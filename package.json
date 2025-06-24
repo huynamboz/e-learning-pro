@@ -18,6 +18,13 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.1",
-    "eslint": "^9.29.0"
+    "@nuxt/eslint": "^1.4.1",
+    "@nuxt/eslint-config": "^1.4.1",
+    "@nuxtjs/tailwindcss": "7.0.0-beta.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.8.3"
   }
 }
