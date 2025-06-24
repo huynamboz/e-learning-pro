@@ -2,8 +2,5 @@
 </script>
 
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+  <div class="bg-red-100 w-5 h-5" />
 </template>
