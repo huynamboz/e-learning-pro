@@ -1,3 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme {
+  /* Theme styles go here */
+}
+
+@layer base {
+  /* Base styles go here */
+}
+
+@layer components {
+  /* Component styles go here */
+}
+
+@layer utilities {
+  /* Utility styles go here */
+}

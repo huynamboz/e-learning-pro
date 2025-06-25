@@ -2,5 +2,7 @@
 </script>
 
 <template>
-  <div class="bg-red-100 w-5 h-5" />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
