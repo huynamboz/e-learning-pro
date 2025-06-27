@@ -7,9 +7,11 @@
       </p>
     </div>
 
+        <Icon name="solar-accessibility-bold-duotone" class="text-2xl mr-2 text-[red-300]" />
     <!-- Menu -->
     <ul>
-      <li><a href="#" class="block py-2">Dashboard</a></li>
+      <li>
+        <a href="#" class="block py-2">Dashboard</a></li>
       <li><a href="#" class="block py-2">Settings</a></li>
       <li><a href="#" class="block py-2">Profile</a></li>
     </ul>

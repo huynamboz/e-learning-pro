@@ -22,7 +22,8 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
-    '@nuxtjs/google-fonts'
+    '@nuxtjs/google-fonts',
+    '@nuxt/icon',
   ],
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -51,4 +52,11 @@ export default defineNuxtConfig({
      */
     componentDir: './components/ui'
   },
+
+  // Icon
+  icon: {
+    serverBundle: {
+      collections: ['solar']
+    }
+  }
 })
