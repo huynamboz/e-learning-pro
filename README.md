@@ -1,75 +1,106 @@
-# Nuxt Minimal Starter
+# NULive
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A modern, high-performance web application built with **Nuxt 3**, **Tailwind CSS**, and the latest UI best practices. NULive is designed for rapid development, scalability, and a beautiful developer experience.
 
-## Setup
+---
 
-Make sure to install dependencies:
+## ✨ Features
 
-```bash
-# npm
-npm install
+- **Nuxt 3**: Powerful Vue 3 framework for SSR, SSG, and hybrid apps
+- **Tailwind CSS**: Utility-first CSS for fast, responsive design
+- **shadcn-nuxt**: Elegant, accessible UI components
+- **Google Fonts**: Preloaded Inter font for a clean, modern look
+- **ESLint & Prettier**: Code quality and formatting out of the box
+- **Component-based architecture**: Easy to extend and maintain
+- **Dark mode ready**: Style your app for any theme
 
-# pnpm
-pnpm install
+---
 
-# yarn
-yarn install
+## 🚀 Quick Start
 
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+### 1. Install dependencies
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+pnpm install # or npm install / yarn install / bun install
 ```
 
-## Production
-
-Build the application for production:
+### 2. Start the development server
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+pnpm dev # or npm run dev / yarn dev / bun run dev
 ```
 
-Locally preview production build:
+Visit [http://localhost:3000](http://localhost:3000) to see your app in action.
+
+---
+
+## 🛠️ Project Structure
+
+```
+├── app.vue                # App entry point
+├── nuxt.config.ts         # Nuxt configuration
+├── assets/                # CSS, fonts, images
+├── components/            # Vue components (base, layout, etc.)
+├── layouts/               # Application layouts
+├── pages/                 # Route-based pages
+├── public/                # Static files
+├── lib/                   # Utility functions
+├── server/                # API/server logic (if needed)
+└── ...
+```
+
+---
+
+## 🧩 Main Dependencies
+
+- [Nuxt 3](https://nuxt.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn-nuxt](https://ui.shadcn.com/)
+- [Google Fonts](https://github.com/nuxt-modules/google-fonts)
+- [ESLint](https://eslint.org/) & [Prettier](https://prettier.io/)
+
+---
+
+## 🏗️ Build for Production
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+pnpm build # or npm run build / yarn build / bun run build
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Preview the production build:
+
+```bash
+pnpm preview # or npm run preview / yarn preview / bun run preview
+```
+
+---
+
+## 📦 Lint & Format
+
+```bash
+pnpm lint      # Lint code
+pnpm lint:fix  # Lint and auto-fix
+```
+
+---
+
+## 📁 Customization
+- Edit `nuxt.config.ts` to tweak modules, fonts, and global settings
+- Add your own components in `components/`
+- Style with Tailwind in `assets/css/main.css`
+
+---
+
+## 🤝 Contributing
+
+Pull requests and issues are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
+
+---
+
+> Built with ❤️ using Nuxt 3, Tailwind CSS, and shadcn UI.
