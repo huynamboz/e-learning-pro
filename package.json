@@ -9,17 +9,21 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "shadcn-vue": "shadcn-vue"
   },
   "dependencies": {
     "@nuxt/icon": "1.14.0",
     "@nuxtjs/google-fonts": "3.2.0",
     "@tailwindcss/vite": "^4.1.10",
+    "@vueuse/core": "^13.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.523.0",
     "nuxt": "^3.17.5",
+    "reka-ui": "^2.3.1",
     "shadcn-nuxt": "2.2.0",
+    "shadcn-vue": "^2.2.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.10",
     "tw-animate-css": "^1.3.4",
