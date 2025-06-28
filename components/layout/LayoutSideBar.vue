@@ -3,13 +3,13 @@ const expandedItems = ref(new Set())
 const route = useRoute()
 const menu = ref([
   {
-    name: 'Dashboard',
+    name: 'Components',
     icon: 'solar-box-minimalistic-broken',
     link: '#',
     subItems: [
       { name: 'Home', link: '/' },
-      { name: 'Reports', link: '#reports' },
-      { name: 'Overview', link: '#overview' },
+      { name: 'Button', link: '/components/button' },
+      { name: 'Input', link: '/components/input' },
     ],
   },
   {
@@ -95,7 +95,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed top-0 left-0 w-[260px] border-r border-shade-4 z-50 p-5 h-full">
+  <div class="fixed bg-shade-1 top-0 left-0 w-[260px] border-r border-shade-4 z-50 p-5 h-full">
     <!-- Site logo -->
     <div class="flex items-center mb-5 gap-2">
       <Icon name="solar-bolt-line-duotone" class="text-2xl text-green" />
