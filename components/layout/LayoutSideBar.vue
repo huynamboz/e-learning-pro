@@ -121,7 +121,7 @@ onMounted(() => {
             </p>
           </div>
           <Icon
-            name="tabler-chevron-up"
+            name="tabler-chevron-down"
             class="text-[16px] text-shade-9 transition-all duration-200"
             :class="{
               'rotate-180': isExpanded(item.name),

@@ -29,15 +29,43 @@
       </p>
     </div>
 
-    <Card>
-      <CardContent>
-        <div class="flex justify-center items-center py-10">
-          <BaseButton size="medium" state="default">
-            Default Button
-          </BaseButton>
-        </div>
-      </CardContent>
-    </Card>
+    <Tabs default-value="account">
+      <TabsList>
+        <TabsTrigger value="account">
+          Preview
+        </TabsTrigger>
+        <TabsTrigger value="password">
+          Code
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="account">
+        <Card>
+          <CardHeader>
+            <CardTitle>Button Sizes</CardTitle>
+            <CardDescription>
+              Different button sizes for various use cases.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div class="flex gap-4 justify-center items-center py-10">
+              <BaseButton size="sm" state="default">
+                Button
+              </BaseButton>
+              <BaseButton size="md" state="default">
+                Button
+              </BaseButton>
+              <BaseButton size="lg" state="default">
+                Button
+              </BaseButton>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="password">
+        Change your password here.
+      </TabsContent>
+    </Tabs>
+
     <Card>
       <CardHeader>
         <CardTitle>Card Title</CardTitle>

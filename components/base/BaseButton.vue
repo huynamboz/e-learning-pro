@@ -1,15 +1,43 @@
 <script setup lang="ts">
-defineProps<{
-  disabled?: boolean
-}>()
+import { cn } from '~/lib/utils'
+
+withDefaults(
+  defineProps<{
+    disabled?: boolean
+    size?: 'sm' | 'md' | 'lg'
+    state?: 'default' | 'primary' | 'secondary' | 'danger'
+  }>(),
+  {
+    disabled: false,
+    size: 'md',
+    state: 'default',
+  },
+)
+
+const baseSize = {
+  sm: 'h-8 px-3 text-xs rounded-[10px]',
+  md: 'py-[8px] px-6 text-sm',
+  lg: 'py-[10px] px-6 text-base',
+}
+
+const baseState = {
+  default: 'bg-shade-4 text-shade-9 hover:bg-shade-5',
+  primary: 'bg-primary text-white hover:bg-primary/90',
+  secondary: 'bg-secondary text-white hover:bg-secondary/90',
+  danger: 'bg-danger text-white hover:bg-danger/90',
+}
 </script>
 
 <template>
   <button
-    :class="{
-      '!cursor-not-allowed opacity-30': disabled,
-    }"
-    class="cursor-pointer hover:bg-shade-5 transition-all duration-200 bg-shade-4 border border-shade-5 rounded-xl pt-[9px] pr-6 pb-[9px] pl-6 flex flex-row gap-2 items-center justify-center shrink-0 relative overflow-hidden"
+    :class="cn(
+      'cursor-pointer transition-all duration-200 rounded-[12px] flex items-center justify-center gap-2 relative overflow-hidden',
+      baseSize[size],
+      baseState[state],
+      {
+        'opacity-50 pointer-events-none': disabled,
+      },
+    )"
     style="box-shadow: var(--button-box-shadow)"
   >
     <p class="text-sm font-semibold text-shade-9">

@@ -43,7 +43,7 @@ function handleScroll(): void {
         <Icon name="solar-square-alt-arrow-left-linear" class="text-2xl text-shade-6"/>
       </div>
       <div class="flex items-center gap-4">
-        <BaseButton size="medium" state="default" icon="no" disabled>
+        <BaseButton size="md" state="default" icon="no">
           Create
         </BaseButton>
         <BaseAvatar
