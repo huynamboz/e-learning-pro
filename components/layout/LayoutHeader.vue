@@ -39,7 +39,9 @@ function handleScroll(): void {
     class="fixed top-0 flex left-0 w-full border-b border-shade-4 bg-shade-1 z-40 pl-[260px] h-[80px]"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
-      <div />
+      <div >
+        <Icon name="solar-square-alt-arrow-left-linear" class="text-2xl text-shade-6"/>
+      </div>
       <div class="flex items-center gap-4">
         <BaseButton size="medium" state="default" icon="no" disabled>
           Create

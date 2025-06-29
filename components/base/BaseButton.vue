@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-  <div
+  <button
     :class="{
       '!cursor-not-allowed opacity-30': disabled,
     }"
@@ -15,7 +15,7 @@ defineProps<{
     <p class="text-sm font-semibold text-shade-9">
       <slot />
     </p>
-  </div>
+  </button>
 </template>
 
 <style scoped></style>
