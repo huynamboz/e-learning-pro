@@ -148,7 +148,7 @@ onMounted(() => {
                 :key="subItem.name"
                 :to="subItem.link"
                 active-class="active-route"
-                class="flex p-2 px-4 relative text-sm text-shade-6 hover:text-shade-8 hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
+                class="flex p-2 px-4 border border-transparent relative text-sm text-shade-6 hover:text-shade-8 hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
               >
                 <div
                   :style="{ height: index !== 0 ? '51px' : '22px' }"
@@ -171,7 +171,12 @@ onMounted(() => {
       </p>
     </div>
     <div class="flex flex-col gap-[2px]">
-      <LayoutMenuItem v-for="item in staticMenu" :key="item.icon" :active="item.active" :menu="item" />
+      <LayoutMenuItem
+        v-for="item in staticMenu"
+        :key="item.icon"
+        :active="item.active"
+        :menu="item"
+      />
     </div>
   </div>
 </template>

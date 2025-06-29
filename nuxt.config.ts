@@ -8,9 +8,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en',
       },
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      ],
+      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
   },
   css: [
@@ -29,17 +27,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
   eslint: {},
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
   },
   googleFonts: {
     fontsDir: 'fonts',
     outputDir: 'assets',
     preload: true,
     families: {
-      'Inter': [400, 500, 600, 700, 800],
-    }
+      Inter: [400, 500, 600, 700, 800],
+    },
   },
   shadcn: {
     /**
@@ -50,13 +46,13 @@ export default defineNuxtConfig({
      * Directory that the component lives in.
      * @default "./components/ui"
      */
-    componentDir: './components/ui'
+    componentDir: './components/ui',
   },
 
   // Icon
   icon: {
     serverBundle: {
-      collections: ['solar']
-    }
-  }
+      collections: ['solar'],
+    },
+  },
 })

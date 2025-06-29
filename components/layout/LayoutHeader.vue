@@ -41,12 +41,7 @@ function handleScroll(): void {
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
       <div />
       <div class="flex items-center gap-4">
-        <BaseButton
-          size="medium"
-          state="default"
-          icon="no"
-          disabled
-        >
+        <BaseButton size="medium" state="default" icon="no" disabled>
           Create
         </BaseButton>
         <BaseAvatar

@@ -10,7 +10,9 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "shadcn-vue": "shadcn-vue"
+    "shadcn-vue": "shadcn-vue",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "dependencies": {
     "@nuxt/icon": "1.14.0",

@@ -85,6 +85,7 @@ pnpm lint:fix  # Lint and auto-fix
 ---
 
 ## 📁 Customization
+
 - Edit `nuxt.config.ts` to tweak modules, fonts, and global settings
 - Add your own components in `components/`
 - Style with Tailwind in `assets/css/main.css`
