@@ -10,7 +10,7 @@
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/components/button">
+          <BreadcrumbLink href="/components/BaseButton">
             Button
           </BreadcrumbLink>
         </BreadcrumbItem>

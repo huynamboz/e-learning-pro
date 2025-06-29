@@ -49,6 +49,38 @@
     border-color: var(--shade-4);
     color: var(--foreground);
   }
+
+  /* Dark mode specific enhancements */
+  .dark .sidebar-item:hover {
+    background-color: var(--shade-3);
+  }
+
+  .dark .menu-item {
+    border-color: var(--shade-4);
+  }
+
+  .dark .menu-item:hover {
+    background-color: var(--shade-3);
+    border-color: var(--shade-5);
+  }
+
+  /* Scroll styling for dark mode */
+  .dark ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: var(--shade-2);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--shade-4);
+    border-radius: 3px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--shade-5);
+  }
 }
 
 @layer utilities {
@@ -175,6 +207,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  --button-box-shadow:
+    0px 0px 0px 1px #3e3e3e, inset 0px 1px 0px 0px #000000, 
+    0px 3px 4px -1px #00000026;
 }
 
 @layer base {
@@ -241,8 +277,25 @@
   * {
     @apply border-border outline-ring/50 font-sans;
   }
+  
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Smooth transitions for all elements that use CSS variables */
+  *,
+  *::before,
+  *::after {
+    transition: 
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease,
+      box-shadow 0.3s ease;
   }
 }
 

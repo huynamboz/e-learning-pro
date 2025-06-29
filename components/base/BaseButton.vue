@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { cn } from '~/lib/utils'
 
-withDefaults(
+const prop = withDefaults(
   defineProps<{
     disabled?: boolean
     size?: 'sm' | 'md' | 'lg'
     state?: 'default' | 'primary' | 'secondary' | 'danger'
+    class?: string
   }>(),
   {
     disabled: false,
     size: 'md',
     state: 'default',
+    class: '',
   },
 )
 
@@ -21,7 +23,7 @@ const baseSize = {
 }
 
 const baseState = {
-  default: 'bg-shade-4 text-shade-9 hover:bg-shade-5',
+  default: 'bg-shade-4 dark:bg-shade-2 text-shade-9 hover:bg-shade-5',
   primary: 'bg-primary text-white hover:bg-primary/90',
   secondary: 'bg-secondary text-white hover:bg-secondary/90',
   danger: 'bg-danger text-white hover:bg-danger/90',
@@ -34,6 +36,7 @@ const baseState = {
       'cursor-pointer transition-all duration-200 rounded-[12px] flex items-center justify-center gap-2 relative overflow-hidden',
       baseSize[size],
       baseState[state],
+      prop.class,
       {
         'opacity-50 pointer-events-none': disabled,
       },

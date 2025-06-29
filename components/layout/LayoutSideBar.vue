@@ -96,12 +96,15 @@ onMounted(() => {
 
 <template>
   <div class="fixed bg-shade-1 top-0 left-0 w-[260px] border-r border-shade-4 z-50 p-5 h-full">
-    <!-- Site logo -->
-    <div class="flex items-center mb-5 gap-2">
-      <Icon name="solar-bolt-line-duotone" class="text-2xl text-green" />
-      <p class="font-bold text-2xl">
-        <span class="text-green">NuxLive</span>
-      </p>
+    <!-- Site logo and dark mode toggle -->
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-2">
+        <Icon name="solar-bolt-line-duotone" class="text-2xl text-green" />
+        <p class="font-bold text-2xl">
+          <span class="text-green">NuxLive</span>
+        </p>
+      </div>
+      <BaseDarkModeToggle />
     </div>
     <!-- Menu -->
     <ul>
