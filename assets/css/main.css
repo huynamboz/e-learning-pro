@@ -161,8 +161,8 @@
   --foreground: oklch(0.145 0 0);
 
   --button-box-shadow:
-    0px 0px 0px 1px #d4d4d4, inset 0px 1px 0px 0px #FFFFFF,
-    0px 3px 4px -1px #00000026;
+    0px 0px 0px 1px #d4d4d4, inset 0px 1px 0px 0px rgba(255, 255, 255, 0.33),
+    0px 3px 4px -1px rgba(0, 0, 0, 0.15);
 }
 
 .dark {
