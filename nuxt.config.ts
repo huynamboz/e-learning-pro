@@ -13,8 +13,8 @@ export default defineNuxtConfig({
   },
   css: [
     '~/assets/css/main.css',
-    // font
     '~/assets/css/nuxt-google-fonts.css',
+    'highlight.js/styles/atom-one-dark.css',
   ],
   modules: [
     '@nuxt/eslint',

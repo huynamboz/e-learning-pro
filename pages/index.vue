@@ -3,7 +3,7 @@ const { isDark } = useDarkMode()
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div class="space-y-8 p-6">
     <!-- Hero Section -->
     <div class="space-y-4">
       <h1 class="text-4xl font-bold tracking-tight">
@@ -79,7 +79,7 @@ const { isDark } = useDarkMode()
           <BaseButton size="lg">
             Large
           </BaseButton>
-          <BaseButton size="icon">
+          <BaseButton>
             <Icon name="solar-heart-bold" class="w-4 h-4" />
           </BaseButton>
         </div>

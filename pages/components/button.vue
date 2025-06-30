@@ -1,5 +1,30 @@
+<script setup lang="ts">
+// Using ES6 import syntax
+import hljs from 'highlight.js/lib/core'
+import xml from 'highlight.js/lib/languages/xml'
+
+// Then register the languages you need
+hljs.registerLanguage('xml', xml)
+
+const highlightedCode = hljs.highlight(
+  `<BaseButton size="sm" state="default">
+  Size sm
+</BaseButton>
+
+<BaseButton size="md" state="default">
+  Size md
+</BaseButton>
+
+<BaseButton size="lg" state="default">
+  Size lg
+</BaseButton>
+`,
+  { language: 'xml' },
+).value
+</script>
+
 <template>
-  <div class="p-5 flex flex-col gap-5">
+  <div class="p-6 flex flex-col gap-5">
     <!-- Breadcrumb -->
     <Breadcrumb>
       <BreadcrumbList>
@@ -29,24 +54,62 @@
       </p>
     </div>
 
-    <Tabs default-value="account">
-      <TabsList>
-        <TabsTrigger value="account">
-          Preview
-        </TabsTrigger>
-        <TabsTrigger value="password">
-          Code
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="account">
-        <Card>
-          <CardHeader>
-            <CardTitle>Button Sizes</CardTitle>
-            <CardDescription>
-              Different button sizes for various use cases.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+    <Card>
+      <CardHeader>
+        <CardTitle>Button Sizes</CardTitle>
+        <CardDescription>
+          Different button sizes for various use cases.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs default-value="preview">
+          <TabsList>
+            <TabsTrigger value="preview">
+              Preview
+            </TabsTrigger>
+            <TabsTrigger value="code">
+              Code
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview">
+            <div class="flex gap-4 justify-center items-center py-10">
+              <BaseButton size="sm" state="default">
+                Size sm
+              </BaseButton>
+              <BaseButton size="md" state="default">
+                Size md
+              </BaseButton>
+              <BaseButton size="lg" state="default">
+                Size lg
+              </BaseButton>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="code">
+            <BaseCodeBlock :code="highlightedCode" />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Button Sizes</CardTitle>
+        <CardDescription>
+          Different button sizes for various use cases.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs default-value="preview">
+          <TabsList>
+            <TabsTrigger value="preview">
+              Preview
+            </TabsTrigger>
+            <TabsTrigger value="code">
+              Code
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview">
             <div class="flex gap-4 justify-center items-center py-10">
               <BaseButton size="sm" state="default">
                 Button
@@ -58,61 +121,13 @@
                 Button
               </BaseButton>
             </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-      <TabsContent value="password">
-        Change your password here.
-      </TabsContent>
-    </Tabs>
+          </TabsContent>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
-    </Card>
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent> Card Content </CardContent>
-      <CardFooter> Card Footer </CardFooter>
+          <TabsContent value="code">
+            <Card />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
     </Card>
   </div>
 </template>

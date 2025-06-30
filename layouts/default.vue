@@ -17,7 +17,7 @@ if (process.server) {
     <LayoutSideBar />
     <div class="flex-1 bg-shade-1 flex flex-col ml-[260px] pt-[80px]">
       <LayoutHeader />
-      <div class="p-6">
+      <div>
         <slot />
       </div>
     </div>
