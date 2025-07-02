@@ -18,8 +18,8 @@ const prop = withDefaults(
 
 const baseSize = {
   sm: 'h-8 px-3 rounded-[10px]',
-  md: 'py-[8px] px-6 ',
-  lg: 'py-[10px] px-6 ',
+  md: 'px-6 h-9',
+  lg: 'px-6 h-10',
   icon: 'h-9 w-9 p-2 rounded-[10px] flex items-center justify-center',
 }
 
@@ -34,7 +34,7 @@ const baseState = {
 <template>
   <button
     :class="cn(
-      'text-sm font-semibold text-shade-9 cursor-pointer transition-all duration-200 rounded-[12px] flex items-center justify-center gap-2 relative overflow-hidden',
+      'text-sm text-shade-9 cursor-pointer transition-all duration-200 rounded-[12px] flex items-center justify-center gap-2 relative overflow-hidden',
       baseSize[size],
       baseState[state],
       prop.class,

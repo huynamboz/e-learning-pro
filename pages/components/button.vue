@@ -23,7 +23,7 @@ const buttonSize = hljs.highlight(
 ).value
 
 const buttonIcon = hljs.highlight(
-`<BaseButton size="icon">
+  `<BaseButton size="icon">
   <Icon name="solar-alt-arrow-right-outline" size="20" />
 </BaseButton>
 
@@ -32,6 +32,25 @@ const buttonIcon = hljs.highlight(
 </BaseButton>
 
 <BaseButton size="icon">
+  <Icon name="solar-bath-broken" size="20" />
+</BaseButton>
+`,
+  { language: 'xml' },
+).value
+
+const buttonTextWithIcon = hljs.highlight(
+  `<BaseButton>
+  Back
+  <Icon name="solar-alt-arrow-right-outline" size="20" />
+</BaseButton>
+
+<BaseButton>
+  Login
+  <Icon name="solar-login-2-linear" size="20" />
+</BaseButton>
+
+<BaseButton>
+  Go bath
   <Icon name="solar-bath-broken" size="20" />
 </BaseButton>
 `,
@@ -143,6 +162,48 @@ const buttonIcon = hljs.highlight(
 
           <TabsContent value="code">
             <BaseCodeBlock :code="buttonIcon" />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+
+    <!-- Text with icon -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Text with Icon</CardTitle>
+        <CardDescription>
+          Different button sizes for various use cases.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs default-value="preview">
+          <TabsList>
+            <TabsTrigger value="preview">
+              Preview
+            </TabsTrigger>
+            <TabsTrigger value="code">
+              Code
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview">
+            <div class="flex gap-4 justify-center items-center py-10">
+              <BaseButton>
+                Back
+                <Icon name="solar-alt-arrow-right-outline" size="20" />
+              </BaseButton>
+              <BaseButton>
+                Login
+                <Icon name="solar-login-2-linear" size="20" />
+              </BaseButton>
+              <BaseButton>
+                Go bath
+                <Icon name="solar-bath-broken" size="20" />
+              </BaseButton>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="code">
+            <BaseCodeBlock :code="buttonTextWithIcon" />
           </TabsContent>
         </Tabs>
       </CardContent>
