@@ -13,11 +13,11 @@ if (process.server) {
 </script>
 
 <template>
-  <div class="flex bg-background min-h-lvh transition-colors duration-300">
+  <div class="flex bg-background min-h-lvh max-w-lvw transition-colors duration-300">
     <LayoutSideBar />
-    <div class="flex-1 bg-shade-1 flex flex-col ml-[260px] pt-[80px]">
+    <div class="w-full bg-shade-1 flex flex-col pl-[260px] pt-[80px]">
       <LayoutHeader />
-      <div>
+      <div class="flex-1 overflow-x-hidden p-5">
         <slot />
       </div>
     </div>

@@ -136,7 +136,7 @@ const buttonTextWithIcon = hljs.highlight(
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview">
-            <div class="flex gap-4 justify-center items-center py-10">
+            <div class="flex gap-4 justify-center items-center flex-wrap py-10">
               <BaseButton size="sm">
                 Size sm
               </BaseButton>
@@ -175,7 +175,7 @@ const buttonTextWithIcon = hljs.highlight(
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview">
-            <div class="flex gap-4 justify-center items-center py-10">
+            <div class="flex gap-4 justify-center items-center flex-wrap py-10">
               <BaseButton size="md" variant="default">
                 Default
               </BaseButton>
@@ -190,6 +190,9 @@ const buttonTextWithIcon = hljs.highlight(
               </BaseButton>
               <BaseButton size="md" variant="ghost">
                 Ghost
+              </BaseButton>
+              <BaseButton size="md" variant="outline">
+                Outline
               </BaseButton>
               <BaseButton size="md" disabled>
                 Disabled
@@ -223,7 +226,7 @@ const buttonTextWithIcon = hljs.highlight(
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview">
-            <div class="flex gap-4 justify-center items-center py-10">
+            <div class="flex gap-4 justify-center items-center flex-wrap py-10">
               <BaseButton size="icon">
                 <Icon name="solar-alt-arrow-right-outline" size="20" />
               </BaseButton>
@@ -262,7 +265,7 @@ const buttonTextWithIcon = hljs.highlight(
             </TabsTrigger>
           </TabsList>
           <TabsContent value="preview">
-            <div class="flex gap-4 justify-center items-center py-10">
+            <div class="flex gap-4 justify-center items-center flex-wrap py-10">
               <BaseButton>
                 Back
                 <Icon name="solar-alt-arrow-right-outline" size="20" />

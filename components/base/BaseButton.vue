@@ -5,7 +5,7 @@ const prop = withDefaults(
   defineProps<{
     disabled?: boolean
     size?: 'sm' | 'md' | 'lg' | 'icon'
-    variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'ghost'
+    variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'ghost' | 'outline'
     class?: string
   }>(),
   {
@@ -25,10 +25,11 @@ const baseSize = {
 
 const baseState = {
   default: 'bg-shade-4 dark:bg-shade-2 text-shade-9 hover:bg-shade-5 shadow-[var(--button-box-shadow)]',
-  primary: 'bg-primary hover:bg-primary/90 text-white',
+  primary: 'bg-green hover:bg-green/90 text-white',
   secondary: 'bg-secondary hover:bg-secondary/90',
   destructive: 'bg-destructive hover:bg-destructive/90 text-white',
-  ghost: 'bg-transparent border text-shade-9 hover:bg-shade-2',
+  ghost: 'bg-transparent text-shade-9 hover:bg-shade-2',
+  outline: 'bg-transparent border text-shade-9 hover:bg-shade-2',
 }
 </script>
 
