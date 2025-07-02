@@ -22,6 +22,34 @@ const buttonSize = hljs.highlight(
   { language: 'xml' },
 ).value
 
+const buttonVariant = hljs.highlight(
+  `<BaseButton size="md" variant="default">
+  Default
+</BaseButton>
+
+<BaseButton size="md" variant="primary">
+  Primary
+</BaseButton>
+
+<BaseButton size="md" variant="secondary">
+  Secondary
+</BaseButton>
+
+<BaseButton size="md" variant="destructive">
+  Danger
+</BaseButton>
+
+<BaseButton size="md" variant="ghost">
+  Ghost
+</BaseButton>
+
+<BaseButton size="md" disabled>
+  Disabled
+</BaseButton>
+`,
+  { language: 'xml' },
+).value
+
 const buttonIcon = hljs.highlight(
   `<BaseButton size="icon">
   <Icon name="solar-alt-arrow-right-outline" size="20" />
@@ -123,6 +151,54 @@ const buttonTextWithIcon = hljs.highlight(
 
           <TabsContent value="code">
             <BaseCodeBlock :code="buttonSize" />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+
+    <!-- Variant -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Variants</CardTitle>
+        <CardDescription>
+          Different button variants for various use cases.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs default-value="preview">
+          <TabsList>
+            <TabsTrigger value="preview">
+              Preview
+            </TabsTrigger>
+            <TabsTrigger value="code">
+              Code
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="preview">
+            <div class="flex gap-4 justify-center items-center py-10">
+              <BaseButton size="md" variant="default">
+                Default
+              </BaseButton>
+              <BaseButton size="md" variant="primary">
+                Primary
+              </BaseButton>
+              <BaseButton size="md" variant="secondary">
+                Secondary
+              </BaseButton>
+              <BaseButton size="md" variant="destructive">
+                Danger
+              </BaseButton>
+              <BaseButton size="md" variant="ghost">
+                Ghost
+              </BaseButton>
+              <BaseButton size="md" disabled>
+                Disabled
+              </BaseButton>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="code">
+            <BaseCodeBlock :code="buttonVariant" />
           </TabsContent>
         </Tabs>
       </CardContent>

@@ -3,8 +3,8 @@ const profileOptions = [
   {
     title: 'Profile',
     options: [
-      { icon: 'solar-user-linear', name: 'Settings', link: '/settings' },
-      { icon: 'solar-feed-linear', name: 'Account', link: '/account' },
+      { icon: 'solar-user-linear', name: 'Profile', link: '/settings' },
+      { icon: 'solar-feed-linear', name: 'Feed', link: '/account' },
 
       { icon: 'solar-settings-linear', name: 'Privacy', link: '/privacy' },
     ],

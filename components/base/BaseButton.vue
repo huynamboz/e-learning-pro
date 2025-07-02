@@ -5,13 +5,13 @@ const prop = withDefaults(
   defineProps<{
     disabled?: boolean
     size?: 'sm' | 'md' | 'lg' | 'icon'
-    state?: 'default' | 'primary' | 'secondary' | 'danger'
+    variant?: 'default' | 'primary' | 'secondary' | 'destructive' | 'ghost'
     class?: string
   }>(),
   {
     disabled: false,
     size: 'md',
-    state: 'default',
+    variant: 'default',
     class: '',
   },
 )
@@ -24,10 +24,11 @@ const baseSize = {
 }
 
 const baseState = {
-  default: 'bg-shade-4 dark:bg-shade-2 text-shade-9 hover:bg-shade-5',
-  primary: 'bg-primary hover:bg-primary/90',
+  default: 'bg-shade-4 dark:bg-shade-2 text-shade-9 hover:bg-shade-5 shadow-[var(--button-box-shadow)]',
+  primary: 'bg-primary hover:bg-primary/90 text-white',
   secondary: 'bg-secondary hover:bg-secondary/90',
-  danger: 'bg-danger hover:bg-danger/90',
+  destructive: 'bg-destructive hover:bg-destructive/90 text-white',
+  ghost: 'bg-transparent border text-shade-9 hover:bg-shade-2',
 }
 </script>
 
@@ -36,13 +37,12 @@ const baseState = {
     :class="cn(
       'text-sm text-shade-9 cursor-pointer transition-all duration-200 rounded-[12px] flex items-center justify-center gap-2 relative overflow-hidden',
       baseSize[size],
-      baseState[state],
+      baseState[variant],
       prop.class,
       {
-        'opacity-50 pointer-events-none': disabled,
+        'opacity-40 pointer-events-none cursor-not-allowed': disabled,
       },
     )"
-    style="box-shadow: var(--button-box-shadow)"
   >
     <slot />
   </button>
