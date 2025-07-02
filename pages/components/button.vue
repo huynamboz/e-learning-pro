@@ -6,17 +6,33 @@ import xml from 'highlight.js/lib/languages/xml'
 // Then register the languages you need
 hljs.registerLanguage('xml', xml)
 
-const highlightedCode = hljs.highlight(
-  `<BaseButton size="sm" state="default">
+const buttonSize = hljs.highlight(
+  `<BaseButton size="sm">
   Size sm
 </BaseButton>
 
-<BaseButton size="md" state="default">
+<BaseButton size="md">
   Size md
 </BaseButton>
 
-<BaseButton size="lg" state="default">
+<BaseButton size="lg">
   Size lg
+</BaseButton>
+`,
+  { language: 'xml' },
+).value
+
+const buttonIcon = hljs.highlight(
+`<BaseButton size="icon">
+  <Icon name="solar-alt-arrow-right-outline" size="20" />
+</BaseButton>
+
+<BaseButton size="icon">
+  <Icon name="solar-map-arrow-right-outline" size="20" />
+</BaseButton>
+
+<BaseButton size="icon">
+  <Icon name="solar-bath-broken" size="20" />
 </BaseButton>
 `,
   { language: 'xml' },
@@ -54,9 +70,10 @@ const highlightedCode = hljs.highlight(
       </p>
     </div>
 
+    <!-- Size -->
     <Card>
       <CardHeader>
-        <CardTitle>Button Sizes</CardTitle>
+        <CardTitle>Sizes</CardTitle>
         <CardDescription>
           Different button sizes for various use cases.
         </CardDescription>
@@ -73,28 +90,29 @@ const highlightedCode = hljs.highlight(
           </TabsList>
           <TabsContent value="preview">
             <div class="flex gap-4 justify-center items-center py-10">
-              <BaseButton size="sm" state="default">
+              <BaseButton size="sm">
                 Size sm
               </BaseButton>
-              <BaseButton size="md" state="default">
+              <BaseButton size="md">
                 Size md
               </BaseButton>
-              <BaseButton size="lg" state="default">
+              <BaseButton size="lg">
                 Size lg
               </BaseButton>
             </div>
           </TabsContent>
 
           <TabsContent value="code">
-            <BaseCodeBlock :code="highlightedCode" />
+            <BaseCodeBlock :code="buttonSize" />
           </TabsContent>
         </Tabs>
       </CardContent>
     </Card>
 
+    <!-- Icon -->
     <Card>
       <CardHeader>
-        <CardTitle>Button Sizes</CardTitle>
+        <CardTitle>Icon</CardTitle>
         <CardDescription>
           Different button sizes for various use cases.
         </CardDescription>
@@ -111,20 +129,20 @@ const highlightedCode = hljs.highlight(
           </TabsList>
           <TabsContent value="preview">
             <div class="flex gap-4 justify-center items-center py-10">
-              <BaseButton size="sm" state="default">
-                Button
+              <BaseButton size="icon">
+                <Icon name="solar-alt-arrow-right-outline" size="20" />
               </BaseButton>
-              <BaseButton size="md" state="default">
-                Button
+              <BaseButton size="icon">
+                <Icon name="solar-map-arrow-right-outline" size="20" />
               </BaseButton>
-              <BaseButton size="lg" state="default">
-                Button
+              <BaseButton size="icon">
+                <Icon name="solar-bath-broken" size="20" />
               </BaseButton>
             </div>
           </TabsContent>
 
           <TabsContent value="code">
-            <Card />
+            <BaseCodeBlock :code="buttonIcon" />
           </TabsContent>
         </Tabs>
       </CardContent>
