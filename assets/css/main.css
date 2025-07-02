@@ -163,6 +163,13 @@
   --button-box-shadow:
     0px 0px 0px 1px #d4d4d4, inset 0px 1px 0px 0px rgba(255, 255, 255, 0.33),
     0px 3px 4px -1px rgba(0, 0, 0, 0.15);
+
+  --popover-box-shadow:
+    0px 10px 21px 0px rgba(0, 0, 0, 0.07),
+        0px 38px 38px 0px rgba(0, 0, 0, 0.06),
+        0px 86px 52px 0px rgba(0, 0, 0, 0.04),
+        0px 153px 61px 0px rgba(0, 0, 0, 0.01),
+        0px 239px 67px 0px rgba(0, 0, 0, 0);
 }
 
 .dark {

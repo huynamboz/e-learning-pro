@@ -39,16 +39,17 @@ function handleScroll(): void {
     class="fixed top-0 flex left-0 w-full border-b border-shade-4 bg-shade-1 z-40 pl-[260px] h-[80px]"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
-      <div >
-        <Icon name="solar-square-alt-arrow-left-linear" class="text-2xl text-shade-6"/>
+      <div>
+        <Icon name="solar-square-alt-arrow-left-linear" class="text-2xl text-shade-6" />
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-5">
+        <div class="p-[10px] flex justify-center items-center">
+          <Icon name="solar-bell-linear" class="text-shade-9" size="20"/>
+        </div>
         <BaseButton size="md" state="default" icon="no">
           Create
         </BaseButton>
-        <BaseAvatar
-          src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"
-        />
+        <BaseUserProfilePopup />
       </div>
     </div>
   </div>
