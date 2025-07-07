@@ -13,11 +13,11 @@ const menu = ref([
     ],
   },
   {
-    name: 'Assets',
+    name: 'Pages',
     icon: 'solar-settings-bold-duotone',
     link: '#',
     subItems: [
-      { name: 'Images', link: '#images' },
+      { name: 'Pricing', link: '#images' },
       { name: 'Videos', link: '#videos' },
       { name: 'Documents', link: '#documents' },
     ],
@@ -95,7 +95,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed bg-shade-1 top-0 left-0 w-[260px] border-r border-shade-4 z-50 p-5 h-full">
+  <div class="fixed bg-shade-1 top-0 left-0 w-[220px] border-r border-shade-4 z-50 p-5 h-full">
     <!-- Site logo and dark mode toggle -->
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-2">
@@ -119,7 +119,7 @@ onMounted(() => {
             <div class="size-8 flex justify-center items-center">
               <Icon :name="item.icon" class="text-[20px] text-shade-6" />
             </div>
-            <p class="font-semibold text-sm">
+            <p class="font-semibold text-xs">
               {{ item.name }}
             </p>
           </div>
@@ -151,7 +151,7 @@ onMounted(() => {
                 :key="subItem.name"
                 :to="subItem.link"
                 active-class="active-route"
-                class="flex p-2 px-4 border border-transparent relative text-sm text-shade-6 hover:text-shade-8 hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
+                class="flex p-2 px-4 font-medium border border-transparent relative text-xs text-shade-6 hover:text-shade-8 hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
               >
                 <div
                   :style="{ height: index !== 0 ? '51px' : '22px' }"

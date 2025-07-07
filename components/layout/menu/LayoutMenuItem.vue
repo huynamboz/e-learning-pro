@@ -28,7 +28,7 @@ defineProps<{
     >
       <Icon :name="menu.icon" class="text-[20px]" :style="{ color: menu.iconColor }" />
     </div>
-    <p class="text-sm text-shade-9 font-medium">
+    <p class="text-xs text-shade-9 font-medium">
       {{ menu.name }}
     </p>
   </NuxtLink>

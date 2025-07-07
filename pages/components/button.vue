@@ -87,7 +87,7 @@ const buttonTextWithIcon = hljs.highlight(
 </script>
 
 <template>
-  <div class="p-6 flex flex-col gap-5">
+  <div class="p-8 px-12 flex flex-col gap-5">
     <!-- Breadcrumb -->
     <Breadcrumb>
       <BreadcrumbList>
