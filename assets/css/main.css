@@ -111,6 +111,9 @@
 }
 
 :root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
   --shade-1: #fcfcfc;
   --shade-2: #f8f7f7;
   --shade-3: #f1f1f1;

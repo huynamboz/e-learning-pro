@@ -14,10 +14,10 @@ const menu = ref([
   },
   {
     name: 'Pages',
-    icon: 'solar-settings-bold-duotone',
+    icon: 'solar-book-2-line-duotone',
     link: '#',
     subItems: [
-      { name: 'Pricing', link: '#images' },
+      { name: 'Pricing', link: '/pages/pricing' },
       { name: 'Videos', link: '#videos' },
       { name: 'Documents', link: '#documents' },
     ],
