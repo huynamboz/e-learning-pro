@@ -18,6 +18,21 @@ const { isDark } = useDarkMode()
     <div class="bg-card border border-border rounded-lg p-6 space-y-4">
       <h2 class="text-2xl font-semibold">
         Dark Mode
+        <a-space wrap>
+          <a-button type="primary">
+            Primary Button
+          </a-button>
+          <a-button>Default Button</a-button>
+          <a-button type="dashed">
+            Dashed Button
+          </a-button>
+          <a-button type="text">
+            Text Button
+          </a-button>
+          <a-button type="link">
+            Link Button
+          </a-button>
+        </a-space>
       </h2>
       <p class="text-muted-foreground">
         Toggle between light and dark modes using the button in the sidebar. The theme persists across sessions and respects your system preference.

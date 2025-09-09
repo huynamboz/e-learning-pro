@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
-
+import { createStyleImportPlugin } from 'vite-plugin-style-import'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -11,11 +11,15 @@ export default defineNuxtConfig({
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
   },
+
   css: [
+    'ant-design-vue/dist/reset.css',
+    '~/assets/css/custom.css',
     '~/assets/css/main.css',
     '~/assets/css/nuxt-google-fonts.css',
     'highlight.js/styles/atom-one-dark.css',
   ],
+
   modules: [
     '@nuxt/eslint',
     '@nuxtjs/tailwindcss',
@@ -23,12 +27,24 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     '@nuxt/icon',
   ],
+
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
   eslint: {},
+
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+    ],
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+        },
+      },
+    },
   },
+
   googleFonts: {
     fontsDir: 'fonts',
     outputDir: 'assets',
@@ -37,22 +53,18 @@ export default defineNuxtConfig({
       Inter: [400, 500, 600, 700, 800],
     },
   },
+
   shadcn: {
-    /**
-     * Prefix for all the imported component
-     */
     prefix: '',
-    /**
-     * Directory that the component lives in.
-     * @default "./components/ui"
-     */
     componentDir: './components/ui',
   },
 
   // Icon
   icon: {
     serverBundle: {
-      collections: ['solar'],
+      collections: ['solar, logos'],
     },
   },
+
+  plugins: ['@/plugins/antd'],
 })
