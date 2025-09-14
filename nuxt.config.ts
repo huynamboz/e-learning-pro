@@ -1,5 +1,4 @@
 import tailwindcss from '@tailwindcss/vite'
-import { createStyleImportPlugin } from 'vite-plugin-style-import'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   app: {
@@ -67,4 +66,12 @@ export default defineNuxtConfig({
   },
 
   plugins: ['@/plugins/antd'],
+
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.API_BASE_URL || '/api', // Sử dụng local fake API, có thể thay đổi qua env
+    },
+  },
+
+  ssr: true, // Đảm bảo SSR được bật
 })

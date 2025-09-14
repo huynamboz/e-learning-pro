@@ -1,4 +1,9 @@
 <script lang="ts" setup>
+definePageMeta({
+  layout: 'default',
+  middleware: 'auth',
+})
+
 const tabList = ref([
   {
     key: 'PROFILE',

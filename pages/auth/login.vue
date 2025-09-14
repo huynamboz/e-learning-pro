@@ -1,16 +1,42 @@
 <script setup lang="ts">
 import type { LoginRequest } from '~/types/auth.type'
+import { message } from 'ant-design-vue'
 
 definePageMeta({
   layout: 'auth',
+  middleware: 'guest',
 })
+
+const { login } = useAuth()
 
 const formState = reactive<LoginRequest>({
   email: '',
   password: '',
 })
 
-function onFinish() {
+const loading = ref(false)
+
+async function onFinish() {
+  loading.value = true
+
+  try {
+    const result = await login(formState)
+
+    if (result.success) {
+      message.success('Đăng nhập thành công!')
+      // Redirect sẽ được xử lý bởi login function
+      await navigateTo('/learning')
+    }
+    else {
+      message.error(result.error || 'Đăng nhập thất bại')
+    }
+  }
+  catch {
+    message.error('Có lỗi xảy ra, vui lòng thử lại')
+  }
+  finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -51,9 +77,16 @@ function onFinish() {
           Forgot password
         </router-link>
 
-        <a-button type="primary" class="w-full !h-[40px] flex items-center justify-center" html-type="submit">
-          Sign in
-          <Icon class="ml-2 -mb-1 text-base" name="i-solar-arrow-right-outline" />
+        <a-button
+          type="primary"
+          class="w-full !h-[40px] flex items-center justify-center"
+          html-type="submit"
+          :loading="loading"
+        >
+          <template v-if="!loading">
+            Sign in
+            <Icon class="ml-2 -mb-1 text-base" name="i-solar-arrow-right-outline" />
+          </template>
         </a-button>
       </a-form>
       <div class="flex items-center gap-3 my-3">

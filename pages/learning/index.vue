@@ -16,6 +16,7 @@ import {
 // Page meta
 definePageMeta({
   layout: 'default',
+  middleware: 'auth', // Yêu cầu đăng nhập
 })
 
 const router = useRouter()

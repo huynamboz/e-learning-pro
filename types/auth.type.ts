@@ -13,6 +13,19 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  user: any
-  id_token: string
+  data: {
+    id_token: string
+  }
+}
+
+export interface User {
+  id: string
+  email: string
+  firstName: string
+  lastName: string
+  userName: string
+  avatar?: string
+  role?: string
+  createdAt?: string
+  updatedAt?: string
 }

@@ -8,8 +8,8 @@ const menu = ref([
     link: '#',
     subItems: [
       { name: 'Home', link: '/' },
-      { name: 'Button', link: '/components/button' },
-      { name: 'Input', link: '/components/input' },
+      { name: 'Button', link: '#' },
+      { name: 'Input', link: '#' },
     ],
   },
   {
@@ -17,9 +17,9 @@ const menu = ref([
     icon: 'solar-book-2-line-duotone',
     link: '#',
     subItems: [
-      { name: 'Pricing', link: '/pages/pricing' },
-      { name: 'Videos', link: '#videos' },
-      { name: 'Documents', link: '#documents' },
+      { name: 'Pricing', link: '#' },
+      { name: 'Videos', link: '#' },
+      { name: 'Documents', link: '#' },
     ],
   },
   {
@@ -27,8 +27,8 @@ const menu = ref([
     icon: 'solar-user-bold-duotone',
     link: '#',
     subItems: [
-      { name: 'Favorites', link: '#favorites' },
-      { name: 'Bookmarks', link: '#bookmarks' },
+      { name: 'Favorites', link: '#' },
+      { name: 'Bookmarks', link: '#' },
     ],
   },
 ])
@@ -46,14 +46,14 @@ const staticMenu = ref([
   {
     name: 'New folder',
     icon: 'solar-add-folder-bold-duotone',
-    link: '/new-folder',
+    link: '#',
     active: false,
     iconColor: '#7B7B7B',
   },
   {
     name: 'My scenes',
     icon: 'solar-folder-open-line-duotone',
-    link: '/folder/hehe',
+    link: '#',
     active: false,
     iconColor: '#E36323',
   },
@@ -101,7 +101,7 @@ onMounted(() => {
       <div class="flex items-center gap-2">
         <Icon name="solar-bolt-line-duotone" class="text-2xl text-green" />
         <p class="font-bold text-2xl">
-          <span class="text-green">NuxLive</span>
+          <span class="text-green">UNLabs</span>
         </p>
       </div>
       <BaseDarkModeToggle />

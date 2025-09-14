@@ -7,4 +7,9 @@ export default antfu({
   vue: true,
   jsonc: false,
   yml: false,
+}, {
+  files: ['nuxt.config.ts', 'nuxt.config.js'],
+  rules: {
+    'node/prefer-global/process': 'off',
+  },
 })

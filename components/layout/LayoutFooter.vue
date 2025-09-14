@@ -24,19 +24,19 @@ const footerSections: FooterSection[] = [
   {
     title: 'Get Help',
     links: [
-      { title: 'Contact Us', url: '/contact' },
-      { title: 'Latest Articles', url: '/articles' },
-      { title: 'FAQ', url: '/faq' },
+      { title: 'Contact Us', url: '#' },
+      { title: 'Latest Articles', url: '#' },
+      { title: 'FAQ', url: '#' },
     ],
   },
   {
     title: 'Programs',
     links: [
-      { title: 'Art & Design', url: '/programs/art-design' },
-      { title: 'Business', url: '/programs/business' },
-      { title: 'IT & Software', url: '/programs/it-software' },
-      { title: 'Languages', url: '/programs/languages' },
-      { title: 'Programming', url: '/programs/programming' },
+      { title: 'Art & Design', url: '/' },
+      { title: 'Business', url: '/' },
+      { title: 'IT & Software', url: '/' },
+      { title: 'Languages', url: '/' },
+      { title: 'Programming', url: '/' },
     ],
   },
 ]

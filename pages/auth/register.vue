@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { RegisterRequest } from '~/types/auth.type'
+import { message } from 'ant-design-vue'
 
 definePageMeta({
   layout: 'auth',
+  middleware: 'guest',
 })
+
+const { register } = useAuth()
 
 const formState = reactive<RegisterRequest>({
   firstName: '',
@@ -13,8 +17,35 @@ const formState = reactive<RegisterRequest>({
   confirmPassword: '',
   password: '',
 })
-function onFinish() {
 
+const loading = ref(false)
+
+async function onFinish() {
+  // Validate passwords match
+  if (formState.password !== formState.confirmPassword) {
+    message.error('Mật khẩu xác nhận không khớp')
+    return
+  }
+
+  loading.value = true
+
+  try {
+    const result = await register(formState)
+
+    if (result.success) {
+      message.success('Đăng ký thành công! Vui lòng đăng nhập.')
+      await navigateTo('/auth/login')
+    }
+    else {
+      message.error(result.error || 'Đăng ký thất bại')
+    }
+  }
+  catch {
+    message.error('Có lỗi xảy ra, vui lòng thử lại')
+  }
+  finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -87,9 +118,16 @@ function onFinish() {
           </a-form-item>
         </div>
 
-        <a-button type="primary" class="w-full !h-[40px] flex items-center justify-center" html-type="submit">
-          Create Account
-          <Icon class="ml-2 -mb-1 text-base" name="i-solar-arrow-right-outline" />
+        <a-button
+          type="primary"
+          class="w-full !h-[40px] flex items-center justify-center"
+          html-type="submit"
+          :loading="loading"
+        >
+          <template v-if="!loading">
+            Create Account
+            <Icon class="ml-2 -mb-1 text-base" name="i-solar-arrow-right-outline" />
+          </template>
         </a-button>
       </a-form>
       <div class="flex items-center gap-3 my-3">

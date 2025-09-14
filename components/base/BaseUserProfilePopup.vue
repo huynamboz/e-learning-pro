@@ -1,22 +1,32 @@
 <script setup lang="ts">
+const { logout } = useAuth()
+
 const profileOptions = [
   {
     title: 'Profile',
     options: [
-      { icon: 'solar-user-linear', name: 'Profile', link: '/settings' },
-      { icon: 'solar-feed-linear', name: 'Feed', link: '/account' },
-
-      { icon: 'solar-settings-linear', name: 'Privacy', link: '/privacy' },
+      { icon: 'solar-user-linear', name: 'Profile', link: '/profile' },
+      { icon: 'solar-book-linear', name: 'My Courses', link: '/learning' },
+      { icon: 'solar-settings-linear', name: 'Settings', link: '/settings' },
     ],
   },
   {
     title: 'Actions',
     options: [
       { icon: 'solar-bell-linear', name: 'Notifications', link: '/notifications' },
-      { icon: 'solar-logout-linear', name: 'Logout', link: '/logout' },
+      { icon: 'solar-logout-linear', name: 'Logout', action: 'logout' },
     ],
   },
 ]
+
+async function handleItemClick(item: any) {
+  if (item.action === 'logout') {
+    await logout()
+  }
+  else if (item.link) {
+    await navigateTo(item.link)
+  }
+}
 </script>
 
 <template>
@@ -35,16 +45,18 @@ const profileOptions = [
           }"
         >
           <ul class="p-2 ">
-            <li v-for="(item, itemIndex) in option.options" :key="itemIndex" class="hover:bg-shade-3 font-medium rounded-[12px] cursor-pointer flex items-center gap-3 p-2">
+            <li
+              v-for="(item, itemIndex) in option.options"
+              :key="itemIndex"
+              class="hover:bg-shade-3 font-medium rounded-[12px] cursor-pointer flex items-center gap-3 p-2"
+              @click="handleItemClick(item)"
+            >
               <div class="flex items-center justify-center size-6">
                 <Icon :name="item.icon" class="text-[20px] text-shade-9" />
               </div>
-              <NuxtLink
-                :to="item.link"
-                class="text-sm text-shade-9 hover:text-primary transition-colors"
-              >
+              <span class="text-sm text-shade-9 hover:text-primary transition-colors">
                 {{ item.name }}
-              </NuxtLink>
+              </span>
             </li>
           </ul>
         </div>

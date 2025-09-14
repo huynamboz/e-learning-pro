@@ -2,10 +2,10 @@
 import { Button } from 'ant-design-vue'
 
 const listOfLinks = [
-  { name: 'Courses', href: '/courses' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'About', href: '/about' },
-  { name: 'Pricing', href: '/pricing', hideIcon: true },
+  { name: 'Courses', href: '/' },
+  { name: 'Contact', href: '#' },
+  { name: 'About', href: '#' },
+  { name: 'Pricing', href: '#', hideIcon: true },
 ]
 </script>
 
@@ -16,7 +16,7 @@ const listOfLinks = [
         <NuxtLink to="/">
           <img
           src="@/assets/images/logo.webp"
-          alt="ELearnPro Logo"
+          alt="UNLabs Logo"
           width="48"
           height="48"
         >
