@@ -34,7 +34,7 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [
-      tailwindcss(),
+      tailwindcss as any,
     ],
     css: {
       preprocessorOptions: {
@@ -62,7 +62,7 @@ export default defineNuxtConfig({
   // Icon
   icon: {
     serverBundle: {
-      collections: ['solar, logos'],
+      collections: ['solar', 'logos', 'tabler', 'majesticons', 'ri', 'hugeicons'],
     },
   },
 
