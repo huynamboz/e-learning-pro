@@ -10,6 +10,11 @@
 @layer components {
   /* Component styles go here */
 
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
   /* Menu expand/collapse animations */
   .menu-expand-enter-active {
     transition: all 0.3s ease-out;
