@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { LoginRequest } from '~/types/auth.type'
 
+definePageMeta({
+  layout: 'auth',
+})
+
 const formState = reactive<LoginRequest>({
   email: '',
   password: '',
@@ -18,8 +22,8 @@ function onFinish() {
         name="basic"
         autocomplete="off"
         layout="vertical"
-        @finish="onFinish"
         class="flex items-center justify-center flex-col"
+        @finish="onFinish"
       >
         <img src="@/assets/images/logo.png" class="w-[148px] h-[148px] object-cover" alt="logo">
         <h1 class="text-[#0F172A] text-[32px] font-bold">
@@ -43,7 +47,9 @@ function onFinish() {
           <a-input-password v-model:value="formState.password" placeholder="Enter password" size="large" />
         </a-form-item>
 
-        <router-link class="!text-black hover:text-[#49ba61] w-full text-right mb-2" to="/auth/forgot-password">Forgot password</router-link>
+        <router-link class="!text-black hover:text-[#49ba61] w-full text-right mb-2" to="/auth/forgot-password">
+          Forgot password
+        </router-link>
 
         <a-button type="primary" class="w-full !h-[40px] flex items-center justify-center" html-type="submit">
           Sign in

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { RegisterRequest } from '~/types/auth.type'
 
+definePageMeta({
+  layout: 'auth',
+})
+
 const formState = reactive<RegisterRequest>({
   firstName: '',
   lastName: '',

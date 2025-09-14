@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { LoginRequest } from '~/types/auth.type'
 
+definePageMeta({
+  layout: 'guest',
+})
+
 const formState = reactive<any>({
   email: '',
 })

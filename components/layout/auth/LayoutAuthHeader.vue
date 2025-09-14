@@ -13,19 +13,21 @@ const listOfLinks = [
   <header class="bg-white dark:bg-gray-900 shadow-[0_0_20px_0_#0F306A0D] dark:border-gray-800 sticky top-0 z-50 left-0">
     <div class="w-full flex justify-between px-5 items-center">
       <div class="flex justify-between items-center h-[76px] px-8 gap-[120px]">
-        <img
+        <NuxtLink to="/">
+          <img
           src="@/assets/images/logo.webp"
           alt="ELearnPro Logo"
           width="48"
           height="48"
         >
+        </NuxtLink>
 
         <nav class="hidden md:flex items-center space-x-5">
           <NuxtLink
             v-for="value in listOfLinks"
             :key="value.name"
             :to="value.href"
-            class="flex items-center group text-[#181D26] hover:text-[#16A34A]"
+            class="flex items-center group !text-[#181D26] hover:text-[#16A34A]"
           >
             {{ value.name }}
             <Icon

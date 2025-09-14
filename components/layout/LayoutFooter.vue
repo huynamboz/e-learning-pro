@@ -65,9 +65,9 @@ const companyInfo = {
       <div class="grid grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-10">
         <!-- Company Info -->
         <div class="space-y-4 col-span-2 lg:col-span-3">
-          <div class="flex items-center space-x-2">
+          <NuxtLink to="/" class="flex items-center space-x-2">
             <img src="@/assets/images/logo.webp" alt="Logo" class="w-10 h-10">
-          </div>
+          </NuxtLink>
           <p class="text-white text-sm leading-relaxed max-w-md">
             {{ companyInfo.description }}
           </p>
@@ -86,7 +86,7 @@ const companyInfo = {
             <li v-for="link in section.links" :key="link.title">
               <NuxtLink
                 :to="link.url"
-                class="text-white text-sm font-medium hover:text-slate-200 transition-colors"
+                class="!text-white text-sm font-medium hover:text-slate-200 transition-colors"
               >
                 {{ link.title }}
               </NuxtLink>
