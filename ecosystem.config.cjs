@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'italianolive-app',
-      script: 'server/index.mjs',
+      script: '.output/server/index.mjs',
       cwd: './',
       instances: 'max', // Sử dụng tất cả CPU cores
       exec_mode: 'cluster',
