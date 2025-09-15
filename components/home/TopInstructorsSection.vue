@@ -11,17 +11,17 @@ defineProps({
 </script>
 
 <template>
-  <section class="max-w-[1280px] mx-auto xl:px-0 px-4">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
+  <section class="max-w-[1280px] mx-auto xl:px-0 px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
         Top Instructors
       </h2>
-      <Button type="text" class="text-blue-600">
+      <Button type="text" class="text-blue-600 self-start sm:self-auto">
         See All
       </Button>
     </div>
 
-    <div class="flex justify-between gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:justify-between gap-6">
       <div
         v-for="instructor in instructorsData"
         :key="instructor.id"
@@ -31,13 +31,13 @@ defineProps({
           <img
             :src="instructor.image"
             :alt="instructor.name"
-            class="w-[177px] h-[132px] object-cover rounded-lg mx-auto"
+            class="w-full sm:w-[177px] h-32 sm:h-[132px] object-cover rounded-lg mx-auto"
           >
           <div class="space-y-2">
-            <h3 class="text-lg font-semibold text-gray-900">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900">
               {{ instructor.name }}
             </h3>
-            <p class="text-sm text-gray-600">
+            <p class="text-xs sm:text-sm text-gray-600">
               {{ instructor.designation }}
             </p>
             <hr class="border-gray-200">

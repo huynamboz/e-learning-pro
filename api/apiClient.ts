@@ -54,7 +54,7 @@ async function handleUnauthorized() {
 // Get base URL
 function getBaseURL() {
   const config = useRuntimeConfig()
-  return config.public.apiBase || 'https://elearning.genfash.online/api/v1'
+  return config.public.apiBase
 }
 
 // Generate or get device ID

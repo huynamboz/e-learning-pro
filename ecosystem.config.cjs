@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'elearning-app',
-      script: '.output/server/index.mjs',
+      name: 'italianolive-app',
+      script: 'server/index.mjs',
       cwd: './',
       instances: 'max', // Sử dụng tất cả CPU cores
       exec_mode: 'cluster',
@@ -51,22 +51,22 @@ module.exports = {
   deploy: {
     production: {
       'user': 'deploy',
-      'host': ['your-server.com'],
+      'host': ['italianolive.com'],
       'ref': 'origin/main',
-      'repo': 'git@github.com:your-username/elearning.git',
-      'path': '/var/www/elearning',
+      'repo': 'git@github.com:your-username/italianolive.git',
+      'path': '/var/www/italianolive',
       'pre-deploy-local': '',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
+      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.cjs --env production',
       'pre-setup': '',
     },
     staging: {
       'user': 'deploy',
-      'host': ['staging-server.com'],
+      'host': ['staging.italianolive.com'],
       'ref': 'origin/develop',
-      'repo': 'git@github.com:your-username/elearning.git',
-      'path': '/var/www/elearning-staging',
+      'repo': 'git@github.com:your-username/italianolive.git',
+      'path': '/var/www/italianolive-staging',
       'pre-deploy-local': '',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env staging',
+      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.cjs --env staging',
       'pre-setup': '',
     },
   },

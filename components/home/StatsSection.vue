@@ -11,14 +11,14 @@ defineProps({
 </script>
 
 <template>
-  <section class="py-10 bg-[#DC2626]">
-    <div class="grid grid-cols-2 lg:grid-cols-4  gap-8 px-4 sm:px-8 lg:px-20">
+  <section class="py-8 sm:py-10 lg:py-12 bg-[#DC2626]">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-8 lg:px-12 xl:px-20">
       <template v-for="(stat, index) in statsData" :key="index">
         <div
           :class="cn('flex flex-col items-center gap-1.5', (index < statsData.length - 1) && 'border-r-4 border-[#E2E8F0]',
                      (index % 2 === 1) && 'max-lg:border-none')"
         >
-          <div class="text-white text-[32px] font-semibold leading-[1.3] flex">
+          <div class="text-white text-2xl sm:text-3xl lg:text-[32px] font-semibold leading-[1.3] flex">
             <CountUp
               :end-val="parseInt(stat.number)"
               :duration="5"
@@ -27,7 +27,7 @@ defineProps({
             />
             +
           </div>
-          <div class="text-white text-center text-sm font-normal leading-[1.5]" :class="[stat.width, stat.textAlign]">
+          <div class="text-white text-center text-xs sm:text-sm font-normal leading-[1.5] px-2" :class="[stat.width, stat.textAlign]">
             {{ stat.description }}
           </div>
         </div>

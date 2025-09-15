@@ -1,2 +1,24 @@
-User-Agent: *
-Disallow:
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://italianolive.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block access to admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_nuxt/
+Disallow: /node_modules/
+
+# Allow important pages
+Allow: /learning/
+Allow: /profile/
+Allow: /auth/
+Allow: /pages/
+
+# Block duplicate content
+Disallow: /*?*
+Disallow: /*#*

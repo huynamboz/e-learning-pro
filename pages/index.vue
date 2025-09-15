@@ -7,7 +7,7 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="bg-white min-h-screen space-y-[60px]">
+  <div class="bg-white min-h-screen space-y-8 sm:space-y-12 md:space-y-16 lg:space-y-20 xl:space-y-[60px]">
     <HomeHeroSection :hero-data="heroData" />
     <HomeStatsSection :stats-data="statsData" />
     <HomeTopCategoriesSection :categories-data="categoriesData" />

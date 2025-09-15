@@ -3,11 +3,53 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   app: {
     head: {
-      title: 'NUlive',
+      title: 'ItalianoLive - Học Tiếng Ý Trực Tuyến',
+      titleTemplate: '%s | ItalianoLive',
       htmlAttrs: {
-        lang: 'en',
+        lang: 'vi',
       },
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        {
+          name: 'description',
+          content: 'Học tiếng Ý trực tuyến với ItalianoLive. Khóa học tiếng Ý chất lượng cao, giáo viên bản ngữ, phương pháp học hiện đại. Bắt đầu hành trình chinh phục tiếng Ý ngay hôm nay!',
+        },
+        {
+          name: 'keywords',
+          content: 'học tiếng Ý, tiếng Ý online, khóa học tiếng Ý, giáo viên tiếng Ý, học tiếng Ý miễn phí, tiếng Ý cơ bản, tiếng Ý nâng cao, ItalianoLive',
+        },
+        { name: 'author', content: 'ItalianoLive Team' },
+        { name: 'robots', content: 'index, follow' },
+
+        // Open Graph / Facebook
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: 'ItalianoLive - Học Tiếng Ý Trực Tuyến' },
+        {
+          property: 'og:description',
+          content: 'Học tiếng Ý trực tuyến với ItalianoLive. Khóa học tiếng Ý chất lượng cao, giáo viên bản ngữ, phương pháp học hiện đại.',
+        },
+        { property: 'og:url', content: 'https://italianolive.com' },
+        { property: 'og:site_name', content: 'ItalianoLive' },
+        { property: 'og:locale', content: 'vi_VN' },
+        { property: 'og:image', content: 'https://italianolive.com/og-image.jpg' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: 'ItalianoLive - Học Tiếng Ý Trực Tuyến' },
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
+        { rel: 'canonical', href: 'https://italianolive.com' },
+
+        // Preconnect to external domains
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'preconnect', href: 'https://elearning.genfash.online' },
+      ],
     },
   },
 
@@ -69,9 +111,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1', // API mới
+      apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1',
     },
   },
 
-  ssr: true, // Đảm bảo SSR được bật
+  ssr: true,
 })
