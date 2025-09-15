@@ -1,13 +1,5 @@
-import type { LoginRequest, LoginResponse } from '~/types/auth.type'
-
-interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  userName: string
-  // Thêm các field khác tùy theo API response
-}
+import type { LoginRequest, LoginResponse, User } from '~/types/auth.type'
+import { useApiClient } from '~/api/apiClient'
 
 export function useAuth() {
   const user = useState<User | null>('auth.user', () => null)
@@ -23,6 +15,9 @@ export function useAuth() {
   const isInitializing = useState<boolean>('auth.isInitializing', () => true)
   const isFetchingUser = useState<boolean>('auth.isFetchingUser', () => false)
 
+  // Get API client instance
+  const apiClient = useApiClient()
+
   // User is logged in if has token (and not currently fetching for the first time)
   const isLoggedIn = computed(() => {
     return !!token.value && (!isInitializing.value || !!user.value)
@@ -31,9 +26,10 @@ export function useAuth() {
   // Show loading when initializing or fetching user
   const isLoading = computed(() => isInitializing.value || isFetchingUser.value)
 
-  // Base API URL - sử dụng local API fake hoặc external API
-  const config = useRuntimeConfig()
-  const baseURL = config.public.apiBase || '/api' // Sử dụng local API fake
+  // Sync token with API client
+  watch(token, (newToken) => {
+    apiClient.setToken(newToken)
+  }, { immediate: true })
 
   // Fetch user profile
   async function fetchUser(): Promise<void> {
@@ -45,19 +41,13 @@ export function useAuth() {
     isFetchingUser.value = true
 
     try {
-      const userData = await $fetch<User>('/user/me', {
-        baseURL,
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      })
-
+      // API client will automatically handle 401 errors and logout
+      const userData = await apiClient.get<User>('/auth/me/')
       user.value = userData
     }
     catch (error) {
       console.error('Fetch user error:', error)
-      // If token is invalid, clear it
-      await logout()
+      // API client already handled logout for 401 errors
     }
     finally {
       isFetchingUser.value = false
@@ -79,17 +69,11 @@ export function useAuth() {
   // Login function
   async function login(credentials: LoginRequest): Promise<{ success: boolean, error?: string }> {
     try {
-      const response = await $fetch<LoginResponse>('/auth/login', {
-        baseURL,
-        method: 'POST',
-        body: credentials,
-      })
+      const response = await apiClient.post<LoginResponse>('/auth/login/', credentials)
 
-      if (response?.data?.id_token) {
-        token.value = response.data.id_token
-
-        // Fetch user profile after login
-        await fetchUser()
+      if (response?.access && response?.user) {
+        token.value = response.access
+        user.value = response.user
 
         return { success: true }
       }
@@ -100,7 +84,7 @@ export function useAuth() {
       console.error('Login error:', error)
       return {
         success: false,
-        error: error.data?.message || error.message || 'Login failed',
+        error: error.data?.message || error.statusMessage || 'Login failed',
       }
     }
   }
@@ -108,19 +92,14 @@ export function useAuth() {
   // Register function
   async function register(userData: any): Promise<{ success: boolean, error?: string }> {
     try {
-      await $fetch('/auth/register', {
-        baseURL,
-        method: 'POST',
-        body: userData,
-      })
-
+      await apiClient.post('/auth/register/', userData)
       return { success: true }
     }
     catch (error: any) {
       console.error('Register error:', error)
       return {
         success: false,
-        error: error.data?.message || error.message || 'Registration failed',
+        error: error.data?.message || error.statusMessage || 'Registration failed',
       }
     }
   }
@@ -131,16 +110,11 @@ export function useAuth() {
       return false
 
     try {
-      const response = await $fetch<LoginResponse>('/auth/refresh', {
-        baseURL,
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      })
+      // Use the API client's refresh method which handles 401 automatically
+      const result = await apiClient.refreshToken()
 
-      if (response?.data?.id_token) {
-        token.value = response.data.id_token
+      if (result?.access) {
+        token.value = result.access
         return true
       }
 
@@ -148,7 +122,7 @@ export function useAuth() {
     }
     catch (error) {
       console.error('Refresh token error:', error)
-      await logout()
+      // API client already handled logout for 401 errors
       return false
     }
   }

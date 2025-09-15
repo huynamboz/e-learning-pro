@@ -13,17 +13,18 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  data: {
-    id_token: string
-  }
+  access: string
+  user: User
 }
 
 export interface User {
-  id: string
+  id: number
   email: string
-  firstName: string
-  lastName: string
-  userName: string
+  username: string
+  first_name: string
+  last_name: string
+  is_teacher: boolean
+  is_verified: boolean
   avatar?: string
   role?: string
   createdAt?: string

@@ -69,7 +69,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || '/api', // Sử dụng local fake API, có thể thay đổi qua env
+      apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1', // API mới
     },
   },
 
