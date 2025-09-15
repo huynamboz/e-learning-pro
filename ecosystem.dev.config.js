@@ -11,7 +11,7 @@ module.exports = {
         NODE_ENV: 'development',
         PORT: 3000,
         HOST: '0.0.0.0',
-        API_BASE_URL: 'https://elearning.genfash.online/api/v1'
+        API_BASE_URL: 'https://elearning.genfash.online/api/v1',
       },
       // Development specific options
       watch: true,
@@ -21,12 +21,12 @@ module.exports = {
         '.nuxt',
         '.output',
         'dist',
-        '*.log'
+        '*.log',
       ],
       watch_options: {
         followSymlinks: false,
         usePolling: true,
-        interval: 1000
+        interval: 1000,
       },
       // Logging
       error_file: './logs/dev-err.log',
@@ -43,7 +43,7 @@ module.exports = {
       // Kill timeout
       kill_timeout: 5000,
       // Environment file
-      env_file: '.env'
-    }
-  ]
+      env_file: '.env',
+    },
+  ],
 }
