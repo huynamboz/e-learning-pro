@@ -27,7 +27,7 @@ function handleShareProfile() {
 
 <template>
   <div class="bg-white p-6">
-    <div class="flex gap-6 mx-auto items-start">
+    <div class="flex gap-6 mx-auto items-start sm:flex-row flex-col">
       <!-- Profile Sidebar -->
       <ProfileSidebar
         :user-profile="userProfile"
