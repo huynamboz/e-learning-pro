@@ -11,7 +11,7 @@ definePageMeta({
     <HomeHeroSection :hero-data="heroData" />
     <HomeStatsSection :stats-data="statsData" />
     <HomeTopCategoriesSection :categories-data="categoriesData" />
-    <HomeTopCoursesSection :courses-data="coursesData" />
+    <HomeTopCoursesSection :courses-data="coursesData" :title="'Top Courses'"/>
     <HomeTopInstructorsSection :instructors-data="instructorsData" />
     <HomeCustomerReviewsSection :reviews-data="reviewsData" />
     <HomeCTASection />

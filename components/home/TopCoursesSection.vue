@@ -7,6 +7,10 @@ defineProps({
     type: Array,
     required: true,
   },
+  title: {
+    type: String,
+    required: true,
+  }
 })
 </script>
 
@@ -14,7 +18,7 @@ defineProps({
   <section class="max-w-[1280px] mx-auto xl:px-0 px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <h2 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-        Top Courses
+        {{ title }}
       </h2>
       <Button type="text" class="text-blue-600 self-start sm:self-auto">
         See All

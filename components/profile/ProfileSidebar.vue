@@ -27,11 +27,11 @@ const emit = defineEmits<{
 }>()
 
 const navigationTabs: NavigationTab[] = [
-  { key: 'profile', label: 'Profile' },
-  { key: 'myCourses', label: 'My Courses' },
-  { key: 'teachers', label: 'Teachers' },
-  { key: 'message', label: 'Message' },
-  { key: 'myReviews', label: 'My Reviews' },
+  { key: 'PROFILE', label: 'Profile' },
+  { key: 'MY_COURSES', label: 'My Courses' },
+  { key: 'TEACHERS', label: 'Teachers' },
+  { key: 'MESSAGE', label: 'Message' },
+  { key: 'MY_REVIEWS', label: 'My Reviews' },
 ]
 
 const activeTab = ref(props.activeTab)
@@ -76,7 +76,7 @@ function handleShareProfile() {
         v-for="tab in navigationTabs"
         :key="tab.key"
         class="nav-tab flex items-center px-4 py-4 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors hover:bg-gray-100"
-        :class="{ 'bg-gray-900 text-white': activeTab === tab.key }"
+        :class="{ 'bg-gray-900 text-white hover:bg-gray-900': activeTab === tab.key }"
         @click="handleTabClick(tab.key)"
       >
         <span class="text-sm font-normal" :class="activeTab === tab.key ? 'text-white' : 'text-gray-700'">{{ tab.label }}</span>
