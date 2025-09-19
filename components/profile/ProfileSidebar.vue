@@ -47,7 +47,7 @@ function handleShareProfile() {
 </script>
 
 <template>
-  <div class="bg-gray-50 rounded-2xl p-6 w-80 h-fit">
+  <div class="bg-gray-50 rounded-2xl p-6 sm:w-80 w-full h-fit">
     <div class="flex flex-col items-center gap-4">
       <a-avatar
         :size="160"
