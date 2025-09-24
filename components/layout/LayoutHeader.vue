@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { isCollapsed, menu } = useSidebar()
 const navbar = ref<HTMLElement | null>(null)
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -6,7 +7,9 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
-
+const pageTitle = computed(() => {
+  return menu.value.find(item => item.link && useRoute().path.startsWith(item.link))?.name || ''
+})
 function handleScroll(): void {
   if (!navbar.value)
     return
@@ -36,19 +39,19 @@ function handleScroll(): void {
 <template>
   <div
     ref="navbar"
-    class="fixed top-0 flex left-0 w-full border-b border-shade-4 bg-shade-1 z-40 pl-[260px] h-[80px]"
+    class="fixed top-0 flex left-0 w-full border-b border-shade-4 bg-shade-1 z-40 h-[80px] transition-all duration-300 ease-in-out"
+    :class="isCollapsed ? 'pl-[80px]' : 'pl-[280px]'"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
-      <div>
-        <Icon name="solar-square-alt-arrow-left-linear" class="text-2xl text-shade-6" />
+      <div class="flex items-center gap-2 text-sm text-[#00000066]">
+        <span>Dashboard</span>
+        <span>/</span>
+        <span class="text-black">{{ pageTitle }}</span>
       </div>
       <div class="flex items-center gap-5">
         <div class="p-[10px] flex justify-center items-center">
-          <Icon name="solar-bell-linear" class="text-shade-9" size="20"/>
+          <Icon name="solar-bell-linear" class="text-shade-9" size="20" />
         </div>
-        <BaseButton size="md" state="default" icon="no">
-          Create
-        </BaseButton>
         <BaseUserProfilePopup />
       </div>
     </div>

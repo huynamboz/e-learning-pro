@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { cn } from '~/lib/utils'
+
 // Initialize dark mode on layout mount
+const { isCollapsed } = useSidebar()
 const { isDark } = useDarkMode()
 
 // Set HTML class on SSR
@@ -13,9 +16,12 @@ if (process.server) {
 </script>
 
 <template>
-  <div class="flex bg-background transition-colors duration-300">
+  <div class="flex bg-background transition-colors duration-300 h-dvh">
     <LayoutSideBar />
-    <div class="w-full bg-shade-1 flex flex-col pl-[220px] pt-[80px]">
+    <div
+      class="w-full bg-shade-1 flex flex-col pt-[80px] transition-all duration-300 ease-in-out"
+      :class="cn(isCollapsed ? 'pl-[80px]' : 'pl-[280px]')"
+    >
       <LayoutHeader />
       <div class="flex-1 overflow-x-hidden">
         <slot />

@@ -1,37 +1,11 @@
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+import { Tooltip } from 'ant-design-vue'
+import { cn } from '~/lib/utils'
+
+const { isCollapsed, toggleSidebar, menu } = useSidebar()
 const expandedItems = ref(new Set())
 const route = useRoute()
-const menu = ref([
-  {
-    name: 'Components',
-    icon: 'solar-box-minimalistic-broken',
-    link: '#',
-    subItems: [
-      { name: 'Home', link: '/' },
-      { name: 'Button', link: '#' },
-      { name: 'Input', link: '#' },
-    ],
-  },
-  {
-    name: 'Pages',
-    icon: 'solar-book-2-line-duotone',
-    link: '#',
-    subItems: [
-      { name: 'Pricing', link: '#' },
-      { name: 'Videos', link: '#' },
-      { name: 'Documents', link: '#' },
-    ],
-  },
-  {
-    name: 'Liked',
-    icon: 'solar-user-bold-duotone',
-    link: '#',
-    subItems: [
-      { name: 'Favorites', link: '#' },
-      { name: 'Bookmarks', link: '#' },
-    ],
-  },
-])
 
 function toggleExpand(itemName: string) {
   if (expandedItems.value.has(itemName)) {
@@ -42,50 +16,11 @@ function toggleExpand(itemName: string) {
   }
 }
 
-const staticMenu = ref([
-  {
-    name: 'New folder',
-    icon: 'solar-add-folder-bold-duotone',
-    link: '#',
-    active: false,
-    iconColor: '#7B7B7B',
-  },
-  {
-    name: 'My scenes',
-    icon: 'solar-folder-open-line-duotone',
-    link: '#',
-    active: false,
-    iconColor: '#E36323',
-  },
-  {
-    name: 'Untitled folder',
-    icon: 'solar-folder-open-line-duotone',
-    link: '#',
-    active: false,
-    iconColor: '#49BA61',
-  },
-  {
-    name: '3D icons',
-    icon: 'solar-folder-open-line-duotone',
-    link: '#',
-    active: false,
-    iconColor: '#FFB73A',
-  },
-  {
-    name: 'Source code',
-    icon: 'solar-folder-open-line-duotone',
-    link: '#',
-    active: false,
-    iconColor: '#8755E9',
-  },
-])
-
 function isExpanded(itemName: string) {
   return expandedItems.value.has(itemName)
 }
 
 onMounted(() => {
-  // open collapse if the current route matches any subItem link
   menu.value.forEach((item) => {
     if (item.subItems && item.subItems.some(subItem => subItem.link === route.path)) {
       expandedItems.value.add(item.name)
@@ -95,91 +30,201 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed bg-shade-1 top-0 left-0 w-[220px] border-r border-shade-4 z-50 p-5 h-full">
-    <!-- Site logo and dark mode toggle -->
-    <div class="flex items-center justify-between mb-5">
-      <div class="flex items-center gap-2">
-        <Icon name="solar-bolt-line-duotone" class="text-2xl text-green" />
-        <p class="font-bold text-2xl">
-          <span class="text-green">UNLabs</span>
-        </p>
-      </div>
-      <BaseDarkModeToggle />
-    </div>
-    <!-- Menu -->
-    <ul>
-      <li v-for="item in menu" :key="item.name" class="mb-1">
-        <!-- Main menu item -->
-        <div
-          class="group mt-[2px] p-1 flex items-center justify-between hover:bg-shade-3 transition-all duration-200 pr-3 rounded-xl"
-          :class="{ 'cursor-pointer': item.subItems && item.subItems.length > 0 }"
-          @click="item.subItems && item.subItems.length > 0 ? toggleExpand(item.name) : null"
-        >
-          <div class="flex items-center gap-3">
-            <div class="size-8 flex justify-center items-center">
-              <Icon :name="item.icon" class="text-[20px] text-shade-6" />
-            </div>
-            <p class="font-semibold text-xs">
-              {{ item.name }}
+  <div
+    class="fixed bg-white top-0 left-0 border rounded-e-2xl border-[#E6E7EC] z-50 h-full transition-all duration-300 ease-in-out h-100vh overflow-y-auto scrollbar-hide"
+    :class="isCollapsed ? 'w-[80px] px-4' : 'w-[280px] px-[18px]'"
+  >
+    <div class="py-6">
+      <!-- Site logo and dark mode toggle -->
+      <div class="flex items-center justify-center gap-3 mb-5 h-10">
+        <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/">
+          <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
+          <div class="grid">
+            <h4 class="font-extrabold text-[#0F172A] text-base whitespace-nowrap">
+              PHAN THI TAM
+            </h4>
+            <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
+              Học tiếng Ý cùng <span class="text-[#EF4444]">Phan Tâm</span>
             </p>
           </div>
-          <Icon
-            name="tabler-chevron-down"
-            class="text-[16px] text-shade-9 transition-all duration-200"
-            :class="{
-              'rotate-180': isExpanded(item.name),
-              'rotate-0': !isExpanded(item.name),
-              'opacity-100': item.subItems && item.subItems.length > 0,
-              'opacity-0 group-hover:opacity-100': !item.subItems || item.subItems.length === 0,
-            }"
+        </NuxtLink>
+        <Icon
+          :name="isCollapsed ? 'lucide:sidebar-open' : 'lucide:sidebar-close'"
+          class="text-2xl cursor-pointer hover:text-[#15803D] transition-colors"
+          @click="toggleSidebar"
+        />
+      </div>
+
+      <!-- Search bar - hide when collapsed -->
+      <div v-if="!isCollapsed" class="relative my-5">
+        <Icon
+          name="solar-magnifer-line-duotone"
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"
+        />
+        <input
+          type="text"
+          placeholder="Search"
+          class="w-full pl-10 pr-4 py-3 bg-[#F5F6F8] dark:bg-shade-3 border-0 rounded-xl text-sm placeholder-gray-400 placeholder:text-sm focus:ring-2 focus:ring-[#15803D] focus:outline-none transition-all"
+        >
+      </div>
+
+      <!-- Menu -->
+      <ul>
+        <li v-for="item in menu" :key="item.name" class="mb-px">
+          <!-- Main menu item -->
+          <Tooltip placement="right" :title="isCollapsed ? item.name : null">
+            <component
+              :is="item.link ? NuxtLink : 'div'"
+              :to="item.link && item.link !== '#' ? item.link : undefined"
+              :class="cn(
+                'group p-1 flex items-center transition-all duration-200 rounded-xl border border-transparent cursor-pointer',
+                ((item.subItems && item.subItems.length > 0) || !isCollapsed) && 'cursor-pointer',
+                isExpanded(item.name) && !isCollapsed && '!border-[#E6E7EC]',
+                isCollapsed && 'justify-center tooltip',
+                !isCollapsed && 'justify-between pr-3',
+                item.link && item.link !== '#' && route.path.startsWith(item.link) ? '!bg-[#15803D] hover:!bg-[#15803D] !text-white' : 'hover:!bg-shade-3'
+                ,
+              )"
+              @click="item.subItems && item.subItems.length > 0 && !isCollapsed ? toggleExpand(item.name) : null"
+            >
+              <div class="flex items-center" :class="isCollapsed ? 'justify-center' : 'gap-3'">
+                <div class="size-8 flex justify-center items-center">
+                  <Icon
+                    :name="item.icon"
+                    class="text-[20px]"
+                    :class="item.link && item.link !== '#' && route.path === item.link ? 'text-white' : 'text-shade-6'"
+                  />
+                </div>
+                <p
+                  v-if="!isCollapsed"
+                  class="font-semibold text-sm"
+                  :class="item.link && item.link !== '#' && route.path === item.link ? 'text-white' : 'text-[#0A1B39]'"
+                >
+                  {{ item.name }}
+                </p>
+              </div>
+              <Icon
+                v-if="!isCollapsed && item.subItems && item.subItems.length > 0"
+                name="tabler-chevron-down"
+                class="text-[16px] transition-all duration-200"
+                :class="{
+                  'rotate-180': isExpanded(item.name),
+                  'rotate-0': !isExpanded(item.name),
+                  'opacity-100': item.subItems && item.subItems.length > 0,
+                  'opacity-0 group-hover:opacity-100': !item.subItems || item.subItems.length === 0,
+                  'text-white': item.link && item.link !== '#' && route.path === item.link,
+                  'text-shade-9': !(item.link && item.link !== '#' && route.path === item.link),
+                }"
+              />
+            </component>
+
+            <!-- Sub menu items with animation - hide when collapsed -->
+            <Transition
+              v-if="!isCollapsed"
+              enter-active-class="menu-expand-enter-active"
+              enter-from-class="menu-expand-enter-from"
+              enter-to-class="menu-expand-enter-to"
+              leave-active-class="menu-expand-leave-active"
+              leave-from-class="menu-expand-leave-from"
+              leave-to-class="menu-expand-leave-to"
+            >
+              <div v-show="isExpanded(item.name)" class="overflow-hidden">
+                <div class="ml-8 mt-1 space-y-1 pb-2">
+                  <NuxtLink
+                    v-for="(subItem, index) in item.subItems"
+                    :key="subItem.name"
+                    :to="subItem.link"
+                    active-class="active-route"
+                    class="flex p-2 px-4 font-medium border border-transparent relative text-sm group hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
+                  >
+                    <div
+                      :class="[index !== 0 ? 'h-[51px]' : 'h-[22px] !border-none']"
+                      class="absolute z-10 -left-[16px] bottom-3 w-4 border-l-[1.5px] border-[#D8DBE4]"
+                    />
+                    <div class="absolute z-10 -left-[19px] bottom-3.5 w-2 h-2 rounded-full bg-[#D8DBE4]" />
+                    <p class="text-[#485066] group-hover:text-[#0A1B39]">
+                      {{ subItem.name }}
+                    </p>
+                  </NuxtLink>
+                </div>
+              </div>
+            </Transition>
+          </Tooltip>
+        </li>
+      </ul>
+      <div v-if="!isCollapsed" class="space-y-4 mt-2">
+        <div class="flex flex-col bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl p-2 items-center gap-3">
+          <LayoutMenuDonutChart
+            :percentage="80"
+            label="Attendance"
+            value="4/5"
+            color="#ef4444"
           />
+
+          <LayoutMenuDonutChart
+            :percentage="50"
+            label="Complete your course"
+            value="5/10"
+            color="#22c55e"
+          />
+          <p class="text-[14px] text-[#83899F] text-center mb-4 leading-[17px]">
+            Check 1 min video and begin use components like a pro
+          </p>
+
+          <!-- Study Now Button -->
+          <NuxtLink to="/learning" class="w-full bg-white border border-[#E6E7EC] rounded-xl py-2.5 px-4 shadow-sm text-center">
+            <span class="text-[14px] font-medium text-[#0A1B39]">Study now</span>
+          </NuxtLink>
         </div>
 
-        <!-- Sub menu items with animation -->
-        <Transition
-          enter-active-class="menu-expand-enter-active"
-          enter-from-class="menu-expand-enter-from"
-          enter-to-class="menu-expand-enter-to"
-          leave-active-class="menu-expand-leave-active"
-          leave-from-class="menu-expand-leave-from"
-          leave-to-class="menu-expand-leave-to"
-        >
-          <div v-show="isExpanded(item.name)" class="overflow-hidden">
-            <div class="ml-8 mt-1 space-y-1 pb-2">
-              <NuxtLink
-                v-for="(subItem, index) in item.subItems"
-                :key="subItem.name"
-                :to="subItem.link"
-                active-class="active-route"
-                class="flex p-2 px-4 font-medium border border-transparent relative text-xs text-shade-6 hover:text-shade-8 hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
-              >
-                <div
-                  :style="{ height: index !== 0 ? '51px' : '22px' }"
-                  class="absolute z-10 -left-[16px] bottom-5 w-4 border-l-[1.5px] border-b-[1.5px] border-shade-4 rounded-bl-[8px]"
-                />
-                <p>
-                  {{ subItem.name }}
-                </p>
-              </NuxtLink>
+        <NuxtLink to="#" class="bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl p-3 flex items-center gap-3">
+          <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+            <div class="w-7 h-7 relative">
+              <svg class="w-full h-full" viewBox="0 0 28 28" fill="none">
+                <path d="M11.29 9.8h13.91v15.4H11.29z" fill="#799AD6" />
+                <path d="M2.8 4.2h15.4v15.4H2.8z" fill="#317BFF" />
+              </svg>
             </div>
           </div>
-        </Transition>
-      </li>
-    </ul>
-
-    <!-- static menu -->
-    <div class="p-[10px] mt-3">
-      <p class="text-sm text-shade-6 font-medium">
-        My scenes
-      </p>
-    </div>
-    <div class="flex flex-col gap-[2px]">
-      <LayoutMenuItem
-        v-for="item in staticMenu"
-        :key="item.icon"
-        :active="item.active"
-        :menu="item"
-      />
+          <div class="flex-1">
+            <h4 class="font-bold text-[15px] text-[#0A1B39] leading-[20px]">
+              Help Center
+            </h4>
+            <p class="text-[14px] text-[#83899F] leading-[18px]">
+              Answers here
+            </p>
+          </div>
+          <Icon name="tabler-chevron-right" class="w-4 h-4 text-[#9CA0B2]" />
+        </NuxtLink>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+h4,p{
+  margin: 0;
+  padding: 0;
+}
+
+/* Menu expand/collapse animations */
+.menu-expand-enter-active,
+.menu-expand-leave-active {
+  transition: all 0.3s ease;
+}
+
+.menu-expand-enter-from,
+.menu-expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.menu-expand-enter-to,
+.menu-expand-leave-from {
+  max-height: 500px;
+  opacity: 1;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>
