@@ -104,6 +104,39 @@ export function useAuth() {
     }
   }
 
+  // reset password function
+  async function resetPassword(email: string): Promise<{ success: boolean, error?: string, token?: string }> {
+    try {
+      const response = await apiClient.post('/auth/password/reset/', { email })
+      return { 
+        success: true,
+        token: response?.token || null
+      }
+    }
+    catch (error: any) {
+      console.error('Reset password error:', error)
+      return {
+        success: false,
+        error: error.data?.message || error.statusMessage || 'Reset password failed',
+      }
+    }
+  }
+
+  // Confirm function
+  async function confirmPassword(userData: any): Promise<{ success: boolean, error?: string }> {
+    try {
+      await apiClient.post('/auth/password/reset/confirm/', userData)
+      return { success: true }
+    }
+    catch (error: any) {
+      console.error('Confirm password error:', error)
+      return {
+        success: false,
+        error: error.data?.message || error.statusMessage || 'Confirm password failed',
+      }
+    }
+  }
+
   // Refresh token if needed (optional)
   async function refreshToken(): Promise<boolean> {
     if (!token.value)
@@ -150,5 +183,7 @@ export function useAuth() {
     fetchUser,
     refreshToken,
     initAuth,
+    resetPassword,
+    confirmPassword,
   }
 }

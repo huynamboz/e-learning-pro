@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RegisterRequest } from '~/types/auth.type'
-import { message } from 'ant-design-vue'
+import { notification } from 'ant-design-vue'
 
 definePageMeta({
   layout: 'auth',
@@ -10,20 +10,28 @@ definePageMeta({
 const { register } = useAuth()
 
 const formState = reactive<RegisterRequest>({
-  firstName: '',
-  lastName: '',
   email: '',
-  userName: '',
-  confirmPassword: '',
+  username: '',
+  password2: '',
   password: '',
 })
 
 const loading = ref(false)
 
 async function onFinish() {
+  // Validate password length
+  if (formState.password.length < 8) {
+    notification.error({
+      message: 'Mật khẩu phải có ít nhất 8 ký tự',
+    })
+    return
+  }
+
   // Validate passwords match
-  if (formState.password !== formState.confirmPassword) {
-    message.error('Mật khẩu xác nhận không khớp')
+  if (formState.password !== formState.password2) {
+    notification.error({
+      message: 'Mật khẩu xác nhận không khớp',
+    })
     return
   }
 
@@ -33,15 +41,21 @@ async function onFinish() {
     const result = await register(formState)
 
     if (result.success) {
-      message.success('Đăng ký thành công! Vui lòng đăng nhập.')
+      notification.success({
+        message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+      })
       await navigateTo('/auth/login')
     }
     else {
-      message.error(result.error || 'Đăng ký thất bại')
+      notification.error({
+        message: result.error || 'Đăng ký thất bại',
+      })
     }
   }
   catch {
-    message.error('Có lỗi xảy ra, vui lòng thử lại')
+    notification.error({
+      message: 'Có lỗi xảy ra, vui lòng thử lại',
+    })
   }
   finally {
     loading.value = false
@@ -64,7 +78,9 @@ async function onFinish() {
           <h1 class="text-[#0F172A] dark:text-white text-2xl sm:text-3xl lg:text-[32px] font-bold">
             Create Your Account
           </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">Join us and start your learning journey</p>
+          <p class="text-gray-600 dark:text-gray-400 mt-2">
+            Join us and start your learning journey
+          </p>
         </div>
 
         <a-form
@@ -75,31 +91,13 @@ async function onFinish() {
           class="space-y-4"
           @finish="onFinish"
         >
-          <!-- Name Fields -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <a-form-item
-              label="First Name"
-              name="firstName"
-              :rules="[{ required: true, message: 'Please input your first name!' }]"
-            >
-              <a-input v-model:value="formState.firstName" size="large" placeholder="First name" class="h-12" />
-            </a-form-item>
-            <a-form-item
-              label="Last Name"
-              name="lastName"
-              :rules="[{ message: 'Please input your last name!' }]"
-            >
-              <a-input v-model:value="formState.lastName" size="large" placeholder="Last name" class="h-12" />
-            </a-form-item>
-          </div>
-
           <!-- Username Field -->
           <a-form-item
             label="Username"
-            name="userName"
+            name="username"
             :rules="[{ required: true, message: 'Please input your username!' }]"
           >
-            <a-input v-model:value="formState.userName" size="large" placeholder="Username" class="h-12" />
+            <a-input v-model:value="formState.username" size="large" placeholder="Username" class="h-12" />
           </a-form-item>
 
           <!-- Email Field -->
@@ -116,30 +114,35 @@ async function onFinish() {
             <a-form-item
               label="Password"
               name="password"
-              :rules="[{ required: true, message: 'Please input your password!' }]"
+              :rules="[
+                { required: true, message: 'Please input your password!' },
+                { min: 8, message: 'The confirmation password must be at least 8 characters long.' },
+              ]"
             >
               <a-input-password v-model:value="formState.password" placeholder="Enter password" size="large" class="h-12" />
             </a-form-item>
             <a-form-item
               label="Confirm Password"
-              name="confirmPassword"
-              :rules="[{ required: true, message: 'Please input confirm password!' }]"
+              name="password2"
+              :rules="[
+                { required: true, message: 'Please input confirm password!' },
+                { min: 8, message: 'The confirmation password must be at least 8 characters long.' },
+              ]"
             >
-              <a-input-password v-model:value="formState.confirmPassword" placeholder="Enter confirm password" size="large" class="h-12" />
+              <a-input-password v-model:value="formState.password2" placeholder="Enter confirm password" size="large" class="h-12" />
             </a-form-item>
           </div>
 
           <!-- Create Account Button -->
           <a-button
             type="primary"
-            class="w-full !h-12 flex items-center justify-center text-base font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d] mt-6"
+            class="w-full !h-12 !items-center !flex !justify-center text-base font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d] mt-6"
             html-type="submit"
             :loading="loading"
+            :disabled="loading"
           >
-            <template v-if="!loading">
-              Create Account
-              <Icon class="ml-2 text-lg" name="i-solar-arrow-right-outline" />
-            </template>
+            Create Account
+            <Icon class="ml-2 text-lg" name="i-solar-arrow-right-outline" />
           </a-button>
 
           <!-- Divider -->
