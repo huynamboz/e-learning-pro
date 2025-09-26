@@ -1,14 +1,19 @@
 <script lang="ts" setup>
-import {
-  detailCourseData,
-} from '~/resources/course'
+import type { ICourse } from '~/types/course.type'
 
-const detailCourse = ref(detailCourseData)
+interface Props {
+  courseData: ICourse,
+}
+
+const props = defineProps<Props>()
+
+
 const selectedCalendar = ref<string>('')
 
 function handleSelectCalendar(id: string) {
   selectedCalendar.value = id
 }
+
 
 function handleAddToCard() {
 }
@@ -20,16 +25,17 @@ function handleBuyNow() {
 <template>
   <div class="flex flex-col bg-white rounded-lg border border-[#E2E8F0]">
     <div class="p-5 flex flex-col gap-5">
-      <img :src="detailCourse?.image" class="h-[200px] rounded-lg" alt="image course">
+      <img v-if="props.courseData.thumbnail" :src="props.courseData?.thumbnail" class="h-[200px] rounded-lg object-cover" alt="image course">
+      <img v-else src="/assets/images/course/python.webp" class="h-[200px] rounded-lg object-cover" alt="image course">
       <div class="flex items-center gap-3">
         <span class="text-black font-bold text-2xl">
-          ${{ (detailCourse?.price * detailCourse?.discount) / 100 }}
+          ${{ props.courseData?.price }}
         </span>
-        <span class="font-bold text-lg text-[#94A3B8] line-through">
-          ${{ detailCourse?.price }}
+        <span v-if="courseData.has_discount" class="font-bold text-lg text-[#94A3B8] line-through">
+          ${{ courseData?.discount_price }}
         </span>
-        <span class="font-bold text-lg text-green">
-          {{ detailCourse?.discount }}% Off
+        <span v-if="props.courseData?.discount" class="font-bold text-lg text-green">
+          {{ props.courseData?.discount }}% Off
         </span>
       </div>
       <div class="">
@@ -38,7 +44,7 @@ function handleBuyNow() {
         </h3>
         <div class="flex items-start gap-2 flex-col">
           <div
-            v-for="item in detailCourse.calendar" :key="item.id"
+            v-for="item in props.courseData.calendar" :key="item.id"
             class="flex text-[14px] font-semibold justify-between items-center gap-1 border-1 border-[#DDDDDD] hover:border-green-600 cursor-pointer rounded-lg p-2 w-full"
             :class="{ 'border-green-600': selectedCalendar === item.id }"
             @click="handleSelectCalendar(item.id)"

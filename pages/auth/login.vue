@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { LoginRequest } from '~/types/auth.type'
-import { message } from 'ant-design-vue'
+import { notification } from 'ant-design-vue'
 
 definePageMeta({
   layout: 'auth',
@@ -23,16 +23,16 @@ async function onFinish() {
     const result = await login(formState)
 
     if (result.success) {
-      message.success('Đăng nhập thành công!')
+      notification.success({ message: 'Đăng nhập thành công!' })
       // Redirect sẽ được xử lý bởi login function
       await navigateTo('/learning')
     }
     else {
-      message.error(result.error || 'Đăng nhập thất bại')
+      notification.error({ message: result.error || 'Đăng nhập thất bại' })
     }
   }
   catch {
-    message.error('Có lỗi xảy ra, vui lòng thử lại')
+    notification.error({ message: 'Có lỗi xảy ra, vui lòng thử lại' })
   }
   finally {
     loading.value = false
@@ -87,14 +87,13 @@ async function onFinish() {
           <!-- Sign In Button -->
           <a-button
             type="primary"
-            class="w-full !h-12 flex items-center justify-center text-base font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d]"
+            class="w-full !h-12 !flex !items-center !justify-center text-base font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d]"
             html-type="submit"
             :loading="loading"
+            :disabled="loading"
           >
-            <template v-if="!loading">
-              Sign in
-              <Icon class="ml-2 text-lg" name="i-solar-arrow-right-outline" />
-            </template>
+            Sign in
+            <Icon class="ml-2 text-lg" name="i-solar-arrow-right-outline" />
           </a-button>
 
           <!-- Divider -->

@@ -1,10 +1,15 @@
 export interface RegisterRequest {
-  firstName: string
-  lastName: string
-  userName: string
+  username: string
   email: string
   password: string
-  confirmPassword: string
+  password2: string
+}
+
+export interface ResetRequest {
+  email: string,
+  token: string,
+  new_password: string,
+  new_password2: string,
 }
 
 export interface LoginRequest {
