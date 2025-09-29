@@ -3,9 +3,29 @@ import { NuxtLink } from '#components'
 import { Tooltip } from 'ant-design-vue'
 import { cn } from '~/lib/utils'
 
+// Props to determine if this is admin mode
+const props = defineProps<{
+  isAdmin?: boolean
+}>()
+
 const { isCollapsed, toggleSidebar, menu } = useSidebar()
+const { adminNavItems } = useAdmin()
+const { user } = useAuth()
 const expandedItems = ref(new Set())
 const route = useRoute()
+
+// Get menu items based on mode
+const currentMenu = computed(() => {
+  if (props.isAdmin) {
+    return adminNavItems.value.map(item => ({
+      name: item.label,
+      icon: item.icon,
+      link: item.to,
+      subItems: [],
+    }))
+  }
+  return menu.value
+})
 
 function toggleExpand(itemName: string) {
   if (expandedItems.value.has(itemName)) {
@@ -21,7 +41,7 @@ function isExpanded(itemName: string) {
 }
 
 onMounted(() => {
-  menu.value.forEach((item) => {
+  currentMenu.value.forEach((item) => {
     if (item.subItems && item.subItems.some(subItem => subItem.link === route.path)) {
       expandedItems.value.add(item.name)
     }
@@ -37,14 +57,17 @@ onMounted(() => {
     <div class="py-6">
       <!-- Site logo and dark mode toggle -->
       <div class="flex items-center justify-center gap-3 mb-5 h-10">
-        <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/">
+        <NuxtLink v-if="!isCollapsed" class="flex gap-2" :to="isAdmin ? '/admin' : '/'">
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
             <h4 class="font-extrabold text-[#0F172A] text-base whitespace-nowrap">
-              PHAN THI TAM
+              {{ isAdmin ? 'ADMIN PANEL' : 'PHAN THI TAM' }}
             </h4>
-            <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
+            <p v-if="!isAdmin" class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
               Học tiếng Ý cùng <span class="text-[#EF4444]">Phan Tâm</span>
+            </p>
+            <p v-else class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
+              E-Learning Platform
             </p>
           </div>
         </NuxtLink>
@@ -70,7 +93,7 @@ onMounted(() => {
 
       <!-- Menu -->
       <ul>
-        <li v-for="item in menu" :key="item.name" class="mb-px">
+        <li v-for="item in currentMenu" :key="item.name" class="mb-px">
           <!-- Main menu item -->
           <Tooltip placement="right" :title="isCollapsed ? item.name : null">
             <component
@@ -82,8 +105,11 @@ onMounted(() => {
                 isExpanded(item.name) && !isCollapsed && '!border-[#E6E7EC]',
                 isCollapsed && 'justify-center tooltip',
                 !isCollapsed && 'justify-between pr-3',
-                item.link && item.link !== '#' && route.path.startsWith(item.link) ? '!bg-[#15803D] hover:!bg-[#15803D] !text-white' : 'hover:!bg-shade-3'
-                ,
+                (item.link && item.link !== '#') && (
+                  (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
+                )
+                  ? '!bg-[#15803D] hover:!bg-[#15803D] !text-white'
+                  : 'hover:!bg-shade-3',
               )"
               @click="item.subItems && item.subItems.length > 0 && !isCollapsed ? toggleExpand(item.name) : null"
             >
@@ -152,7 +178,29 @@ onMounted(() => {
           </Tooltip>
         </li>
       </ul>
-      <div v-if="!isCollapsed" class="space-y-4 mt-2">
+      <!-- Admin User Profile Section -->
+      <div v-if="isAdmin && !isCollapsed" class="mt-6 p-3 bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl">
+        <div class="flex items-center space-x-3">
+          <div class="flex-shrink-0">
+            <img
+              :src="user?.avatar || '/profile.png'"
+              :alt="user?.username"
+              class="w-10 h-10 rounded-full"
+            >
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-[#0A1B39] truncate">
+              {{ user?.first_name }} {{ user?.last_name }}
+            </p>
+            <p class="text-xs text-[#83899F] truncate">
+              {{ user?.email }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regular User Content -->
+      <div v-if="!isAdmin && !isCollapsed" class="space-y-4 mt-2">
         <div class="flex flex-col bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl p-2 items-center gap-3">
           <LayoutMenuDonutChart
             :percentage="80"

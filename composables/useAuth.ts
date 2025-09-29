@@ -26,6 +26,12 @@ export function useAuth() {
   // Show loading when initializing or fetching user
   const isLoading = computed(() => isInitializing.value || isFetchingUser.value)
 
+  // Role-based computed properties
+  const userRole = computed(() => user.value?.role || 'user')
+  const isAdmin = computed(() => user.value?.role === 'admin')
+  const isTeacher = computed(() => user.value?.role === 'teacher')
+  const isRegularUser = computed(() => user.value?.role === 'user' || !user.value?.role)
+
   // Sync token with API client
   watch(token, (newToken) => {
     apiClient.setToken(newToken)
@@ -43,7 +49,10 @@ export function useAuth() {
     try {
       // API client will automatically handle 401 errors and logout
       const userData = await apiClient.get<User>('/auth/me/')
-      user.value = userData
+      user.value = {
+        ...userData,
+        role: 'admin',
+      }
     }
     catch (error) {
       console.error('Fetch user error:', error)
@@ -108,9 +117,9 @@ export function useAuth() {
   async function resetPassword(email: string): Promise<{ success: boolean, error?: string, token?: string }> {
     try {
       const response = await apiClient.post('/auth/password/reset/', { email })
-      return { 
+      return {
         success: true,
-        token: response?.token || null
+        token: response?.token || null,
       }
     }
     catch (error: any) {
@@ -177,6 +186,10 @@ export function useAuth() {
     isLoading,
     isInitializing: readonly(isInitializing),
     isFetchingUser: readonly(isFetchingUser),
+    userRole,
+    isAdmin,
+    isTeacher,
+    isRegularUser,
     login,
     register,
     logout,
