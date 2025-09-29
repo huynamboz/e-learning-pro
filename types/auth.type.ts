@@ -6,10 +6,10 @@ export interface RegisterRequest {
 }
 
 export interface ResetRequest {
-  email: string,
-  token: string,
-  new_password: string,
-  new_password2: string,
+  email: string
+  token: string
+  new_password: string
+  new_password2: string
 }
 
 export interface LoginRequest {
@@ -31,7 +31,15 @@ export interface User {
   is_teacher: boolean
   is_verified: boolean
   avatar?: string
-  role?: string
+  role?: 'user' | 'teacher' | 'admin'
   createdAt?: string
   updatedAt?: string
+}
+
+// User role types
+export type UserRole = 'user' | 'teacher' | 'admin'
+
+// Admin specific interfaces
+export interface AdminUser extends User {
+  role: 'admin'
 }

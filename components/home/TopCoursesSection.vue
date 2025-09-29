@@ -1,5 +1,6 @@
 <script setup>
 import { Button } from 'ant-design-vue'
+import CourseCard from '@/components/course/CourseCard.vue'
 
 // Props
 defineProps({
@@ -10,7 +11,7 @@ defineProps({
   title: {
     type: String,
     required: true,
-  }
+  },
 })
 </script>
 
@@ -26,41 +27,11 @@ defineProps({
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
-      <div
+      <CourseCard
         v-for="course in coursesData"
         :key="course.id"
-        class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
-      >
-        <div class="space-y-4">
-          <img
-            :src="course.image"
-            :alt="course.title"
-            class="w-full h-32 sm:h-36 lg:h-[139px] object-cover rounded-lg"
-          >
-          <div class="space-y-2">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900 leading-tight">
-              {{ course.title }}
-            </h3>
-            <p class="text-xs sm:text-sm text-gray-600">
-              {{ course.instructor }}
-            </p>
-            <div class="flex items-center gap-2">
-              <div class="flex">
-                <Icon v-for="star in 5" :key="star" name="solar:star-bold" class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
-              </div>
-              <span class="text-xs font-semibold text-gray-600">
-                ({{ course.ratingsCount }} Ratings)
-              </span>
-            </div>
-            <p class="text-xs sm:text-sm text-gray-600">
-              {{ course.duration }}
-            </p>
-            <div class="text-lg sm:text-xl font-semibold text-gray-900">
-              ${{ course.price }}
-            </div>
-          </div>
-        </div>
-      </div>
+        v-bind="course"
+      />
     </div>
   </section>
 </template>

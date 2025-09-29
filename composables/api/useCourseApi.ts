@@ -50,7 +50,7 @@ export function useCourseApi() {
 
     // Get featured courses
     getDetailCourses: (id: string) =>
-      apiClient.get<ICourse>(`/courses/courses/${id}`),
+      apiClient.get<ICourse>(`/courses/${id}`),
 
     // Get featured courses
     getFeaturedCourses: () =>
