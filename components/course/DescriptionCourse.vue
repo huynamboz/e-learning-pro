@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { ICourse } from '~/types/course.type'
+import type { Course } from '~/types/course.type'
 
 interface Props {
-  courseData: ICourse
+  courseData: Course
 }
 
 const props = defineProps<Props>()
@@ -15,14 +15,17 @@ function convertLanguage(language: string) {
 
 <template>
   <div class="flex flex-col">
-    <div class="flex flex-col gap-4 items-start bg-[#F8FAFC]">
+    <div class="realtive flex flex-col gap-4 items-start p-8">
+      <!-- <div class="absolute top-0 left-0 w-full bg-[#F8FAFC] p-8">
+        
+      </div> -->
       <h1 class="text-4xl font-extrabold text-black">
         {{ courseData?.title }}
       </h1>
       <p class="text-[#334155] leading-[24px]">
         {{ courseData?.short_description }}
       </p>
-      <div class="flex items-center gap-2 text-[#334155]">
+      <div class="flex items-center flex-wrap gap-2 text-[#334155]">
         <div class="flex items-center gap-1">
           <span class="text-base text-yellow-500 font-medium">{{ parseFloat(courseData?.rating_average) }}</span>
           <Icon name="i-material-symbols-star-rounded" class="text-[16px] text-yellow-500" />
@@ -45,10 +48,9 @@ function convertLanguage(language: string) {
       </div>
       <div class="flex flex-col gap-5 mt-3">
         <div class="flex items-center gap-3">
-          <img v-if="courseData?.teacher?.avatar" :src="courseData?.teacher?.avatar" class="rounded-full w-10 h-10" alt="avatar-teacher">
-          <img v-else src="/assets/images/teacher.webp" class="rounded-full w-10 h-10 object-cover" alt="avatar-teacher">
+          <img src="/assets/images/teacher.webp" class="rounded-full w-10 h-10 object-cover" alt="avatar-teacher">
           <p class="!p-0 !m-0">
-            Created by <span class="text-[#49ba61]">{{ courseData?.teacher?.full_name }}</span>
+            Created by <span class="text-[#49ba61]">{{ courseData?.teacher?.full_name || 'Unknown Teacher' }}</span>
           </p>
         </div>
         <div class="flex items-center gap-2">
@@ -59,8 +61,8 @@ function convertLanguage(language: string) {
         </div>
       </div>
     </div>
-    <div class="line border-1 border-[#E2E8F0] my-10" />
-    <div class="flex flex-col gap-5">
+    <div class="mx-8 line border-1 border-[#E2E8F0] my-10" />
+    <div class="px-8 flex flex-col gap-5">
       <div class="flex flex-col gap-1">
         <h1 class="font-bold text-2xl !mb-0">
           Course Description
@@ -78,46 +80,45 @@ function convertLanguage(language: string) {
       </div> -->
     </div>
 
-    <div class="line border-1 border-[#E2E8F0] my-10" />
+    <div class="mx-8 line border-1 border-[#E2E8F0] my-10" />
 
-    <div class="flex flex-col gap-3">
+    <div class="px-8 flex flex-col gap-3">
       <h1 class="font-bold text-2xl !mb-0">
         Instructor
       </h1>
       <div class="flex flex-col gap-1">
         <h3 class="text-xl font-bold text-[#49ba61] !m-0">
-          {{ courseData?.teacher?.full_name }}
+          {{ courseData?.teacher?.full_name || 'Unknown Teacher' }}
         </h3>
         <p class="!m-0">
-          {{ courseData?.teacher?.job }}
+          Instructor
         </p>
       </div>
-      <div class="flex items-center gap-4 mt-5">
-        <img v-if="courseData?.teacher?.avatar" :src="courseData?.teacher?.avatar" class="w-40 h-40 rounded-full" alt="avatar-image">
-        <img v-else src="/assets/images/teacher.webp" class="rounded-full w-40 h-40 object-cover" alt="avatar-teacher">
+      <div class="flex items-center flex-wrap gap-4 mt-5">
+        <img src="/assets/images/teacher.webp" class="rounded-full w-40 h-40 object-cover" alt="avatar-teacher">
         <div class="flex flex-col gap-2 text-gray-900">
           <div class="flex items-center gap-2">
             <Icon name="i-mingcute-certificate-line" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.countRating }} Reviews</span>
+            <span>{{ courseData?.rating_count || 0 }} Reviews</span>
           </div>
           <div class="flex items-center gap-2">
             <Icon name="i-ph-student-fill" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.countStudent }} Students</span>
+            <span>{{ courseData?.enrollment_count || 0 }} Students</span>
           </div>
           <div class="flex items-center gap-2">
             <Icon name="i-material-symbols-play-arrow-outline-rounded" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.countCourse }} Courses</span>
+            <span>{{ courseData?.teacher?.total_courses || 0 }} Courses</span>
           </div>
         </div>
       </div>
       <p class="!mb-0 leading-[24px] text-gray-700 text-[14px]">
-        {{ courseData?.teacher?.description }}
+        Experienced instructor with {{ courseData?.teacher?.total_courses || 0 }} courses and {{ courseData?.teacher?.total_students || 0 }} students.
       </p>
     </div>
 
-    <div class="line border-1 border-[#E2E8F0] my-10" />
+    <div class="mx-8 line border-1 border-[#E2E8F0] my-10" />
 
-    <div class="flex flex-col gap-3">
+    <div class="px-8 flex flex-col gap-3">
       <h1 class="font-bold text-2xl !mb-0">
         Syllabus
       </h1>

@@ -25,7 +25,7 @@ const { isCollapsed } = useSidebar()
       :class="cn(isCollapsed ? 'pl-[80px]' : 'pl-[280px]')"
     >
       <LayoutHeader />
-      <div class="flex-1 overflow-x-hidden">
+      <div class="flex-1 p-4 overflow-x-hidden">
         <slot />
       </div>
     </div>

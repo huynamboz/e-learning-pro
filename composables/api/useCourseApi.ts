@@ -2,38 +2,31 @@
 import type { User } from '~/types/auth.type'
 import { useApiClient } from '~/api/apiClient'
 import { createApiService } from '~/composables/api/useApiService'
-import type { ICourse, ICategory, ITeacher, IChapter, ILesson } from '~/types/course.type'
+import type { 
+  Course, 
+  Category, 
+  Teacher, 
+  Chapter, 
+  Lesson,
+  CourseListResponse,
+  CourseFilters,
+  CourseDetail,
+  CourseReview,
+  CourseProgress,
+  CourseEnrollment
+} from '~/types/course.type'
 
-// Course enrollment interface
-export interface CourseEnrollment {
-  id: number
-  course: ICourse
-  user: User
-  enrolled_at: string
-  progress: number
-  completed_at?: string
-  certificate_url?: string
-}
+// Use the interface from types instead of defining here
 
 export function useCourseApi() {
-  const baseService = createApiService<ICourse>('/courses/')
+  const baseService = createApiService<Course>('/courses/')
   const apiClient = useApiClient()
 
   return {
     ...baseService,
 
     // Get courses with filters
-    getCourses: (params?: {
-      search?: string
-      category?: string
-      price_min?: number
-      price_max?: number
-      level?: string
-      instructor?: number
-      is_free?: boolean
-      page?: number
-      limit?: number
-    }) => {
+    getCourses: (params?: CourseFilters) => {
       const queryParams = new URLSearchParams()
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
@@ -43,26 +36,26 @@ export function useCourseApi() {
         })
       }
       const queryString = queryParams.toString()
-      return apiClient.get<{ results: ICourse[], count: number, next: string | null, previous: string | null }>(
+      return apiClient.get<CourseListResponse>(
         `/courses/${queryString ? `?${queryString}` : ''}`,
       )
     },
 
     // Get featured courses
     getDetailCourses: (id: string) =>
-      apiClient.get<ICourse>(`/courses/${id}`),
+      apiClient.get<Course>(`/courses/${id}`),
 
     // Get featured courses
     getFeaturedCourses: () =>
-      apiClient.get<ICourse[]>('/courses/featured/'),
+      apiClient.get<Course[]>('/courses/featured/'),
 
     // Get popular courses
     getPopularCourses: () =>
-      apiClient.get<ICourse[]>('/courses/popular/'),
+      apiClient.get<Course[]>('/courses/popular/'),
 
     // Get courses by category
     getCoursesByCategory: (categoryId: string) =>
-      apiClient.get<ICourse[]>(`/courses/category/${categoryId}/`),
+      apiClient.get<Course[]>(`/courses/category/${categoryId}/`),
 
     // Enroll in course
     enroll: (courseId: string) =>
@@ -82,11 +75,11 @@ export function useCourseApi() {
 
     // Get course lessons
     getLessons: (courseId: string) =>
-      apiClient.get<ILesson[]>(`/courses/${courseId}/lessons/`),
+      apiClient.get<Lesson[]>(`/courses/${courseId}/lessons/`),
 
     // Get lesson detail
     getLesson: (courseId: string, lessonId: string) =>
-      apiClient.get<ILesson>(`/courses/${courseId}/lessons/${lessonId}/`),
+      apiClient.get<Lesson>(`/courses/${courseId}/lessons/${lessonId}/`),
 
     // Mark lesson as completed
     completeLesson: (courseId: string, lessonId: string) =>
@@ -128,7 +121,7 @@ export function useCourseApi() {
 
     // Get user's wishlist
     getWishlist: () =>
-      apiClient.get<ICourse[]>('/courses/wishlist/'),
+      apiClient.get<Course[]>('/courses/wishlist/'),
 
     // Get course categories
     getCategories: () =>
@@ -144,11 +137,11 @@ export function useCourseApi() {
           }
         })
       }
-      return apiClient.get<ICourse[]>(`/courses/search/?${queryParams.toString()}`)
+      return apiClient.get<Course[]>(`/courses/search/?${queryParams.toString()}`)
     },
 
     // Get course recommendations
     getRecommendations: (userId?: string) =>
-      apiClient.get<ICourse[]>(`/courses/recommendations/${userId ? `?user_id=${userId}` : ''}`),
+      apiClient.get<Course[]>(`/courses/recommendations/${userId ? `?user_id=${userId}` : ''}`),
   }
 }

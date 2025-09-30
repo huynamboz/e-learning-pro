@@ -1,19 +1,17 @@
 <script lang="ts" setup>
 import type { CollapseProps } from 'ant-design-vue'
 import { notification } from 'ant-design-vue'
+import type { Chapter, Lesson } from '~/types/course.type'
 
-defineProps({
-  syllabusData: {
-    type: Array<any>,
-    required: true,
-  },
-})
+defineProps<{
+  syllabusData: Chapter[]
+}>()
 
 const activeKey = ref(['1'])
 const expandIconPosition = ref<CollapseProps['expandIconPosition']>('start')
 const expandedLessonId = ref<string | null>(null)
 
-function handleLessonClick(lesson: any, event: MouseEvent) {
+function handleLessonClick(lesson: Lesson, event: MouseEvent) {
   event.stopPropagation()
   
   if (!lesson.is_unlocked) {
@@ -36,7 +34,7 @@ function handleLessonClick(lesson: any, event: MouseEvent) {
   expandedLessonId.value = expandedLessonId.value === lesson.id ? null : lesson.id
 }
 
-function getChapterDuration(lessons: any[]): string {
+function getChapterDuration(lessons: Lesson[]): string {
   const totalSeconds = lessons.reduce((total, lesson) => total + lesson.video_duration, 0)
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)

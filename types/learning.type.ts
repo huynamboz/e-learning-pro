@@ -5,21 +5,6 @@ export interface Schedule {
   text: string
 }
 
-export interface Course {
-  id: string
-  title: string
-  instructor: string
-  image: string
-  enrolled: boolean
-  progress?: number // 0-100
-  schedule?: Schedule[]
-  details: string
-  ratings: number
-  totalHours: number
-  lectures: number
-  level: 'Beginner' | 'Intermediate' | 'Advanced'
-  price?: number
-}
 
 export interface UserProfile {
   name: string

@@ -1,18 +1,18 @@
-import type { ICourse, ICategory, ITeacher, IChapter, ILesson } from '~/types/course.type'
+import type { Course, Category, Teacher, Chapter, Lesson } from '~/types/course.type'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 
 export function useCourse() {
   // State management
-  const courses = useState<ICourse[]>('course.courses', () => [])
-  const featuredCourses = useState<ICourse[]>('course.featuredCourses', () => [])
-  const popularCourses = useState<ICourse[]>('course.popularCourses', () => [])
-  const categories = useState<ICategory[]>('course.categories', () => [])
-  const wishlist = useState<ICourse[]>('course.wishlist', () => [])
-  const enrolledCourses = useState<ICourse[]>('course.enrolledCourses', () => [])
+  const courses = useState<Course[]>('course.courses', () => [])
+  const featuredCourses = useState<Course[]>('course.featuredCourses', () => [])
+  const popularCourses = useState<Course[]>('course.popularCourses', () => [])
+  const categories = useState<Category[]>('course.categories', () => [])
+  const wishlist = useState<Course[]>('course.wishlist', () => [])
+  const enrolledCourses = useState<Course[]>('course.enrolledCourses', () => [])
   
   // Current course detail
-  const currentCourse = useState<ICourse | null>('course.currentCourse', () => null)
-  const currentLessons = useState<ILesson[]>('course.currentLessons', () => [])
+  const currentCourse = useState<Course | null>('course.currentCourse', () => null)
+  const currentLessons = useState<Lesson[]>('course.currentLessons', () => [])
   
   // Pagination state
   const pagination = useState('course.pagination', () => ({
@@ -271,7 +271,8 @@ export function useCourse() {
       const response = await courseApi.getEnrolledCourses()
       
       if (response) {
-        enrolledCourses.value = response
+        // Extract courses from enrollment objects
+        enrolledCourses.value = response.map(enrollment => enrollment.course)
       }
       
       return { success: true }
@@ -347,7 +348,7 @@ export function useCourse() {
   }
   
   // Search courses
-  async function searchCourses(query: string, params?: { category?: string, limit?: number }): Promise<{ success: boolean, error?: string, data?: ICourse[] }> {
+  async function searchCourses(query: string, params?: { category?: string, limit?: number }): Promise<{ success: boolean, error?: string, data?: Course[] }> {
     isLoading.value = true
     
     try {

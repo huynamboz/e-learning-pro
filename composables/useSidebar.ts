@@ -21,7 +21,7 @@ export function useSidebar() {
     {
       name: 'Courses',
       icon: 'fluent:learning-app-24-regular',
-      link: '/course',
+      link: '/courses',
     },
     {
       name: 'Shop',
