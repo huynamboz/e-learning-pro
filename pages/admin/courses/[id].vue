@@ -1,16 +1,52 @@
 <script lang="ts" setup>
-import FormCourse from '~/components/admin/course/FormCourse.vue'
-import { listOptions } from '~/constant/admin'
+import { defineAsyncComponent, ref } from 'vue'
 
 definePageMeta({
   layout: 'admin',
   middleware: 'admin',
 })
+const route = useRoute()
+const router = useRouter()
+const activeTab = ref(route.query.tab ? (route.query.tab as string) : 'DETAIL',
 
-const activeTab = ref('DETAIL')
+)
 
-function handleChangeTab(tab: string) {
-  activeTab.value = tab
+const listOptions = ref([
+  {
+    key: 'CLASSROOM',
+    name: 'Classroom',
+  },
+  {
+    key: 'QUIZ',
+    name: 'Quiz',
+    component: defineAsyncComponent(() => import('~/components/admin/course/quiz/Quiz.vue')),
+  },
+  {
+    key: 'STUDENTS',
+    name: 'Students',
+  },
+  {
+    key: 'CHAPTERS',
+    name: 'Chapters',
+  },
+  {
+    key: 'PROMOTION',
+    name: 'Promotion',
+  },
+  {
+    key: 'DETAIL',
+    name: 'Detail',
+    component: defineAsyncComponent(() => import('~/components/admin/course/FormCourse.vue')),
+  },
+  {
+    key: 'SETTING',
+    name: 'Setting',
+  },
+])
+
+function handleChangeTab(key: string) {
+  const query = { ...route.query, tab: key }
+  router.replace({ query })
 }
 </script>
 
@@ -19,9 +55,9 @@ function handleChangeTab(tab: string) {
     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
       Italian for Beginners
     </h1>
-    <a-tabs v-model:active-key="activeTab">
-      <a-tab-pane v-for="tab in listOptions" :key="tab.key" :tab="tab.name" @change="handleChangeTab(tab.key)">
-        <FormCourse type="detail" v-if="activeTab === 'DETAIL'" />
+    <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">
+      <a-tab-pane v-for="tab in listOptions" :key="tab.key" :tab="tab.name">
+        <component :is="tab.component" :type="tab.key" />
       </a-tab-pane>
     </a-tabs>
   </div>

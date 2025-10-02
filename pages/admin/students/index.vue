@@ -11,6 +11,10 @@ import { message } from 'ant-design-vue'
 import { onMounted, reactive, ref } from 'vue'
 import { LIST_STUDENTS } from '~/resources/admin/student'
 
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+})
 // Page title for SEO
 useHead({
   title: 'Student Management - Admin Dashboard',
@@ -67,11 +71,6 @@ function resetForm() {
 
 function selectStudent(student: Student) {
   selectedStudent.value = student
-}
-
-function editStudent(student: Student) {
-  // Implementation for editing student
-  message.info(`Edit student: ${student.name}`)
 }
 
 function deleteStudent(student: Student) {
@@ -204,17 +203,6 @@ onMounted(() => {
                   </a-button>
                   <template #overlay>
                     <a-menu class="!space-y-0.5">
-                      <a-menu-item key="edit" class="bg-[#5B93FF]/20" @click="editStudent(student)">
-                        <div class="flex items-center gap-1">
-                          <Icon
-                            name="mynaui:edit"
-                            class="text-[#5B93FF] text-sm"
-                          />
-                          <span class="text-[#5B93FF]">
-                            Edit
-                          </span>
-                        </div>
-                      </a-menu-item>
                       <a-menu-item key="delete" class="bg-[#E71D36]/20 mt-1" @click="deleteStudent(student)">
                         <div class="flex items-center gap-1">
                           <Icon
