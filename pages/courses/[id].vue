@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { notification } from 'ant-design-vue'
-import { categoriesData, coursesData, heroData, instructorsData, reviewsData, statsData } from '@/resources/home'
 import { useCourseApi } from '@/composables/api/useCourseApi'
+import { categoriesData, coursesData, heroData, instructorsData, reviewsData, statsData } from '@/resources/home'
 
 definePageMeta({
   layout: 'auth',
@@ -17,19 +17,20 @@ const { data: currentCourse, pending: isLoading, error: fetchError, refresh: ret
     try {
       const { getDetailCourses } = useCourseApi()
       const response = await getDetailCourses(courseId.value)
-      
+
       if (!response) {
         throw createError({
           statusCode: 404,
-          statusMessage: 'Course not found'
+          statusMessage: 'Course not found',
         })
       }
-      
+
       return response
-    } catch (error: any) {
+    }
+    catch (error: any) {
       throw createError({
         statusCode: error.statusCode || 500,
-        statusMessage: error.statusMessage || 'Failed to load course details'
+        statusMessage: error.statusMessage || 'Failed to load course details',
       })
     }
   },
@@ -37,7 +38,7 @@ const { data: currentCourse, pending: isLoading, error: fetchError, refresh: ret
     default: () => null,
     server: true, // Fetch on server-side for better SEO
     watch: [courseId], // Watch for courseId changes
-  }
+  },
 )
 
 // Watch for errors and show notifications
@@ -75,9 +76,9 @@ watch(fetchError, (error) => {
           {{ fetchError.statusMessage || 'An error occurred while loading the course.' }}
         </p>
         <div class="flex gap-4 justify-center">
-          <button 
-            @click="() => retryFetch()"
+          <button
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            @click="() => retryFetch()"
           >
             <Icon name="solar:refresh-bold" class="mr-2" />
             Try Again
@@ -115,9 +116,9 @@ watch(fetchError, (error) => {
       />
       <div class="pt-8 lg:pr-8 w-full lg:w-[35%] md:pr-4 md:pl-4">
         <course-checkout-card
-        class="w-full"
-        :course-data="currentCourse"
-      />
+          class="w-full"
+          :course-data="currentCourse"
+        />
       </div>
     </div>
 

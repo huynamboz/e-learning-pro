@@ -1,17 +1,14 @@
 <script lang="ts" setup>
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
-import { CloseOutlined } from '@ant-design/icons-vue'
 
-interface Props {
-  type: string
-}
-
-const props = defineProps<Props>()
+const loading = ref(false)
 
 const formState = ref({
-  name: '',
+  title: '',
+  subTitle: '',
   description: '',
 })
+
 
 const formRef = ref()
 
@@ -20,7 +17,6 @@ const videoFileList = ref<UploadFile<any>[]>([])
 const imageFileList = ref<UploadFile<any>[]>([])
 const videoPreviewUrl = ref<string>('')
 const imagePreviewUrl = ref<string>('')
-const loading = ref(false)
 
 function beforeUpload() {
   return false
@@ -60,28 +56,21 @@ function removeImage() {
   imageFileList.value = []
 }
 
-function handleDraft() {
-}
-
-async function handleSave () {
+async function handleSave() {
   loading.value = true
   await formRef.value?.validateFields()
   try {
-    //hell
-  } catch(error)
-  {
+    // hell
+  }
+  catch (error) {
     // console.log(error)
   }
-}
-
-function handlePublish() {
-
 }
 </script>
 
 <template>
   <div class="form-courses flex flex-col gap-20">
-    <div class="flex items-center gap-5 justify-between">
+    <!-- <div class="flex items-center gap-5 justify-between">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
         {{ props.type === 'detail' ? 'Detail' : 'Create' }}
       </h1>
@@ -99,37 +88,25 @@ function handlePublish() {
         >
           Save
         </a-button>
-        <a-button
-          type="primary"
-          class="!h-12 !px-6 rounded-lg text-sm !font-semibold !flex !items-center justify-center !bg-blue-500 !border-blue-500 text-white !hover:bg-blue-600 !hover:border-blue-600"
-          @click="handlePublish"
-        >
-          Publish
-        </a-button>
       </div>
-    </div>
+    </div> -->
 
-    <div class="flex flex-col gap-3">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        Course Details
+    <div class="flex flex-col gap-2">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
+        Upload Notes
       </h2>
+      <p class="!m-0 text-[#334155] text-[15px]">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </p>
       <a-form
-        :model="formState"
         ref="formRef"
+        :model="formState"
         name="basic"
         autocomplete="off"
         layout="vertical"
-        class="flex items-start flex-col !pb-20 w-2/3"
+        class="flex items-start flex-col !pt-6 w-2/3"
         @finish="handleSave"
       >
-        <a-form-item
-          label="Course Name"
-          name="name"
-          class="w-full"
-          :rules="[{ required: true, message: 'Please input your course name!' }]"
-        >
-          <a-input v-model:value="formState.name" size="large" placeholder="Enter course name" />
-        </a-form-item>
         <a-form-item name="video" label="Upload Intro Video" class="w-full">
           <a-upload-dragger
             v-model:file-list="videoFileList"
@@ -199,14 +176,6 @@ function handlePublish() {
               </p>
             </template>
           </a-upload-dragger>
-        </a-form-item>
-
-        <a-form-item name="description" label="Description" class="w-full">
-          <QuillEditor
-            v-model:content="formState.description"
-            content-type="html"
-            theme="snow"
-          />
         </a-form-item>
       </a-form>
     </div>
