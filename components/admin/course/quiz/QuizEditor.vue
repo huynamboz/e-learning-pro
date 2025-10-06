@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import type { Rule } from 'ant-design-vue/es/form'
-import { computed, reactive, ref } from 'vue'
+import type { CreateQuizPayload, Quiz, QuizFormData, UpdateQuizPayload } from '~/types/quiz.type'
 import MultipleChoiceQuestion from './MultipleChoiceQuestion.vue'
 import TextInputQuestion from './TextInputQuestion.vue'
 
-interface QuizFormData {
-  title: string
-  description: string
-  category: string
-  chapter: string
-  timeType: string
-  quantity: number | null
-  unit: string
+interface Props {
+  mode?: 'create' | 'edit'
+  quizId?: string
+  isCreating?: boolean
+  isUpdating?: boolean
+  isLoading?: boolean
 }
+
+interface Emits {
+  (e: 'back'): void
+  (e: 'createQuiz', quizData: CreateQuizPayload): void
+  (e: 'updateQuiz', quizData: UpdateQuizPayload): void
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  mode: 'create',
+  quizId: undefined,
+  isCreating: false,
+  isUpdating: false,
+  isLoading: true,
+})
+
+const emit = defineEmits<Emits>()
 
 const formData = reactive<QuizFormData>({
   title: '',
@@ -23,7 +37,7 @@ const formData = reactive<QuizFormData>({
   quantity: null,
   unit: '',
 })
-
+const { loadQuizForEdit } = useQuizManagement()
 const rules = computed<Record<string, Rule[]>>(() => (
   {
     title: [
@@ -169,22 +183,89 @@ function updateQuestion(index: number, data: any) {
   }
 }
 
-function onFinish(values: QuizFormData) {
+async function onFinish(values: QuizFormData) {
   if (!questionsValidation.value.isValid) {
     return
   }
 
-  const quizData = {
-    ...values,
-    questions: questions.value,
+  try {
+    const basePayload = {
+      title: values.title,
+      description: values.description,
+      category: values.category,
+      chapter: values.chapter,
+      timeType: values.timeType as 'limit' | 'no-limit',
+      questions: questions.value.map(q => ({
+        id: q.id,
+        type: q.type,
+        question: q.data.question,
+        files: q.data.files || [],
+        answer: q.type === 'text-input' ? q.data.answer : undefined,
+        options: q.type === 'multiple-choice' ? q.data.options : undefined,
+        correctAnswer: q.type === 'multiple-choice' ? q.data.correctAnswer : undefined,
+      })),
+    }
+
+    // Add optional fields only if timeType is 'limit' and values exist
+    const payload = {
+      ...basePayload,
+      ...(values.timeType === 'limit' && values.quantity && {
+        quantity: values.quantity,
+        unit: values.unit as 'minute' | 'hour' | 'second',
+      }),
+    }
+
+    if (props.mode === 'edit' && props.quizId) {
+      emit('updateQuiz', { id: props.quizId, ...payload })
+    }
+    else {
+      emit('createQuiz', payload)
+    }
   }
-
-  console.log('Form submitted successfully:', quizData)
+  catch {
+    // Error handling is done in the composable
+  }
 }
 
-function onFinishFailed(errorInfo: any) {
-  console.log('Form submission failed:', errorInfo)
+function onFinishFailed(_errorInfo: any) {
+  // Form validation failed
 }
+
+// Load quiz data for editing
+onMounted(() => {
+  if (props.mode === 'edit' && props.quizId) {
+    const quiz = loadQuizForEdit(props.quizId)
+    if (quiz) {
+      Object.assign(formData, {
+        title: quiz.title,
+        description: quiz.description,
+        category: quiz.category,
+        chapter: quiz.chapter,
+        timeType: quiz.timeType,
+        quantity: quiz.quantity,
+        unit: quiz.unit || '',
+      })
+
+      // Load questions and transform them to the expected format
+      questions.value = (quiz.questions || []).map(q => ({
+        id: q.id,
+        type: q.type,
+        data: {
+          question: q.question,
+          files: q.files || [],
+          answer: q.answer || '',
+          options: q.options || [
+            { text: '', label: 'A' },
+            { text: '', label: 'B' },
+            { text: '', label: 'C' },
+            { text: '', label: 'D' },
+          ],
+          correctAnswer: q.correctAnswer || '',
+        },
+      }))
+    }
+  }
+})
 
 defineExpose({
   formData,
@@ -206,9 +287,18 @@ defineExpose({
   <div class="px-10 pb-3">
     <div class="w-full max-w-[750px] mx-auto">
       <!-- Header -->
-      <h3 class="text-2xl font-semibold text-green-700 mb-3">
-        Create Quiz
-      </h3>
+      <div class="flex justify-between">
+        <h3 class="text-2xl font-semibold text-green-700 mb-3">
+          {{ props.mode === 'edit' ? 'Edit Quiz' : 'Create Quiz' }}
+        </h3>
+        <a-button
+          type="default"
+          danger
+          @click="emit('back')"
+        >
+          Back to Quizzes List
+        </a-button>
+      </div>
 
       <!-- Form -->
       <a-form
@@ -414,13 +504,14 @@ defineExpose({
             type="primary"
             html-type="submit"
             size="large"
+            :loading="isCreating || isUpdating"
             :disabled="!questionsValidation.isValid"
           >
             <template v-if="questions.length === 0">
-              Create Quiz (No questions)
+              {{ props.mode === 'edit' ? 'Update Quiz (No questions)' : 'Create Quiz (No questions)' }}
             </template>
             <template v-else>
-              Create Quiz ({{ questions.length }} question{{ questions.length !== 1 ? 's' : '' }})
+              {{ props.mode === 'edit' ? 'Update Quiz' : 'Create Quiz' }} ({{ questions.length }} question{{ questions.length !== 1 ? 's' : '' }})
             </template>
           </a-button>
         </div>
