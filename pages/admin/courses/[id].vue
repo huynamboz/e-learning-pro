@@ -23,7 +23,7 @@ const listOptions = ref([
   {
     key: 'QUIZ',
     name: 'Quiz',
-    component: defineAsyncComponent(() => import('~/components/admin/course/quiz/Quiz.vue')),
+    component: defineAsyncComponent(() => import('~/components/admin/course/quiz/QuizManager.vue')),
   },
   {
     key: 'STUDENTS',

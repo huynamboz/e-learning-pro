@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
+import type { QuestionOption } from '~/types/quiz.type'
 import { message, Upload } from 'ant-design-vue'
 import { computed, reactive, watch } from 'vue'
 
@@ -17,11 +18,6 @@ const emit = defineEmits<{
   update: [data: MultipleChoiceQuestionData]
 }>()
 
-interface QuestionOption {
-  text: string
-  label: string
-}
-
 interface MultipleChoiceQuestionData {
   question: string
   files: any[]
@@ -33,10 +29,10 @@ const questionData = reactive<MultipleChoiceQuestionData>({
   question: props.initialData.question || '',
   files: props.initialData.files || [],
   options: props.initialData.options || [
-    { text: 'Friend', label: 'A' },
-    { text: 'Option B', label: 'B' },
-    { text: 'Option C', label: 'C' },
-    { text: 'Option D', label: 'D' },
+    { text: 'Friend', label: 'A', id: 'option-a' },
+    { text: 'Option B', label: 'B', id: 'option-b' },
+    { text: 'Option C', label: 'C', id: 'option-c' },
+    { text: 'Option D', label: 'D', id: 'option-d' },
   ],
   correctAnswer: props.initialData.correctAnswer || '',
 })
@@ -106,7 +102,6 @@ async function handleChange(info: UploadChangeParam) {
 }
 
 function beforeUpload(file: File) {
-  console.log(file)
   const isValidType = file.type.startsWith('image/')
   if (!isValidType) {
     message.error('You can only upload JPG file!')
