@@ -28,3 +28,18 @@ export const listOptions = ref([
     name: 'Setting',
   },
 ])
+
+export const listOptionsDetailLesson = ref([
+  {
+    key: 'DETAIL',
+    name: 'Detail',
+  },
+  {
+    key: 'RESEARCH',
+    name: 'Research',
+  },
+  {
+    key: 'SEO',
+    name: 'SEO',
+  },
+])
