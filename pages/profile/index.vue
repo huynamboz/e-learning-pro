@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useAuth } from '#imports'
 import { message } from 'ant-design-vue'
 import ProfileSidebar from '~/components/profile/ProfileSidebar.vue'
+
 import {
   mockUserProfile,
 } from '~/resources/learning'
@@ -16,6 +18,7 @@ const route = useRoute()
 const router = useRouter()
 
 // Reactive data
+const { fetchProfile, profile, isFetchingProfile } = useAuth()
 const userProfile = ref(mockUserProfile)
 
 // Initialize activeTab from query params or default to 'PROFILE'
@@ -43,6 +46,10 @@ function handleTabChange(tabKey: string) {
 function handleShareProfile() {
   message.success('Profile link copied to clipboard!')
 }
+
+onMounted(() => {
+  fetchProfile()
+})
 </script>
 
 <template>
@@ -57,7 +64,7 @@ function handleShareProfile() {
       />
 
       <ProfileListCourses v-if="activeTab === 'MY_COURSES'" />
-      <ProfileForm v-if="activeTab === 'PROFILE'" />
+      <ProfileForm v-if="activeTab === 'PROFILE'" :data-profile="profile" :is-fetching-profile="isFetchingProfile" />
     </div>
   </div>
 </template>

@@ -36,17 +36,9 @@ const listOptions = ref([
     component: defineAsyncComponent(() => import('~/components/admin/course/chapter/ChapterManagement.vue')),
   },
   {
-    key: 'PROMOTION',
-    name: 'Promotion',
-  },
-  {
     key: 'DETAIL',
     name: 'Detail',
     component: defineAsyncComponent(() => import('~/components/admin/course/FormCourse.vue')),
-  },
-  {
-    key: 'SETTING',
-    name: 'Setting',
   },
 ])
 
@@ -55,7 +47,9 @@ function handleChangeTab(key: string) {
   router.replace({ query })
 }
 
-const lessonId = computed(() => route.query.lessonId)
+const courseId = computed(() => route.params.id as string)
+const chapterId = computed(() => route.query.chapterId as string)
+const lessonId = computed(() => route.query.lessonId as string)
 const classroomId = computed(() => route.query.classroomId)
 const attendanceId = computed(() => route.query.attendanceId)
 const attendanceManageId = computed(() => route.query.attendanceManageId)
@@ -64,7 +58,7 @@ const attendanceManageId = computed(() => route.query.attendanceManageId)
 <template>
   <div class="p-8">
     <DetailAttendance v-if="attendanceId && !attendanceManageId" />
-    <DetailLessonManage v-else-if="lessonId" />
+    <DetailLessonManage :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId"  v-else-if="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
     <AttendanceManagement v-else-if="attendanceManageId" />
     <div v-else class="">

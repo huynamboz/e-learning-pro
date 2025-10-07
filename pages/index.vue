@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { categoriesData, heroData, instructorsData, reviewsData, statsData } from '@/resources/home'
 import { useCourseApi } from '@/composables/api/useCourseApi'
+import { categoriesData, heroData, instructorsData, reviewsData, statsData } from '@/resources/home'
 
 definePageMeta({
   layout: 'auth',
@@ -16,23 +16,24 @@ const { data: coursesData, pending: isFetchingCourses, error: fetchError, refres
   async () => {
     try {
       const response = await getCourses({ limit: 8 })
-      
+
       if (response?.results) {
         return response.results // Return raw API data
       }
-      
+
       return []
-    } catch (error: any) {
+    }
+    catch (error: any) {
       throw createError({
         statusCode: 500,
-        statusMessage: error.data?.message || error.statusMessage || 'Failed to fetch courses'
+        statusMessage: error.data?.message || error.statusMessage || 'Failed to fetch courses',
       })
     }
   },
   {
     default: () => [], // Default value while loading
     server: true, // Fetch on server-side for better SEO and initial load
-  }
+  },
 )
 </script>
 
@@ -41,9 +42,9 @@ const { data: coursesData, pending: isFetchingCourses, error: fetchError, refres
     <HomeHeroSection :hero-data="heroData" />
     <HomeStatsSection :stats-data="statsData" />
     <HomeTopCategoriesSection :categories-data="categoriesData" />
-    <HomeTopCoursesSection 
-      :courses-data="coursesData" 
-      title="Top Courses" 
+    <HomeTopCoursesSection
+      :courses-data="coursesData"
+      title="Top Courses"
       :loading="isFetchingCourses"
       :error="fetchError?.message"
       @retry="retryFetch"

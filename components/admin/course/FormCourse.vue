@@ -1,16 +1,33 @@
 <script lang="ts" setup>
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
+import type { CoursePayload } from '~/types/course.type'
 import { CloseOutlined } from '@ant-design/icons-vue'
+import { notification } from 'ant-design-vue'
+import { useAuth } from '@/composables/useAuth'
+import { useCourse } from '@/composables/useCourse'
 
-interface Props {
-  type: string
-}
+const route = useRoute()
+const router = useRouter()
 
-const props = defineProps<Props>()
+const { fetchCategories, categories, fetchCourseDetail, currentCourse, clearCurrentCourse, createCourse, updateCourse, isCreatingCourse } = useCourse()
+const { user } = useAuth()
 
-const formState = ref({
-  name: '',
+const formState = ref<CoursePayload>({
+  title: '',
+  slug: '',
+  short_description: '',
   description: '',
+  category_id: '',
+  teacher_id: '',
+  level: 'beginner',
+  language: 'en',
+  duration_hours: '',
+  price: '0',
+  discount_price: '0',
+  is_free: false,
+  is_published: true,
+  is_featured: false,
+  video_preview: '',
 })
 
 const formRef = ref()
@@ -22,9 +39,33 @@ const videoPreviewUrl = ref<string>('')
 const imagePreviewUrl = ref<string>('')
 const loading = ref(false)
 
+const levelOptions = ref([
+  {
+    label: 'Beginner',
+    value: 'beginner',
+  },
+  {
+    label: 'Intermediate',
+    value: 'intermediate',
+  },
+  {
+    label: 'Advanced',
+    value: 'advanced',
+  },
+])
+
 function beforeUpload() {
   return false
 }
+
+const categoryOptions = computed(() =>
+  categories.value.results?.map((cat: any) => ({
+    label: cat.name,
+    value: cat.id,
+  })),
+)
+
+const courseId = computed(() => route?.params?.id as string)
 
 function handleVideoChange(info: UploadChangeParam) {
   videoFileList.value = [...info.fileList].slice(-1)
@@ -60,52 +101,86 @@ function removeImage() {
   imageFileList.value = []
 }
 
-function handleDraft() {
-}
-
-async function handleSave () {
+async function handleSave() {
+  formState.value.teacher_id = user.value?.id
   loading.value = true
   await formRef.value?.validateFields()
   try {
-    //hell
-  } catch(error)
-  {
-    // console.log(error)
+    if (courseId.value) {
+      const response = await updateCourse(courseId.value, formState.value)
+      if (response) {
+        notification.success({
+          message: 'Update course success',
+        })
+      }
+    }
+    else {
+      const response = await createCourse(formState.value)
+      if (response) {
+        router.push('/admin/courses')
+        notification.success({
+          message: 'Create course success',
+        })
+      }
+    }
+  }
+  catch (error) {
+    notification.error({
+      message: courseId.value ? 'Update course failed' : 'Create course failed',
+      description: `${error}`
+    })
   }
 }
 
-function handlePublish() {
+onMounted(async () => {
+  clearCurrentCourse()
+  await fetchCategories()
+  if (courseId.value)
+    await fetchCourseDetail(courseId.value)
+  if (currentCourse.value) {
+    formState.value.category_id = currentCourse.value?.category.id
+    formState.value.title = currentCourse.value?.title
+    formState.value.slug = currentCourse.value?.slug
+    formState.value.short_description = currentCourse.value?.short_description
+    formState.value.description = currentCourse.value?.description
+    formState.value.teacher_id = currentCourse.value?.teacher?.id
+    formState.value.duration_hours = currentCourse.value?.duration_hours
+    formState.value.level = currentCourse.value?.level
+    formState.value.discount_price = currentCourse.value?.discount_price
+    formState.value.is_free = currentCourse.value?.is_free
+    formState.value.price = currentCourse.value?.price
+  }
+})
 
-}
+watch(categoryOptions, () => {
+  if (categoryOptions.value.length > 0 && !formState.value.category_id) {
+    formState.value.category_id = categoryOptions.value[0].value
+  }
+})
 </script>
 
 <template>
-  <div class="form-courses flex flex-col gap-20">
+  <div class="form-courses flex flex-col gap-10">
     <div class="flex items-center gap-5 justify-between">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        {{ props.type === 'detail' ? 'Detail' : 'Create' }}
+        {{ courseId ? 'Detail' : 'Create' }}
       </h1>
       <div class="flex gap-2 items-center">
         <a-button
-          class="w-full !px-6 !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-          @click="handleDraft"
-        >
-          Draft
-        </a-button>
-        <a-button
           type="primary"
           class="w-full !px-6 !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
+          :loading="isCreatingCourse"
           @click="handleSave"
         >
           Save
         </a-button>
-        <a-button
+        <!-- <a-button
           type="primary"
           class="!h-12 !px-6 rounded-lg text-sm !font-semibold !flex !items-center justify-center !bg-blue-500 !border-blue-500 text-white !hover:bg-blue-600 !hover:border-blue-600"
           @click="handlePublish"
         >
           Publish
-        </a-button>
+        </a-button> -->
       </div>
     </div>
 
@@ -114,8 +189,8 @@ function handlePublish() {
         Course Details
       </h2>
       <a-form
-        :model="formState"
         ref="formRef"
+        :model="formState"
         name="basic"
         autocomplete="off"
         layout="vertical"
@@ -123,12 +198,84 @@ function handlePublish() {
         @finish="handleSave"
       >
         <a-form-item
-          label="Course Name"
-          name="name"
+          label="Course Title"
+          name="title"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input your course name!' }]"
+          :rules="[{ required: true, message: 'Please input your course title!' }]"
         >
-          <a-input v-model:value="formState.name" size="large" placeholder="Enter course name" />
+          <a-input v-model:value="formState.title" size="large" placeholder="Enter course title" />
+        </a-form-item>
+        <a-form-item
+          label="Course Slug"
+          name="slug"
+          class="w-full"
+          :rules="[
+            { required: true, message: 'Please input your course slug!' },
+            { pattern: /^[a-zA-Z0-9_-]+$/, message: 'Enter a valid slug (letters, numbers, underscores, hyphens)' },
+          ]"
+        >
+          <a-input v-model:value="formState.slug" size="large" placeholder="Enter course slug" />
+        </a-form-item>
+        <a-form-item
+          label="Course Sort Description"
+          name="short_description"
+          class="w-full"
+          :rules="[{ required: true, message: 'Please input your course sort description!' }]"
+        >
+          <a-textarea v-model:value="formState.short_description" size="large" placeholder="Enter course sort description" :auto-size="{ minRows: 3, maxRows: 3 }" />
+        </a-form-item>
+        <div class="flex items-center w-full gap-3">
+          <a-form-item
+            label="Course Category"
+            name="category_id"
+            class="w-full"
+            :rules="[{ required: true, message: 'Please input your course category!' }]"
+          >
+            <a-select
+              v-model:value="formState.category_id"
+              placeholder="Select category"
+              :options="categoryOptions"
+              class="w-full"
+            />
+          </a-form-item>
+          <a-form-item
+            label="Course Level"
+            name="level"
+            class="w-full"
+            :rules="[{ required: true, message: 'Please input your level!' }]"
+          >
+            <a-select
+              v-model:value="formState.level"
+              placeholder="Select level"
+              :options="levelOptions"
+              class="w-full"
+            />
+          </a-form-item>
+        </div>
+        <div class="flex items-center w-full gap-3">
+          <a-form-item
+            label="Course price"
+            name="price"
+            class="w-full"
+            :rules="[{ required: true, message: 'Please input your course price!' }]"
+          >
+            <a-input-number v-model:value="formState.price" class="!w-full" size="large" placeholder="Enter course price" />
+          </a-form-item>
+          <a-form-item
+            label="Course discount price"
+            name="discount_price"
+            class="w-full"
+          >
+            <a-input-number v-model:value="formState.discount_price" class="!w-full" size="large" placeholder="Enter course discount price" />
+          </a-form-item>
+        </div>
+        <a-form-item
+          label="Course duration hours"
+          name="duration_hours"
+          class="w-full"
+          :rules="[{ required: true, message: 'Please input your course duration hours!' }]"
+        >
+          <a-input-number v-model:value="formState.duration_hours" class="!w-full" size="large" placeholder="Enter course duration hours" />
         </a-form-item>
         <a-form-item name="video" label="Upload Intro Video" class="w-full">
           <a-upload-dragger

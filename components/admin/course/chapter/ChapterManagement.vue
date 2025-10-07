@@ -1,87 +1,60 @@
 <script setup lang="ts">
+import { useCourse } from '#imports'
 import { notification } from 'ant-design-vue'
 import LessonsList from './LessonsList.vue'
 
-interface Lesson {
-  id: number
-  title: string
-  duration: number // seconds
-  publish: boolean
-}
+const { fetchChapters, createChapter, updateChapter, chapters, isCreatingChapter } = useCourse()
+const route = useRoute()
 
-interface Chapter {
-  id: number
-  title: string
-  lessons: Lesson[]
-}
+const courseId = computed(() => route.params.id as string)
 
-// Mock data
-const chapters = ref<Chapter[]>([
-  {
-    id: 1,
-    title: 'Chapter 1: Starting Basics',
-    lessons: [
-      { id: 1, title: 'Learn abc from xyz', duration: 270, publish: true },
-      { id: 2, title: 'Variables and Data Types', duration: 300, publish: false },
-      { id: 3, title: 'Control Flow Introduction', duration: 280, publish: true },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Inspiration',
-    lessons: [
-      { id: 4, title: 'Motivation and Mindset', duration: 250, publish: true },
-      { id: 5, title: 'Building Learning Habits', duration: 260, publish: true },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Ideas',
-    lessons: [
-      { id: 6, title: 'Project Ideas for Beginners', duration: 400, publish: true },
-      { id: 7, title: 'How to Structure a Project', duration: 320, publish: false },
-      { id: 8, title: 'Debugging Tips', duration: 200, publish: true },
-      { id: 9, title: 'Version Control Basics', duration: 330, publish: true },
-    ],
-  },
-])
-
-const activeChapterId = ref<number>(chapters.value[0].id)
+const router = useRouter()
 const open = ref<boolean>(false)
-const confirmLoading = ref<boolean>(false)
 const formRef = ref()
 
 const formState = ref({
   title: '',
+  slug: '',
+  description: '',
+  order: '',
 })
 
-async function handleOk() {
-  // confirmLoading.value = true
+const activeChapterId = ref<string>('')
+
+async function handleAddChapter() {
   await formRef.value?.validateFields()
   try {
-    //hell
-    notification.success({
-      message: 'Create Chapter Success',
-      description: 'Chapter has been created successfully',
+    const response = createChapter(courseId.value, formState.value)
+    if ((await response).success) {
+      notification.success({
+        message: 'Create chapter cuccess',
+      })
+      fetchChapters(courseId.value)
+      open.value = false
+    }
+  }
+  catch (error) {
+    notification.error({
+      message: 'Create chapter failed',
     })
-    open.value = false
-  } catch(error)
-  {
-    // console.log(error)
   }
 }
 
 const activeChapter = computed(() => {
-  return chapters.value.find(ch => ch.id === activeChapterId.value)
+  return chapters.value?.find(ch => ch.id === activeChapterId.value)
 })
-
-function handleAddLesson() {
-
-}
 
 function showModal() {
   open.value = true
 }
+
+onMounted(async () => {
+  await fetchChapters(courseId.value)
+  // Set first chapter as active if available
+  if (chapters.value && chapters.value.length > 0) {
+    activeChapterId.value = chapters.value[0].id
+  }
+})
 </script>
 
 <template>
@@ -117,7 +90,7 @@ function showModal() {
       </div>
     </div>
 
-    <a-modal v-model:open="open" title="Add Chapter" :confirm-loading="confirmLoading" @ok="handleOk">
+    <a-modal v-model:open="open" title="Add Chapter" width="600px" :confirm-loading="isCreatingChapter" @ok="handleAddChapter">
       <a-form
         ref="formRef"
         :model="formState"
@@ -134,6 +107,32 @@ function showModal() {
         >
           <a-input v-model:value="formState.title" size="large" placeholder="Enter chapter title" />
         </a-form-item>
+        <a-form-item
+          label="Chapter Slug"
+          name="slug"
+          class="w-full"
+          :rules="[
+            { required: true, message: 'Please input your chapter slug!' },
+            { pattern: /^[a-zA-Z0-9_-]+$/, message: 'Enter a valid slug (letters, numbers, underscores, hyphens)' },
+          ]"
+        >
+          <a-input v-model:value="formState.slug" size="large" placeholder="Enter chapter slug" />
+        </a-form-item>
+        <a-form-item
+          label="Order"
+          name="order"
+          class="w-full"
+          :rules="[{ required: true, message: 'Please input your order!' }]"
+        >
+          <a-input-number v-model:value="formState.order" class="!w-full" size="large" placeholder="Enter order" />
+        </a-form-item>
+        <!-- <a-form-item name="description" label="Description" class="w-full">
+          <QuillEditor
+            v-model:content="formState.description"
+            content-type="html"
+            theme="snow"
+          />
+        </a-form-item> -->
       </a-form>
     </a-modal>
 
@@ -147,15 +146,33 @@ function showModal() {
           <a-button
             type="primary"
             class="!h-12 !mt-4 rounded-lg text-sm !font-semibold !flex !items-center !justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-            @click="handleAddLesson"
+            @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
           >
             Add lesson
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
         </div>
-        <!-- List lesson component -->
-        <LessonsList :list-lesson="activeChapter.lessons" />
+        <LessonsList :chapter-id="activeChapter.id"  :list-lesson="activeChapter.lessons" />
       </div>
     </div>
   </div>
 </template>
+
+<style scoped lang="css">
+:deep(.ql-editor) {
+  min-height: 200px;
+}
+:deep(.ql-toolbar.ql-snow) {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+:deep(.ql-container.ql-snow) {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+:deep(.ql-editor) {
+  height: 200px !important;
+  overflow-y: auto;
+}
+</style>

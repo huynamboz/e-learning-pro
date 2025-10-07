@@ -9,9 +9,7 @@ export default defineNuxtRouteMiddleware(() => {
       return navigateTo('/auth/login', { external: true })
     }
 
-  // Check if user has admin role
-  if (!user.value || user.value.role !== 'admin') {
-    // Redirect to home page or show access denied
+  if (!user.value || !user.value.is_teacher) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Access Denied: Admin privileges required',

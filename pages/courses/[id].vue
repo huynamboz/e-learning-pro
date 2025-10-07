@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { notification } from 'ant-design-vue'
 import { useCourseApi } from '@/composables/api/useCourseApi'
-import { categoriesData, coursesData, heroData, instructorsData, reviewsData, statsData } from '@/resources/home'
+import { reviewsData } from '@/resources/home'
 
 definePageMeta({
   layout: 'auth',

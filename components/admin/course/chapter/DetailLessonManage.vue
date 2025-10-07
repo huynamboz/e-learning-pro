@@ -1,28 +1,101 @@
 <script lang="ts" setup>
+import type { LessonPayload } from '~/types/course.type'
+import { useCourse } from '#imports'
+import { notification } from 'ant-design-vue'
+
 import { listOptionsDetailLesson } from '~/constant/admin'
-import FormChapter from './FormChapter.vue'
+import FormLesson from './FormLesson.vue'
 import FormResearch from './FormResearch.vue'
-import FormSEO from './FormSEO.vue'
+
+const props = defineProps<{
+  courseId: string
+  chapterId: string
+  lessonId: string
+}>()
 
 const router = useRouter()
 const route = useRoute()
+
+const { createLesson, updateLesson, detailLesson, currentLesson, fetchChapters, isCreatingLesson } = useCourse()
 const activeTab = ref('DETAIL')
+
+const formState = defineModel<LessonPayload>({
+  default: () => ({
+    chapter_id: '',
+    title: '',
+    slug: '',
+    description: '',
+    video_url: '',
+    video_duration: 0,
+    content: '',
+    order: null,
+    is_preview: true,
+    is_published: true,
+    is_unlocked: true,
+  }),
+})
+
+watch(currentLesson, (newLesson) => {
+  if (newLesson && props.lessonId && props.lessonId !== 'default') {
+    formState.value = {
+      chapter_id: props.chapterId,
+      title: newLesson.title,
+      slug: newLesson.slug,
+      description: newLesson.description,
+      video_url: newLesson.video_url,
+      video_duration: newLesson.video_duration,
+      content: '',
+      order: newLesson.order,
+      is_preview: newLesson.is_preview,
+      is_published: newLesson.is_published,
+      is_unlocked: newLesson.is_unlocked,
+    }
+  }
+}, { immediate: true })
 
 function handleChangeTab(tab: string) {
   activeTab.value = tab
 }
 
-function handleDelete() {
+async function handleAddLesson() {  
+  try {
+    // await formLessonRef.value?.validateFields()
+    formState.value.chapter_id = props.chapterId
 
+    let response
+    if (props.lessonId && props.lessonId !== 'default') {
+      response = await updateLesson(props.courseId, props.chapterId, props.lessonId, formState.value)
+    }
+    else {
+      response = await createLesson(props.courseId, props.chapterId, formState.value)
+    }
+
+    if (response.success) {
+      notification.success({
+        message: props.lessonId && props.lessonId !== 'default' ? 'Update lesson success' : 'Create lesson success',
+      })
+      await fetchChapters(props.courseId)
+    }
+    else {
+      notification.error({
+        message: props.lessonId && props.lessonId !== 'default' ? 'Update lesson failed' : 'Create lesson failed',
+        description: `${response.error}`
+      })
+    }
+  }
+  catch (error) {
+    console.error('Validation or API error:', error)
+  }
 }
 
-function handleDraft() {
-
-}
-
-function handleAddCourse() {
-
-}
+onMounted(() => {
+  if (props.lessonId && props.lessonId !== 'default') {
+    detailLesson(props.courseId, props.chapterId, props.lessonId)
+  }
+  else {
+    formState.value.chapter_id = props.chapterId
+  }
+})
 </script>
 
 <template>
@@ -31,38 +104,24 @@ function handleAddCourse() {
       <div class="flex items-center gap-1 cursor-pointer" @click="router.push(`/admin/courses/${route.params.id}`)">
         <Icon name="i-material-symbols-chevron-left-rounded" class="text-[24px]" />
         <h1 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
-          Italian for Beginners
+          {{ currentLesson ? currentLesson?.title : 'Untitle' }}
         </h1>
       </div>
       <div class="flex items-center gap-2">
         <a-button
-          danger
-          class="w-full !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-          @click="handleDelete"
-        >
-          Delete
-        </a-button>
-
-        <a-button
-          class="w-full !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-          @click="handleDraft"
-        >
-          Move to Draft
-        </a-button>
-        <a-button
           type="primary"
           class="w-full !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-          @click="handleAddCourse"
+          :loading="isCreatingLesson"
+          @click="handleAddLesson"
         >
-          Add Course
+          {{ currentLesson ? 'Update' : 'Add' }} Lesson
         </a-button>
       </div>
     </div>
     <a-tabs v-model:active-key="activeTab">
       <a-tab-pane v-for="tab in listOptionsDetailLesson" :key="tab.key" :tab="tab.name" @change="handleChangeTab(tab.key)">
-        <FormChapter v-if="activeTab === 'DETAIL'" />
-        <FormResearch v-if="activeTab === 'RESEARCH'" />
-        <FormSEO v-if="activeTab === 'SEO'" />
+        <FormLesson v-if="activeTab === 'DETAIL'" v-model="formState" />
+        <FormResearch v-if="activeTab === 'RESEARCH'" v-model="formState" />
       </a-tab-pane>
     </a-tabs>
   </div>

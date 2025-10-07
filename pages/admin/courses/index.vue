@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { coursesData } from '@/resources/home'
+import { useCourseApi } from '@/composables/api/useCourseApi'
+
 import CourseCard from '~/components/course/CourseCard.vue'
 
 definePageMeta({
@@ -12,23 +13,32 @@ useHead({
 })
 
 const router = useRouter()
+const { getCourses } = useCourseApi()
 
-// Pagination state
-const currentPage = ref(1)
-const pageSize = ref(4)
+const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData(
+  'admin-courses', // Unique key for caching
+  async () => {
+    try {
+      const response = await getCourses({ limit: 100 })
 
-const totalItems = computed(() => coursesData.length)
+      if (response?.results) {
+        return response.results // Return raw API data
+      }
 
-const paginatedCourses = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return coursesData.slice(start, start + pageSize.value)
-})
-
-function handlePageChange(page: number, size: number) {
-  currentPage.value = page
-  pageSize.value = size
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
+      return []
+    }
+    catch (error: any) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: error.data?.message || error.statusMessage || 'Failed to fetch courses',
+      })
+    }
+  },
+  {
+    default: () => [], // Default value while loading
+    server: true, // Fetch on server-side for better SEO and initial load
+  },
+)
 </script>
 
 <template>
@@ -48,9 +58,9 @@ function handlePageChange(page: number, size: number) {
       </a-button>
     </div>
 
-    <div v-if="coursesData.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+    <div v-if="coursesData.length > 0 || isFetchingCourses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
       <CourseCard
-        v-for="course in paginatedCourses"
+        v-for="course in coursesData"
         :key="course.id"
         type="admin"
         v-bind="course"
@@ -71,7 +81,7 @@ function handlePageChange(page: number, size: number) {
       </a-button>
     </div>
 
-    <div class="flex justify-center mt-4">
+    <!-- <div class="flex justify-center mt-4">
       <a-pagination
         :current="currentPage"
         :page-size="pageSize"
@@ -80,6 +90,6 @@ function handlePageChange(page: number, size: number) {
         :hide-on-single-page="true"
         @change="handlePageChange"
       />
-    </div>
+    </div> -->
   </div>
 </template>

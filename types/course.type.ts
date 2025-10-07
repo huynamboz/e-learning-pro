@@ -28,6 +28,24 @@ export interface Course {
   updated_at: string
 }
 
+export interface CoursePayload {
+  title: string
+  slug: string
+  description: string
+  short_description: string
+  category_id: string
+  teacher_id: string
+  video_preview: string
+  level: string
+  language: string
+  duration_hours: string
+  price: string
+  discount_price: string
+  is_free: boolean
+  is_published: boolean
+  is_featured: boolean
+}
+
 export interface Category {
   id: string
   name: string
@@ -52,6 +70,13 @@ export interface Teacher {
   total_students: number
 }
 
+export interface ChapterPayload {
+  title: string
+  slug: string
+  description: string
+  order: string
+}
+
 export interface Chapter {
   id: string
   title: string
@@ -62,6 +87,20 @@ export interface Chapter {
   lessons_count: string
   created_at: string
   updated_at: string
+}
+
+export interface LessonPayload {
+  chapter_id: string
+  title: string
+  slug: string
+  description: string
+  video_url: string
+  video_duration: number
+  content: string
+  order: number
+  is_preview: boolean
+  is_published: boolean
+  is_unlocked: boolean
 }
 
 export interface Lesson {

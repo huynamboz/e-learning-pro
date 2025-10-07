@@ -1,6 +1,6 @@
 .ant-select-selector{
   height: 40px !important;
-  border: 1px solid #0f172a !important;
+  /* border: 1px solid #0f172a !important; */
   border-radius: 8px !important;
   display: flex !important;
   align-items: center !important;
