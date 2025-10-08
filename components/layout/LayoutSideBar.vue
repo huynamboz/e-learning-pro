@@ -54,7 +54,7 @@ onMounted(() => {
     class="fixed bg-white top-0 left-0 border rounded-e-2xl border-[#E6E7EC] z-50 h-full transition-all duration-300 ease-in-out h-100vh overflow-y-auto scrollbar-hide"
     :class="isCollapsed ? 'w-[80px] px-4' : 'w-[280px] px-[18px]'"
   >
-    <div class="py-6">
+    <div class="py-6 flex flex-col h-full">
       <!-- Site logo and dark mode toggle -->
       <div class="flex items-center justify-center gap-3 mb-5 h-10">
         <NuxtLink v-if="!isCollapsed" class="flex gap-2" :to="isAdmin ? '/admin' : '/'">
@@ -200,7 +200,7 @@ onMounted(() => {
       </div>
 
       <!-- Regular User Content -->
-      <div v-if="!isAdmin && !isCollapsed" class="space-y-4 mt-2">
+      <div v-if="!isAdmin && !isCollapsed" class="mt-auto space-y-4 mt-2">
         <div class="flex flex-col bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl p-2 items-center gap-3">
           <LayoutMenuDonutChart
             :percentage="80"

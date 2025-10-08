@@ -19,28 +19,23 @@ export function useSidebar() {
   const { isCollapsed } = globalSidebarState
   const menu = ref<MenuItem[]>([
     {
-      name: 'Courses',
-      icon: 'fluent:learning-app-24-regular',
-      link: '/courses',
+      name: 'Home',
+      icon: 'solar:home-2-bold',
+      link: '/learning',
     },
     {
-      name: 'Shop',
-      icon: 'famicons:cart',
-      link: '/shop',
-    },
-    {
-      name: 'Scheduled',
-      icon: 'mingcute:schedule-fill',
-      link: '/scheduled',
-    },
-    {
-      name: 'Profile',
-      icon: 'solar:user-bold',
+      name: 'My Courses',
+      icon: 'solar:book-bookmark-bold',
       link: '/profile',
     },
     {
+      name: 'Calendars',
+      icon: 'solar:calendar-bold',
+      link: '/calendars',
+    },
+    {
       name: 'Settings',
-      icon: 'material-symbols:settings-rounded',
+      icon: 'solar:settings-bold',
       subItems: [
         { name: 'Edit Profile', link: '/settings/general' },
         { name: 'Language', link: '/settings/language' },
