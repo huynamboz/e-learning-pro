@@ -26,7 +26,7 @@ export function useSidebar() {
     {
       name: 'My Courses',
       icon: 'solar:book-bookmark-bold',
-      link: '/profile',
+      link: '/profile?tab=MY_COURSES',
     },
     {
       name: 'Calendars',

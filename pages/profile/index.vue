@@ -11,13 +11,33 @@ definePageMeta({
   middleware: 'auth',
 })
 
+// Get route and router
+const route = useRoute()
+const router = useRouter()
+
 // Reactive data
 const userProfile = ref(mockUserProfile)
-const activeTab = ref('PROFILE')
+
+// Initialize activeTab from query params or default to 'PROFILE'
+const activeTab = ref((route.query.tab as string) || 'PROFILE')
+
+// Watch for query param changes
+watch(() => route.query.tab, (newTab) => {
+  if (newTab) {
+    activeTab.value = newTab as string
+  }
+})
 
 // Event handlers
 function handleTabChange(tabKey: string) {
   activeTab.value = tabKey
+  // Update URL query param
+  router.push({
+    query: {
+      ...route.query,
+      tab: tabKey,
+    },
+  })
 }
 
 function handleShareProfile() {
