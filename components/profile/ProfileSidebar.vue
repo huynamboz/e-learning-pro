@@ -18,7 +18,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  activeTab: 'myCourses',
+  activeTab: 'MY_COURSES',
 })
 
 const emit = defineEmits<{

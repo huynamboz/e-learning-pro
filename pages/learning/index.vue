@@ -195,7 +195,7 @@ function navigateToCourse(courseId: string) {
               </p>
             </div>
             <NuxtLink
-              to="/profile?tab=myCourses"
+              to="/profile?tab=MY_COURSES"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
               View All
@@ -423,7 +423,7 @@ function navigateToCourse(courseId: string) {
                 </div>
               </NuxtLink>
 
-              <NuxtLink to="/profile?tab=myCourses" class="block group">
+              <NuxtLink to="/profile?tab=MY_COURSES" class="block group">
                 <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-purple/30 bg-gradient-to-r from-transparent to-transparent hover:from-purple/5 hover:to-purple/10 transition-all duration-300 cursor-pointer">
                   <div class="p-2.5 bg-gradient-to-br from-purple to-purple/80 rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
                     <Icon name="solar:book-bookmark-bold" size="20" class="text-white" />
