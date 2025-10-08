@@ -77,8 +77,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="grid grid-cols-[280px_1fr] gap-2 h-full max-h-[calc(100vh-100px)] px-8 pt-2">
-    <div class="flex flex-col gap-2.5 p-8 border border-[#E2E8F0] shadow-[0px_4px_20px_3px_#0000000A] h-fit justify-center rounded-[12px]">
+  <div class="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-2 h-full max-h-[calc(100vh-100px)] px-4 lg:px-8 pt-2">
+    <!-- Date picker and upcoming events - stack on mobile -->
+    <div class="flex flex-col gap-2.5 p-4 lg:p-8 border border-[#E2E8F0] shadow-[0px_4px_20px_3px_#0000000A] h-fit justify-center rounded-[12px]">
       <VueCal
         v-model:selected-date="selectedDate"
         class="w-full custom-theme date-picker"
@@ -89,20 +90,21 @@ onMounted(() => {
         style="height: 225px"
         @update:selected-date="viewDate = $event"
       />
-      <div class="text-[18px] font-semibold pb-2.5 border-b border-[#E4E4E7]">
+      <div class="text-base lg:text-[18px] font-semibold pb-2.5 border-b border-[#E4E4E7]">
         Upcoming event <span class="text-[#DC2626]">(1)</span>
       </div>
       <div class="grid text-xs">
         <b>Lop hoc T5 - T6</b>
         <span>At: <b class="text-[#15803D]">08:30 - 14:30</b></span>
-        <span>Link: Https://zoom.vn/a1231-sdfsdf</span>
+        <span class="break-all">Link: Https://zoom.vn/a1231-sdfsdf</span>
       </div>
     </div>
 
+    <!-- Main calendar -->
     <VueCal
       v-model:selected-date="selectedDate"
       v-model:view-date="viewDate"
-      class="w-full !h-full custom-theme calendar"
+      class="w-full !h-full custom-theme calendar min-h-[500px]"
       :time-from="7 * 60"
       :time-step="60"
       :time-to="17 * 60"

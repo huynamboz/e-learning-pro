@@ -11,17 +11,18 @@ const listOfLinks = [
 
 const isMobileMenuOpen = ref(false)
 
-const toggleMobileMenu = () => {
+function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
 }
 
 // Check if user is logged in
-const { user, isLoggedIn } = useAuth()
+const { isLoggedIn } = useAuth()
 </script>
 
 <template>
   <header
-    class="border-b bg-white dark:bg-gray-900 shadow-[0_0_20px_0_#0F306A0D] dark:border-gray-800 sticky top-0 z-50 left-0">
+    class="border-b bg-white dark:bg-gray-900 shadow-[0_0_20px_0_#0F306A0D] dark:border-gray-800 sticky top-0 z-50 left-0"
+  >
     <div class="w-full flex justify-between items-center px-4 sm:px-6 lg:px-8">
       <!-- Logo and Mobile Menu Button -->
       <div class="flex items-center justify-between w-full lg:w-auto">
@@ -42,30 +43,38 @@ const { user, isLoggedIn } = useAuth()
         </div>
 
         <!-- Mobile menu button -->
-        <button @click="toggleMobileMenu" class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
-          aria-label="Toggle mobile menu">
-          <Icon :name="isMobileMenuOpen ? 'solar:close-square-outline' : 'solar:hamburger-menu-outline'"
-            class="text-2xl text-gray-700 dark:text-gray-300" />
+        <button
+          class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle mobile menu"
+          @click="toggleMobileMenu"
+        >
+          <Icon
+            :name="isMobileMenuOpen ? 'solar:close-square-outline' : 'solar:hamburger-menu-outline'"
+            class="text-2xl text-gray-700 dark:text-gray-300"
+          />
         </button>
       </div>
 
       <!-- Desktop Navigation - Different for logged in users -->
       <nav v-if="!isLoggedIn" class="hidden lg:flex items-center space-x-8">
-        <NuxtLink v-for="value in listOfLinks" :key="value.name" :to="value.href"
-          class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors">
+        <NuxtLink
+          v-for="value in listOfLinks" :key="value.name" :to="value.href"
+          class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
+        >
           {{ value.name }}
-          <Icon v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone"
-            class="text-lg text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors" />
+          <Icon
+            v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone"
+            class="text-lg text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
+          />
         </NuxtLink>
       </nav>
 
       <!-- Logged in user navigation -->
       <nav v-else class="hidden lg:flex items-center space-x-8">
-        <NuxtLink to="/dashboard" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          Dashboard
+        <NuxtLink to="/learning" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
+          Learning
         </NuxtLink>
-        <NuxtLink to="/experiences" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          Experiences
+        <NuxtLink to="/profile?tab=MY_COURSES" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
+          My Courses
         </NuxtLink>
       </nav>
 
@@ -111,16 +120,22 @@ const { user, isLoggedIn } = useAuth()
     </div>
 
     <!-- Mobile Navigation Menu -->
-    <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="transform scale-95 opacity-0"
+    <Transition
+      enter-active-class="transition duration-200 ease-out" enter-from-class="transform scale-95 opacity-0"
       enter-to-class="transform scale-100 opacity-100" leave-active-class="transition duration-100 ease-in"
-      leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0">
-      <div v-show="isMobileMenuOpen"
-        class="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+      leave-from-class="transform scale-100 opacity-100" leave-to-class="transform scale-95 opacity-0"
+    >
+      <div
+        v-show="isMobileMenuOpen"
+        class="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
+      >
         <div class="px-4 pt-2 pb-4 space-y-1">
           <!-- Mobile Navigation Links - Different for logged in users -->
           <nav v-if="!isLoggedIn" class="space-y-1">
-            <NuxtLink v-for="value in listOfLinks" :key="value.name" :to="value.href" @click="isMobileMenuOpen = false"
-              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
+            <NuxtLink
+              v-for="value in listOfLinks" :key="value.name" :to="value.href" class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
               <span>{{ value.name }}</span>
               <Icon v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone" class="text-lg text-gray-400" />
             </NuxtLink>
@@ -128,33 +143,39 @@ const { user, isLoggedIn } = useAuth()
 
           <!-- Logged in user mobile navigation -->
           <nav v-else class="space-y-1">
-            <NuxtLink to="/dashboard" @click="isMobileMenuOpen = false"
-              class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
-              Dashboard
+            <NuxtLink
+              to="/learning" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              Learning
             </NuxtLink>
-            <NuxtLink to="/experiences" @click="isMobileMenuOpen = false"
-              class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
-              Experiences
+            <NuxtLink
+              to="/profile?tab=MY_COURSES" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              My Courses
             </NuxtLink>
-            <NuxtLink to="/learning" @click="isMobileMenuOpen = false"
-              class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors">
-              Go to my course
+            <NuxtLink
+              to="/profile" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              Profile
             </NuxtLink>
           </nav>
 
           <!-- Mobile Buttons - Different for logged in users -->
           <div v-if="!isLoggedIn" class="pt-4 space-y-3 border-t border-gray-200 dark:border-gray-700">
-            <NuxtLink to="/" @click="isMobileMenuOpen = false" class="block">
+            <NuxtLink to="/" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="default" class="w-full rounded-xl text-base">
                 Contact directly
               </Button>
             </NuxtLink>
-            <NuxtLink to="/auth/register" @click="isMobileMenuOpen = false" class="block">
+            <NuxtLink to="/auth/register" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="primary" class="w-full rounded-xl text-base bg-[#16A34A]">
                 Sign up for free
               </Button>
             </NuxtLink>
-            <NuxtLink to="/auth/login" @click="isMobileMenuOpen = false" class="block">
+            <NuxtLink to="/auth/login" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="ghost" class="w-full rounded-xl text-base">
                 Sign in
               </Button>
@@ -163,13 +184,17 @@ const { user, isLoggedIn } = useAuth()
 
           <!-- Logged in user mobile buttons -->
           <div v-else class="pt-4 space-y-3 border-t border-gray-200 dark:border-gray-700">
-            <button @click="isMobileMenuOpen = false"
-              class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
               <Icon name="solar:globe-bold" class="w-5 h-5 mr-2" />
               Language
             </button>
-            <button @click="isMobileMenuOpen = false"
-              class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors">
+            <button
+              class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
               <Icon name="solar:user-bold" class="w-5 h-5 mr-2" />
               Profile
             </button>

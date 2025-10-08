@@ -40,7 +40,7 @@ function handleScroll(): void {
   <div
     ref="navbar"
     class="fixed top-0 flex left-0 w-full border-b border-shade-4 bg-shade-1 z-40 h-[80px] transition-all duration-300 ease-in-out"
-    :class="isCollapsed ? 'pl-[80px]' : 'pl-[280px]'"
+    :class="isCollapsed ? 'lg:pl-[80px]' : 'lg:pl-[280px]'"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
       <div class="flex items-center gap-2 text-sm text-[#00000066]">

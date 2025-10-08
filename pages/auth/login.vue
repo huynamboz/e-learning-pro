@@ -129,7 +129,10 @@ async function onFinish() {
             :disabled="loading"
           >
             <span v-if="!loading">Sign in</span>
-            <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
+              <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
+              <span v-if="loading" class="ml-2">
+                Loading...
+              </span>
           </a-button>
 
           <!-- Divider -->

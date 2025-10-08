@@ -17,15 +17,21 @@ if (process.server) {
 
 <template>
   <div class="flex bg-background transition-colors duration-300 h-dvh">
-    <LayoutSideBar />
+    <!-- Hide sidebar on mobile, show on desktop -->
+    <LayoutSideBar class="hidden lg:block" />
+
     <div
       class="w-full bg-shade-1 flex flex-col pt-[80px] transition-all duration-300 ease-in-out"
-      :class="cn(isCollapsed ? 'pl-[80px]' : 'pl-[280px]')"
+      :class="cn(isCollapsed ? 'lg:pl-[80px]' : 'lg:pl-[280px]')"
     >
       <LayoutHeader />
-      <div class="flex-1 overflow-x-hidden">
+      <!-- Add bottom padding on mobile for bottom bar space -->
+      <div class="flex-1 overflow-x-hidden pb-16 lg:pb-0">
         <slot />
       </div>
     </div>
+
+    <!-- Bottom bar - mobile only -->
+    <LayoutBottomBar />
   </div>
 </template>
