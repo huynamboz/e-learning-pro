@@ -17,8 +17,17 @@ const formState = reactive<RegisterRequest>({
 })
 
 const loading = ref(false)
+const agreedToTerms = ref(false)
 
 async function onFinish() {
+  // Validate terms agreement
+  if (!agreedToTerms.value) {
+    notification.error({
+      message: 'Please agree to the Terms and Conditions',
+    })
+    return
+  }
+
   // Validate password length
   if (formState.password.length < 8) {
     notification.error({
@@ -64,106 +73,229 @@ async function onFinish() {
 </script>
 
 <template>
-  <div class="flex flex-col lg:flex-row items-stretch min-h-screen">
-    <!-- Image Section - Hidden on mobile, shown first on desktop -->
-    <div class="hidden lg:block lg:w-1/2 relative order-1">
-      <img src="@/assets/images/auth/bg-login.png" class="w-full h-full object-cover" alt="bg-login">
-      <div class="absolute inset-0 bg-gradient-to-br from-[#16A34A]/20 to-transparent" />
-    </div>
+  <div class="flex flex-col lg:flex-row items-stretch min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <!-- Image Section - Left on desktop -->
+    <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-green-500 to-green-700 items-center justify-center p-12">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl" />
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full blur-3xl" />
+      </div>
 
-    <!-- Form Section -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-12 py-8 lg:py-12 order-2">
-      <div class="w-full max-w-md">
-        <div class="text-center lg:text-left mb-8">
-          <h1 class="text-[#0F172A] dark:text-white text-2xl sm:text-3xl lg:text-[32px] font-bold">
-            Create Your Account
-          </h1>
-          <p class="text-gray-600 dark:text-gray-400 mt-2">
-            Join us and start your learning journey
+      <div class="relative z-10 text-white max-w-lg">
+        <div class="mb-8">
+          <Icon name="solar:users-group-rounded-bold" size="64" class="text-white/90 mb-6" />
+          <h2 class="text-4xl font-bold mb-4">
+            Join Our Community
+          </h2>
+          <p class="text-lg text-white/90 leading-relaxed">
+            Create your account and unlock access to world-class Italian courses,
+            connect with expert teachers, and join a thriving community of learners.
           </p>
         </div>
 
+        <!-- Benefits -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
+              <Icon name="solar:verified-check-bold" size="24" />
+            </div>
+            <span class="text-white/90">Free trial for new members</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
+              <Icon name="solar:verified-check-bold" size="24" />
+            </div>
+            <span class="text-white/90">Lifetime access to materials</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
+              <Icon name="solar:verified-check-bold" size="24" />
+            </div>
+            <span class="text-white/90">Certificate of completion</span>
+          </div>
+        </div>
+
+        <!-- Testimonial -->
+        <div class="mt-12 p-6 bg-white/10 rounded-2xl backdrop-blur border border-white/20">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="/images/avatar.jpg" alt="user" class="w-12 h-12 rounded-full border-2 border-white/50">
+            <div>
+              <div class="font-semibold">Maria Rossi</div>
+              <div class="text-sm text-white/80">Student</div>
+            </div>
+          </div>
+          <p class="text-sm text-white/90 italic">
+            "Best Italian learning platform! The courses are well-structured and the teachers are amazing."
+          </p>
+          <div class="flex gap-1 mt-2">
+            <Icon v-for="i in 5" :key="i" name="solar:star-bold" size="16" class="text-yellow-400" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section - Right on desktop -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-12 py-8 lg:py-12">
+      <div class="w-full max-w-md">
         <a-form
           :model="formState"
-          name="basic"
+          name="register"
           autocomplete="off"
           layout="vertical"
-          class="space-y-4"
+          class="space-y-5"
           @finish="onFinish"
         >
-          <!-- Username Field -->
-          <a-form-item
-            label="Username"
-            name="username"
-            :rules="[{ required: true, message: 'Please input your username!' }]"
-          >
-            <a-input v-model:value="formState.username" size="large" placeholder="Username" class="h-12" />
-          </a-form-item>
+          <!-- Logo & Header -->
+          <div class="text-center mb-8">
+            <h1 class="text-gray-900 dark:text-white text-3xl sm:text-4xl font-bold mb-2">
+              Create Account
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-base">
+              Start your learning journey today
+            </p>
+          </div>
 
-          <!-- Email Field -->
-          <a-form-item
-            label="Email"
-            name="email"
-            :rules="[{ required: true, message: 'Please input your email!' }]"
-          >
-            <a-input v-model:value="formState.email" size="large" placeholder="Email" class="h-12" />
-          </a-form-item>
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <!-- Username -->
+            <a-form-item
+              label="Username"
+              name="username"
+              :rules="[
+                { required: true, message: 'Please input your username!' },
+                { min: 3, message: 'Username must be at least 3 characters' }
+              ]"
+              class="mb-0"
+            >
+              <a-input
+                v-model:value="formState.username"
+                size="large"
+                placeholder="Choose a username"
+                class="!h-12 !rounded-xl"
+              >
+                <template #prefix>
+                  <Icon name="solar:user-bold" size="20" class="text-gray-400" />
+                </template>
+              </a-input>
+            </a-form-item>
 
-          <!-- Password Fields -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Email -->
+            <a-form-item
+              label="Email Address"
+              name="email"
+              :rules="[
+                { required: true, message: 'Please input your email!' },
+                { type: 'email', message: 'Please enter a valid email!' }
+              ]"
+              class="mb-0"
+            >
+              <a-input
+                v-model:value="formState.email"
+                size="large"
+                placeholder="your.email@example.com"
+                class="!h-12 !rounded-xl"
+              >
+                <template #prefix>
+                  <Icon name="solar:letter-bold" size="20" class="text-gray-400" />
+                </template>
+              </a-input>
+            </a-form-item>
+
+            <!-- Password -->
             <a-form-item
               label="Password"
               name="password"
               :rules="[
                 { required: true, message: 'Please input your password!' },
-                { min: 8, message: 'The confirmation password must be at least 8 characters long.' },
+                { min: 8, message: 'Password must be at least 8 characters' }
               ]"
+              class="mb-0"
             >
-              <a-input-password v-model:value="formState.password" placeholder="Enter password" size="large" class="h-12" />
+              <a-input-password
+                v-model:value="formState.password"
+                placeholder="Create a strong password"
+                size="large"
+                class="!h-12 !rounded-xl"
+              >
+                <template #prefix>
+                  <Icon name="solar:lock-password-bold" size="20" class="text-gray-400" />
+                </template>
+              </a-input-password>
             </a-form-item>
+
+            <!-- Confirm Password -->
             <a-form-item
               label="Confirm Password"
               name="password2"
               :rules="[
-                { required: true, message: 'Please input confirm password!' },
-                { min: 8, message: 'The confirmation password must be at least 8 characters long.' },
+                { required: true, message: 'Please confirm your password!' },
+                { min: 8, message: 'Password must be at least 8 characters' }
               ]"
+              class="mb-0"
             >
-              <a-input-password v-model:value="formState.password2" placeholder="Enter confirm password" size="large" class="h-12" />
+              <a-input-password
+                v-model:value="formState.password2"
+                placeholder="Re-enter your password"
+                size="large"
+                class="!h-12 !rounded-xl"
+              >
+                <template #prefix>
+                  <Icon name="solar:shield-check-bold" size="20" class="text-gray-400" />
+                </template>
+              </a-input-password>
             </a-form-item>
+          </div>
+
+          <!-- Terms & Conditions -->
+          <div class="flex items-start gap-2 pt-2">
+            <a-checkbox v-model:checked="agreedToTerms" class="mt-1" />
+            <span class="text-sm text-gray-600">
+              I agree to the
+              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">Terms and Conditions</a>
+              and
+              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">Privacy Policy</a>
+            </span>
           </div>
 
           <!-- Create Account Button -->
           <a-button
             type="primary"
-            class="w-full !h-12 !items-center !flex !justify-center text-base font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d] mt-6"
+            class="w-full !h-12 !rounded-xl !flex !items-center !justify-center text-base font-semibold !bg-gradient-to-r !from-green-500 !to-green-600 hover:!from-green-600 hover:!to-green-700 !border-0 shadow-lg hover:shadow-xl transition-all"
             html-type="submit"
             :loading="loading"
             :disabled="loading"
           >
-            Create Account
-            <Icon class="ml-2 text-lg" name="i-solar-arrow-right-outline" />
+            <span v-if="!loading">Create Account</span>
+            <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
           </a-button>
 
           <!-- Divider -->
-          <div class="flex items-center gap-4 my-6">
-            <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
-            <span class="text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-              Or sign up with
-            </span>
-            <div class="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
+          <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300" />
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-4 bg-white text-gray-500 font-medium">
+                Or sign up with
+              </span>
+            </div>
           </div>
 
           <!-- Google Sign Up -->
-          <a-button class="w-full !h-12 text-base font-medium border-gray-300 hover:border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800">
-            <Icon class="mr-3 text-lg" name="i-logos-google-icon" />
+          <a-button
+            class="w-full !h-12 !rounded-xl text-base font-medium border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all shadow-sm hover:shadow"
+          >
+            <Icon class="mr-3 text-xl" name="logos:google-icon" />
             Continue with Google
           </a-button>
 
           <!-- Sign In Link -->
-          <div class="text-center mt-6">
-            <span class="text-gray-600 dark:text-gray-400">Already have an account? </span>
-            <NuxtLink to="/auth/login" class="text-[#16A34A] hover:text-[#15803d] font-medium">
+          <div class="text-center mt-6 p-4 bg-gray-50 rounded-xl">
+            <span class="text-gray-600">Already have an account? </span>
+            <NuxtLink
+              to="/auth/login"
+              class="text-green-600 hover:text-green-700 font-semibold transition-colors"
+            >
               Sign in
             </NuxtLink>
           </div>
@@ -172,3 +304,24 @@ async function onFinish() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Custom input styles */
+:deep(.ant-input-affix-wrapper) {
+  border-radius: 0.75rem;
+}
+
+:deep(.ant-input) {
+  border-radius: 0.75rem;
+}
+
+:deep(.ant-form-item-label > label) {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Smooth transitions */
+button, a {
+  transition: all 0.2s ease;
+}
+</style>
