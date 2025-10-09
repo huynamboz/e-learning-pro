@@ -1,60 +1,58 @@
 <script setup lang="ts">
-import { Icon } from '#components'
 import type { Category, Teacher } from '~/types/course.type'
+import { Icon } from '#components'
 
 // Course Card Props (for components)
 export interface CourseCardProps {
   id: string
   title: string
-  slug: string
-  description: string
-  short_description: string
   category: Category
   teacher: Teacher
   thumbnail: string | null
-  video_preview: string
   level: string
-  language: string
   duration_hours: string
   price: string
-  discount_price: string | null
   effective_price: number
   has_discount: boolean
   is_free: boolean
-  is_published: boolean
   is_featured: boolean
   enrollment_count: number
   rating_average: string
   rating_count: number
-  chapters_count: string
   lessons_count: string
-  created_at: string
-  updated_at: string
   type?: string
 }
 
 const props = defineProps<CourseCardProps>()
 
 // Computed properties for better performance
-const averageRating = computed(() => parseFloat(props.rating_average) || 0)
+const averageRating = computed(() => Number.parseFloat(props.rating_average) || 0)
 const roundedRating = computed(() => Math.round(averageRating.value))
 const formattedPrice = computed(() => {
-  if (props.is_free) return 'Free'
-  if (props.has_discount) return `$${props.effective_price}`
+  if (props.is_free)
+    return 'Free'
+  if (props.has_discount)
+    return `$${props.effective_price}`
   return `$${props.effective_price}`
 })
 const originalPrice = computed(() => props.has_discount ? `$${props.price}` : null)
 </script>
 
 <template>
-  <RouterLink :to="type === 'admin' ? `courses/${id}` : `/courses/${id}`"
-    class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+  <RouterLink
+    :to="type === 'admin' ? `courses/${id}` : `/courses/${id}`"
+    class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+  >
     <div class="space-y-4 relative">
       <div class="relative">
-        <img :src="thumbnail || '/images/course-thumbnail-default.webp'" :alt="title"
-          class="w-full h-32 sm:h-36 lg:h-[139px] object-cover rounded-lg">
-        <span v-if="is_featured"
-          class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium">
+        <img
+          :src="thumbnail || '/images/course-thumbnail-default.webp'" :alt="title"
+          class="w-full h-32 sm:h-36 lg:h-[139px] object-cover rounded-lg"
+        >
+        <span
+          v-if="is_featured"
+          class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium"
+        >
           Featured
         </span>
       </div>
@@ -63,7 +61,6 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
           <h3 class="text-base sm:text-lg font-semibold text-gray-900 leading-tight flex-1">
             {{ title }}
           </h3>
-
         </div>
         <p class="text-xs sm:text-sm text-gray-600">
           By {{ teacher?.full_name || 'Unknown Teacher' }}
@@ -72,11 +69,13 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
           {{ category?.name || 'Unknown Category' }}
         </p>
 
-        <div class="flex items-center gap-2" v-if="type !== 'admin'">
+        <div v-if="type !== 'admin'" class="flex items-center gap-2">
           <div class="flex">
-            <Icon v-for="star in 5" :key="star"
+            <Icon
+              v-for="star in 5" :key="star"
               :name="star <= roundedRating ? 'solar:star-bold' : 'solar:star-line-duotone'"
-              :class="star <= roundedRating ? 'w-4 h-4 sm:w-5 sm:h-5 text-yellow-400' : 'w-4 h-4 sm:w-5 sm:h-5 text-gray-300'" />
+              :class="star <= roundedRating ? 'w-4 h-4 sm:w-5 sm:h-5 text-yellow-400' : 'w-4 h-4 sm:w-5 sm:h-5 text-gray-300'"
+            />
           </div>
           <span class="text-xs font-semibold text-gray-600">
             {{ averageRating.toFixed(1) }} ({{ rating_count || 0 }} Ratings)

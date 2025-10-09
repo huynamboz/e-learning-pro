@@ -18,17 +18,15 @@ export interface ApiError {
   data?: any
 }
 
-// State management for token
-function createTokenState() {
-  const token = ref<string | null>(null)
+// Token management using useCookie directly
+function getTokenFromCookie(): string | null {
+  const tokenCookie = useCookie('auth.token')
+  return tokenCookie.value || null
+}
 
-  const setToken = (newToken: string | null) => {
-    token.value = newToken
-  }
-
-  const getToken = () => token.value
-
-  return { token: readonly(token), setToken, getToken }
+function setTokenToCookie(newToken: string | null): void {
+  const tokenCookie = useCookie('auth.token')
+  tokenCookie.value = newToken
 }
 
 // Handle logout when 401 occurs
@@ -197,10 +195,8 @@ async function refreshToken(currentToken: string): Promise<{ access: string } | 
     const response = await post<{ access: string }>('/auth/refresh/', {}, {}, currentToken)
 
     if (response.access) {
-      // Update cookie
-      const tokenCookie = useCookie('auth.token')
-      tokenCookie.value = response.access
-
+      // Update cookie using helper function
+      setTokenToCookie(response.access)
       return response
     }
 
@@ -215,60 +211,41 @@ async function refreshToken(currentToken: string): Promise<{ access: string } | 
 
 // Main API client composable
 export function useApiClient() {
-  const tokenState = createTokenState()
-
-  // Initialize token from cookie if available
-  if (import.meta.client) {
-    const tokenCookie = useCookie('auth.token')
-    if (tokenCookie.value && !tokenState.getToken()) {
-      tokenState.setToken(tokenCookie.value)
-    }
-  }
-
-  // Watch for token changes and sync with cookie
-  watch(tokenState.token, (newToken) => {
-    if (import.meta.client) {
-      const tokenCookie = useCookie('auth.token')
-      tokenCookie.value = newToken
-    }
-  })
-
-  // Create API methods with current token
+  // Create API methods with current token from cookie
   const apiGet = <T = any>(url: string, options?: FetchOptions): Promise<T> =>
-    get<T>(url, options, tokenState.getToken())
+    get<T>(url, options, getTokenFromCookie())
 
   const apiPost = <T = any>(url: string, body?: any, options?: FetchOptions): Promise<T> =>
-    post<T>(url, body, options, tokenState.getToken())
+    post<T>(url, body, options, getTokenFromCookie())
 
   const apiPut = <T = any>(url: string, body?: any, options?: FetchOptions): Promise<T> =>
-    put<T>(url, body, options, tokenState.getToken())
+    put<T>(url, body, options, getTokenFromCookie())
 
   const apiPatch = <T = any>(url: string, body?: any, options?: FetchOptions): Promise<T> =>
-    patch<T>(url, body, options, tokenState.getToken())
+    patch<T>(url, body, options, getTokenFromCookie())
 
   const apiDelete = <T = any>(url: string, options?: FetchOptions): Promise<T> =>
-    del<T>(url, options, tokenState.getToken())
+    del<T>(url, options, getTokenFromCookie())
 
   const apiUpload = <T = any>(url: string, formData: FormData, options?: FetchOptions): Promise<T> =>
-    upload<T>(url, formData, options, tokenState.getToken())
+    upload<T>(url, formData, options, getTokenFromCookie())
 
   const apiRefreshToken = async (): Promise<{ access: string } | null> => {
-    const currentToken = tokenState.getToken()
+    const currentToken = getTokenFromCookie()
     if (!currentToken)
       return null
 
     const result = await refreshToken(currentToken)
     if (result?.access) {
-      tokenState.setToken(result.access)
+      setTokenToCookie(result.access)
     }
     return result
   }
 
   return {
     // Token management
-    setToken: tokenState.setToken,
-    getToken: tokenState.getToken,
-    token: tokenState.token,
+    setToken: setTokenToCookie,
+    getToken: getTokenFromCookie,
 
     // HTTP methods
     get: apiGet,

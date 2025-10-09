@@ -15,29 +15,27 @@ export function useAuth() {
   const isInitializing = useState<boolean>('auth.isInitializing', () => true)
   const isFetchingUser = useState<boolean>('auth.isFetchingUser', () => false)
 
-  // Get API client instance
+  // // Get API client instance
   const apiClient = useApiClient()
 
-  // User is logged in if has token (and not currently fetching for the first time)
+  // // User is logged in if has token (and not currently fetching for the first time)
   const isLoggedIn = computed(() => {
     return !!token.value && (!isInitializing.value || !!user.value)
   })
 
-  // Show loading when initializing or fetching user
+  // // Show loading when initializing or fetching user
   const isLoading = computed(() => isInitializing.value || isFetchingUser.value)
 
-  // Role-based computed properties
+  // // Role-based computed properties
   const userRole = computed(() => user.value?.role || 'user')
   const isAdmin = computed(() => user.value?.role === 'admin')
   const isTeacher = computed(() => user.value?.role === 'teacher')
   const isRegularUser = computed(() => user.value?.role === 'user' || !user.value?.role)
 
-  // Sync token with API client
-  watch(token, (newToken) => {
-    apiClient.setToken(newToken)
-  }, { immediate: true })
+  // No need to sync token with API client anymore
+  // API client now uses useCookie directly
 
-  // Fetch user profile
+  // // Fetch user profile
   async function fetchUser(): Promise<void> {
     if (!token.value) {
       isInitializing.value = false
@@ -182,10 +180,10 @@ export function useAuth() {
   return {
     user: readonly(user),
     token: readonly(token),
-    isLoggedIn,
-    isLoading,
     isInitializing: readonly(isInitializing),
     isFetchingUser: readonly(isFetchingUser),
+    isLoggedIn,
+    isLoading,
     userRole,
     isAdmin,
     isTeacher,
