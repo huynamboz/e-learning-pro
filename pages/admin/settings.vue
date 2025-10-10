@@ -75,10 +75,10 @@ function saveSettings() {
   <div class="admin-settings">
     <!-- Page Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-gray-900">
         {{ $t('admin.settings.title') }}
       </h1>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">
+      <p class="mt-2 text-gray-600">
         {{ $t('admin.settings.description') }}
       </p>
     </div>
@@ -91,7 +91,7 @@ function saveSettings() {
             v-for="tab in settingsTabs"
             :key="tab.id"
             class="w-full text-left px-3 py-2 text-sm font-medium rounded-lg transition-colors"
-            :class="activeTab === tab.id ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
+            :class="activeTab === tab.id ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
             @click="activeTab = tab.id"
           >
             <Icon :name="tab.icon" class="w-4 h-4 mr-2" />
@@ -104,39 +104,39 @@ function saveSettings() {
       <div class="lg:col-span-2">
         <!-- General Settings -->
         <div v-if="activeTab === 'general'" class="space-y-6">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.general.title') }}
             </h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                   {{ $t('admin.settings.general.platformName') }}
                 </label>
                 <input
                   v-model="settings.general.platformName"
                   type="text"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                   {{ $t('admin.settings.general.platformDescription') }}
                 </label>
                 <textarea
                   v-model="settings.general.platformDescription"
                   rows="3"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                   {{ $t('admin.settings.general.contactEmail') }}
                 </label>
                 <input
                   v-model="settings.general.contactEmail"
                   type="email"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
               </div>
             </div>
@@ -145,17 +145,17 @@ function saveSettings() {
 
         <!-- User Settings -->
         <div v-if="activeTab === 'users'" class="space-y-6">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.users.title') }}
             </h2>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                  <h3 class="text-sm font-medium text-gray-900">
                     {{ $t('admin.settings.users.allowRegistration') }}
                   </h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-gray-500">
                     {{ $t('admin.settings.users.allowRegistrationDesc') }}
                   </p>
                 </div>
@@ -165,15 +165,15 @@ function saveSettings() {
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
                 </label>
               </div>
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                  <h3 class="text-sm font-medium text-gray-900">
                     {{ $t('admin.settings.users.emailVerificationRequired') }}
                   </h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-gray-500">
                     {{ $t('admin.settings.users.emailVerificationDesc') }}
                   </p>
                 </div>
@@ -183,7 +183,7 @@ function saveSettings() {
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
                 </label>
               </div>
             </div>
@@ -192,17 +192,17 @@ function saveSettings() {
 
         <!-- Course Settings -->
         <div v-if="activeTab === 'courses'" class="space-y-6">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.courses.title') }}
             </h2>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">
+                  <h3 class="text-sm font-medium text-gray-900">
                     {{ $t('admin.settings.courses.approvalRequired') }}
                   </h3>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                  <p class="text-sm text-gray-500">
                     {{ $t('admin.settings.courses.approvalRequiredDesc') }}
                   </p>
                 </div>
@@ -212,17 +212,17 @@ function saveSettings() {
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
                 </label>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                   {{ $t('admin.settings.courses.maxPrice') }}
                 </label>
                 <input
                   v-model="settings.courses.maxPrice"
                   type="number"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
               </div>
             </div>
@@ -231,16 +231,16 @@ function saveSettings() {
 
         <!-- Language Settings -->
         <div v-if="activeTab === 'language'" class="space-y-6">
-          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.language.title') }}
             </h2>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
                   {{ $t('admin.settings.language.selectLanguage') }}
                 </label>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <p class="text-sm text-gray-500 mb-4">
                   {{ $t('admin.settings.language.languageDesc') }}
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -249,17 +249,17 @@ function saveSettings() {
                     :key="language.code"
                     class="relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
                     :class="settings.language.selectedLanguage === language.code
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'"
                     @click="switchLanguage(language.code)"
                   >
                     <div class="flex items-center space-x-3">
                       <span class="text-2xl">{{ language.flag }}</span>
                       <div>
-                        <h3 class="font-medium text-gray-900 dark:text-white">
+                        <h3 class="font-medium text-gray-900">
                           {{ language.name }}
                         </h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="text-sm text-gray-500">
                           {{ language.code.toUpperCase() }}
                         </p>
                       </div>
@@ -273,11 +273,11 @@ function saveSettings() {
                   </div>
                 </div>
               </div>
-              <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+              <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">
                   {{ $t('admin.settings.language.currentLanguage') }}
                 </h4>
-                <p class="text-sm text-gray-600 dark:text-gray-400">
+                <p class="text-sm text-gray-600">
                   {{ availableLanguages.find(lang => lang.code === settings.language.selectedLanguage)?.name }}
                 </p>
               </div>

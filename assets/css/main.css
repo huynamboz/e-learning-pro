@@ -181,7 +181,7 @@
 }
 
 .dark {
-  --shade-1: #0d0d0d;
+  /* --shade-1: #0d0d0d;
   --shade-2: #262626;
   --shade-3: #404040;
   --shade-4: #595959;
@@ -225,7 +225,7 @@
 
   --button-box-shadow:
     0px 0px 0px 1px #3e3e3e, inset 0px 1px 0px 0px #000000, 
-    0px 3px 4px -1px #00000026;
+    0px 3px 4px -1px #00000026; */
 }
 
 @layer base {

@@ -54,7 +54,6 @@ function handleScroll(): void {
     navbar.value.classList.add(
       'bg-white/70',
       'border-b-[1px]',
-      'dark:bg-slate-900/80',
       'backdrop-blur',
     )
   }
@@ -62,7 +61,6 @@ function handleScroll(): void {
     navbar.value.classList.remove(
       'bg-white/70',
       'border-b-[1px]',
-      'dark:bg-slate-900/80',
       'backdrop-blur',
     )
   }
@@ -94,7 +92,7 @@ function handleScroll(): void {
             <template #icon>
               <span class="">{{ currentLanguage.flag }}</span>
             </template>
-            <span class="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300">{{ currentLanguage.code.toUpperCase() }}</span>
+            <span class="ml-1 text-sm font-medium text-gray-700">{{ currentLanguage.code.toUpperCase() }}</span>
             <template #icon-suffix>
               <Icon name="i-heroicons-chevron-down" class="w-4 h-4 text-gray-500" />
             </template>
@@ -106,23 +104,23 @@ function handleScroll(): void {
                 v-for="language in availableLanguages"
                 :key="language.code"
                 class="flex items-center gap-3 px-4 py-2"
-                :class="language.code === currentLanguage.code ? 'bg-blue-50 dark:bg-blue-900/20' : ''"
+                :class="language.code === currentLanguage.code ? 'bg-blue-50' : ''"
                 @click="switchLanguage(language.code)"
               >
                 <div class="flex items-center gap-3">
                   <span class="text-lg">{{ language.flag }}</span>
                   <div class="flex-1">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    <div class="text-sm font-medium text-gray-900">
                       {{ language.name }}
                     </div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <div class="text-xs text-gray-500">
                       {{ language.code.toUpperCase() }}
                     </div>
                   </div>
                   <Icon
                     v-if="language.code === currentLanguage.code"
                     name="i-heroicons-check"
-                    class="w-4 h-4 text-blue-600 dark:text-blue-400"
+                    class="w-4 h-4 text-blue-600"
                   />
                 </div>
               </a-menu-item>

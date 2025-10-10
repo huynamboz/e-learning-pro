@@ -169,7 +169,7 @@ function customRow(record: any) {
     <div class="flex items-center gap-4 justify-between mb-6">
       <div class="flex items-center gap-1 cursor-pointer" @click="router.push(`/admin/courses/${route.params.id}`)">
         <Icon name="i-material-symbols-chevron-left-rounded" class="text-[24px]" />
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
+        <h1 class="text-xl font-bold text-gray-900 !m-0">
           Attendance detail
         </h1>
       </div>

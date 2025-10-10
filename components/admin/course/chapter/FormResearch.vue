@@ -57,7 +57,7 @@ function removeImage() {
 <template>
   <div class="form-courses flex flex-col gap-20">
     <div class="flex flex-col gap-2">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
+      <h2 class="text-xl font-bold text-gray-900 !m-0">
         Upload Notes
       </h2>
       <p class="!m-0 text-[#334155] text-[15px]">

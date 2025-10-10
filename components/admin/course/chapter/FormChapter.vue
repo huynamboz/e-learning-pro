@@ -29,7 +29,7 @@ async function handleSave() {
 <template>
   <div class="form-courses flex flex-col gap-20">
     <!-- <div class="flex items-center gap-5 justify-between">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-gray-900">
         {{ props.type === 'detail' ? 'Detail' : 'Create' }}
       </h1>
       <div class="flex gap-2 items-center">
@@ -50,7 +50,7 @@ async function handleSave() {
     </div> -->
 
     <div class="flex flex-col gap-2">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
+      <h2 class="text-xl font-bold text-gray-900 !m-0">
         Chapter details
       </h2>
       <p class="!m-0 text-[#334155] text-[15px]">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>

@@ -186,12 +186,12 @@ onMounted(async () => {
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+        <h1 class="text-3xl md:text-4xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           {{ $t('admin.dashboard.title') }}
-        </h1>
-        <p class="mt-2 text-gray-600 dark:text-gray-400">
+      </h1>
+        <p class="mt-2 text-gray-600">
           {{ $t('admin.dashboard.welcome') }}
-        </p>
+      </p>
       </div>
     </div>
 
@@ -210,7 +210,7 @@ onMounted(async () => {
           <div class="flex items-center justify-between mb-4">
             <div class="size-10 flex items-center justify-center rounded-xl backdrop-blur-sm" :class="stat.iconBg">
               <Icon :name="stat.icon" class="w-7 h-7" :class="stat.iconColor" />
-            </div>
+      </div>
             <span class="inline-flex items-center gap-1 text-sm font-bold text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
               <Icon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
               {{ stat.change }}
@@ -227,8 +227,8 @@ onMounted(async () => {
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
         <Icon name="i-heroicons-bolt-solid" class="w-6 h-6 text-yellow-500" />
         {{ $t('admin.dashboard.quickActions.title') }}
       </h2>
@@ -251,56 +251,56 @@ onMounted(async () => {
     </div>
 
     <!-- Latest Users -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white rounded-2xl border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+        <h2 class="text-xl font-bold text-gray-900">
           {{ $t('admin.dashboard.latestUsers.title') }}
-        </h2>
-        <NuxtLink to="/admin/users" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+      </h2>
+        <NuxtLink to="/admin/users" class="text-sm font-medium text-blue-600 hover:underline">
           {{ $t('admin.dashboard.latestUsers.viewAll') }}
         </NuxtLink>
-      </div>
+          </div>
 
       <!-- Loading State -->
       <div v-if="isLoadingUsers" class="space-y-4">
         <div v-for="i in 5" :key="i" class="flex items-center gap-4 p-3">
-          <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+          <div class="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
           <div class="flex-1">
-            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
-            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-2/3" />
+            <div class="h-4 bg-gray-200 rounded animate-pulse mb-2" />
+            <div class="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
+          </div>
           </div>
         </div>
-      </div>
 
       <!-- Users List -->
       <div v-else class="space-y-4">
         <div
           v-for="user in users"
           :key="user.id"
-          class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group"
+          class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
         >
           <div class="relative">
             <a-avatar
               :size="40"
-              class="ring-2 ring-gray-200 dark:ring-gray-700 group-hover:ring-blue-500 dark:group-hover:ring-blue-400 transition-all duration-300"
+              class="ring-2 ring-gray-200 group-hover:ring-blue-500 transition-all duration-300"
             >
               {{ getUserInitials(user.email) }}
             </a-avatar>
             <div
               v-if="user.is_active"
-              class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-gray-800"
+              class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"
             />
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            <p class="text-sm font-semibold text-gray-900 truncate">
               {{ getUserDisplayName(user) }}
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+            <p class="text-xs text-gray-500 truncate">
               {{ user.email }}
             </p>
           </div>
           <div class="text-right">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
+            <p class="text-xs text-gray-500">
               {{ formatUserDate(user.date_joined) }}
             </p>
             <div class="flex items-center gap-1 mt-1">
@@ -309,12 +309,12 @@ onMounted(async () => {
                 class="w-2 h-2 rounded-full"
               />
               <span
-                :class="user.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'"
+                :class="user.is_active ? 'text-emerald-600' : 'text-gray-500'"
                 class="text-xs font-medium"
               >
                 {{ user.is_active ? $t('admin.dashboard.latestUsers.active') : $t('admin.dashboard.latestUsers.inactive') }}
               </span>
-            </div>
+        </div>
           </div>
         </div>
       </div>
@@ -322,32 +322,32 @@ onMounted(async () => {
       <!-- Empty State -->
       <div v-if="!isLoadingUsers && users.length === 0" class="text-center py-8">
         <Icon name="i-heroicons-users" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p class="text-gray-500 dark:text-gray-400">
+        <p class="text-gray-500">
           {{ $t('admin.dashboard.latestUsers.noUsers') }}
         </p>
       </div>
     </div>
 
     <!-- Top Courses -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white rounded-2xl border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+        <h2 class="text-xl font-bold text-gray-900">
           {{ $t('admin.dashboard.topCourses.title') }}
         </h2>
-        <NuxtLink to="/admin/courses" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+        <NuxtLink to="/admin/courses" class="text-sm font-medium text-blue-600 hover:underline">
           {{ $t('admin.dashboard.topCourses.viewAll') }}
         </NuxtLink>
       </div>
 
       <!-- Loading State -->
       <div v-if="isLoadingCourses" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div v-for="i in 3" :key="i" class="bg-gray-100 dark:bg-gray-700 rounded-2xl p-4 animate-pulse">
-          <div class="h-36 bg-gray-200 dark:bg-gray-600 rounded-lg mb-4" />
+        <div v-for="i in 3" :key="i" class="bg-gray-100 rounded-2xl p-4 animate-pulse">
+          <div class="h-36 bg-gray-200 rounded-lg mb-4" />
           <div class="space-y-3">
-            <div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4" />
-            <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/2" />
-            <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-2/3" />
-            <div class="h-6 bg-gray-200 dark:bg-gray-600 rounded w-1/3" />
+            <div class="h-4 bg-gray-200 rounded w-3/4" />
+            <div class="h-3 bg-gray-200 rounded w-1/2" />
+            <div class="h-3 bg-gray-200 rounded w-2/3" />
+            <div class="h-6 bg-gray-200 rounded w-1/3" />
           </div>
         </div>
       </div>
@@ -364,7 +364,7 @@ onMounted(async () => {
       <!-- Empty State -->
       <div v-if="!isLoadingCourses && topCourses.length === 0" class="text-center py-8">
         <Icon name="i-heroicons-academic-cap" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p class="text-gray-500 dark:text-gray-400">
+        <p class="text-gray-500">
           {{ $t('admin.dashboard.topCourses.noCourses') }}
         </p>
       </div>

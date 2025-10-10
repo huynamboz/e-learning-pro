@@ -176,7 +176,7 @@ function backToAttendance() {
     <div class="flex items-center gap-4 justify-between mb-6">
       <div class="flex items-center gap-1 cursor-pointer" @click="backToAttendance">
         <Icon name="i-material-symbols-chevron-left-rounded" class="text-[24px]" />
-        <h1 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
+        <h1 class="text-xl font-bold text-gray-900 !m-0">
             Attendance for July 20
         </h1>
       </div>

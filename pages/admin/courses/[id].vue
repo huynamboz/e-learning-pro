@@ -62,7 +62,7 @@ const attendanceManageId = computed(() => route.query.attendanceManageId)
     <DetailClassroom v-else-if="classroomId" />
     <AttendanceManagement v-else-if="attendanceManageId" />
     <div v-else class="">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-gray-900">
         Italian for Beginners
       </h1>
       <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">

@@ -162,7 +162,7 @@ watch(categoryOptions, () => {
 <template>
   <div class="form-courses flex flex-col gap-10">
     <div class="flex items-center gap-5 justify-between">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-gray-900">
         {{ courseId ? 'Detail' : 'Create' }}
       </h1>
       <div class="flex gap-2 items-center">
@@ -185,7 +185,7 @@ watch(categoryOptions, () => {
     </div>
 
     <div class="flex flex-col gap-3">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+      <h2 class="text-2xl font-bold text-gray-900">
         Course Details
       </h2>
       <a-form
