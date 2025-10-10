@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { isCollapsed, menu } = useSidebar()
+const { isAdmin } = useAdmin()
+const { isCollapsed, menu, menuAdmin } = useSidebar()
+
 const navbar = ref<HTMLElement | null>(null)
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -8,8 +10,12 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
 const pageTitle = computed(() => {
+  if (isAdmin.value) {
+    return menuAdmin.value.find(item => item.link && useRoute().path.startsWith(item.link))?.name || ''
+  }
   return menu.value.find(item => item.link && useRoute().path.startsWith(item.link))?.name || ''
 })
+
 function handleScroll(): void {
   if (!navbar.value)
     return

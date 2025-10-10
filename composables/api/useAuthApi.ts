@@ -36,5 +36,13 @@ export function useAuthApi() {
     // Resend verification email
     resendVerification: (email: string) =>
       apiClient.post('/auth/resend-verification/', { email }),
+
+    // Get profile
+    getProfile: () =>
+      apiClient.get('/profile/'),
+
+    // udpate profile
+    updateProfile: (payload: any) =>
+      apiClient.patch('/profile/', payload),
   }
 }

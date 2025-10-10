@@ -1,10 +1,11 @@
 <script lang="ts" setup>
+import type { LessonPayload } from '~/types/course.type'
+
 const loading = ref(false)
 
-const formState = ref({
-  title: '',
-  subTitle: '',
-  description: '',
+// Use defineModel for two-way binding with parent component
+const formState = defineModel<LessonPayload>({
+  required: true
 })
 
 const formRef = ref()
@@ -13,10 +14,13 @@ async function handleSave() {
   loading.value = true
   await formRef.value?.validateFields()
   try {
-    // hell
+    // Form validation passed, parent component will handle the save
   }
   catch (error) {
     // console.log(error)
+  }
+  finally {
+    loading.value = false
   }
 }
 
@@ -65,14 +69,14 @@ async function handleSave() {
           class="w-full"
           :rules="[{ required: true, message: 'Please input your lesson title!' }]"
         >
-          <a-input v-model:value="formState.title" size="large" placeholder="Enter course title" />
+          <a-input v-model:value="formState.title" size="large" placeholder="Enter lesson title" />
         </a-form-item>
 
-        <a-form-item name="image" label="SubTitle" class="w-full" :rules="[{ required: true, message: 'Please input your lesson subtitle!' }]">
-          <a-textarea
-            v-model:value="formState.subTitle"
-            placeholder="Enter subTitle"
-            :auto-size="{ minRows: 3, maxRows: 3 }"
+        <a-form-item name="slug" label="Slug" class="w-full" :rules="[{ required: true, message: 'Please input your lesson slug!' }]">
+          <a-input
+            v-model:value="formState.slug"
+            placeholder="Enter lesson slug"
+            size="large"
           />
         </a-form-item>
 
@@ -82,6 +86,46 @@ async function handleSave() {
             placeholder="Enter description"
             :auto-size="{ minRows: 10, maxRows: 10 }"
           />
+        </a-form-item>
+
+        <a-form-item name="video_url" label="Video URL" class="w-full">
+          <a-input
+            v-model:value="formState.video_url"
+            placeholder="Enter video URL"
+            size="large"
+          />
+        </a-form-item>
+
+        <a-form-item name="video_duration" label="Video Duration (minutes)" class="w-full">
+          <a-input-number
+            v-model:value="formState.video_duration"
+            placeholder="Enter video duration"
+            class="w-full"
+            size="large"
+            :min="0"
+          />
+        </a-form-item>
+
+        <a-form-item name="order" label="Order" class="w-full">
+          <a-input-number
+            v-model:value="formState.order"
+            placeholder="Enter order"
+            class="w-full"
+            size="large"
+            :min="0"
+          />
+        </a-form-item>
+
+        <a-form-item name="is_preview" label="Is Preview" class="w-full">
+          <a-switch v-model:checked="formState.is_preview" />
+        </a-form-item>
+
+        <a-form-item name="is_published" label="Is Published" class="w-full">
+          <a-switch v-model:checked="formState.is_published" />
+        </a-form-item>
+
+        <a-form-item name="is_unlocked" label="Is Unlocked" class="w-full">
+          <a-switch v-model:checked="formState.is_unlocked" />
         </a-form-item>
       </a-form>
     </div>

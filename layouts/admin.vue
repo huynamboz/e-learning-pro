@@ -19,7 +19,7 @@ const { isCollapsed } = useSidebar()
 
 <template>
   <div class="flex bg-background transition-colors duration-300 h-dvh">
-    <LayoutSideBar :is-admin="true" />
+    <LayoutAdminSideBar />
     <div
       class="w-full bg-shade-1 flex flex-col pt-[80px] transition-all duration-300 ease-in-out"
       :class="cn(isCollapsed ? 'pl-[80px]' : 'pl-[280px]')"

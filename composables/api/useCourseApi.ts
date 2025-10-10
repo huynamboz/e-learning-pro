@@ -1,20 +1,22 @@
 // Course API service
-import type { User } from '~/types/auth.type'
+import type {
+  Category,
+  Chapter,
+  ChapterPayload,
+  Course,
+  CourseDetail,
+  CourseEnrollment,
+  CourseFilters,
+  CourseListResponse,
+  CoursePayload,
+  CourseProgress,
+  CourseReview,
+  Lesson,
+  LessonPayload,
+  Teacher,
+} from '~/types/course.type'
 import { useApiClient } from '~/api/apiClient'
 import { createApiService } from '~/composables/api/useApiService'
-import type { 
-  Course, 
-  Category, 
-  Teacher, 
-  Chapter, 
-  Lesson,
-  CourseListResponse,
-  CourseFilters,
-  CourseDetail,
-  CourseReview,
-  CourseProgress,
-  CourseEnrollment
-} from '~/types/course.type'
 
 // Use the interface from types instead of defining here
 
@@ -41,9 +43,27 @@ export function useCourseApi() {
       )
     },
 
+    createCourse: (courseData: CoursePayload) =>
+      apiClient.post<CoursePayload>(`/courses/`, courseData),
+
+    updateCourse: (id: string, courseData: CoursePayload) =>
+      apiClient.put<CoursePayload>(`/courses/${id}/`, courseData),
+
     // Get featured courses
     getDetailCourses: (id: string) =>
       apiClient.get<Course>(`/courses/${id}`),
+
+    getChapters: (id: string) =>
+      apiClient.get<Chapter[]>(`/courses/${id}/chapters/`),
+
+    createChapter: (id: string, chapterData: ChapterPayload) =>
+      apiClient.post<ChapterPayload>(`/courses/${id}/chapters/`, chapterData),
+
+    updateChapter: (idCourse: string, id: string, payload: ChapterPayload) =>
+      apiClient.put<ChapterPayload>(`/courses/${idCourse}/chapters/${id}/`, payload),
+
+    deleteChapter: (id: string) =>
+      apiClient.delete<Chapter[]>(`/courses/${id}/chapters/`),
 
     // Get featured courses
     getFeaturedCourses: () =>
@@ -74,12 +94,24 @@ export function useCourseApi() {
       apiClient.get(`/courses/${courseId}/progress/`),
 
     // Get course lessons
-    getLessons: (courseId: string) =>
-      apiClient.get<Lesson[]>(`/courses/${courseId}/lessons/`),
+    getLessons: (courseId: string, chapterId: string) =>
+      apiClient.get<Lesson[]>(`/courses/${courseId}/chapters/${chapterId}/lessons/`),
+
+    // Post course lessons
+    createLesson: (courseId: string, chapterId: string, payload: LessonPayload) =>
+      apiClient.post<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/`, payload),
+
+    // Post course lessons
+    updateLesson: (courseId: string, chapterId: string, lessonId: string, payload: LessonPayload) =>
+      apiClient.put<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`, payload),
 
     // Get lesson detail
-    getLesson: (courseId: string, lessonId: string) =>
-      apiClient.get<Lesson>(`/courses/${courseId}/lessons/${lessonId}/`),
+    getLesson: (courseId: string, chapterId: string, lessonId: string) =>
+      apiClient.get<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`),
+
+    // Get lesson detail
+    deleteLesson: (courseId: string, chapterId: string, lessonId: string) =>
+      apiClient.delete<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`),
 
     // Mark lesson as completed
     completeLesson: (courseId: string, lessonId: string) =>

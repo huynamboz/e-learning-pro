@@ -1,18 +1,13 @@
 <script lang="ts" setup>
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
+import type { LessonPayload } from '~/types/course.type'
 
-const loading = ref(false)
-
-const formState = ref({
-  title: '',
-  subTitle: '',
-  description: '',
+const formState = defineModel<LessonPayload>({
+  required: true
 })
-
 
 const formRef = ref()
 
-// Upload states
 const videoFileList = ref<UploadFile<any>[]>([])
 const imageFileList = ref<UploadFile<any>[]>([])
 const videoPreviewUrl = ref<string>('')
@@ -29,6 +24,8 @@ function handleVideoChange(info: UploadChangeParam) {
     if (videoPreviewUrl.value)
       URL.revokeObjectURL(videoPreviewUrl.value)
     videoPreviewUrl.value = URL.createObjectURL(last.originFileObj as File)
+    // Update formState with video URL (in real app, you'd upload to server first)
+    formState.value.video_url = videoPreviewUrl.value
   }
 }
 
@@ -55,42 +52,10 @@ function removeImage() {
   imagePreviewUrl.value = ''
   imageFileList.value = []
 }
-
-async function handleSave() {
-  loading.value = true
-  await formRef.value?.validateFields()
-  try {
-    // hell
-  }
-  catch (error) {
-    // console.log(error)
-  }
-}
 </script>
 
 <template>
   <div class="form-courses flex flex-col gap-20">
-    <!-- <div class="flex items-center gap-5 justify-between">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        {{ props.type === 'detail' ? 'Detail' : 'Create' }}
-      </h1>
-      <div class="flex gap-2 items-center">
-        <a-button
-          class="w-full !px-6 !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-          @click="handleDraft"
-        >
-          Draft
-        </a-button>
-        <a-button
-          type="primary"
-          class="w-full !px-6 !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-          @click="handleSave"
-        >
-          Save
-        </a-button>
-      </div>
-    </div> -->
-
     <div class="flex flex-col gap-2">
       <h2 class="text-xl font-bold text-gray-900 dark:text-white !m-0">
         Upload Notes
@@ -105,9 +70,15 @@ async function handleSave() {
         autocomplete="off"
         layout="vertical"
         class="flex items-start flex-col !pt-6 w-2/3"
-        @finish="handleSave"
       >
-        <a-form-item name="video" label="Upload Intro Video" class="w-full">
+        <a-form-item 
+          name="video" 
+          label="Upload Intro Video" 
+          class="w-full"
+          :rules="[
+            { required: true, message: 'Please upload a video!' }
+          ]"
+        >
           <a-upload-dragger
             v-model:file-list="videoFileList"
             name="introVideo"
@@ -142,7 +113,14 @@ async function handleSave() {
           </a-upload-dragger>
         </a-form-item>
 
-        <a-form-item name="image" label="Upload Intro Image" class="w-full">
+        <a-form-item 
+          name="image" 
+          label="Upload Intro Image" 
+          class="w-full"
+          :rules="[
+            { required: true, message: 'Please upload an image!' }
+          ]"
+        >
           <a-upload-dragger
             v-model:file-list="imageFileList"
             name="introImage"

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import FormCourse from '~/components/admin/course/FormCourse.vue';
+import FormCourse from '~/components/admin/course/FormCourse.vue'
 
 definePageMeta({
   layout: 'admin',
@@ -8,7 +8,7 @@ definePageMeta({
 </script>
 
 <template>
-    <div class="create-course p-8">
-        <FormCourse type="create" />
-    </div>
+  <div class="create-course p-8">
+    <FormCourse />
+  </div>
 </template>

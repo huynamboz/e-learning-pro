@@ -24,7 +24,6 @@ async function onFinish() {
 
     if (result.success) {
       notification.success({ message: 'Đăng nhập thành công!' })
-      await navigateTo('/learning')
     }
     else {
       notification.error({ message: result.error || 'Đăng nhập thất bại' })
@@ -42,7 +41,7 @@ async function onFinish() {
 <template>
   <div class="flex flex-col lg:flex-row items-stretch min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
     <!-- Form Section -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-12 py-8 lg:py-12">
+    <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-12">
       <div class="w-full max-w-md">
         <a-form
           :model="formState"

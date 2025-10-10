@@ -1,8 +1,14 @@
 import type { LoginRequest, LoginResponse, User } from '~/types/auth.type'
 import { useApiClient } from '~/api/apiClient'
 
+import { useAuthApi } from '~/composables/api/useAuthApi'
+import type { IsAny } from '@vueuse/core'
+
+const authApi = useAuthApi()
+
 export function useAuth() {
   const user = useState<User | null>('auth.user', () => null)
+  const profile = useState<User | null>('auth.profile', () => null)
   const token = useCookie<string | null>('auth.token', {
     default: () => null,
     httpOnly: false,
@@ -14,6 +20,7 @@ export function useAuth() {
   // Loading states
   const isInitializing = useState<boolean>('auth.isInitializing', () => true)
   const isFetchingUser = useState<boolean>('auth.isFetchingUser', () => false)
+  const isFetchingProfile = useState<boolean>('auth.isFetchingProfile', () => false)
 
   // // Get API client instance
   const apiClient = useApiClient()
@@ -26,11 +33,9 @@ export function useAuth() {
   // // Show loading when initializing or fetching user
   const isLoading = computed(() => isInitializing.value || isFetchingUser.value)
 
-  // // Role-based computed properties
-  const userRole = computed(() => user.value?.role || 'user')
-  const isAdmin = computed(() => user.value?.role === 'admin')
-  const isTeacher = computed(() => user.value?.role === 'teacher')
-  const isRegularUser = computed(() => user.value?.role === 'user' || !user.value?.role)
+  // Role-based computed properties
+  const userRole = computed(() => !user.value?.is_teacher)
+  const isTeacher = computed(() => user.value?.is_teacher)
 
   // No need to sync token with API client anymore
   // API client now uses useCookie directly
@@ -47,10 +52,7 @@ export function useAuth() {
     try {
       // API client will automatically handle 401 errors and logout
       const userData = await apiClient.get<User>('/auth/me/')
-      user.value = {
-        ...userData,
-        role: 'admin',
-      }
+      user.value = userData
     }
     catch (error) {
       console.error('Fetch user error:', error)
@@ -81,6 +83,13 @@ export function useAuth() {
       if (response?.access && response?.user) {
         token.value = response.access
         user.value = response.user
+
+        if (user.value?.is_teacher) {
+          await navigateTo('/admin')
+        }
+        else {
+          await navigateTo('/learning')
+        }
 
         return { success: true }
       }
@@ -177,6 +186,42 @@ export function useAuth() {
     }
   }
 
+  // Fetch user profile
+  async function fetchProfile(): Promise<void> {
+    isFetchingProfile.value = true
+
+    try {
+      const response = await authApi.getProfile()
+      profile.value = response
+    }
+    catch (error) {
+      console.error('Fetch user error:', error)
+    }
+    finally {
+      isFetchingProfile.value = false
+      isInitializing.value = false
+    }
+  }
+
+  async function updateProfile(payload: any): Promise<{ success: boolean, error?: string }> {
+    isFetchingProfile.value = true
+
+    try {
+      await authApi.updateProfile(payload)
+      return { success: true }
+    }
+    catch (error: any) {
+      return {
+        success: false,
+        error: error.data?.message || error.statusMessage || 'Failed to create chapter',
+      }
+    }
+    finally {
+      isFetchingProfile.value = false
+      isInitializing.value = false
+    }
+  }
+
   return {
     user: readonly(user),
     token: readonly(token),
@@ -185,9 +230,8 @@ export function useAuth() {
     isLoggedIn,
     isLoading,
     userRole,
-    isAdmin,
     isTeacher,
-    isRegularUser,
+    profile,
     login,
     register,
     logout,
@@ -196,5 +240,7 @@ export function useAuth() {
     initAuth,
     resetPassword,
     confirmPassword,
+    fetchProfile,
+    updateProfile,
   }
 }

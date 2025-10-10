@@ -44,6 +44,40 @@ export function useSidebar() {
       ],
     },
   ])
+
+  const menuAdmin = ref<MenuItem[]>([
+    {
+      name: 'Overview',
+      icon: 'i-heroicons-chart-bar',
+      link: '/admin',
+    },
+    {
+      name: 'Course',
+      icon: 'i-heroicons-academic-cap',
+      link: '/admin/courses',
+    },
+    {
+      name: 'Classroom',
+      icon: 'i-heroicons-building-office-2',
+      link: '/admin/classrooms',
+    },
+    {
+      name: 'Students',
+      icon: 'i-heroicons-users',
+      link: '/admin/users',
+    },
+    {
+      name: 'Orders',
+      icon: 'i-heroicons-shopping-cart',
+      link: '/admin/orders',
+    },
+    {
+      name: 'Settings',
+      icon: 'i-heroicons-cog-6-tooth',
+      link: '/admin/settings',
+    },
+  ])
+
   function toggleSidebar() {
     isCollapsed.value = !isCollapsed.value
   }
@@ -62,5 +96,6 @@ export function useSidebar() {
     collapseSidebar,
     expandSidebar,
     menu,
+    menuAdmin,
   }
 }

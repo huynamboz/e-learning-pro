@@ -38,8 +38,4 @@ export const listOptionsDetailLesson = ref([
     key: 'RESEARCH',
     name: 'Research',
   },
-  {
-    key: 'SEO',
-    name: 'SEO',
-  },
 ])

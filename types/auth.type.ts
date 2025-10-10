@@ -36,6 +36,23 @@ export interface User {
   updatedAt?: string
 }
 
+export interface Profile {
+  avatar: string | null
+  bio: string
+  created_at: string
+  email: string
+  facebook_url: string | null
+  first_name: string
+  headline: string
+  last_name: string
+  linkedin_url: string | null
+  preferred_language: string
+  updated_at: string
+  website_url: string | null
+  x_handle: string | null
+  youtube_url: string | null
+}
+
 // User role types
 export type UserRole = 'user' | 'teacher' | 'admin'
 
