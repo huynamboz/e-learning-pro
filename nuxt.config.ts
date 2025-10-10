@@ -53,7 +53,7 @@ export default defineNuxtConfig({
   },
 
   css: [
-    'ant-design-vue/dist/reset.css',
+    // 'ant-design-vue/dist/reset.css',
     '~/assets/css/custom.css',
     '~/assets/css/main.css',
     '~/assets/css/nuxt-google-fonts.css',

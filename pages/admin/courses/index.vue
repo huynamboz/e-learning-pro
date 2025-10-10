@@ -42,7 +42,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
 </script>
 
 <template>
-  <div class="admin-courses p-8 flex flex-col gap-8">
+  <div class="admin-courses px-4 flex flex-col gap-8">
     <!-- Page Header -->
     <div class="flex justify-between items-center gap-4">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">

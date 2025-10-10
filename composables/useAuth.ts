@@ -2,7 +2,7 @@ import type { LoginRequest, LoginResponse, User } from '~/types/auth.type'
 import { useApiClient } from '~/api/apiClient'
 
 import { useAuthApi } from '~/composables/api/useAuthApi'
-import type { IsAny } from '@vueuse/core'
+
 
 const authApi = useAuthApi()
 

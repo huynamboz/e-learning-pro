@@ -56,7 +56,7 @@ const attendanceManageId = computed(() => route.query.attendanceManageId)
 </script>
 
 <template>
-  <div class="p-8">
+  <div class="px-4">
     <DetailAttendance v-if="attendanceId && !attendanceManageId" />
     <DetailLessonManage :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId"  v-else-if="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
