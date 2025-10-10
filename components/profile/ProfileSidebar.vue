@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ShareAltOutlined } from '@ant-design/icons-vue'
-import { ref } from 'vue'
 
 interface UserProfile {
   name: string
@@ -13,7 +12,6 @@ interface NavigationTab {
 }
 
 interface Props {
-  userProfile: UserProfile
   activeTab?: string
 }
 
@@ -21,18 +19,19 @@ const props = withDefaults(defineProps<Props>(), {
   activeTab: 'MY_COURSES',
 })
 
+const { user } = useAuth()
+
 const emit = defineEmits<{
   tabChange: [tabKey: string]
   shareProfile: []
 }>()
 
-const navigationTabs: NavigationTab[] = [
-  { key: 'PROFILE', label: 'Profile' },
-  { key: 'MY_COURSES', label: 'My Courses' },
-  { key: 'TEACHERS', label: 'Teachers' },
-  { key: 'MESSAGE', label: 'Message' },
-  { key: 'MY_REVIEWS', label: 'My Reviews' },
-]
+const { t } = useI18n()
+
+const navigationTabs = computed<NavigationTab[]>(() => [
+  { key: 'PROFILE', label: t('profileSidebar.profile') },
+  { key: 'MY_COURSES', label: t('profileSidebar.myCourses') },
+])
 
 const activeTab = ref(props.activeTab)
 
@@ -51,11 +50,11 @@ function handleShareProfile() {
     <div class="flex flex-col items-center gap-4">
       <a-avatar
         :size="160"
-        :src="userProfile.avatar"
+        :src="user?.avatar"
         class="border-4 border-white shadow-sm"
       />
       <h4 class="text-xl font-semibold text-gray-900 m-0 leading-6">
-        {{ userProfile.name }}
+        {{ user?.first_name }} {{ user?.last_name }}
       </h4>
       <a-button
         type="default"

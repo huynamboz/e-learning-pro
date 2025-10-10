@@ -60,13 +60,7 @@ export default defineNuxtConfig({
     'highlight.js/styles/atom-one-dark.css',
   ],
 
-  modules: [
-    '@nuxt/eslint',
-    '@nuxtjs/tailwindcss',
-    'shadcn-nuxt',
-    '@nuxtjs/google-fonts',
-    '@nuxt/icon',
-  ],
+  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n'],
 
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -112,6 +106,10 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1',
     },
+  },
+
+  i18n: {
+    vueI18n: './i18n.config.ts',
   },
 
   ssr: true,

@@ -1,0 +1,330 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard Overview",
+      "welcome": "Welcome back! Here's your performance overview for today.",
+      "stats": {
+        "totalUsers": "Total Students",
+        "activeCourses": "Active Courses",
+        "monthlyRevenue": "Monthly Revenue",
+        "completionRate": "Completion Rate"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "createCourse": "Create Course",
+        "manageStudents": "Manage Students",
+        "viewOrders": "View Orders",
+        "settings": "Settings"
+      },
+      "latestUsers": {
+        "title": "Latest Students",
+        "viewAll": "View All",
+        "active": "Active",
+        "inactive": "Inactive",
+        "noUsers": "No students yet"
+      },
+      "topCourses": {
+        "title": "Top Courses",
+        "viewAll": "View All",
+        "noCourses": "No courses yet"
+      }
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "description": "Configure platform-wide settings and preferences.",
+      "tabs": {
+        "general": "General",
+        "users": "Users",
+        "courses": "Courses",
+        "language": "Language"
+      },
+      "general": {
+        "title": "General Settings",
+        "platformName": "Platform Name",
+        "platformDescription": "Platform Description",
+        "contactEmail": "Contact Email"
+      },
+      "users": {
+        "title": "User Management",
+        "allowRegistration": "Allow User Registration",
+        "allowRegistrationDesc": "Allow new users to register on the platform",
+        "emailVerificationRequired": "Email Verification Required",
+        "emailVerificationDesc": "Require users to verify their email address"
+      },
+      "courses": {
+        "title": "Course Management",
+        "approvalRequired": "Course Approval Required",
+        "approvalRequiredDesc": "Require admin approval for new courses",
+        "maxPrice": "Maximum Course Price"
+      },
+      "language": {
+        "title": "Language Settings",
+        "selectLanguage": "Select Language",
+        "currentLanguage": "Current Language",
+        "languageDesc": "Choose your preferred language for the platform"
+      },
+      "saveSettings": "Save Settings"
+    },
+    "sidebar": {
+      "title": "ADMIN PANEL",
+      "subtitle": "Learn Italian with",
+      "author": "Phan Tam"
+    }
+  },
+  "sidebar": {
+    "search": "Search",
+    "studyNow": "Study now",
+    "helpCenter": "Help Center",
+    "helpCenterDesc": "Answers here",
+    "attendance": "Attendance",
+    "completeCourse": "Complete your course",
+    "checkVideo": "Check 1 min video and begin use components like a pro"
+  },
+  "menu": {
+    "home": "Home",
+    "myCourses": "My Courses",
+    "calendars": "Calendars",
+    "settings": "Settings",
+    "editProfile": "Edit Profile",
+    "language": "Language",
+    "notifications": "Notifications",
+    "password": "Password"
+  },
+  "adminMenu": {
+    "overview": "Overview",
+    "course": "Course",
+    "classroom": "Classroom",
+    "students": "Students",
+    "orders": "Orders",
+    "settings": "Settings"
+  },
+  "profile": {
+    "profile": "Profile",
+    "myCourses": "My Courses",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "actions": "Actions",
+    "logout": "Logout"
+  },
+  "homepage": {
+    "topCourses": "Top Courses"
+  },
+  "learning": {
+    "welcome": "Welcome back, {name}! 👋",
+    "welcomeDesc": "Continue your learning journey and achieve your goals",
+    "stats": {
+      "totalCourses": "Total Courses",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "certificates": "Certificates"
+    },
+    "continueLearning": {
+      "title": "Continue Learning",
+      "subtitle": "Pick up where you left off",
+      "viewAll": "View All",
+      "noCourses": "No courses in progress",
+      "noCoursesDesc": "Start learning something new today!",
+      "browseCourses": "Browse Courses",
+      "progress": "Progress",
+      "lessonsCompleted": "{completed} of {total} lessons completed",
+      "continue": "Continue"
+    },
+    "recommended": {
+      "title": "Recommended for You",
+      "subtitle": "Explore new courses tailored to your interests",
+      "viewAll": "View All"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "subtitle": "Your latest learning activities",
+      "noActivity": "No recent activity yet",
+      "completed": "Completed",
+      "continueLearning": "Continue Learning"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "browseCourses": "Browse Courses",
+      "browseCoursesDesc": "Explore new learning paths",
+      "myCourses": "My Courses",
+      "myCoursesDesc": "View enrolled courses",
+      "myProfile": "My Profile",
+      "myProfileDesc": "Manage your account"
+    },
+    "date": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "{days} days ago",
+      "weeksAgo": "{weeks} weeks ago"
+    }
+  },
+  "profilePage": {
+    "shareProfileSuccess": "Profile link copied to clipboard!"
+  },
+  "profileSidebar": {
+    "profile": "Profile",
+    "myCourses": "My Courses",
+    "teachers": "Teachers",
+    "message": "Message",
+    "myReviews": "My Reviews"
+  },
+  "profileForm": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "username": "Username",
+    "email": "Email",
+    "enterFirstName": "Enter first name",
+    "enterLastName": "Enter last name",
+    "enterUsername": "Enter username",
+    "enterEmail": "Enter email",
+    "updateProfile": "Update Profile",
+    "validation": {
+      "firstNameRequired": "Please input your first name!",
+      "lastNameRequired": "Please input your last name!",
+      "usernameRequired": "Please input your username!",
+      "emailRequired": "Please input your email!",
+      "emailInvalid": "Please enter a valid email!"
+    },
+    "messages": {
+      "updateSuccess": "Profile updated successfully!",
+      "updateFailed": "Update profile failed"
+    }
+  },
+  "courseDetail": {
+    "loading": "Loading course details...",
+    "error": {
+      "title": "Failed to Load Course",
+      "description": "An error occurred while loading the course.",
+      "tryAgain": "Try Again",
+      "backToCourses": "Back to Courses"
+    },
+    "notFound": {
+      "title": "Course Not Found",
+      "description": "The course you're looking for doesn't exist or has been removed.",
+      "backToCourses": "Back to Courses"
+    },
+    "notifications": {
+      "loadFailed": "Failed to load course",
+      "courseNotFound": "Course not found"
+    }
+  },
+  "descriptionCourse": {
+    "about": "About this course",
+    "whatYouWillLearn": "What you'll learn",
+    "requirements": "Requirements",
+    "description": "Description",
+    "curriculum": "Curriculum",
+    "instructor": "Instructor",
+    "reviews": "Reviews",
+    "students": "students",
+    "lessons": "lessons",
+    "hours": "hours",
+    "level": "Level",
+    "language": "Language",
+    "lastUpdated": "Last updated",
+    "enrolled": "enrolled"
+  },
+  "checkoutCard": {
+    "enrollNow": "Enroll Now",
+    "buyNow": "Buy Now",
+    "addToCart": "Add to Cart",
+    "classroom": "Classroom",
+    "free": "Free",
+    "originalPrice": "Original Price",
+    "discount": "Discount",
+    "total": "Total",
+    "includes": "This course includes:",
+    "lifetimeAccess": "Lifetime access",
+    "certificate": "Certificate of completion",
+    "mobileAccess": "Access on mobile and desktop",
+    "assignments": "Assignments",
+    "moneyBack": "30-day money-back guarantee",
+    "share": "Share",
+    "wishlist": "Add to Wishlist",
+    "gift": "Gift this course"
+  },
+  "customerReviews": {
+    "title": "What our students say",
+    "subtitle": "Join thousands of satisfied learners",
+    "showAll": "Show all reviews",
+    "rating": "rating",
+    "ratings": "ratings",
+    "basedOn": "Based on",
+    "reviews": "reviews"
+  },
+  "coursesIndex": {
+    "hero": {
+      "badge": "Explore Language Courses",
+      "title": "Discover Your Next",
+      "subtitle": "Language Journey",
+      "description": "Master new languages with expert instructors and interactive lessons",
+      "searchPlaceholder": "Search for language courses...",
+      "searchButton": "Search"
+    },
+    "stats": {
+      "totalCourses": "Total Courses",
+      "activeStudents": "Active Students",
+      "expertInstructors": "Expert Instructors",
+      "languagesAvailable": "Languages Available"
+    },
+    "filters": {
+      "allLevels": "All Levels",
+      "allPrices": "All Prices",
+      "free": "Free",
+      "paid": "Paid",
+      "mostPopular": "Most Popular",
+      "highestRated": "Highest Rated",
+      "newest": "Newest",
+      "priceLowToHigh": "Price: Low to High",
+      "priceHighToLow": "Price: High to Low",
+      "clearAll": "Clear All",
+      "coursesFound": "courses found"
+    },
+    "emptyState": {
+      "title": "No courses found",
+      "description": "Try adjusting your filters or search query",
+      "clearFilters": "Clear Filters"
+    },
+    "successStories": {
+      "title": "Join 50,000+ Language Learners",
+      "description": "Start your language journey today and unlock new opportunities with our proven learning methods",
+      "interactiveLearning": {
+        "title": "Interactive Learning",
+        "description": "Practice with native speakers and AI-powered conversations"
+      },
+      "certifiedProgress": {
+        "title": "Certified Progress",
+        "description": "Earn certificates and track your fluency improvement"
+      },
+      "flexibleSchedule": {
+        "title": "Flexible Schedule",
+        "description": "Learn at your own pace, anytime, anywhere"
+      },
+      "startLearningNow": "Start Learning Now",
+      "viewSuccessStories": "View Success Stories"
+    }
+  },
+  "layoutAuthHeader": {
+    "brand": {
+      "tagline": "Learn Italian with Phan Tam"
+    },
+    "navigation": {
+      "courses": "Courses",
+      "contact": "Contact",
+      "about": "About",
+      "pricing": "Pricing",
+      "learning": "Learning",
+      "myCourses": "My Courses",
+      "profile": "Profile"
+    },
+    "buttons": {
+      "contactDirectly": "Contact directly",
+      "signUpForFree": "Sign up for free",
+      "signIn": "Sign in",
+      "goToMyCourse": "Go to my course",
+      "language": "Language"
+    },
+    "mobile": {
+      "toggleMenu": "Toggle mobile menu"
+    }
+  }
+}

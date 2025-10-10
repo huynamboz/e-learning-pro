@@ -6,6 +6,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 
 const selectedCalendar = ref<string>('')
@@ -40,7 +41,7 @@ function handleBuyNow() {
       </div>
       <div class="">
         <h3 class="font-semibold">
-          Classroom
+          {{ $t('checkoutCard.classroom') }}
         </h3>
         <div class="flex items-start gap-2 flex-col">
           <div
@@ -67,21 +68,21 @@ function handleBuyNow() {
           class="w-full !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
           @click="handleAddToCard"
         >
-          Add to Cart
+          {{ $t('checkoutCard.addToCart') }}
         </a-button>
 
         <a-button
           class="w-full !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
           @click="handleBuyNow"
         >
-          Buy Now
+          {{ $t('checkoutCard.buyNow') }}
         </a-button>
       </div>
     </div>
 
     <div class="line border-b border-[#E2E8F0]" />
     <div class="flex flex-col items-start justify-center gap-2 px-10 py-5">
-      <span>Share</span>
+      <span>{{ $t('checkoutCard.share') }}</span>
       <div class="flex items-center justify-center gap-5 w-full">
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
           <Icon name="i-logos-facebook" class="text-[16px]" />

@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const { getCourses } = useCourseApi()
+const { t } = useI18n()
 
 // Search and filter states
 const searchQuery = ref('')
@@ -58,26 +59,26 @@ const totalPages = computed(() => Math.ceil(totalCourses.value / pageSize.value)
 
 // Stats
 const stats = computed(() => [
-  { icon: 'solar:book-bold', label: 'Total Courses', value: totalCourses.value.toLocaleString(), color: 'from-blue-500 to-blue-600' },
-  { icon: 'solar:users-group-rounded-bold', label: 'Active Students', value: '45,283', color: 'from-green-500 to-green-600' },
-  { icon: 'solar:star-bold', label: 'Expert Instructors', value: '1,250', color: 'from-yellow-500 to-yellow-600' },
-  { icon: 'solar:chat-round-line-bold', label: 'Languages Available', value: '12+', color: 'from-purple-500 to-purple-600' },
+  { icon: 'solar:book-bold', label: t('coursesIndex.stats.totalCourses'), value: totalCourses.value.toLocaleString(), color: 'from-blue-500 to-blue-600' },
+  { icon: 'solar:users-group-rounded-bold', label: t('coursesIndex.stats.activeStudents'), value: '45,283', color: 'from-green-500 to-green-600' },
+  { icon: 'solar:star-bold', label: t('coursesIndex.stats.expertInstructors'), value: '1,250', color: 'from-yellow-500 to-yellow-600' },
+  { icon: 'solar:chat-round-line-bold', label: t('coursesIndex.stats.languagesAvailable'), value: '12+', color: 'from-purple-500 to-purple-600' },
 ])
 
 // Filter options
-const levels = ['Beginner', 'Intermediate', 'Advanced', 'All Levels']
-const priceOptions = [
-  { label: 'All Prices', value: '' },
-  { label: 'Free', value: 'free' },
-  { label: 'Paid', value: 'paid' },
-]
-const sortOptions = [
-  { label: 'Most Popular', value: 'popular' },
-  { label: 'Highest Rated', value: 'rating' },
-  { label: 'Newest', value: 'newest' },
-  { label: 'Price: Low to High', value: 'price_asc' },
-  { label: 'Price: High to Low', value: 'price_desc' },
-]
+const levels = computed(() => ['Beginner', 'Intermediate', 'Advanced', t('coursesIndex.filters.allLevels')])
+const priceOptions = computed(() => [
+  { label: t('coursesIndex.filters.allPrices'), value: '' },
+  { label: t('coursesIndex.filters.free'), value: 'free' },
+  { label: t('coursesIndex.filters.paid'), value: 'paid' },
+])
+const sortOptions = computed(() => [
+  { label: t('coursesIndex.filters.mostPopular'), value: 'popular' },
+  { label: t('coursesIndex.filters.highestRated'), value: 'rating' },
+  { label: t('coursesIndex.filters.newest'), value: 'newest' },
+  { label: t('coursesIndex.filters.priceLowToHigh'), value: 'price_asc' },
+  { label: t('coursesIndex.filters.priceHighToLow'), value: 'price_desc' },
+])
 
 // Methods
 function handleSearch() {
@@ -108,18 +109,18 @@ function handlePageChange(page: number) {
         <div class="text-center space-y-4">
           <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium">
             <Icon name="solar:fire-bold" size="16" />
-            <span>Explore Language Courses</span>
+            <span>{{ $t('coursesIndex.hero.badge') }}</span>
           </div>
 
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-            Discover Your Next
+            {{ $t('coursesIndex.hero.title') }}
             <span class="block bg-gradient-to-r from-yellow-300 to-yellow-100 bg-clip-text text-transparent">
-              Language Journey
+              {{ $t('coursesIndex.hero.subtitle') }}
             </span>
           </h1>
 
           <p class="text-base sm:text-lg text-green-100 max-w-xl mx-auto">
-            Master new languages with expert instructors and interactive lessons
+            {{ $t('coursesIndex.hero.description') }}
           </p>
 
           <!-- Search Bar -->
@@ -131,7 +132,7 @@ function handlePageChange(page: number) {
                   <input
                     v-model="searchQuery"
                     type="text"
-                    placeholder="Search for language courses..."
+                    :placeholder="$t('coursesIndex.hero.searchPlaceholder')"
                     class="w-full pl-12 pr-3 py-3 rounded-lg !text-gray-800 placeholder-gray-400 focus:outline-none text-sm bg-white"
                     @keyup.enter="handleSearch"
                   >
@@ -141,7 +142,7 @@ function handlePageChange(page: number) {
                   @click="handleSearch"
                 >
                   <Icon name="solar:magnifer-linear" size="18" class="sm:hidden" />
-                  <span class="hidden sm:inline">Search</span>
+                  <span class="hidden sm:inline">{{ $t('coursesIndex.hero.searchButton') }}</span>
                 </button>
               </div>
             </div>
@@ -181,7 +182,7 @@ function handlePageChange(page: number) {
               class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
             >
               <option value="">
-                All Levels
+                {{ $t('coursesIndex.filters.allLevels') }}
               </option>
               <option v-for="level in levels" :key="level" :value="level">
                 {{ level }}
@@ -214,12 +215,12 @@ function handlePageChange(page: number) {
               class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
               @click="clearFilters"
             >
-              Clear All
+              {{ $t('coursesIndex.filters.clearAll') }}
             </button>
           </div>
 
           <div class="text-sm text-gray-600">
-            <span class="font-semibold">{{ totalCourses }}</span> courses found
+            <span class="font-semibold">{{ totalCourses }}</span> {{ $t('coursesIndex.filters.coursesFound') }}
           </div>
         </div>
       </div>
@@ -249,16 +250,16 @@ function handlePageChange(page: number) {
           <Icon name="solar:box-minimalistic-bold" size="48" class="text-gray-400" />
         </div>
         <h3 class="text-xl font-semibold text-gray-900 mb-2">
-          No courses found
+          {{ $t('coursesIndex.emptyState.title') }}
         </h3>
         <p class="text-gray-600 mb-6">
-          Try adjusting your filters or search query
+          {{ $t('coursesIndex.emptyState.description') }}
         </p>
         <button
           class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 !text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all"
           @click="clearFilters"
         >
-          Clear Filters
+          {{ $t('coursesIndex.emptyState.clearFilters') }}
         </button>
       </div>
 
@@ -320,11 +321,11 @@ function handlePageChange(page: number) {
           </div>
 
           <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Join 50,000+ Language Learners
+            {{ $t('coursesIndex.successStories.title') }}
           </h2>
 
           <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Start your language journey today and unlock new opportunities with our proven learning methods
+            {{ $t('coursesIndex.successStories.description') }}
           </p>
         </div>
 
@@ -334,10 +335,10 @@ function handlePageChange(page: number) {
               <Icon name="solar:users-group-rounded-bold" size="32" class="text-white" />
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">
-              Interactive Learning
+              {{ $t('coursesIndex.successStories.interactiveLearning.title') }}
             </h3>
             <p class="text-gray-600">
-              Practice with native speakers and AI-powered conversations
+              {{ $t('coursesIndex.successStories.interactiveLearning.description') }}
             </p>
           </div>
 
@@ -346,10 +347,10 @@ function handlePageChange(page: number) {
               <Icon name="solar:medal-star-bold" size="32" class="text-white" />
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">
-              Certified Progress
+              {{ $t('coursesIndex.successStories.certifiedProgress.title') }}
             </h3>
             <p class="text-gray-600">
-              Earn certificates and track your fluency improvement
+              {{ $t('coursesIndex.successStories.certifiedProgress.description') }}
             </p>
           </div>
 
@@ -358,10 +359,10 @@ function handlePageChange(page: number) {
               <Icon name="solar:clock-circle-bold" size="32" class="text-white" />
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">
-              Flexible Schedule
+              {{ $t('coursesIndex.successStories.flexibleSchedule.title') }}
             </h3>
             <p class="text-gray-600">
-              Learn at your own pace, anytime, anywhere
+              {{ $t('coursesIndex.successStories.flexibleSchedule.description') }}
             </p>
           </div>
         </div>
@@ -369,10 +370,10 @@ function handlePageChange(page: number) {
         <div class="text-center">
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 !text-white rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-xl">
-              Start Learning Now
+              {{ $t('coursesIndex.successStories.startLearningNow') }}
             </button>
             <button class="px-8 py-4 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all border border-gray-200 shadow-lg">
-              View Success Stories
+              {{ $t('coursesIndex.successStories.viewSuccessStories') }}
             </button>
           </div>
         </div>

@@ -1,12 +1,85 @@
+<script setup lang="ts">
+// Define page meta
+const { $i18n } = useNuxtApp()
+
+definePageMeta({
+  layout: 'admin',
+  middleware: 'admin',
+})
+
+// Set page title
+useHead({
+  title: 'Settings',
+})
+
+// Reactive data
+const activeTab = ref('general')
+
+const settingsTabs = computed(() => [
+  { id: 'general', label: $t('admin.settings.tabs.general'), icon: 'i-heroicons-cog-6-tooth' },
+  { id: 'users', label: $t('admin.settings.tabs.users'), icon: 'i-heroicons-users' },
+  { id: 'courses', label: $t('admin.settings.tabs.courses'), icon: 'i-heroicons-academic-cap' },
+  { id: 'language', label: $t('admin.settings.tabs.language'), icon: 'i-heroicons-language' },
+])
+
+// Language settings with cookie persistence
+const languageCookie = useCookie('locale', {
+  default: () => 'vi',
+  maxAge: 60 * 60 * 24 * 365, // 1 year
+})
+
+const settings = ref({
+  general: {
+    platformName: 'E-Learning Platform',
+    platformDescription: 'A comprehensive online learning platform',
+    contactEmail: 'admin@example.com',
+  },
+  users: {
+    allowRegistration: true,
+    emailVerificationRequired: true,
+  },
+  courses: {
+    approvalRequired: true,
+    maxPrice: 1000,
+  },
+  language: {
+    selectedLanguage: languageCookie.value,
+  },
+})
+
+// Available languages
+const availableLanguages = [
+  { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+]
+
+// Language switching function
+function switchLanguage(languageCode: string) {
+  settings.value.language.selectedLanguage = languageCode
+  languageCookie.value = languageCode
+  // Trigger i18n locale change
+  $i18n.locale.value = languageCode
+}
+
+
+
+// Methods
+function saveSettings() {
+  // Save language setting to cookie
+  languageCookie.value = settings.value.language.selectedLanguage
+  // Implement other save logic here
+}
+</script>
+
 <template>
   <div class="admin-settings">
     <!-- Page Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Platform Settings
+        {{ $t('admin.settings.title') }}
       </h1>
       <p class="mt-2 text-gray-600 dark:text-gray-400">
-        Configure platform-wide settings and preferences.
+        {{ $t('admin.settings.description') }}
       </p>
     </div>
 
@@ -17,11 +90,11 @@
           <button
             v-for="tab in settingsTabs"
             :key="tab.id"
-            @click="activeTab = tab.id"
             class="w-full text-left px-3 py-2 text-sm font-medium rounded-lg transition-colors"
             :class="activeTab === tab.id ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'"
+            @click="activeTab = tab.id"
           >
-            <UIcon :name="tab.icon" class="w-4 h-4 mr-2" />
+            <Icon :name="tab.icon" class="w-4 h-4 mr-2" />
             {{ tab.label }}
           </button>
         </nav>
@@ -33,38 +106,38 @@
         <div v-if="activeTab === 'general'" class="space-y-6">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              General Settings
+              {{ $t('admin.settings.general.title') }}
             </h2>
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Platform Name
+                  {{ $t('admin.settings.general.platformName') }}
                 </label>
                 <input
                   v-model="settings.general.platformName"
                   type="text"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                />
+                >
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Platform Description
+                  {{ $t('admin.settings.general.platformDescription') }}
                 </label>
                 <textarea
                   v-model="settings.general.platformDescription"
                   rows="3"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                ></textarea>
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Contact Email
+                  {{ $t('admin.settings.general.contactEmail') }}
                 </label>
                 <input
                   v-model="settings.general.contactEmail"
                   type="email"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                />
+                >
               </div>
             </div>
           </div>
@@ -74,16 +147,16 @@
         <div v-if="activeTab === 'users'" class="space-y-6">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              User Management
+              {{ $t('admin.settings.users.title') }}
             </h2>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
-                    Allow User Registration
+                    {{ $t('admin.settings.users.allowRegistration') }}
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Allow new users to register on the platform
+                    {{ $t('admin.settings.users.allowRegistrationDesc') }}
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -92,16 +165,16 @@
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
                 </label>
               </div>
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
-                    Email Verification Required
+                    {{ $t('admin.settings.users.emailVerificationRequired') }}
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Require users to verify their email address
+                    {{ $t('admin.settings.users.emailVerificationDesc') }}
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -110,7 +183,7 @@
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
                 </label>
               </div>
             </div>
@@ -121,16 +194,16 @@
         <div v-if="activeTab === 'courses'" class="space-y-6">
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Course Management
+              {{ $t('admin.settings.courses.title') }}
             </h2>
             <div class="space-y-4">
               <div class="flex items-center justify-between">
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
-                    Course Approval Required
+                    {{ $t('admin.settings.courses.approvalRequired') }}
                   </h3>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    Require admin approval for new courses
+                    {{ $t('admin.settings.courses.approvalRequiredDesc') }}
                   </p>
                 </div>
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -139,18 +212,74 @@
                     type="checkbox"
                     class="sr-only peer"
                   >
-                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                  <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600" />
                 </label>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Maximum Course Price
+                  {{ $t('admin.settings.courses.maxPrice') }}
                 </label>
                 <input
                   v-model="settings.courses.maxPrice"
                   type="number"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                />
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language Settings -->
+        <div v-if="activeTab === 'language'" class="space-y-6">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              {{ $t('admin.settings.language.title') }}
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {{ $t('admin.settings.language.selectLanguage') }}
+                </label>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  {{ $t('admin.settings.language.languageDesc') }}
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div
+                    v-for="language in availableLanguages"
+                    :key="language.code"
+                    class="relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md"
+                    :class="settings.language.selectedLanguage === language.code
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'"
+                    @click="switchLanguage(language.code)"
+                  >
+                    <div class="flex items-center space-x-3">
+                      <span class="text-2xl">{{ language.flag }}</span>
+                      <div>
+                        <h3 class="font-medium text-gray-900 dark:text-white">
+                          {{ language.name }}
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ language.code.toUpperCase() }}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      v-if="settings.language.selectedLanguage === language.code"
+                      class="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center"
+                    >
+                      <Icon name="i-heroicons-check" class="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+                  {{ $t('admin.settings.language.currentLanguage') }}
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ availableLanguages.find(lang => lang.code === settings.language.selectedLanguage)?.name }}
+                </p>
               </div>
             </div>
           </div>
@@ -159,56 +288,13 @@
         <!-- Save Button -->
         <div class="flex justify-end">
           <button
-            @click="saveSettings"
             class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            @click="saveSettings"
           >
-            Save Settings
+            {{ $t('admin.settings.saveSettings') }}
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-// Define page meta
-definePageMeta({
-  layout: 'admin',
-  middleware: 'admin'
-})
-
-// Set page title
-useHead({
-  title: 'Settings'
-})
-
-// Reactive data
-const activeTab = ref('general')
-
-const settingsTabs = [
-  { id: 'general', label: 'General', icon: 'i-heroicons-cog-6-tooth' },
-  { id: 'users', label: 'Users', icon: 'i-heroicons-users' },
-  { id: 'courses', label: 'Courses', icon: 'i-heroicons-academic-cap' }
-]
-
-const settings = ref({
-  general: {
-    platformName: 'E-Learning Platform',
-    platformDescription: 'A comprehensive online learning platform',
-    contactEmail: 'admin@example.com'
-  },
-  users: {
-    allowRegistration: true,
-    emailVerificationRequired: true
-  },
-  courses: {
-    approvalRequired: true,
-    maxPrice: 1000
-  }
-})
-
-// Methods
-const saveSettings = () => {
-  // Implement save logic
-}
-</script>

@@ -8,6 +8,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const { t } = useI18n()
 const courseId = computed(() => route.params.id as string)
 
 // Use useLazyAsyncData for better data fetching
@@ -45,8 +46,8 @@ const { data: currentCourse, pending: isLoading, error: fetchError, refresh: ret
 watch(fetchError, (error) => {
   if (error) {
     notification.error({
-      message: 'Failed to load course',
-      description: error.statusMessage || 'Course not found',
+      message: t('courseDetail.notifications.loadFailed'),
+      description: error.statusMessage || t('courseDetail.notifications.courseNotFound'),
     })
   }
 })
@@ -59,7 +60,7 @@ watch(fetchError, (error) => {
       <a-spin size="large">
         <div class="content">
           <p class="text-gray-500">
-            Loading course details...
+            {{ $t('courseDetail.loading') }}
           </p>
         </div>
       </a-spin>
@@ -70,10 +71,10 @@ watch(fetchError, (error) => {
       <div class="text-center">
         <Icon name="solar:danger-circle-bold" class="text-6xl text-red-300 mb-4" />
         <h2 class="text-2xl font-bold text-gray-700 mb-2">
-          Failed to Load Course
+          {{ $t('courseDetail.error.title') }}
         </h2>
         <p class="text-gray-500 mb-6">
-          {{ fetchError.statusMessage || 'An error occurred while loading the course.' }}
+          {{ fetchError.statusMessage || $t('courseDetail.error.description') }}
         </p>
         <div class="flex gap-4 justify-center">
           <button
@@ -81,11 +82,11 @@ watch(fetchError, (error) => {
             @click="() => retryFetch()"
           >
             <Icon name="solar:refresh-bold" class="mr-2" />
-            Try Again
+            {{ $t('courseDetail.error.tryAgain') }}
           </button>
           <NuxtLink to="/learning" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
             <Icon name="solar:arrow-left-bold" class="mr-2" />
-            Back to Courses
+            {{ $t('courseDetail.error.backToCourses') }}
           </NuxtLink>
         </div>
       </div>
@@ -96,14 +97,14 @@ watch(fetchError, (error) => {
       <div class="text-center">
         <Icon name="solar:document-text-bold" class="text-6xl text-gray-300 mb-4" />
         <h2 class="text-2xl font-bold text-gray-700 mb-2">
-          Course Not Found
+          {{ $t('courseDetail.notFound.title') }}
         </h2>
         <p class="text-gray-500 mb-6">
-          The course you're looking for doesn't exist or has been removed.
+          {{ $t('courseDetail.notFound.description') }}
         </p>
         <NuxtLink to="/learning" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
           <Icon name="solar:arrow-left-bold" class="mr-2" />
-          Back to Courses
+          {{ $t('courseDetail.notFound.backToCourses') }}
         </NuxtLink>
       </div>
     </div>

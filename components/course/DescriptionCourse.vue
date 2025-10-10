@@ -6,6 +6,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 function convertLanguage(language: string) {
   if (language === 'en')
@@ -29,17 +30,17 @@ function convertLanguage(language: string) {
         <div class="flex items-center gap-1">
           <span class="text-base text-yellow-500 font-medium">{{ parseFloat(courseData?.rating_average) }}</span>
           <Icon name="i-material-symbols-star-rounded" class="text-[16px] text-yellow-500" />
-          <span>{{ `(${courseData?.rating_count} rating)` }}</span>
+          <span>{{ `(${courseData?.rating_count} ${t('descriptionCourse.rating')})` }}</span>
         </div>
         <div class="text-[#334155]">
           |
         </div>
         <div class="flex items-center gap-2">
           <p class="!m-0">
-            {{ parseFloat(courseData?.duration_hours) }} Total Hours.
+            {{ parseFloat(courseData?.duration_hours) }} {{ t('descriptionCourse.hours') }}.
           </p>
           <p class="!m-0">
-            {{ parseFloat(courseData?.lessons_count) }} Lesstures.
+            {{ parseFloat(courseData?.lessons_count) }} {{ t('descriptionCourse.lessons') }}.
           </p>
           <p class="!m-0">
             {{ courseData?.level }}
@@ -65,7 +66,7 @@ function convertLanguage(language: string) {
     <div class="px-8 flex flex-col gap-5">
       <div class="flex flex-col gap-1">
         <h1 class="font-bold text-2xl !mb-0">
-          Course Description
+          {{ $t('descriptionCourse.description') }}
         </h1>
         <p class="text-[14px] text-gray-700 leading-[24px] !mb-0" v-html="courseData?.description" />
       </div>
@@ -84,14 +85,14 @@ function convertLanguage(language: string) {
 
     <div class="px-8 flex flex-col gap-3">
       <h1 class="font-bold text-2xl !mb-0">
-        Instructor
+        {{ $t('descriptionCourse.instructor') }}
       </h1>
       <div class="flex flex-col gap-1">
         <h3 class="text-xl font-bold text-[#49ba61] !m-0">
           {{ courseData?.teacher?.full_name || 'Unknown Teacher' }}
         </h3>
         <p class="!m-0">
-          Instructor
+          {{ $t('descriptionCourse.instructor') }}
         </p>
       </div>
       <div class="flex items-center flex-wrap gap-4 mt-5">
@@ -99,15 +100,15 @@ function convertLanguage(language: string) {
         <div class="flex flex-col gap-2 text-gray-900">
           <div class="flex items-center gap-2">
             <Icon name="i-mingcute-certificate-line" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.rating_count || 0 }} Reviews</span>
+            <span>{{ courseData?.rating_count || 0 }} {{ $t('descriptionCourse.reviews') }}</span>
           </div>
           <div class="flex items-center gap-2">
             <Icon name="i-ph-student-fill" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.enrollment_count || 0 }} Students</span>
+            <span>{{ courseData?.enrollment_count || 0 }} {{ $t('descriptionCourse.students') }}</span>
           </div>
           <div class="flex items-center gap-2">
             <Icon name="i-material-symbols-play-arrow-outline-rounded" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.teacher?.total_courses || 0 }} Courses</span>
+            <span>{{ courseData?.teacher?.total_courses || 0 }} {{ $t('descriptionCourse.lessons') }}</span>
           </div>
         </div>
       </div>
@@ -120,7 +121,7 @@ function convertLanguage(language: string) {
 
     <div class="px-8 flex flex-col gap-3">
       <h1 class="font-bold text-2xl !mb-0">
-        Syllabus
+        {{ $t('descriptionCourse.curriculum') }}
       </h1>
       <CourseSyllabusCourse :syllabus-data="courseData?.chapters" />
     </div>

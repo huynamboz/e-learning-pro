@@ -9,7 +9,7 @@ const route = useRoute()
 
 // Get menu items based on mode
 const currentMenu = computed(() => {
-    return menuAdmin.value
+  return menuAdmin.value
 })
 
 function toggleExpand(itemName: string) {
@@ -46,10 +46,10 @@ function isExpanded(itemName: string) {
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
             <h4 class="font-extrabold text-white text-base whitespace-nowrap">
-              ADMIN PANEL
+              {{ $t('admin.sidebar.title') }}
             </h4>
             <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
-              Học tiếng Ý cùng <span class="text-[#EF4444]">Phan Tâm</span>
+              {{ $t('admin.sidebar.subtitle') }} <span class="text-[#EF4444]">{{ $t('admin.sidebar.author') }}</span>
             </p>
           </div>
         </NuxtLink>

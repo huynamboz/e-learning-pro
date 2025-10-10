@@ -44,7 +44,7 @@ const { data: coursesData, pending: isFetchingCourses, error: fetchError, refres
     <HomeTopCategoriesSection :categories-data="categoriesData" />
     <HomeTopCoursesSection
       :courses-data="coursesData"
-      title="Top Courses"
+      :title="$t('homepage.topCourses')"
       :loading="isFetchingCourses"
       :error="fetchError?.message"
       @retry="retryFetch"

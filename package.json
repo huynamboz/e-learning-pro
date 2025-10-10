@@ -29,6 +29,7 @@
     "@ant-design/icons-vue": "^7.0.1",
     "@nuxt/icon": "1.14.0",
     "@nuxtjs/google-fonts": "3.2.0",
+    "@nuxtjs/i18n": "10.1.0",
     "@tailwindcss/vite": "^4.1.10",
     "@vueup/vue-quill": "^1.2.0",
     "@vueuse/core": "^13.4.0",
@@ -55,6 +56,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.16.1",
+    "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/hugeicons": "^1.2.15",
     "@iconify-json/logos": "^1.2.9",
     "@iconify-json/majesticons": "^1.2.4",

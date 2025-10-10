@@ -17,62 +17,64 @@ const globalSidebarState = {
 
 export function useSidebar() {
   const { isCollapsed } = globalSidebarState
-  const menu = ref<MenuItem[]>([
+  const { t } = useI18n()
+
+  const menu = computed<MenuItem[]>(() => [
     {
-      name: 'Home',
+      name: t('menu.home'),
       icon: 'solar:home-2-bold',
       link: '/learning',
     },
     {
-      name: 'My Courses',
+      name: t('menu.myCourses'),
       icon: 'solar:book-bookmark-bold',
       link: '/profile?tab=MY_COURSES',
     },
     {
-      name: 'Calendars',
+      name: t('menu.calendars'),
       icon: 'solar:calendar-bold',
       link: '/calendars',
     },
     {
-      name: 'Settings',
+      name: t('menu.settings'),
       icon: 'solar:settings-bold',
       subItems: [
-        { name: 'Edit Profile', link: '/settings/general' },
-        { name: 'Language', link: '/settings/language' },
-        { name: 'Notifications', link: '/settings/notifications' },
-        { name: 'Password', link: '/settings/password' },
+        { name: t('menu.editProfile'), link: '/settings/general' },
+        { name: t('menu.language'), link: '/settings/language' },
+        { name: t('menu.notifications'), link: '/settings/notifications' },
+        { name: t('menu.password'), link: '/settings/password' },
       ],
     },
   ])
 
-  const menuAdmin = ref<MenuItem[]>([
+  const menuAdmin = computed<MenuItem[]>(() => [
     {
-      name: 'Overview',
+      name: t('adminMenu.overview'),
       icon: 'i-heroicons-chart-bar',
       link: '/admin',
     },
     {
-      name: 'Course',
+      name: t('adminMenu.course'),
       icon: 'i-heroicons-academic-cap',
       link: '/admin/courses',
     },
     {
-      name: 'Classroom',
+      name: t('adminMenu.classroom'),
       icon: 'i-heroicons-building-office-2',
       link: '/admin/classrooms',
     },
     {
-      name: 'Students',
+      name: t('adminMenu.students'),
       icon: 'i-heroicons-users',
       link: '/admin/users',
     },
     {
-      name: 'Orders',
+      name: t('adminMenu.orders'),
       icon: 'i-heroicons-shopping-cart',
       link: '/admin/orders',
     },
     {
-      name: 'Settings',
+      name: t('adminMenu.settings'),
       icon: 'i-heroicons-cog-6-tooth',
       link: '/admin/settings',
     },

@@ -69,7 +69,7 @@ onMounted(() => {
         />
         <input
           type="text"
-          placeholder="Search"
+          :placeholder="$t('sidebar.search')"
           class="w-full pl-10 pr-4 py-3 bg-[#F5F6F8] dark:bg-shade-3 border-0 rounded-xl text-sm placeholder-gray-400 placeholder:text-sm focus:ring-2 focus:ring-[#15803D] focus:outline-none transition-all"
         >
       </div>
@@ -187,24 +187,24 @@ onMounted(() => {
         <div class="flex flex-col bg-[#F5F6F8] border border-[#E6E7EC] rounded-2xl p-2 items-center gap-3">
           <LayoutMenuDonutChart
             :percentage="80"
-            label="Attendance"
+            :label="$t('sidebar.attendance')"
             value="4/5"
             color="#ef4444"
           />
 
           <LayoutMenuDonutChart
             :percentage="50"
-            label="Complete your course"
+            :label="$t('sidebar.completeCourse')"
             value="5/10"
             color="#22c55e"
           />
           <p class="text-[14px] text-[#83899F] text-center mb-4 leading-[17px]">
-            Check 1 min video and begin use components like a pro
+            {{ $t('sidebar.checkVideo') }}
           </p>
 
           <!-- Study Now Button -->
           <NuxtLink to="/learning" class="w-full bg-white border border-[#E6E7EC] rounded-xl py-2.5 px-4 shadow-sm text-center">
-            <span class="text-[14px] font-medium text-[#0A1B39]">Study now</span>
+            <span class="text-[14px] font-medium text-[#0A1B39]">{{ $t('sidebar.studyNow') }}</span>
           </NuxtLink>
         </div>
 
@@ -219,10 +219,10 @@ onMounted(() => {
           </div>
           <div class="flex-1">
             <h4 class="font-bold text-[15px] text-[#0A1B39] leading-[20px]">
-              Help Center
+              {{ $t('sidebar.helpCenter') }}
             </h4>
             <p class="text-[14px] text-[#83899F] leading-[18px]">
-              Answers here
+              {{ $t('sidebar.helpCenterDesc') }}
             </p>
           </div>
           <Icon name="tabler-chevron-right" class="w-4 h-4 text-[#9CA0B2]" />

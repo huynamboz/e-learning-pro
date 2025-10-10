@@ -1,34 +1,24 @@
 <script lang="ts" setup>
-import type { Profile } from '@/types/auth.type'
+import type { User } from '@/types/auth.type'
 import { useAuth } from '#imports'
 import { notification } from 'ant-design-vue'
 
 const props = defineProps<{
-  dataProfile?: Profile
+  dataProfile?: User
   isFetchingProfile: boolean
 }>()
 
 const { updateProfile, fetchProfile } = useAuth()
+const { t } = useI18n()
 
 const formRef = ref()
 
 const formState = reactive({
   first_name: '',
   last_name: '',
-  headline: '',
-  bio: '',
-  preferred_language: 'en',
-  website_url: '',
-  x_handle: '',
-  linkedin_url: '',
-  youtube_url: '',
-  facebook_url: '',
+  username: '',
+  email: '',
 })
-
-const listLanguages = ref([
-  { key: 'vi', label: 'Tiếng Việt' },
-  { key: 'en', label: 'English' },
-])
 
 watch(
   () => props.dataProfile,
@@ -36,14 +26,8 @@ watch(
     if (val) {
       formState.first_name = val.first_name || ''
       formState.last_name = val.last_name || ''
-      formState.headline = val.headline || ''
-      formState.bio = val.bio || ''
-      formState.preferred_language = val.preferred_language || 'VI'
-      formState.website_url = val.website_url || ''
-      formState.x_handle = val.x_handle || ''
-      formState.linkedin_url = val.linkedin_url || ''
-      formState.youtube_url = val.youtube_url || ''
-      formState.facebook_url = val.facebook_url || ''
+      formState.username = val.username || ''
+      formState.email = val.email || ''
     }
   },
   { immediate: true },
@@ -52,18 +36,17 @@ watch(
 async function onFinish() {
   await formRef.value?.validateFields()
   try {
-    // hell
     const response = updateProfile(formState)
     if ((await response).success) {
       notification.success({
-        message: 'Create chapter cuccess',
+        message: t('profileForm.messages.updateSuccess'),
       })
       fetchProfile()
     }
   }
   catch (error) {
     notification.error({
-      message: 'Update profile failed',
+      message: t('profileForm.messages.updateFailed'),
     })
   }
 }
@@ -83,114 +66,49 @@ async function onFinish() {
     <div class="flex flex-col rounded-lg border border-[#E2E8F0] p-6 w-full">
       <div class="flex items-center gap-3">
         <a-form-item
-          label="First Name"
+          :label="$t('profileForm.firstName')"
           name="first_name"
-          :rules="[{ required: true, message: 'Please input your first name!' }]"
+          :rules="[{ required: true, message: $t('profileForm.validation.firstNameRequired') }]"
           class="w-full"
         >
-          <a-input v-model:value="formState.first_name" size="large" placeholder="Enter first name" />
+          <a-input v-model:value="formState.first_name" size="large" :placeholder="$t('profileForm.enterFirstName')" />
         </a-form-item>
         <a-form-item
-          label="Last Name"
+          :label="$t('profileForm.lastName')"
           name="last_name"
-          :rules="[{ required: true, message: 'Please input your last name!' }]"
+          :rules="[{ required: true, message: $t('profileForm.validation.lastNameRequired') }]"
           class="w-full"
         >
-          <a-input v-model:value="formState.last_name" size="large" placeholder="Enter last name" />
+          <a-input v-model:value="formState.last_name" size="large" :placeholder="$t('profileForm.enterLastName')" />
         </a-form-item>
       </div>
 
       <a-form-item
-        label="Headline"
-        name="headline"
-        :rules="[{ required: true, message: 'Please input your headline!' }]"
+        :label="$t('profileForm.username')"
+        name="username"
+        :rules="[{ required: true, message: $t('profileForm.validation.usernameRequired') }]"
         class="w-1/2"
       >
-        <a-input v-model:value="formState.headline" size="large" placeholder="Enter headline" />
+        <a-input v-model:value="formState.username" size="large" :placeholder="$t('profileForm.enterUsername')" />
       </a-form-item>
 
       <a-form-item
-        label="Bio"
-        name="bio"
-        :rules="[{ required: true, message: 'Please input your bio!' }]"
-        class="w-full"
-      >
-        <a-textarea
-          v-model:value="formState.bio"
-          placeholder="Enter bio"
-          :auto-size="{ minRows: 5, maxRows: 5 }"
-        />
-      </a-form-item>
-
-      <a-form-item
-        label="Preferred Language"
-        name="preferred_language"
-        :rules="[{ required: true, message: 'Please choose language!' }]"
+        :label="$t('profileForm.email')"
+        name="email"
+        :rules="[
+          { required: true, message: $t('profileForm.validation.emailRequired') },
+          { type: 'email', message: $t('profileForm.validation.emailInvalid') }
+        ]"
         class="w-1/2"
       >
-        <a-select
-          v-model:value="formState.preferred_language"
-          :options="listLanguages"
-          placeholder="Language"
-          size="large"
-          :field-names="{ label: 'label', value: 'key' }"
-        />
+        <a-input v-model:value="formState.email" size="large" :placeholder="$t('profileForm.enterEmail')" />
       </a-form-item>
     </div>
 
-    <!-- Upload -->
-    <ProfileUploadForm />
-
-    <!-- Links -->
-    <div class="flex flex-col rounded-lg border border-[#E2E8F0] p-6 w-full">
-      <h1 class="text-xl font-semibold mb-6">
-        Links
-      </h1>
-
-      <a-form-item
-        label="Website" name="website_url" :rules="[
-          { type: 'url', message: 'Please enter a valid URL!' },
-        ]"
-      >
-        <a-input v-model:value="formState.website_url" size="large" placeholder="Enter website" />
-      </a-form-item>
-
-      <a-form-item
-        label="X (Formerly Twitter)" name="x_handle" :rules="[
-          { type: 'url', message: 'Please enter a valid URL!' },
-        ]"
-      >
-        <a-input v-model:value="formState.x_handle" size="large" placeholder="Enter X handle" />
-      </a-form-item>
-
-      <a-form-item
-        label="LinkedIn" name="linkedin_url" :rules="[
-          { type: 'url', message: 'Please enter a valid URL!' },
-        ]"
-      >
-        <a-input v-model:value="formState.linkedin_url" size="large" placeholder="Enter LinkedIn" />
-      </a-form-item>
-
-      <a-form-item
-        label="YouTube" name="youtube_url" :rules="[
-          { type: 'url', message: 'Please enter a valid URL!' },
-        ]"
-      >
-        <a-input v-model:value="formState.youtube_url" size="large" placeholder="Enter YouTube" />
-      </a-form-item>
-
-      <a-form-item
-        label="Facebook" name="facebook_url" :rules="[
-          { type: 'url', message: 'Please enter a valid URL!' },
-        ]"
-      >
-        <a-input v-model:value="formState.facebook_url" size="large" placeholder="Enter Facebook" />
-      </a-form-item>
-    </div>
 
     <div class="text-right w-full">
       <a-button :loading="isFetchingProfile" type="primary" class="max-w-[148px] !h-[40px]" html-type="submit">
-        Update Profile
+        {{ $t('profileForm.updateProfile') }}
       </a-button>
     </div>
   </a-form>

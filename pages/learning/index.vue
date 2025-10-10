@@ -10,6 +10,7 @@ definePageMeta({
 
 const { user } = useAuth()
 const { getEnrolledCourses, getCourses } = useCourseApi()
+const { t } = useI18n()
 
 // Fetch enrolled courses
 const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncData(
@@ -74,7 +75,7 @@ const recentActivity = computed(() => {
     .map((enrollment: CourseEnrollment) => ({
       id: enrollment.id,
       title: enrollment.course.title,
-      action: enrollment.progress?.progress_percentage === 100 ? 'Completed' : 'Continue Learning',
+      action: enrollment.progress?.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
       date: enrollment.enrolled_at,
       thumbnail: enrollment.course.thumbnail,
     }))
@@ -88,13 +89,13 @@ function formatDate(dateString: string) {
   const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
 
   if (diffInDays === 0)
-    return 'Today'
+    return t('learning.date.today')
   if (diffInDays === 1)
-    return 'Yesterday'
+    return t('learning.date.yesterday')
   if (diffInDays < 7)
-    return `${diffInDays} days ago`
+    return t('learning.date.daysAgo', { days: diffInDays })
   if (diffInDays < 30)
-    return `${Math.floor(diffInDays / 7)} weeks ago`
+    return t('learning.date.weeksAgo', { weeks: Math.floor(diffInDays / 7) })
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
@@ -108,11 +109,11 @@ function navigateToCourse(courseId: string) {
   <div class="min-h-screen bg-gradient-to-br from-shade-1 via-shade-1 to-shade-2 dark:from-shade-1 dark:via-shade-1 dark:to-shade-2 p-4 sm:p-6 lg:p-8">
     <!-- Welcome Header -->
     <div class="mb-8 sm:mb-10">
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue via-purple to-blue bg-clip-text text-transparent mb-3">
-        Welcome back, {{ user?.first_name || user?.username || 'Student' }}! 👋
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue via-purple to-blue bg-clip-text text-transparent mb-3">
+        {{ $t('learning.welcome', { name: user?.first_name || user?.username || 'Student' }) }} 
       </h1>
       <p class="text-base sm:text-lg text-shade-6 dark:text-shade-6">
-        Continue your learning journey and achieve your goals
+        {{ $t('learning.welcomeDesc') }}
       </p>
     </div>
 
@@ -129,7 +130,7 @@ function navigateToCourse(courseId: string) {
           {{ stats.total }}
         </div>
         <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
-          Total Courses
+          {{ $t('learning.stats.totalCourses') }}
         </div>
       </div>
 
@@ -144,7 +145,7 @@ function navigateToCourse(courseId: string) {
           {{ stats.inProgress }}
         </div>
         <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
-          In Progress
+          {{ $t('learning.stats.inProgress') }}
         </div>
       </div>
 
@@ -159,7 +160,7 @@ function navigateToCourse(courseId: string) {
           {{ stats.completed }}
         </div>
         <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
-          Completed
+          {{ $t('learning.stats.completed') }}
         </div>
       </div>
 
@@ -174,7 +175,7 @@ function navigateToCourse(courseId: string) {
           {{ stats.certificates }}
         </div>
         <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
-          Certificates
+          {{ $t('learning.stats.certificates') }}
         </div>
       </div>
     </div>
@@ -188,17 +189,17 @@ function navigateToCourse(courseId: string) {
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
               <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
-                Continue Learning
+                {{ $t('learning.continueLearning.title') }}
               </h2>
               <p class="text-sm text-shade-6 dark:text-shade-6">
-                Pick up where you left off
+                {{ $t('learning.continueLearning.subtitle') }}
               </p>
             </div>
             <NuxtLink
               to="/profile?tab=MY_COURSES"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
-              View All
+              {{ $t('learning.continueLearning.viewAll') }}
               <Icon name="solar:alt-arrow-right-line-duotone" size="16" />
             </NuxtLink>
           </div>
@@ -221,14 +222,14 @@ function navigateToCourse(courseId: string) {
           <div v-else-if="continueLearningCourses.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-8 sm:p-12 text-center">
             <Icon name="solar:book-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-4" />
             <h3 class="text-lg sm:text-xl font-semibold text-shade-9 dark:text-shade-9 mb-2">
-              No courses in progress
+              {{ $t('learning.continueLearning.noCourses') }}
             </h3>
             <p class="text-sm text-shade-6 dark:text-shade-6 mb-6">
-              Start learning something new today!
+              {{ $t('learning.continueLearning.noCoursesDesc') }}
             </p>
             <NuxtLink to="/courses">
               <BaseButton variant="primary" class="mx-auto !text-white">
-                Browse Courses
+                {{ $t('learning.continueLearning.browseCourses') }}
               </BaseButton>
             </NuxtLink>
           </div>
@@ -266,7 +267,7 @@ function navigateToCourse(courseId: string) {
                   <!-- Progress Bar -->
                   <div class="space-y-2">
                     <div class="flex items-center justify-between text-sm">
-                      <span class="text-shade-6 dark:text-shade-6 font-medium">Progress</span>
+                      <span class="text-shade-6 dark:text-shade-6 font-medium">{{ $t('learning.continueLearning.progress') }}</span>
                       <span class="font-bold text-shade-9 dark:text-shade-9">
                         {{ enrollment.progress?.progress_percentage || 0 }}%
                       </span>
@@ -281,7 +282,10 @@ function navigateToCourse(courseId: string) {
                     </div>
                     <div class="text-xs text-shade-6 dark:text-shade-6 flex items-center gap-1">
                       <Icon name="solar:checklist-bold" size="14" />
-                      {{ enrollment.progress?.completed_lessons || 0 }} of {{ enrollment.progress?.total_lessons || 0 }} lessons completed
+                      {{ $t('learning.continueLearning.lessonsCompleted', { 
+                        completed: enrollment.progress?.completed_lessons || 0, 
+                        total: enrollment.progress?.total_lessons || 0 
+                      }) }}
                     </div>
                   </div>
                 </div>
@@ -290,7 +294,7 @@ function navigateToCourse(courseId: string) {
                 <div class="flex sm:flex-col items-center justify-end gap-2">
                   <BaseButton variant="primary" size="md" class="w-full sm:w-auto whitespace-nowrap text-white shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all">
                     <Icon name="solar:play-bold" size="16" class="mr-1" />
-                    Continue
+                    {{ $t('learning.continueLearning.continue') }}
                   </BaseButton>
                 </div>
               </div>
@@ -303,17 +307,17 @@ function navigateToCourse(courseId: string) {
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
               <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
-                Recommended for You
+                {{ $t('learning.recommended.title') }}
               </h2>
               <p class="text-sm text-shade-6 dark:text-shade-6">
-                Explore new courses tailored to your interests
+                {{ $t('learning.recommended.subtitle') }}
               </p>
             </div>
             <NuxtLink
               to="/courses"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
-              View All
+              {{ $t('learning.recommended.viewAll') }}
               <Icon name="solar:alt-arrow-right-line-duotone" size="16" />
             </NuxtLink>
           </div>
@@ -345,10 +349,10 @@ function navigateToCourse(courseId: string) {
         <section class="sticky top-8 space-y-6">
           <div>
             <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
-              Recent Activity
+              {{ $t('learning.recentActivity.title') }}
             </h2>
             <p class="text-sm text-shade-6 dark:text-shade-6">
-              Your latest learning activities
+              {{ $t('learning.recentActivity.subtitle') }}
             </p>
           </div>
 
@@ -365,7 +369,7 @@ function navigateToCourse(courseId: string) {
           <div v-else-if="recentActivity.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-6 sm:p-8 text-center">
             <Icon name="solar:history-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-3" />
             <p class="text-sm text-shade-6 dark:text-shade-6">
-              No recent activity yet
+              {{ $t('learning.recentActivity.noActivity') }}
             </p>
           </div>
 
@@ -403,7 +407,7 @@ function navigateToCourse(courseId: string) {
               <div class="size-10 flex items-center justify-center bg-gradient-to-br from-blue to-purple rounded-lg">
                 <Icon name="solar:widget-bold" size="16" class="text-white" />
               </div>
-              Quick Actions
+              {{ $t('learning.quickActions.title') }}
             </h3>
             <div class="space-y-1">
               <NuxtLink to="/courses" class="block group">
@@ -413,10 +417,10 @@ function navigateToCourse(courseId: string) {
                   </div>
                   <div class="flex-1">
                     <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-blue transition-colors">
-                      Browse Courses
+                      {{ $t('learning.quickActions.browseCourses') }}
                     </div>
                     <div class="text-xs text-shade-6 dark:text-shade-6">
-                      Explore new learning paths
+                      {{ $t('learning.quickActions.browseCoursesDesc') }}
                     </div>
                   </div>
                   <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-blue group-hover:translate-x-1 transition-all" />
@@ -430,10 +434,10 @@ function navigateToCourse(courseId: string) {
                   </div>
                   <div class="flex-1">
                     <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-purple transition-colors">
-                      My Courses
+                      {{ $t('learning.quickActions.myCourses') }}
                     </div>
                     <div class="text-xs text-shade-6 dark:text-shade-6">
-                      View enrolled courses
+                      {{ $t('learning.quickActions.myCoursesDesc') }}
                     </div>
                   </div>
                   <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-purple group-hover:translate-x-1 transition-all" />
@@ -447,10 +451,10 @@ function navigateToCourse(courseId: string) {
                   </div>
                   <div class="flex-1">
                     <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-green transition-colors">
-                      My Profile
+                      {{ $t('learning.quickActions.myProfile') }}
                     </div>
                     <div class="text-xs text-shade-6 dark:text-shade-6">
-                      Manage your account
+                      {{ $t('learning.quickActions.myProfileDesc') }}
                     </div>
                   </div>
                   <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-green group-hover:translate-x-1 transition-all" />

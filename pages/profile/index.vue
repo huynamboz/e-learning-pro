@@ -16,10 +16,17 @@ definePageMeta({
 // Get route and router
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 // Reactive data
-const { fetchProfile, profile, isFetchingProfile } = useAuth()
+const { fetchProfile, user } = useAuth()
 const userProfile = ref(mockUserProfile)
+const isFetchingProfile = ref(false)
+
+// Use user data directly
+const userProfileData = computed(() => {
+  return user.value || undefined
+})
 
 // Initialize activeTab from query params or default to 'PROFILE'
 const activeTab = ref((route.query.tab as string) || 'PROFILE')
@@ -44,7 +51,7 @@ function handleTabChange(tabKey: string) {
 }
 
 function handleShareProfile() {
-  message.success('Profile link copied to clipboard!')
+  message.success(t('profilePage.shareProfileSuccess'))
 }
 
 onMounted(() => {
@@ -64,7 +71,7 @@ onMounted(() => {
       />
 
       <ProfileListCourses v-if="activeTab === 'MY_COURSES'" />
-      <ProfileForm v-if="activeTab === 'PROFILE'" :data-profile="profile" :is-fetching-profile="isFetchingProfile" />
+      <ProfileForm v-if="activeTab === 'PROFILE'" :data-profile="userProfileData" :is-fetching-profile="isFetchingProfile" />
     </div>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { logout, user } = useAuth()
+const { t } = useI18n()
 
 interface ProfileOption {
   title: string
@@ -15,11 +16,11 @@ interface ProfileOption {
 const profileOptions = computed(() => {
   const baseOptions: ProfileOption[] = [
     {
-      title: 'Profile',
+      title: t('profile.profile'),
       options: [
-        { icon: 'solar-user-linear', name: 'Profile', link: '/profile?tab=PROFILE' },
-        { icon: 'solar-book-linear', name: 'My Courses', link: '/profile?tab=MY_COURSES' },
-        { icon: 'solar-settings-linear', name: 'Settings', link: '/settings' },
+        { icon: 'solar-user-linear', name: t('profile.profile'), link: '/profile?tab=PROFILE' },
+        { icon: 'solar-book-linear', name: t('profile.myCourses'), link: '/profile?tab=MY_COURSES' },
+        { icon: 'solar-settings-linear', name: t('profile.settings'), link: '/settings' },
       ],
     },
   ]
@@ -28,16 +29,16 @@ const profileOptions = computed(() => {
   if (user.value?.is_teacher) {
     baseOptions[0].options.unshift({
       icon: 'solar-chart-square-linear',
-      name: 'Dashboard',
+      name: t('profile.dashboard'),
       link: '/admin',
     })
   }
 
   // Add Actions section
   baseOptions.push({
-    title: 'Actions',
+    title: t('profile.actions'),
     options: [
-      { icon: 'solar-logout-linear', name: 'Logout', action: 'logout' },
+      { icon: 'solar-logout-linear', name: t('profile.logout'), action: 'logout' },
     ],
   })
 

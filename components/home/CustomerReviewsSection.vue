@@ -13,6 +13,8 @@ defineProps({
   },
 })
 
+const { t } = useI18n()
+
 // Swiper modules
 const modules = [Navigation, Pagination, Autoplay]
 
@@ -56,7 +58,7 @@ const swiperOptions = {
     <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col sm:flex-row w-full justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 lg:mb-12">
         <h2 class="text-xl sm:text-2xl font-semibold text-black">
-          What Our Customer Say About Us
+          {{ $t('customerReviews.title') }}
         </h2>
         <div class="flex gap-4 sm:gap-6 justify-start sm:justify-end">
           <button class="cursor-pointer swiper-button-prev-custom w-12 h-9 sm:w-14 sm:h-10 bg-gray-400 hover:bg-gray-500 rounded-lg flex items-center justify-center transition-colors">

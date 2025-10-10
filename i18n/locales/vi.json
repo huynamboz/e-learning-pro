@@ -1,0 +1,330 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "Tổng quan Dashboard",
+      "welcome": "Chào mừng trở lại! Đây là tổng quan hiệu suất của bạn hôm nay.",
+      "stats": {
+        "totalUsers": "Tổng học viên",
+        "activeCourses": "Khóa học hoạt động",
+        "monthlyRevenue": "Doanh thu tháng này",
+        "completionRate": "Tỷ lệ hoàn thành"
+      },
+      "quickActions": {
+        "title": "Thao tác nhanh",
+        "createCourse": "Tạo khóa học",
+        "manageStudents": "Quản lý học viên",
+        "viewOrders": "Xem đơn hàng",
+        "settings": "Cài đặt"
+      },
+      "latestUsers": {
+        "title": "Học viên mới nhất",
+        "viewAll": "Xem tất cả",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "noUsers": "Chưa có học viên nào"
+      },
+      "topCourses": {
+        "title": "Khóa học hàng đầu",
+        "viewAll": "Xem tất cả",
+        "noCourses": "Chưa có khóa học nào"
+      }
+    },
+    "settings": {
+      "title": "Cài đặt nền tảng",
+      "description": "Cấu hình các cài đặt và tùy chọn cho toàn bộ nền tảng.",
+      "tabs": {
+        "general": "Tổng quan",
+        "users": "Người dùng",
+        "courses": "Khóa học",
+        "language": "Ngôn ngữ"
+      },
+      "general": {
+        "title": "Cài đặt tổng quan",
+        "platformName": "Tên nền tảng",
+        "platformDescription": "Mô tả nền tảng",
+        "contactEmail": "Email liên hệ"
+      },
+      "users": {
+        "title": "Quản lý người dùng",
+        "allowRegistration": "Cho phép đăng ký người dùng",
+        "allowRegistrationDesc": "Cho phép người dùng mới đăng ký trên nền tảng",
+        "emailVerificationRequired": "Yêu cầu xác thực email",
+        "emailVerificationDesc": "Yêu cầu người dùng xác thực địa chỉ email"
+      },
+      "courses": {
+        "title": "Quản lý khóa học",
+        "approvalRequired": "Yêu cầu phê duyệt khóa học",
+        "approvalRequiredDesc": "Yêu cầu admin phê duyệt khóa học mới",
+        "maxPrice": "Giá khóa học tối đa"
+      },
+      "language": {
+        "title": "Cài đặt ngôn ngữ",
+        "selectLanguage": "Chọn ngôn ngữ",
+        "currentLanguage": "Ngôn ngữ hiện tại",
+        "languageDesc": "Chọn ngôn ngữ ưa thích cho nền tảng"
+      },
+      "saveSettings": "Lưu cài đặt"
+    },
+    "sidebar": {
+      "title": "BẢNG ĐIỀU KHIỂN",
+      "subtitle": "Học tiếng Ý cùng",
+      "author": "Phan Tâm"
+    }
+  },
+  "sidebar": {
+    "search": "Tìm kiếm",
+    "studyNow": "Học ngay",
+    "helpCenter": "Trung tâm trợ giúp",
+    "helpCenterDesc": "Câu trả lời ở đây",
+    "attendance": "Điểm danh",
+    "completeCourse": "Hoàn thành khóa học",
+    "checkVideo": "Xem video 1 phút và bắt đầu sử dụng các thành phần như một chuyên gia"
+  },
+  "menu": {
+    "home": "Trang chủ",
+    "myCourses": "Khóa học của tôi",
+    "calendars": "Lịch",
+    "settings": "Cài đặt",
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "language": "Ngôn ngữ",
+    "notifications": "Thông báo",
+    "password": "Mật khẩu"
+  },
+  "adminMenu": {
+    "overview": "Tổng quan",
+    "course": "Khóa học",
+    "classroom": "Lớp học",
+    "students": "Học viên",
+    "orders": "Đơn hàng",
+    "settings": "Cài đặt"
+  },
+  "profile": {
+    "profile": "Hồ sơ",
+    "myCourses": "Khóa học của tôi",
+    "settings": "Cài đặt",
+    "dashboard": "Bảng điều khiển",
+    "actions": "Hành động",
+    "logout": "Đăng xuất"
+  },
+  "homepage": {
+    "topCourses": "Khóa học hàng đầu"
+  },
+  "learning": {
+    "welcome": "Chào mừng trở lại, {name}! 👋",
+    "welcomeDesc": "Tiếp tục hành trình học tập và đạt được mục tiêu của bạn",
+    "stats": {
+      "totalCourses": "Tổng khóa học",
+      "inProgress": "Đang học",
+      "completed": "Đã hoàn thành",
+      "certificates": "Chứng chỉ"
+    },
+    "continueLearning": {
+      "title": "Tiếp tục học",
+      "subtitle": "Tiếp tục từ nơi bạn đã dừng lại",
+      "viewAll": "Xem tất cả",
+      "noCourses": "Chưa có khóa học nào đang học",
+      "noCoursesDesc": "Bắt đầu học điều gì đó mới hôm nay!",
+      "browseCourses": "Duyệt khóa học",
+      "progress": "Tiến độ",
+      "lessonsCompleted": "{completed} trong {total} bài học đã hoàn thành",
+      "continue": "Tiếp tục"
+    },
+    "recommended": {
+      "title": "Được đề xuất cho bạn",
+      "subtitle": "Khám phá các khóa học mới phù hợp với sở thích của bạn",
+      "viewAll": "Xem tất cả"
+    },
+    "recentActivity": {
+      "title": "Hoạt động gần đây",
+      "subtitle": "Các hoạt động học tập mới nhất của bạn",
+      "noActivity": "Chưa có hoạt động gần đây",
+      "completed": "Đã hoàn thành",
+      "continueLearning": "Tiếp tục học"
+    },
+    "quickActions": {
+      "title": "Thao tác nhanh",
+      "browseCourses": "Duyệt khóa học",
+      "browseCoursesDesc": "Khám phá các lộ trình học tập mới",
+      "myCourses": "Khóa học của tôi",
+      "myCoursesDesc": "Xem các khóa học đã đăng ký",
+      "myProfile": "Hồ sơ của tôi",
+      "myProfileDesc": "Quản lý tài khoản của bạn"
+    },
+    "date": {
+      "today": "Hôm nay",
+      "yesterday": "Hôm qua",
+      "daysAgo": "{days} ngày trước",
+      "weeksAgo": "{weeks} tuần trước"
+    }
+  },
+  "profilePage": {
+    "shareProfileSuccess": "Đã sao chép liên kết hồ sơ vào clipboard!"
+  },
+  "profileSidebar": {
+    "profile": "Hồ sơ",
+    "myCourses": "Khóa học của tôi",
+    "teachers": "Giảng viên",
+    "message": "Tin nhắn",
+    "myReviews": "Đánh giá của tôi"
+  },
+  "profileForm": {
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "username": "Tên đăng nhập",
+    "email": "Email",
+    "enterFirstName": "Nhập tên",
+    "enterLastName": "Nhập họ",
+    "enterUsername": "Nhập tên đăng nhập",
+    "enterEmail": "Nhập email",
+    "updateProfile": "Cập nhật hồ sơ",
+    "validation": {
+      "firstNameRequired": "Vui lòng nhập tên!",
+      "lastNameRequired": "Vui lòng nhập họ!",
+      "usernameRequired": "Vui lòng nhập tên đăng nhập!",
+      "emailRequired": "Vui lòng nhập email!",
+      "emailInvalid": "Vui lòng nhập email hợp lệ!"
+    },
+    "messages": {
+      "updateSuccess": "Cập nhật hồ sơ thành công!",
+      "updateFailed": "Cập nhật hồ sơ thất bại"
+    }
+  },
+  "courseDetail": {
+    "loading": "Đang tải chi tiết khóa học...",
+    "error": {
+      "title": "Không thể tải khóa học",
+      "description": "Đã xảy ra lỗi khi tải khóa học.",
+      "tryAgain": "Thử lại",
+      "backToCourses": "Quay lại khóa học"
+    },
+    "notFound": {
+      "title": "Không tìm thấy khóa học",
+      "description": "Khóa học bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+      "backToCourses": "Quay lại khóa học"
+    },
+    "notifications": {
+      "loadFailed": "Không thể tải khóa học",
+      "courseNotFound": "Không tìm thấy khóa học"
+    }
+  },
+  "descriptionCourse": {
+    "about": "Về khóa học này",
+    "whatYouWillLearn": "Bạn sẽ học được gì",
+    "requirements": "Yêu cầu",
+    "description": "Mô tả",
+    "curriculum": "Chương trình học",
+    "instructor": "Giảng viên",
+    "reviews": "Đánh giá",
+    "students": "học viên",
+    "lessons": "bài học",
+    "hours": "giờ",
+    "level": "Cấp độ",
+    "language": "Ngôn ngữ",
+    "lastUpdated": "Cập nhật lần cuối",
+    "enrolled": "đã đăng ký"
+  },
+  "checkoutCard": {
+    "enrollNow": "Đăng ký ngay",
+    "buyNow": "Mua ngay",
+    "addToCart": "Thêm vào giỏ hàng",
+    "classroom": "Lớp học",
+    "free": "Miễn phí",
+    "originalPrice": "Giá gốc",
+    "discount": "Giảm giá",
+    "total": "Tổng cộng",
+    "includes": "Khóa học này bao gồm:",
+    "lifetimeAccess": "Truy cập trọn đời",
+    "certificate": "Chứng chỉ hoàn thành",
+    "mobileAccess": "Truy cập trên mobile và desktop",
+    "assignments": "Bài tập",
+    "moneyBack": "Đảm bảo hoàn tiền 30 ngày",
+    "share": "Chia sẻ",
+    "wishlist": "Thêm vào danh sách yêu thích",
+    "gift": "Tặng khóa học này"
+  },
+  "customerReviews": {
+    "title": "Học viên nói gì về chúng tôi",
+    "subtitle": "Tham gia cùng hàng nghìn học viên hài lòng",
+    "showAll": "Xem tất cả đánh giá",
+    "rating": "đánh giá",
+    "ratings": "đánh giá",
+    "basedOn": "Dựa trên",
+    "reviews": "đánh giá"
+  },
+  "coursesIndex": {
+    "hero": {
+      "badge": "Khám phá khóa học ngôn ngữ",
+      "title": "Khám phá hành trình",
+      "subtitle": "ngôn ngữ tiếp theo của bạn",
+      "description": "Thành thạo ngôn ngữ mới với giảng viên chuyên nghiệp và bài học tương tác",
+      "searchPlaceholder": "Tìm kiếm khóa học ngôn ngữ...",
+      "searchButton": "Tìm kiếm"
+    },
+    "stats": {
+      "totalCourses": "Tổng khóa học",
+      "activeStudents": "Học viên đang học",
+      "expertInstructors": "Giảng viên chuyên nghiệp",
+      "languagesAvailable": "Ngôn ngữ có sẵn"
+    },
+    "filters": {
+      "allLevels": "Tất cả cấp độ",
+      "allPrices": "Tất cả giá",
+      "free": "Miễn phí",
+      "paid": "Trả phí",
+      "mostPopular": "Phổ biến nhất",
+      "highestRated": "Đánh giá cao nhất",
+      "newest": "Mới nhất",
+      "priceLowToHigh": "Giá: Thấp đến cao",
+      "priceHighToLow": "Giá: Cao đến thấp",
+      "clearAll": "Xóa tất cả",
+      "coursesFound": "khóa học được tìm thấy"
+    },
+    "emptyState": {
+      "title": "Không tìm thấy khóa học",
+      "description": "Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "successStories": {
+      "title": "Tham gia cùng 50,000+ người học ngôn ngữ",
+      "description": "Bắt đầu hành trình ngôn ngữ của bạn ngay hôm nay và mở ra những cơ hội mới với phương pháp học tập đã được chứng minh",
+      "interactiveLearning": {
+        "title": "Học tập tương tác",
+        "description": "Thực hành với người bản ngữ và cuộc trò chuyện được hỗ trợ bởi AI"
+      },
+      "certifiedProgress": {
+        "title": "Tiến bộ được chứng nhận",
+        "description": "Kiếm chứng chỉ và theo dõi sự cải thiện khả năng ngôn ngữ của bạn"
+      },
+      "flexibleSchedule": {
+        "title": "Lịch học linh hoạt",
+        "description": "Học theo tốc độ của riêng bạn, bất cứ lúc nào, bất cứ đâu"
+      },
+      "startLearningNow": "Bắt đầu học ngay",
+      "viewSuccessStories": "Xem câu chuyện thành công"
+    }
+  },
+  "layoutAuthHeader": {
+    "brand": {
+      "tagline": "Học tiếng Ý cùng Phan Tâm"
+    },
+    "navigation": {
+      "courses": "Khóa học",
+      "contact": "Liên hệ",
+      "about": "Giới thiệu",
+      "pricing": "Giá cả",
+      "learning": "Học tập",
+      "myCourses": "Khóa học của tôi",
+      "profile": "Hồ sơ"
+    },
+    "buttons": {
+      "contactDirectly": "Liên hệ trực tiếp",
+      "signUpForFree": "Đăng ký miễn phí",
+      "signIn": "Đăng nhập",
+      "goToMyCourse": "Đi đến khóa học của tôi",
+      "language": "Ngôn ngữ"
+    },
+    "mobile": {
+      "toggleMenu": "Chuyển đổi menu di động"
+    }
+  }
+}

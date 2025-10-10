@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { Button } from 'ant-design-vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-const listOfLinks = [
-  { name: 'Courses', href: '/' },
-  { name: 'Contact', href: '#' },
-  { name: 'About', href: '#' },
-  { name: 'Pricing', href: '#', hideIcon: true },
-]
+const { t } = useI18n()
+
+const listOfLinks = computed(() => [
+  { name: t('layoutAuthHeader.navigation.courses'), href: '/' },
+  { name: t('layoutAuthHeader.navigation.contact'), href: '#' },
+  { name: t('layoutAuthHeader.navigation.about'), href: '#' },
+  { name: t('layoutAuthHeader.navigation.pricing'), href: '#', hideIcon: true },
+])
 
 const isMobileMenuOpen = ref(false)
 
@@ -37,14 +39,14 @@ const { isLoggedIn } = useAuth()
               <span class="text-red-600"> TAM</span>
             </div>
             <div class="text-xs text-green-600 font-medium">
-              Học tiếng Ý cùng Phan Tâm
+              {{ $t('layoutAuthHeader.brand.tagline') }}
             </div>
           </div>
         </div>
 
         <!-- Mobile menu button -->
         <button
-          class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle mobile menu"
+          class="lg:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800" :aria-label="$t('layoutAuthHeader.mobile.toggleMenu')"
           @click="toggleMobileMenu"
         >
           <Icon
@@ -71,10 +73,10 @@ const { isLoggedIn } = useAuth()
       <!-- Logged in user navigation -->
       <nav v-else class="hidden lg:flex items-center space-x-8">
         <NuxtLink to="/learning" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          Learning
+          {{ $t('layoutAuthHeader.navigation.learning') }}
         </NuxtLink>
         <NuxtLink to="/profile?tab=MY_COURSES" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          My Courses
+          {{ $t('layoutAuthHeader.navigation.myCourses') }}
         </NuxtLink>
       </nav>
 
@@ -82,17 +84,17 @@ const { isLoggedIn } = useAuth()
       <div v-if="!isLoggedIn" class="hidden lg:flex items-center space-x-3">
         <NuxtLink to="/">
           <Button size="middle" type="default" class="rounded-xl text-sm lg:text-base">
-            Contact directly
+            {{ $t('layoutAuthHeader.buttons.contactDirectly') }}
           </Button>
         </NuxtLink>
         <NuxtLink to="/auth/register">
           <Button size="middle" type="primary" class="rounded-xl text-sm lg:text-base bg-[#16A34A]">
-            Sign up for free
+            {{ $t('layoutAuthHeader.buttons.signUpForFree') }}
           </Button>
         </NuxtLink>
         <NuxtLink to="/auth/login">
           <Button size="middle" type="ghost" class="rounded-xl text-sm lg:text-base">
-            Sign in
+            {{ $t('layoutAuthHeader.buttons.signIn') }}
           </Button>
         </NuxtLink>
       </div>
@@ -100,7 +102,7 @@ const { isLoggedIn } = useAuth()
       <!-- Logged in user buttons -->
       <div v-else class="hidden lg:flex items-center space-x-4">
         <NuxtLink to="/learning" class="text-sm !text-gray-600 hover:text-[#16A34A] transition-colors">
-          Go to my course
+          {{ $t('layoutAuthHeader.buttons.goToMyCourse') }}
         </NuxtLink>
 
         <!-- Language selector -->
@@ -147,19 +149,19 @@ const { isLoggedIn } = useAuth()
               to="/learning" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              Learning
+              {{ $t('layoutAuthHeader.navigation.learning') }}
             </NuxtLink>
             <NuxtLink
               to="/profile?tab=MY_COURSES" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              My Courses
+              {{ $t('layoutAuthHeader.navigation.myCourses') }}
             </NuxtLink>
             <NuxtLink
               to="/profile" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              Profile
+              {{ $t('layoutAuthHeader.navigation.profile') }}
             </NuxtLink>
           </nav>
 
@@ -167,17 +169,17 @@ const { isLoggedIn } = useAuth()
           <div v-if="!isLoggedIn" class="pt-4 space-y-3 border-t border-gray-200 dark:border-gray-700">
             <NuxtLink to="/" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="default" class="w-full rounded-xl text-base">
-                Contact directly
+                {{ $t('layoutAuthHeader.buttons.contactDirectly') }}
               </Button>
             </NuxtLink>
             <NuxtLink to="/auth/register" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="primary" class="w-full rounded-xl text-base bg-[#16A34A]">
-                Sign up for free
+                {{ $t('layoutAuthHeader.buttons.signUpForFree') }}
               </Button>
             </NuxtLink>
             <NuxtLink to="/auth/login" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="ghost" class="w-full rounded-xl text-base">
-                Sign in
+                {{ $t('layoutAuthHeader.buttons.signIn') }}
               </Button>
             </NuxtLink>
           </div>
@@ -189,14 +191,14 @@ const { isLoggedIn } = useAuth()
               @click="isMobileMenuOpen = false"
             >
               <Icon name="solar:globe-bold" class="w-5 h-5 mr-2" />
-              Language
+              {{ $t('layoutAuthHeader.buttons.language') }}
             </button>
             <button
               class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
               <Icon name="solar:user-bold" class="w-5 h-5 mr-2" />
-              Profile
+              {{ $t('layoutAuthHeader.navigation.profile') }}
             </button>
           </div>
         </div>

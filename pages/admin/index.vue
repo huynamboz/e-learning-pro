@@ -45,9 +45,9 @@ function getUserDisplayName(user: any) {
 }
 
 // Stats data
-const statsCards = ref([
+const statsCards = computed(() => [
   {
-    title: 'Tổng học viên',
+    title: $t('admin.dashboard.stats.totalUsers'),
     value: '12,543',
     change: '+15.3%',
     changeType: 'increase',
@@ -58,7 +58,7 @@ const statsCards = ref([
     iconColor: 'text-white',
   },
   {
-    title: 'Khóa học hoạt động',
+    title: $t('admin.dashboard.stats.activeCourses'),
     value: '287',
     change: '+23.1%',
     changeType: 'increase',
@@ -69,7 +69,7 @@ const statsCards = ref([
     iconColor: 'text-white',
   },
   {
-    title: 'Doanh thu tháng này',
+    title: $t('admin.dashboard.stats.monthlyRevenue'),
     value: '₫125.4M',
     change: '+18.2%',
     changeType: 'increase',
@@ -80,7 +80,7 @@ const statsCards = ref([
     iconColor: 'text-white',
   },
   {
-    title: 'Tỷ lệ hoàn thành',
+    title: $t('admin.dashboard.stats.completionRate'),
     value: '87.5%',
     change: '+5.2%',
     changeType: 'increase',
@@ -93,30 +93,30 @@ const statsCards = ref([
 ])
 
 // Quick actions
-const quickActions = ref([
+const quickActions = computed(() => [
   {
-    title: 'Tạo khóa học',
+    title: $t('admin.dashboard.quickActions.createCourse'),
     icon: 'i-heroicons-plus-circle',
     color: 'text-white',
     bgColor: 'bg-gradient-to-br from-blue-500 to-cyan-500',
     to: '/admin/courses/create',
   },
   {
-    title: 'Quản lý học viên',
+    title: $t('admin.dashboard.quickActions.manageStudents'),
     icon: 'i-heroicons-users',
     color: 'text-white',
     bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
     to: '/admin/students',
   },
   {
-    title: 'Xem đơn hàng',
+    title: $t('admin.dashboard.quickActions.viewOrders'),
     icon: 'i-heroicons-shopping-bag',
     color: 'text-white',
     bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-500',
     to: '/admin/orders',
   },
   {
-    title: 'Cài đặt',
+    title: $t('admin.dashboard.quickActions.settings'),
     icon: 'i-heroicons-cog-6-tooth',
     color: 'text-white',
     bgColor: 'bg-gradient-to-br from-orange-500 to-red-500',
@@ -187,10 +187,10 @@ onMounted(async () => {
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <h1 class="text-3xl md:text-4xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-          Dashboard Overview
+          {{ $t('admin.dashboard.title') }}
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Chào mừng trở lại! Đây là tổng quan hiệu suất của bạn hôm nay.
+          {{ $t('admin.dashboard.welcome') }}
         </p>
       </div>
     </div>
@@ -230,7 +230,7 @@ onMounted(async () => {
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
       <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
         <Icon name="i-heroicons-bolt-solid" class="w-6 h-6 text-yellow-500" />
-        Thao tác nhanh
+        {{ $t('admin.dashboard.quickActions.title') }}
       </h2>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <NuxtLink
@@ -254,10 +254,10 @@ onMounted(async () => {
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-          Học viên mới nhất
+          {{ $t('admin.dashboard.latestUsers.title') }}
         </h2>
         <NuxtLink to="/admin/users" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-          Xem tất cả
+          {{ $t('admin.dashboard.latestUsers.viewAll') }}
         </NuxtLink>
       </div>
 
@@ -312,7 +312,7 @@ onMounted(async () => {
                 :class="user.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'"
                 class="text-xs font-medium"
               >
-                {{ user.is_active ? 'Hoạt động' : 'Không hoạt động' }}
+                {{ user.is_active ? $t('admin.dashboard.latestUsers.active') : $t('admin.dashboard.latestUsers.inactive') }}
               </span>
             </div>
           </div>
@@ -323,7 +323,7 @@ onMounted(async () => {
       <div v-if="!isLoadingUsers && users.length === 0" class="text-center py-8">
         <Icon name="i-heroicons-users" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <p class="text-gray-500 dark:text-gray-400">
-          Chưa có học viên nào
+          {{ $t('admin.dashboard.latestUsers.noUsers') }}
         </p>
       </div>
     </div>
@@ -332,10 +332,10 @@ onMounted(async () => {
     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-          Khóa học hàng đầu
+          {{ $t('admin.dashboard.topCourses.title') }}
         </h2>
         <NuxtLink to="/admin/courses" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-          Xem tất cả
+          {{ $t('admin.dashboard.topCourses.viewAll') }}
         </NuxtLink>
       </div>
 
@@ -365,7 +365,7 @@ onMounted(async () => {
       <div v-if="!isLoadingCourses && topCourses.length === 0" class="text-center py-8">
         <Icon name="i-heroicons-academic-cap" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <p class="text-gray-500 dark:text-gray-400">
-          Chưa có khóa học nào
+          {{ $t('admin.dashboard.topCourses.noCourses') }}
         </p>
       </div>
     </div>
