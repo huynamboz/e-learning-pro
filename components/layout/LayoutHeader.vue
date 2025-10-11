@@ -1,6 +1,5 @@
 <script setup lang="ts">
-const { isAdmin } = useAdmin()
-const { isCollapsed, menu, menuAdmin } = useSidebar()
+const { isCollapsed } = useSidebar()
 
 // Language settings
 const languageCookie = useCookie('locale', {
@@ -36,12 +35,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
-const pageTitle = computed(() => {
-  if (isAdmin.value) {
-    return menuAdmin.value.find(item => item.link && useRoute().path.startsWith(item.link))?.name || ''
-  }
-  return menu.value.find(item => item.link && useRoute().path.startsWith(item.link))?.name || ''
-})
 
 function handleScroll(): void {
   if (!navbar.value)
@@ -74,11 +67,7 @@ function handleScroll(): void {
     :class="isCollapsed ? 'lg:pl-[80px]' : 'lg:pl-[280px]'"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
-      <div class="flex items-center gap-2 text-sm text-[#00000066]">
-        <span>Dashboard</span>
-        <span>/</span>
-        <span class="text-black">{{ pageTitle }}</span>
-      </div>
+      <div />
       <div class="flex items-center gap-5">
         <!-- Language Switcher -->
         <a-dropdown

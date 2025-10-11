@@ -26,6 +26,39 @@ export interface Course {
   lessons_count: string
   created_at: string
   updated_at: string
+  classrooms: Classroom[]
+}
+
+export interface ClassroomSchedule {
+  day_of_week: string
+  start_time: string
+  end_time: string
+}
+export interface Classroom {
+  id: string
+  course: {
+    id: string
+    title: string
+    slug: string
+  }
+  title: string
+  background_url: string
+  student_count: number
+  schedules: Array<{
+    id: string
+    day_of_week: string
+    day_display: string
+    start_time: string
+    end_time: string
+    created_at: string
+    updated_at: string
+  }>
+  enrollment_count: number
+  session_count: number
+  schedule_summary: string
+  upcoming_sessions: any[]
+  created_at: string
+  updated_at: string
 }
 
 export interface CoursePayload {

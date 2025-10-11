@@ -60,7 +60,7 @@ export default defineNuxtConfig({
     'highlight.js/styles/atom-one-dark.css',
   ],
 
-  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n'],
+  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt'],
 
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -113,4 +113,8 @@ export default defineNuxtConfig({
   },
 
   ssr: true,
+
+  routeRules:{
+    '/learning/**': { ssr: false },
+  }
 })

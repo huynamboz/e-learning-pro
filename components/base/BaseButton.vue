@@ -24,7 +24,7 @@ const baseSize = {
 }
 
 const baseState = {
-  default: 'bg-shade-4 dark:bg-shade-2 text-shade-9 hover:bg-shade-5 shadow-[var(--button-box-shadow)]',
+  default: 'bg-shade-4 text-shade-9 hover:bg-shade-5 shadow-[var(--button-box-shadow)]',
   primary: 'bg-green hover:bg-green/90 text-white',
   secondary: 'bg-secondary hover:bg-secondary/90',
   destructive: 'bg-destructive hover:bg-destructive/90 text-white',

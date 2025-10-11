@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Button } from 'ant-design-vue'
-import { ref, computed } from 'vue'
 
 const { t } = useI18n()
 
@@ -23,7 +22,7 @@ const { isLoggedIn } = useAuth()
 
 <template>
   <header
-    class="border-b bg-white dark:bg-gray-900 shadow-[0_0_20px_0_#0F306A0D] dark:border-gray-800 sticky top-0 z-50 left-0"
+    class="border-b bg-white shadow-[0_0_20px_0_#0F306A0D] sticky top-0 z-50 left-0"
   >
     <div class="w-full flex justify-between items-center px-4 sm:px-6 lg:px-8">
       <!-- Logo and Mobile Menu Button -->
@@ -129,7 +128,7 @@ const { isLoggedIn } = useAuth()
     >
       <div
         v-show="isMobileMenuOpen"
-        class="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
+        class="lg:hidden bg-white border-t border-gray-200"
       >
         <div class="px-4 pt-2 pb-4 space-y-1">
           <!-- Mobile Navigation Links - Different for logged in users -->
@@ -166,7 +165,7 @@ const { isLoggedIn } = useAuth()
           </nav>
 
           <!-- Mobile Buttons - Different for logged in users -->
-          <div v-if="!isLoggedIn" class="pt-4 space-y-3 border-t border-gray-200 dark:border-gray-700">
+          <div v-if="!isLoggedIn" class="pt-4 space-y-3 border-t border-gray-200">
             <NuxtLink to="/" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="default" class="w-full rounded-xl text-base">
                 {{ $t('layoutAuthHeader.buttons.contactDirectly') }}
@@ -185,7 +184,7 @@ const { isLoggedIn } = useAuth()
           </div>
 
           <!-- Logged in user mobile buttons -->
-          <div v-else class="pt-4 space-y-3 border-t border-gray-200 dark:border-gray-700">
+          <div v-else class="pt-4 space-y-3 border-t border-gray-200">
             <button
               class="w-full flex items-center justify-center py-3 px-2 text-base font-medium text-gray-600 hover:text-[#16A34A] hover:bg-gray-50 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"

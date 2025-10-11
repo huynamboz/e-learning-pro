@@ -70,7 +70,7 @@ onMounted(() => {
         <input
           type="text"
           :placeholder="$t('sidebar.search')"
-          class="w-full pl-10 pr-4 py-3 bg-[#F5F6F8] dark:bg-shade-3 border-0 rounded-xl text-sm placeholder-gray-400 placeholder:text-sm focus:ring-2 focus:ring-[#15803D] focus:outline-none transition-all"
+          class="w-full pl-10 pr-4 py-3 bg-[#F5F6F8] border-0 rounded-xl text-sm placeholder-gray-400 placeholder:text-sm focus:ring-2 focus:ring-[#15803D] focus:outline-none transition-all"
         >
       </div>
 
@@ -101,13 +101,13 @@ onMounted(() => {
                   <Icon
                     :name="item.icon"
                     class="text-[20px]"
-                    :class="item.link && item.link !== '#' && route.path === item.link ? 'text-white' : 'text-shade-6'"
+                    :class="item.link && item.link !== '#' && route.path.includes(item.link) ? 'text-white' : 'text-shade-6'"
                   />
                 </div>
                 <p
                   v-if="!isCollapsed"
                   class="font-semibold text-sm"
-                  :class="item.link && item.link !== '#' && route.path === item.link ? 'text-white' : 'text-[#0A1B39]'"
+                  :class="item.link && item.link !== '#' && route.path.includes(item.link) ? 'text-white' : 'text-[#0A1B39]'"
                 >
                   {{ item.name }}
                 </p>

@@ -1,20 +1,16 @@
 // Course API service
 import type {
-  Category,
   Chapter,
   ChapterPayload,
   Course,
-  CourseDetail,
   CourseEnrollment,
   CourseFilters,
   CourseListResponse,
   CoursePayload,
-  CourseProgress,
-  CourseReview,
   Lesson,
   LessonPayload,
-  Teacher,
 } from '~/types/course.type'
+
 import { useApiClient } from '~/api/apiClient'
 import { createApiService } from '~/composables/api/useApiService'
 
@@ -42,6 +38,12 @@ export function useCourseApi() {
         `/courses/${queryString ? `?${queryString}` : ''}`,
       )
     },
+
+    getMyCourses: () =>
+      apiClient.get<CourseListResponse>('/courses/mine/'),
+
+    getCourseEnrolled: () =>
+      apiClient.get<CourseListResponse>('/courses/enrolled/'),
 
     createCourse: (courseData: CoursePayload) =>
       apiClient.post<CoursePayload>(`/courses/`, courseData),

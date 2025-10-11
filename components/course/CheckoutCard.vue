@@ -1,20 +1,17 @@
 <script lang="ts" setup>
-import type { ICourse } from '~/types/course.type'
+import type { Course } from '~/types/course.type'
 
 interface Props {
-  courseData: ICourse,
+  courseData: Course
 }
 
 const props = defineProps<Props>()
-const { t } = useI18n()
-
 
 const selectedCalendar = ref<string>('')
 
 function handleSelectCalendar(id: string) {
   selectedCalendar.value = id
 }
-
 
 function handleAddToCard() {
 }
@@ -35,8 +32,8 @@ function handleBuyNow() {
         <span v-if="courseData.has_discount" class="font-bold text-lg text-[#94A3B8] line-through">
           ${{ courseData?.discount_price }}
         </span>
-        <span v-if="props.courseData?.discount" class="font-bold text-lg text-green">
-          {{ props.courseData?.discount }}% Off
+        <span v-if="props.courseData?.has_discount" class="font-bold text-lg text-green">
+          {{ props.courseData?.discount_price }}% Off
         </span>
       </div>
       <div class="">
@@ -45,20 +42,24 @@ function handleBuyNow() {
         </h3>
         <div class="flex items-start gap-2 flex-col">
           <div
-            v-for="item in props.courseData.calendar" :key="item.id"
+            v-for="item in props.courseData.classrooms" :key="item.id"
             class="flex text-[14px] font-semibold justify-between items-center gap-1 border-1 border-[#DDDDDD] hover:border-green-600 cursor-pointer rounded-lg p-2 w-full"
             :class="{ 'border-green-600': selectedCalendar === item.id }"
             @click="handleSelectCalendar(item.id)"
           >
             <div class="flex items-center gap-2">
               <Icon v-if="selectedCalendar === item.id" name="i-material-symbols-check-circle-rounded" class="text-[12px] sm:text-[18px] text-[#49ba61]" />
-              <div class="">
-                <div>{{ item.first.date }} ({{ item.first.start }}-{{ item.first.end }})</div>
-                <div>{{ item.second.date }} ({{ item.second.start }}-{{ item.second.end }})</div>
+              <div>
+                <div class="font-medium text-gray-900">
+                  {{ item.title }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ item.schedule_summary || 'No schedule' }}
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-1">
-              <span class="font-medium">{{ item?.quantity }}</span>
+              <span class="font-medium">{{ item.student_count }}</span>
               <Icon name="i-heroicons-users" class="text-[12px] sm:text-[18px]" />
             </div>
           </div>

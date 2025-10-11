@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CourseEnrollment } from '~/types/course.type'
+import type { Course } from '~/composables/api'
 import { Icon } from '#components'
 import { useCourseApi } from '@/composables/api/useCourseApi'
 
@@ -9,7 +9,7 @@ definePageMeta({
 })
 
 const { user } = useAuth()
-const { getEnrolledCourses, getCourses } = useCourseApi()
+const { getCourseEnrolled } = useCourseApi()
 const { t } = useI18n()
 
 // Fetch enrolled courses
@@ -17,8 +17,8 @@ const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncDa
   'enrolled-courses',
   async () => {
     try {
-      const response = await getEnrolledCourses()
-      return response || []
+      const response = await getCourseEnrolled()
+      return response.results || []
     }
     catch (error) {
       console.error('Error fetching enrolled courses:', error)
@@ -33,7 +33,7 @@ const { data: recommendedCourses, pending: loadingRecommended } = await useLazyA
   'recommended-courses',
   async () => {
     try {
-      const response = await getCourses({ limit: 4 })
+      const response = await getCourseEnrolled()
       return response?.results || []
     }
     catch (error) {
@@ -48,21 +48,22 @@ const { data: recommendedCourses, pending: loadingRecommended } = await useLazyA
 const stats = computed(() => {
   const courses = enrolledCourses.value || []
   const total = courses.length
-  const inProgress = courses.filter((c: CourseEnrollment) =>
+  const inProgress = courses.filter((c: Course) =>
     c.progress && c.progress.progress_percentage > 0 && c.progress.progress_percentage < 100,
   ).length
-  const completed = courses.filter((c: CourseEnrollment) =>
+  const completed = courses.filter((c: Course) =>
     c.progress && c.progress.progress_percentage === 100,
   ).length
-  const certificates = courses.filter((c: CourseEnrollment) => c.certificate_url).length
+  const certificates = courses.filter((c: Course) => c.certificate_url).length
 
   return { total, inProgress, completed, certificates }
 })
 
 // Continue learning courses (in progress)
 const continueLearningCourses = computed(() => {
+  return enrolledCourses.value || []
   return (enrolledCourses.value || [])
-    .filter((c: CourseEnrollment) =>
+    .filter((c: Course) =>
       c.progress && c.progress.progress_percentage > 0 && c.progress.progress_percentage < 100,
     )
     .slice(0, 3)
@@ -72,13 +73,13 @@ const continueLearningCourses = computed(() => {
 const recentActivity = computed(() => {
   return (enrolledCourses.value || [])
     .slice(0, 5)
-    .map((enrollment: CourseEnrollment) => ({
-      id: enrollment.id,
-      title: enrollment.course.title,
-      action: enrollment.progress?.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
-      date: enrollment.enrolled_at,
-      thumbnail: enrollment.course.thumbnail,
-    }))
+    // .map((enrollment: Course) => ({
+    //   id: enrollment.id,
+    //   title: enrollment.course?.title,
+    //   action: enrollment.progress?.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
+    //   date: enrollment.enrolled_at,
+    //   thumbnail: enrollment.course.thumbnail,
+    // }))
 })
 
 // Format date
@@ -101,7 +102,7 @@ function formatDate(dateString: string) {
 
 // Navigate to course
 function navigateToCourse(courseId: string) {
-  navigateTo(`/courses/${courseId}`)
+  navigateTo(`/learning/${courseId}`)
 }
 </script>
 
@@ -110,7 +111,7 @@ function navigateToCourse(courseId: string) {
     <!-- Welcome Header -->
     <div class="mb-8 sm:mb-10">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue via-purple to-blue bg-clip-text text-transparent mb-3">
-        {{ $t('learning.welcome', { name: user?.first_name || user?.username || 'Student' }) }} 
+        {{ $t('learning.welcome', { name: user?.first_name || user?.username || 'Student' }) }}
       </h1>
       <p class="text-base sm:text-lg text-shade-6 dark:text-shade-6">
         {{ $t('learning.welcomeDesc') }}
@@ -240,15 +241,15 @@ function navigateToCourse(courseId: string) {
               v-for="enrollment in continueLearningCourses"
               :key="enrollment.id"
               class="group bg-card dark:bg-card border border-border dark:border-border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl hover:border-blue/30 transition-all duration-300 cursor-pointer overflow-hidden relative"
-              @click="navigateToCourse(enrollment.course.id)"
+              @click="navigateToCourse(enrollment.id)"
             >
               <div class="absolute inset-0 bg-gradient-to-r from-blue/0 via-blue/0 to-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div class="flex flex-col sm:flex-row gap-5 relative z-10">
                 <!-- Thumbnail -->
                 <div class="w-full sm:w-32 h-32 flex-shrink-0 relative overflow-hidden rounded-xl">
                   <img
-                    :src="enrollment.course.thumbnail || '/images/image-default.png'"
-                    :alt="enrollment.course.title"
+                    :src="enrollment?.thumbnail || '/images/course-thumbnail-default.webp'"
+                    :alt="enrollment?.title"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   >
                   <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -257,11 +258,11 @@ function navigateToCourse(courseId: string) {
                 <!-- Course Info -->
                 <div class="flex-1 min-w-0">
                   <h3 class="text-lg sm:text-xl font-bold text-shade-9 dark:text-shade-9 mb-2 group-hover:text-blue transition-colors line-clamp-2">
-                    {{ enrollment.course.title }}
+                    {{ enrollment?.title }}
                   </h3>
                   <p class="text-sm text-shade-6 dark:text-shade-6 mb-4 flex items-center gap-2">
                     <Icon name="solar:user-circle-bold" size="16" />
-                    {{ enrollment.course.teacher?.full_name || 'Unknown Teacher' }}
+                    {{ enrollment.teacher?.full_name || 'Unknown Teacher' }}
                   </p>
 
                   <!-- Progress Bar -->
@@ -269,22 +270,22 @@ function navigateToCourse(courseId: string) {
                     <div class="flex items-center justify-between text-sm">
                       <span class="text-shade-6 dark:text-shade-6 font-medium">{{ $t('learning.continueLearning.progress') }}</span>
                       <span class="font-bold text-shade-9 dark:text-shade-9">
-                        {{ enrollment.progress?.progress_percentage || 0 }}%
+                        {{ enrollment.progress_percentage || 0 }}%
                       </span>
                     </div>
                     <div class="w-full bg-shade-3 dark:bg-shade-3 rounded-full h-2.5 overflow-hidden">
                       <div
                         class="bg-gradient-to-r from-green to-green/80 h-2.5 rounded-full transition-all duration-500 relative"
-                        :style="{ width: `${enrollment.progress?.progress_percentage || 0}%` }"
+                        :style="{ width: `${enrollment.progress_percentage || 0}%` }"
                       >
                         <div class="absolute inset-0 bg-white/30 animate-pulse" />
                       </div>
                     </div>
                     <div class="text-xs text-shade-6 dark:text-shade-6 flex items-center gap-1">
                       <Icon name="solar:checklist-bold" size="14" />
-                      {{ $t('learning.continueLearning.lessonsCompleted', { 
-                        completed: enrollment.progress?.completed_lessons || 0, 
-                        total: enrollment.progress?.total_lessons || 0 
+                      {{ $t('learning.continueLearning.lessonsCompleted', {
+                        completed: enrollment.completed_lessons || 0,
+                        total: enrollment.lessons_count || 0,
                       }) }}
                     </div>
                   </div>
@@ -381,14 +382,14 @@ function navigateToCourse(courseId: string) {
             >
               <div class="w-14 h-14 flex-shrink-0 relative overflow-hidden rounded-xl shadow-sm">
                 <img
-                  :src="activity.thumbnail || '/images/image-default.png'"
-                  :alt="activity.title"
+                  :src="activity?.thumbnail || '/images/image-default.png'"
+                  :alt="activity?.title"
                   class="w-full h-full object-cover"
                 >
               </div>
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-bold text-shade-9 dark:text-shade-9 mb-1.5 line-clamp-2 hover:text-blue transition-colors">
-                  {{ activity.title }}
+                  {{ activity?.title }}
                 </h4>
                 <p class="text-xs text-shade-6 dark:text-shade-6 mb-1 flex items-center gap-1">
                   <Icon name="solar:clock-circle-bold" size="12" />

@@ -40,7 +40,7 @@ function isActive(link: string) {
 
 <template>
   <!-- Bottom Navigation Bar - Only visible on mobile -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-shade-1 border-t border-gray-200 dark:border-shade-3 shadow-lg safe-area-bottom">
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg safe-area-bottom">
     <div class="grid grid-cols-4 h-16">
       <NuxtLink
         v-for="item in bottomBarItems"
@@ -70,7 +70,7 @@ function isActive(link: string) {
         >
           <div
             v-if="isActive(item.link)"
-            class="absolute inset-0 dark:bg-green-900/20 rounded-full scale-150 animate-pulse"
+            class="absolute inset-0 rounded-full scale-150 animate-pulse"
           />
           <Icon
             :name="item.icon"

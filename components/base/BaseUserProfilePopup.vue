@@ -70,7 +70,7 @@ async function handleItemClick(item: any) {
             'border-b border-shade-3': index < profileOptions.length - 1,
           }"
         >
-          <ul class="p-2 pb-0">
+          <ul class="p-2 pb-2">
             <li
               v-for="(item, itemIndex) in option.options"
               :key="itemIndex"

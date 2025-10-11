@@ -1,80 +1,41 @@
 <script lang="ts" setup>
+import type { ClassroomPayload } from '~/composables/api/useClassroomApi'
+import { useCourseApi } from '~/composables/api'
+import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import CardClassroom from './CardClassroom.vue'
 
-// defineProps<{
-//   classRoomData: any
-// }>()
+interface Props {
+  courseId: string
+}
 
-const classRoomData = ref([
-  {
-    id: 1,
-    name: 'Class for newbie',
-    students: 30,
-    schedule: [
-      {
-        id: 'id-1',
-        day: 'Thurday',
-        start: '8:40',
-        end: '9:50',
-      },
-      {
-        id: 'id-1',
-        day: 'Friday',
-        start: '8:40',
-        end: '9:50',
-      },
-      {
-        id: 'id-1',
-        day: 'Monday',
-        start: '8:40',
-        end: '9:50',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Class for Advanced',
-    students: 30,
-    schedule: [
-      {
-        id: 'id-1',
-        day: 'Thurday',
-        start: '8:40',
-        end: '9: 50',
-      },
-      {
-        id: 'id-1',
-        day: 'Friday',
-        start: '8:40',
-        end: '9:50',
-      },
-      {
-        id: 'id-1',
-        day: 'Monday',
-        start: '8:40',
-        end: '9:50',
-      },
-    ],
-  },
-])
+const props = defineProps<Props>()
+
+const { createClassroom } = useClassroomApi()
+const { getDetailCourses } = useCourseApi()
+
+// State
+const classRoomData = ref<any[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+const courseDetail = ref<any>(null)
 
 const open = ref<boolean>(false)
 const confirmLoading = ref<boolean>(false)
 const formRef = ref()
 
 const daysOfWeek = [
-  { value: 'MONDAY', label: 'Monday' },
-  { value: 'TUESDAY', label: 'Tuesday' },
-  { value: 'WEDNESDAY', label: 'Wednesday' },
-  { value: 'THURSDAY', label: 'Thursday' },
-  { value: 'FRIDAY', label: 'Friday' },
-  { value: 'SATURDAY', label: 'Saturday' },
-  { value: 'SUNDAY', label: 'Sunday' },
+  { value: 'monday', label: 'Monday' },
+  { value: 'tuesday', label: 'Tuesday' },
+  { value: 'wednesday', label: 'Wednesday' },
+  { value: 'thursday', label: 'Thursday' },
+  { value: 'friday', label: 'Friday' },
+  { value: 'saturday', label: 'Saturday' },
+  { value: 'sunday', label: 'Sunday' },
 ]
 
 const formState = ref({
-  name: '',
-  student: '',
+  title: '',
+  student_count: '',
   schedule: [
     { day: null, start: null, end: null },
   ],
@@ -94,9 +55,102 @@ function removeScheduleItem(index: number) {
   }
 }
 
-async function handleOk() {
-  await formRef.value?.validateFields()
+// Load course detail and extract classrooms
+async function loadCourseDetail() {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await getDetailCourses(props.courseId)
+    courseDetail.value = response
+
+    // Extract classrooms from course detail
+    if ((response as any).classrooms) {
+      classRoomData.value = (response as any).classrooms
+    }
+    else {
+      classRoomData.value = []
+    }
+  }
+  catch (err: any) {
+    console.error('Error loading course detail:', err)
+    error.value = err.message || 'Failed to load course detail'
+  }
+  finally {
+    isLoading.value = false
+  }
 }
+
+// Format time for API
+function formatTimeForApi(time: any): string {
+  if (!time)
+    return ''
+  if (typeof time === 'string')
+    return time
+  if (time.format) {
+    return time.format('HH:mm:ss')
+  }
+  return time.toString()
+}
+
+// Create classroom
+async function handleOk() {
+  try {
+    await formRef.value?.validateFields()
+    confirmLoading.value = true
+
+    // Transform form data to API format
+    const classroomPayload: ClassroomPayload = {
+      course_id: props.courseId,
+      title: formState.value.title,
+      student_count: Number.parseInt(formState.value.student_count),
+      schedules_data: formState.value.schedule
+        .filter(schedule => schedule.day && schedule.start && schedule.end)
+        .map(schedule => ({
+          day_of_week: schedule.day as unknown as string,
+          start_time: formatTimeForApi(schedule.start),
+          end_time: formatTimeForApi(schedule.end),
+        })),
+    }
+
+    await createClassroom(classroomPayload)
+
+    // Reload course detail to get updated classrooms
+    await loadCourseDetail()
+
+    // Reset form and close modal
+    resetForm()
+    open.value = false
+
+    // Show success message
+    const { $message } = useNuxtApp() as unknown as { $message: any }
+    $message.success('Classroom created successfully!')
+  }
+  catch (err: any) {
+    console.error('Error creating classroom:', err)
+    const { $message } = useNuxtApp() as unknown as { $message: any }
+    $message.error(err.message || 'Failed to create classroom')
+  }
+  finally {
+    confirmLoading.value = false
+  }
+}
+
+// Reset form
+function resetForm() {
+  formState.value = {
+    title: '',
+    student_count: '',
+    schedule: [
+      { day: null, start: null, end: null },
+    ],
+  }
+  formRef.value?.resetFields()
+}
+
+// Load course detail on mount
+onMounted(() => {
+  loadCourseDetail()
+})
 </script>
 
 <template>
@@ -110,7 +164,23 @@ async function handleOk() {
       <Icon name="i-material-symbols-add-2-rounded" class="text-[16px] text-white" />
     </a-button>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-8">
+      <a-spin size="large" />
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="text-center py-8">
+      <p class="text-red-500 mb-4">
+        {{ error }}
+      </p>
+      <a-button @click="loadCourseDetail">
+        Try Again
+      </a-button>
+    </div>
+
+    <!-- Classrooms Grid -->
+    <div v-else class="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
       <CardClassroom
         v-for="item in classRoomData"
         :key="item.id"
@@ -128,21 +198,30 @@ async function handleOk() {
         class="flex items-start flex-col w-full"
       >
         <a-form-item
-          label="Name"
-          name="name"
+          label="Classroom Title"
+          name="title"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input name!' }]"
+          :rules="[{ required: true, message: 'Please input classroom title!' }]"
         >
-          <a-input v-model:value="formState.name" size="large" placeholder="Enter name classroom" />
+          <a-input v-model:value="formState.title" size="large" placeholder="Enter classroom title" />
         </a-form-item>
 
         <a-form-item
-          label="Student count"
-          name="student"
+          label="Student Count"
+          name="student_count"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input student count!' }]"
+          :rules="[
+            { required: true, message: 'Please input student count!' },
+            { type: 'number', min: 1, message: 'Student count must be at least 1!' },
+          ]"
         >
-          <a-input v-model:value="formState.student" size="large" placeholder="Enter student count" />
+          <a-input-number
+            v-model:value="formState.student_count"
+            size="large"
+            placeholder="Enter student count"
+            :min="1"
+            class="w-full"
+          />
         </a-form-item>
 
         <a-form-item

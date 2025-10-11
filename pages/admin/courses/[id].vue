@@ -3,6 +3,7 @@ import DetailLessonManage from '~/components/admin/course/chapter/DetailLessonMa
 import AttendanceManagement from '~/components/admin/course/classroom/AttendanceManagement.vue'
 import DetailAttendance from '~/components/admin/course/classroom/DetailAttendance.vue'
 import DetailClassroom from '~/components/admin/course/classroom/DetailClassroom.vue'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 
 definePageMeta({
   layout: 'admin',
@@ -53,21 +54,31 @@ const lessonId = computed(() => route.query.lessonId as string)
 const classroomId = computed(() => route.query.classroomId)
 const attendanceId = computed(() => route.query.attendanceId)
 const attendanceManageId = computed(() => route.query.attendanceManageId)
+
+const { getDetailCourses } = useCourseApi()
+const courseDetail = ref<any>(null)
+
+onMounted(async () => {
+  courseDetail.value = await getDetailCourses(courseId.value)
+})
+
 </script>
 
 <template>
   <div class="px-4">
+    <div class="flex mb-6 items-center gap-2 text-sm text-[#00000066]">
+      <span>Course</span>
+      <span>/</span>
+      <span class="text-black">{{ courseDetail?.title }}</span>
+    </div>
     <DetailAttendance v-if="attendanceId && !attendanceManageId" />
-    <DetailLessonManage :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId"  v-else-if="lessonId" />
+    <DetailLessonManage v-else-if="lessonId" :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
     <AttendanceManagement v-else-if="attendanceManageId" />
     <div v-else class="">
-      <h1 class="text-3xl font-bold text-gray-900">
-        Italian for Beginners
-      </h1>
       <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">
         <a-tab-pane v-for="tab in listOptions" :key="tab.key" :tab="tab.name">
-          <component :is="tab.component" :type="tab.key" />
+          <component :is="tab.component" :type="tab.key" :course-id="courseId" />
         </a-tab-pane>
       </a-tabs>
     </div>

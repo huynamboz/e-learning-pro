@@ -13,16 +13,16 @@ useHead({
 })
 
 const router = useRouter()
-const { getCourses } = useCourseApi()
+const { getMyCourses } = useCourseApi()
 
 const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData(
   'admin-courses', // Unique key for caching
   async () => {
     try {
-      const response = await getCourses({ limit: 100 })
+      const response = await getMyCourses()
 
       if (response?.results) {
-        return response.results // Return raw API data
+        return response.results
       }
 
       return []
@@ -35,8 +35,8 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
     }
   },
   {
-    default: () => [], // Default value while loading
-    server: true, // Fetch on server-side for better SEO and initial load
+    default: () => [],
+    server: true,
   },
 )
 </script>
