@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import type { Course } from '~/types/course.type'
+import { notification } from 'ant-design-vue'
 
 interface Props {
   courseData: Course
 }
 
 const props = defineProps<Props>()
+const cartStore = useCartStore()
+const { t } = useI18n()
 
 const selectedCalendar = ref<string>('')
 
@@ -13,10 +16,93 @@ function handleSelectCalendar(id: string) {
   selectedCalendar.value = id
 }
 
+// Auto-select classroom if already in cart
+onMounted(() => {
+  // Check if this course has any classroom in cart
+  const cartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
+  if (cartItem) {
+    selectedCalendar.value = cartItem.selectedClassroom.id
+  }
+})
+
 function handleAddToCard() {
+  if (!selectedCalendar.value) {
+    notification.warning({
+      message: t('checkoutCard.messages.selectClassroom'),
+      description: t('checkoutCard.messages.selectClassroomDesc'),
+    })
+    return
+  }
+
+  // Check if this course is already in cart
+  const existingCartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
+  if (existingCartItem) {
+    // If same classroom, show already in cart message
+    if (existingCartItem.selectedClassroom.id === selectedCalendar.value) {
+      notification.info({
+        message: t('checkoutCard.messages.alreadyInCart'),
+        description: t('checkoutCard.messages.alreadyInCartDesc', {
+          title: props.courseData.title,
+          classroom: existingCartItem.selectedClassroom.title
+        }),
+      })
+      return
+    }
+    
+    // If different classroom, remove old one and add new one
+    cartStore.removeFromCart(existingCartItem.id)
+    notification.info({
+      message: t('checkoutCard.messages.classroomChanged'),
+      description: t('checkoutCard.messages.classroomChangedDesc', {
+        title: props.courseData.title
+      }),
+    })
+  }
+
+  const selectedClassroom = props.courseData.classrooms.find(c => c.id === selectedCalendar.value)
+  if (selectedClassroom) {
+    cartStore.addToCart(props.courseData, selectedClassroom)
+    notification.success({
+      message: t('checkoutCard.messages.addedToCart'),
+      description: t('checkoutCard.messages.addedToCartDesc', {
+        title: props.courseData.title,
+        classroom: selectedClassroom.title
+      }),
+    })
+  }
 }
 
+// Check if item is already in cart
+const isInCart = computed(() => {
+  if (!selectedCalendar.value) return false
+  const selectedClassroom = props.courseData.classrooms.find(c => c.id === selectedCalendar.value)
+  if (!selectedClassroom) return false
+  return cartStore.isInCart(props.courseData.id, selectedClassroom.id)
+})
+
 function handleBuyNow() {
+  if (!selectedCalendar.value) {
+    notification.warning({
+      message: t('checkoutCard.messages.selectClassroom'),
+      description: t('checkoutCard.messages.selectClassroomBuy'),
+    })
+    return
+  }
+
+  // Check if this course is already in cart
+  const existingCartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
+  if (existingCartItem) {
+    // If different classroom, remove old one and add new one
+    if (existingCartItem.selectedClassroom.id !== selectedCalendar.value) {
+      cartStore.removeFromCart(existingCartItem.id)
+    }
+  }
+
+  const selectedClassroom = props.courseData.classrooms.find(c => c.id === selectedCalendar.value)
+  if (selectedClassroom) {
+    cartStore.addToCart(props.courseData, selectedClassroom)
+    navigateTo('/checkout')
+  }
 }
 </script>
 
@@ -53,7 +139,7 @@ function handleBuyNow() {
             @click="handleSelectCalendar(item.id)"
           >
             <div class="flex items-center gap-2">
-              <Icon v-if="selectedCalendar === item.id" name="i-material-symbols-check-circle-rounded" class="text-[12px] sm:text-[18px] text-[#49ba61]" />
+              <Icon v-if="selectedCalendar === item.id" name="i-material-symbols-check-circle-rounded" size="18" class="text-[#49ba61]" />
               <div>
                 <div class="font-medium text-gray-900">
                   {{ item.title }}
@@ -65,7 +151,7 @@ function handleBuyNow() {
             </div>
             <div class="flex items-center gap-1">
               <span class="font-medium">{{ item.student_count }}</span>
-              <Icon name="i-heroicons-users" class="text-[12px] sm:text-[18px]" />
+              <Icon name="i-heroicons-users" size="18" />
             </div>
           </div>
         </div>
@@ -73,26 +159,48 @@ function handleBuyNow() {
         <div v-if="!props.courseData.classrooms || props.courseData.classrooms.length === 0" class="w-full !mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div class="flex items-center gap-2">
             <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
-            <span class="text-yellow-800 font-medium">Khóa học này chưa có lớp học</span>
+            <span class="text-yellow-800 font-medium">{{ $t('checkoutCard.messages.noClassroom') }}</span>
           </div>
         </div>
 
-        <a-button
-          type="primary"
-          :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-          class="w-full !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-          @click="handleAddToCard"
-        >
-          {{ $t('checkoutCard.addToCart') }}
-        </a-button>
+        <!-- Show different buttons based on cart status -->
+        <template v-if="isInCart">
+          <!-- Already in cart - show checkout button -->
+          <a-button
+            type="primary"
+            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
+            @click="handleBuyNow"
+          >
+            <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
+            {{ $t('checkoutCard.buttons.checkoutNow') }}
+          </a-button>
+          <a-button
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
+            @click="navigateTo('/checkout')"
+          >
+            <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
+            {{ $t('checkoutCard.buttons.viewCart') }}
+          </a-button>
+        </template>
+        <template v-else>
+          <!-- Not in cart - show add to cart button -->
+          <a-button
+            type="primary"
+            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            @click="handleAddToCard"
+          >
+            {{ $t('checkoutCard.addToCart') }}
+          </a-button>
 
-        <a-button
-          :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-          class="w-full !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-          @click="handleBuyNow"
-        >
-          {{ $t('checkoutCard.buyNow') }}
-        </a-button>
+          <a-button
+            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+            @click="handleBuyNow"
+          >
+            {{ $t('checkoutCard.buyNow') }}
+          </a-button>
+        </template>
       </div>
     </div>
 
@@ -101,19 +209,19 @@ function handleBuyNow() {
       <span>{{ $t('checkoutCard.share') }}</span>
       <div class="flex items-center justify-center gap-5 w-full">
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-facebook" class="text-[16px]" />
+          <Icon name="i-logos-facebook" size="16" />
         </a>
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-github-icon" class="text-[16px]" />
+          <Icon name="i-logos-github-icon" size="16" />
         </a>
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-devicon-google" class="text-[16px]" />
+          <Icon name="i-devicon-google" size="16" />
         </a>
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-devicon-twitter" class="text-[16px]" />
+          <Icon name="i-devicon-twitter" size="16" />
         </a>
         <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-microsoft-icon" class="text-[16px]" />
+          <Icon name="i-logos-microsoft-icon" size="16" />
         </a>
       </div>
     </div>

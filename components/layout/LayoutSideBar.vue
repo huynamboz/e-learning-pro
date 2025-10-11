@@ -43,7 +43,7 @@ onMounted(() => {
     <div class="py-6 flex flex-col h-full">
       <!-- Site logo and dark mode toggle -->
       <div class="flex items-center justify-center gap-3 mb-5 h-10">
-        <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="'/'">
+        <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/">
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
             <h4 class="font-extrabold text-[#0F172A] text-base whitespace-nowrap">

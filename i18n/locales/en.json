@@ -29,6 +29,102 @@
         "noCourses": "No courses yet"
       }
     },
+    "orders": {
+      "title": "Order Management",
+      "description": "Manage and track all course orders",
+      "stats": {
+        "totalOrders": "Total Orders",
+        "totalRevenue": "Total Revenue",
+        "pendingOrders": "Pending Orders",
+        "completedOrders": "Completed Orders"
+      },
+      "filters": {
+        "searchPlaceholder": "Search by invoice, student, course...",
+        "statusFilter": "Filter by status",
+        "dateRange": "Date Range",
+        "clearFilters": "Clear Filters"
+      },
+      "table": {
+        "columns": {
+          "invoice": "Invoice",
+          "student": "Student",
+          "course": "Course",
+          "classroom": "Classroom",
+          "amount": "Amount",
+          "status": "Status",
+          "date": "Date",
+          "actions": "Actions"
+        },
+        "status": {
+          "pending": "Pending",
+          "complete": "Complete",
+          "cancel": "Cancel"
+        },
+         "actions": {
+           "viewDetails": "View Details",
+           "confirmReceive": "Confirm Receive",
+           "reject": "Reject"
+         },
+         "detailDialog": {
+           "title": "Order Details",
+           "invoice": "Invoice Code",
+           "student": "Student",
+           "course": "Course",
+           "classroom": "Classroom",
+           "amount": "Amount",
+           "status": "Status",
+           "paymentMethod": "Payment Method",
+           "paymentReference": "Payment Reference",
+           "notes": "Notes",
+           "adminNote": "Admin Note",
+           "canceledReason": "Canceled Reason",
+           "createdAt": "Created At",
+           "updatedAt": "Updated At",
+           "close": "Close"
+         },
+        "confirmDialog": {
+          "confirmReceive": {
+            "title": "Confirm Receive Payment",
+            "message": "Are you sure you want to confirm that you have received payment for this order?",
+            "confirm": "Yes, Confirm",
+            "cancel": "Cancel"
+          },
+          "reject": {
+            "title": "Reject Order",
+            "message": "Are you sure you want to reject this order?",
+            "reason": "Reason for rejection",
+            "reasonPlaceholder": "Please provide a reason for rejecting this order...",
+            "confirm": "Yes, Reject",
+            "cancel": "Cancel"
+          }
+        },
+        "emptyState": {
+          "title": "No orders found",
+          "description": "No orders match your current filters",
+          "clearFilters": "Clear Filters"
+        },
+        "loading": "Loading orders...",
+        "error": "Failed to load orders. Please try again.",
+        "refresh": "Refresh"
+      },
+      "detailDialog": {
+        "title": "Order Details",
+        "invoice": "Invoice Code",
+        "student": "Student",
+        "course": "Course",
+        "classroom": "Classroom",
+        "amount": "Amount",
+        "status": "Status",
+        "paymentMethod": "Payment Method",
+        "paymentReference": "Payment Reference",
+        "notes": "Notes",
+        "adminNote": "Admin Note",
+        "canceledReason": "Canceled Reason",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "close": "Close"
+      }
+    },
     "settings": {
       "title": "Platform Settings",
       "description": "Configure platform-wide settings and preferences.",
@@ -240,7 +336,86 @@
     "moneyBack": "30-day money-back guarantee",
     "share": "Share",
     "wishlist": "Add to Wishlist",
-    "gift": "Gift this course"
+    "gift": "Gift this course",
+    "messages": {
+      "selectClassroom": "Please select a classroom",
+      "selectClassroomDesc": "You need to select a classroom before adding to cart.",
+      "selectClassroomBuy": "You need to select a classroom before purchasing.",
+      "addedToCart": "Added to cart",
+      "addedToCartDesc": "Course \"{title}\" with classroom \"{classroom}\" has been added to cart.",
+      "alreadyInCart": "Already in cart",
+      "alreadyInCartDesc": "Course \"{title}\" with classroom \"{classroom}\" is already in cart.",
+      "classroomChanged": "Classroom changed",
+      "classroomChangedDesc": "Classroom has been changed for course \"{title}\".",
+      "noClassroom": "This course has no classrooms yet"
+    },
+    "buttons": {
+      "checkoutNow": "Checkout Now",
+      "viewCart": "View Cart"
+    }
+  },
+  "checkout": {
+    "title": "Shopping Cart",
+    "breadcrumb": {
+      "home": "Home",
+      "cart": "Shopping cart"
+    },
+    "summary": {
+      "coursesInCart": "{count} Course{plural} in cart",
+      "emptyCart": {
+        "title": "Empty Cart",
+        "description": "You don't have any courses in your cart yet.",
+        "continueShopping": "Continue Shopping"
+      }
+    },
+    "orderSummary": {
+      "title": "Order Details",
+      "price": "Price",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total",
+      "proceedToCheckout": "Proceed to Checkout",
+      "remove": "Remove"
+    },
+    "messages": {
+      "removedFromCart": "Removed from cart",
+      "removedFromCartDesc": "Item has been removed from cart.",
+      "emptyCart": "Empty cart",
+      "emptyCartDesc": "Please add items to cart before checkout.",
+      "paymentError": "Payment error",
+      "paymentErrorDesc": "An error occurred while processing your order. Please try again."
+    },
+    "paymentDialog": {
+      "title": "Payment Confirmation",
+      "confirmTitle": "Confirm you have transferred money to the teacher",
+      "description": "Please confirm that you have made a bank transfer to the teacher for the amount of {amount}.",
+      "afterConfirm": "After confirmation, the teacher will notify you when the course has been added to your account.",
+      "orderDetails": "Order Details:",
+      "totalAmount": "Total Amount:",
+      "discount": "Discount:",
+      "tax": "Tax:",
+      "finalAmount": "Final Amount:",
+      "cancel": "Cancel",
+      "confirmTransfer": "Transfer Confirmed"
+    },
+    "loginDialog": {
+      "title": "Login Required",
+      "confirmTitle": "Please login to continue",
+      "description": "You need to login to be able to pay and purchase courses.",
+      "registerInfo": "If you don't have an account, you can register for free.",
+      "cancel": "Cancel",
+      "login": "Login",
+      "register": "Register"
+    }
+  },
+  "checkoutComplete": {
+    "title": "Order Complete",
+    "description": "You will receive a confirmation email soon!",
+    "buttons": {
+      "goToMyCourses": "Go to My Courses",
+      "continueShopping": "Continue Shopping"
+    },
+    "autoRedirect": "You will be automatically redirected to your courses in 5 seconds..."
   },
   "customerReviews": {
     "title": "What our students say",

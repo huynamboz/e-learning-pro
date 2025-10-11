@@ -49,7 +49,7 @@ function isExpanded(itemName: string) {
               {{ $t('admin.sidebar.title') }}
             </h4>
             <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
-              {{ $t('admin.sidebar.subtitle') }} <span class="text-[#EF4444]">{{ $t('admin.sidebar.author') }}</span>
+              Học tiếng ý cùng <span class="text-[#EF4444]">Phan Tâm</span>
             </p>
           </div>
         </NuxtLink>

@@ -29,6 +29,102 @@
         "noCourses": "Chưa có khóa học nào"
       }
     },
+    "orders": {
+      "title": "Quản lý đơn hàng",
+      "description": "Quản lý và theo dõi tất cả đơn hàng khóa học",
+      "stats": {
+        "totalOrders": "Tổng đơn hàng",
+        "totalRevenue": "Tổng doanh thu",
+        "pendingOrders": "Đơn hàng chờ xử lý",
+        "completedOrders": "Đơn hàng đã hoàn thành"
+      },
+      "filters": {
+        "searchPlaceholder": "Tìm kiếm theo mã hóa đơn, học viên, khóa học...",
+        "statusFilter": "Lọc theo trạng thái",
+        "dateRange": "Khoảng thời gian",
+        "clearFilters": "Xóa bộ lọc"
+      },
+      "table": {
+        "columns": {
+          "invoice": "Hóa đơn",
+          "student": "Học viên",
+          "course": "Khóa học",
+          "classroom": "Lớp học",
+          "amount": "Số tiền",
+          "status": "Trạng thái",
+          "date": "Ngày",
+          "actions": "Thao tác"
+        },
+        "status": {
+          "pending": "Chờ xử lý",
+          "complete": "Hoàn thành",
+          "cancel": "Hủy"
+        },
+         "actions": {
+           "viewDetails": "Xem chi tiết",
+           "confirmReceive": "Xác nhận nhận tiền",
+           "reject": "Từ chối"
+         },
+         "detailDialog": {
+           "title": "Chi tiết đơn hàng",
+           "invoice": "Mã hóa đơn",
+           "student": "Học viên",
+           "course": "Khóa học",
+           "classroom": "Lớp học",
+           "amount": "Số tiền",
+           "status": "Trạng thái",
+           "paymentMethod": "Phương thức thanh toán",
+           "paymentReference": "Mã tham chiếu thanh toán",
+           "notes": "Ghi chú",
+           "adminNote": "Ghi chú admin",
+           "canceledReason": "Lý do hủy",
+           "createdAt": "Ngày tạo",
+           "updatedAt": "Ngày cập nhật",
+           "close": "Đóng"
+         },
+        "confirmDialog": {
+          "confirmReceive": {
+            "title": "Xác nhận nhận tiền",
+            "message": "Bạn có chắc chắn muốn xác nhận đã nhận tiền cho đơn hàng này?",
+            "confirm": "Có, Xác nhận",
+            "cancel": "Hủy"
+          },
+          "reject": {
+            "title": "Từ chối đơn hàng",
+            "message": "Bạn có chắc chắn muốn từ chối đơn hàng này?",
+            "reason": "Lý do từ chối",
+            "reasonPlaceholder": "Vui lòng cung cấp lý do từ chối đơn hàng này...",
+            "confirm": "Có, Từ chối",
+            "cancel": "Hủy"
+          }
+        },
+        "emptyState": {
+          "title": "Không tìm thấy đơn hàng",
+          "description": "Không có đơn hàng nào phù hợp với bộ lọc hiện tại",
+          "clearFilters": "Xóa bộ lọc"
+        },
+        "loading": "Đang tải đơn hàng...",
+        "error": "Không thể tải đơn hàng. Vui lòng thử lại.",
+        "refresh": "Làm mới"
+      },
+      "detailDialog": {
+        "title": "Chi tiết đơn hàng",
+        "invoice": "Mã hóa đơn",
+        "student": "Học viên",
+        "course": "Khóa học",
+        "classroom": "Lớp học",
+        "amount": "Số tiền",
+        "status": "Trạng thái",
+        "paymentMethod": "Phương thức thanh toán",
+        "paymentReference": "Mã tham chiếu thanh toán",
+        "notes": "Ghi chú",
+        "adminNote": "Ghi chú admin",
+        "canceledReason": "Lý do hủy",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Ngày cập nhật",
+        "close": "Đóng"
+      }
+    },
     "settings": {
       "title": "Cài đặt nền tảng",
       "description": "Cấu hình các cài đặt và tùy chọn cho toàn bộ nền tảng.",
@@ -240,7 +336,86 @@
     "moneyBack": "Đảm bảo hoàn tiền 30 ngày",
     "share": "Chia sẻ",
     "wishlist": "Thêm vào danh sách yêu thích",
-    "gift": "Tặng khóa học này"
+    "gift": "Tặng khóa học này",
+    "messages": {
+      "selectClassroom": "Vui lòng chọn lớp học",
+      "selectClassroomDesc": "Bạn cần chọn một lớp học trước khi thêm vào giỏ hàng.",
+      "selectClassroomBuy": "Bạn cần chọn một lớp học trước khi mua.",
+      "addedToCart": "Đã thêm vào giỏ hàng",
+      "addedToCartDesc": "Khóa học \"{title}\" với lớp \"{classroom}\" đã được thêm vào giỏ hàng.",
+      "alreadyInCart": "Đã có trong giỏ hàng",
+      "alreadyInCartDesc": "Khóa học \"{title}\" với lớp \"{classroom}\" đã có trong giỏ hàng.",
+      "classroomChanged": "Đã thay đổi lớp học",
+      "classroomChangedDesc": "Đã thay đổi lớp học cho khóa học \"{title}\".",
+      "noClassroom": "Khóa học này chưa có lớp học"
+    },
+    "buttons": {
+      "checkoutNow": "Thanh toán ngay",
+      "viewCart": "Xem giỏ hàng"
+    }
+  },
+  "checkout": {
+    "title": "Giỏ hàng",
+    "breadcrumb": {
+      "home": "Trang chủ",
+      "cart": "Giỏ hàng"
+    },
+    "summary": {
+      "coursesInCart": "{count} Khóa học trong giỏ hàng",
+      "emptyCart": {
+        "title": "Giỏ hàng trống",
+        "description": "Bạn chưa có khóa học nào trong giỏ hàng.",
+        "continueShopping": "Tiếp tục mua sắm"
+      }
+    },
+    "orderSummary": {
+      "title": "Chi tiết đơn hàng",
+      "price": "Tổng tiền",
+      "discount": "Giảm giá",
+      "tax": "Thuế",
+      "total": "Thành tiền",
+      "proceedToCheckout": "Tiến hành thanh toán",
+      "remove": "Xóa"
+    },
+    "messages": {
+      "removedFromCart": "Đã xóa khỏi giỏ hàng",
+      "removedFromCartDesc": "Sản phẩm đã được xóa khỏi giỏ hàng.",
+      "emptyCart": "Giỏ hàng trống",
+      "emptyCartDesc": "Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.",
+      "paymentError": "Lỗi thanh toán",
+      "paymentErrorDesc": "Có lỗi xảy ra khi xử lý đơn hàng. Vui lòng thử lại."
+    },
+    "paymentDialog": {
+      "title": "Xác nhận thanh toán",
+      "confirmTitle": "Xác nhận bạn đã chuyển tiền cho giáo viên",
+      "description": "Vui lòng xác nhận rằng bạn đã thực hiện chuyển khoản cho giáo viên với số tiền {amount}.",
+      "afterConfirm": "Sau khi xác nhận, giáo viên sẽ thông báo cho bạn khi khóa học đã được thêm vào tài khoản của bạn.",
+      "orderDetails": "Chi tiết đơn hàng:",
+      "totalAmount": "Tổng tiền:",
+      "discount": "Giảm giá:",
+      "tax": "Thuế:",
+      "finalAmount": "Thành tiền:",
+      "cancel": "Hủy",
+      "confirmTransfer": "Đã chuyển tiền"
+    },
+    "loginDialog": {
+      "title": "Yêu cầu đăng nhập",
+      "confirmTitle": "Vui lòng đăng nhập để tiếp tục",
+      "description": "Bạn cần đăng nhập để có thể thanh toán và mua khóa học.",
+      "registerInfo": "Nếu chưa có tài khoản, bạn có thể đăng ký miễn phí.",
+      "cancel": "Hủy",
+      "login": "Đăng nhập",
+      "register": "Đăng ký"
+    }
+  },
+  "checkoutComplete": {
+    "title": "Đặt hàng thành công",
+    "description": "Bạn sẽ nhận được email xác nhận sớm!",
+    "buttons": {
+      "goToMyCourses": "Đi đến khóa học của tôi",
+      "continueShopping": "Tiếp tục mua sắm"
+    },
+    "autoRedirect": "Bạn sẽ được tự động chuyển hướng đến khóa học của mình trong 5 giây..."
   },
   "customerReviews": {
     "title": "Học viên nói gì về chúng tôi",
