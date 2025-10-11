@@ -23,6 +23,10 @@ export function useCourseApi() {
   return {
     ...baseService,
 
+    // upload file courses
+    uploadFile: (courseId: string, formData: FormData) =>
+      apiClient.upload(`/courses/${courseId}/upload-video-url/`, formData),
+
     // Get courses with filters
     getCourses: (params?: CourseFilters) => {
       const queryParams = new URLSearchParams()

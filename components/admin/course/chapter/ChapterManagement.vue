@@ -126,13 +126,6 @@ onMounted(async () => {
         >
           <a-input-number v-model:value="formState.order" class="!w-full" size="large" placeholder="Enter order" />
         </a-form-item>
-        <!-- <a-form-item name="description" label="Description" class="w-full">
-          <QuillEditor
-            v-model:content="formState.description"
-            content-type="html"
-            theme="snow"
-          />
-        </a-form-item> -->
       </a-form>
     </a-modal>
 

@@ -5,9 +5,11 @@ import { CloseOutlined } from '@ant-design/icons-vue'
 import { notification } from 'ant-design-vue'
 import { useAuth } from '@/composables/useAuth'
 import { useCourse } from '@/composables/useCourse'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 
 const route = useRoute()
 const router = useRouter()
+const { uploadFile } = useCourseApi()
 
 const { fetchCategories, categories, fetchCourseDetail, currentCourse, clearCurrentCourse, createCourse, updateCourse, isCreatingCourse } = useCourse()
 const { user } = useAuth()
@@ -103,52 +105,99 @@ function removeImage() {
 
 async function handleSave() {
   formState.value.teacher_id = user.value?.id
-  loading.value = true
   await formRef.value?.validateFields()
+  loading.value = true
+
   try {
     if (courseId.value) {
-      const response = await updateCourse(courseId.value, formState.value)
-      if (response) {
-        notification.success({
-          message: 'Update course success',
+      if (videoFileList.value.length > 0 && videoFileList.value[0].originFileObj) {
+        const file = videoFileList.value[0].originFileObj as File
+
+        const { upload_url, public_url } = await uploadFile(courseId.value, {
+          file_name: file.name,
+          content_type: file.type,
         })
+
+        const res = await fetch(upload_url, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        })
+        if (!res.ok)
+          throw new Error('Upload video failed')
+
+        formState.value.video_preview = public_url
       }
+      else {
+        formState.value.video_preview = ''
+      }
+
+      await updateCourse(courseId.value, formState.value)
+      notification.success({ message: 'Update course success' })
     }
     else {
-      const response = await createCourse(formState.value)
-      if (response) {
-        router.push('/admin/courses')
-        notification.success({
-          message: 'Create course success',
-        })
-      }
+      await createCourse(formState.value)
+      notification.success({ message: 'Create course success' })
+      router.push('/admin/courses')
     }
   }
   catch (error) {
     notification.error({
       message: courseId.value ? 'Update course failed' : 'Create course failed',
-      description: `${error}`
+      description: `${error}`,
     })
+  }
+  finally {
+    loading.value = false
   }
 }
 
 onMounted(async () => {
   clearCurrentCourse()
   await fetchCategories()
+
   if (courseId.value)
     await fetchCourseDetail(courseId.value)
+
   if (currentCourse.value) {
-    formState.value.category_id = currentCourse.value?.category.id
-    formState.value.title = currentCourse.value?.title
-    formState.value.slug = currentCourse.value?.slug
-    formState.value.short_description = currentCourse.value?.short_description
-    formState.value.description = currentCourse.value?.description
-    formState.value.teacher_id = currentCourse.value?.teacher?.id
-    formState.value.duration_hours = currentCourse.value?.duration_hours
-    formState.value.level = currentCourse.value?.level
-    formState.value.discount_price = currentCourse.value?.discount_price
-    formState.value.is_free = currentCourse.value?.is_free
-    formState.value.price = currentCourse.value?.price
+    const c = currentCourse.value
+    formState.value = {
+      title: c.title || '',
+      slug: c.slug || '',
+      short_description: c.short_description || '',
+      description: c.description || '',
+      category_id: c.category?.id || '',
+      teacher_id: c.teacher?.id || '',
+      duration_hours: c.duration_hours || '',
+      level: c.level || 'beginner',
+      discount_price: c.discount_price || '0',
+      is_free: c.is_free || false,
+      price: c.price || '0',
+      video_preview: c.video_preview || '',
+      is_featured: c.is_featured || false,
+      is_published: c.is_published ?? true,
+      language: c.language || 'en',
+    }
+
+    if (c.video_preview) {
+      videoPreviewUrl.value = c.video_preview
+      videoFileList.value = [{
+        uid: '-1',
+        name: 'intro-video.mp4',
+        status: 'done',
+        url: c.video_preview,
+      }]
+    }
+
+    // if (c.thumbnail) {
+    //   imagePreviewUrl.value = c.thumbnail
+    //   imageFileList.value = [{
+    //     uid: '-2',
+    //     name: 'thumbnail.jpg',
+    //     status: 'done',
+    //     url: c.thumbnail,
+    //   }]
+    // }
   }
 })
 
@@ -277,7 +326,7 @@ watch(categoryOptions, () => {
         >
           <a-input-number v-model:value="formState.duration_hours" class="!w-full" size="large" placeholder="Enter course duration hours" />
         </a-form-item>
-        <a-form-item name="video" label="Upload Intro Video" class="w-full">
+        <a-form-item v-if="courseId" name="video" label="Upload Intro Video" class="w-full">
           <a-upload-dragger
             v-model:file-list="videoFileList"
             name="introVideo"
@@ -285,7 +334,7 @@ watch(categoryOptions, () => {
             :before-upload="beforeUpload"
             :max-count="1"
             :show-upload-list="false"
-            accept="video/mp4,video/quicktime"
+            accept="video/mp4"
             class="!min-h-[200px] !flex !items-center"
             @change="handleVideoChange"
           >
@@ -312,7 +361,7 @@ watch(categoryOptions, () => {
           </a-upload-dragger>
         </a-form-item>
 
-        <a-form-item name="image" label="Upload Intro Image" class="w-full">
+        <a-form-item v-if="courseId" name="image" label="Upload Intro Image" class="w-full">
           <a-upload-dragger
             v-model:file-list="imageFileList"
             name="introImage"
