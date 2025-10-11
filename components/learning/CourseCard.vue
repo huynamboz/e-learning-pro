@@ -43,7 +43,8 @@ function handleCancelCourse() {
 </script>
 
 <template>
-  <div
+  <NuxtLink
+    :to="`/learning/${course.id}`"
     class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col gap-2 w-full
            transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
   >
@@ -107,7 +108,7 @@ function handleCancelCourse() {
         </a-button>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <style scoped>
