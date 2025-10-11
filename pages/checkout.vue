@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { notification } from 'ant-design-vue'
 import { useOrderApi } from '~/composables/api/useOrderApi'
+import { useCartStore } from '~/stores/cart.store'
 
 definePageMeta({
   layout: 'auth',

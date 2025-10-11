@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { Course } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
+import { useCartStore } from '~/stores/cart.store';
 
 interface Props {
   courseData: Course

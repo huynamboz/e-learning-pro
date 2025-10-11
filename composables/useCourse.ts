@@ -344,12 +344,13 @@ export function useCourse() {
   }
 
   // Create lesson
-  async function createLesson(courseId: string, chapterId: string, payload: LessonPayload): Promise<{ success: boolean, error?: string }> {
+  async function createLesson(courseId: string, chapterId: string, payload: LessonPayload): Promise<{ success: boolean, error?: string, data?: Lesson }> {
     isCreatingLesson.value = true
 
     try {
-      await courseApi.createLesson(courseId, chapterId, payload)
-      return { success: true }
+      const response = await courseApi.createLesson(courseId, chapterId, payload)
+      
+      return { success: true, data: response }
     }
     catch (error: any) {
       return {

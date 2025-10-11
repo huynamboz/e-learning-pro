@@ -156,6 +156,7 @@ onMounted(() => {
 <template>
   <div class="classroom">
     <a-button
+      v-if="classRoomData && classRoomData.length > 0"
       type="primary"
       class="!px-6 !h-12 rounded-lg text-sm !font-semibold !flex !items-center !justify-center gap-1 !bg-[#548A1D] !my-6"
       @click="AddNewClassroom"
@@ -177,6 +178,30 @@ onMounted(() => {
       <a-button @click="loadCourseDetail">
         Try Again
       </a-button>
+    </div>
+
+    <!-- Empty State -->
+    <div v-else-if="!classRoomData || classRoomData.length === 0" class="text-center py-12">
+      <div class="flex flex-col items-center justify-center space-y-6">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+          <Icon name="i-heroicons-building-office-2" size="40" class="text-gray-500" />
+        </div>
+        <div class="space-y-2">
+          <h3 class="text-xl font-semibold text-gray-900">No classrooms yet</h3>
+          <p class="text-gray-500 max-w-md text-sm leading-relaxed">
+            Create your first classroom to start organizing your course sessions and manage student enrollment.
+          </p>
+        </div>
+        <a-button
+          type="primary"
+          size="large"
+          class="!px-6 !h-12 rounded-lg text-sm !font-semibold !flex !items-center !justify-center gap-2"
+          @click="AddNewClassroom"
+        >
+          <Icon name="i-material-symbols-add-2-rounded" size="16" />
+          Create First Classroom
+        </a-button>
+      </div>
     </div>
 
     <!-- Classrooms Grid -->

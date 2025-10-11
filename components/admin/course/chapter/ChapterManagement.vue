@@ -2,6 +2,7 @@
 import { useCourse } from '#imports'
 import { notification } from 'ant-design-vue'
 import LessonsList from './LessonsList.vue'
+import { generateSlug } from '~/utils/slug'
 
 const { fetchChapters, createChapter, updateChapter, chapters, isCreatingChapter } = useCourse()
 const route = useRoute()
@@ -14,9 +15,7 @@ const formRef = ref()
 
 const formState = ref({
   title: '',
-  slug: '',
   description: '',
-  order: '',
 })
 
 const activeChapterId = ref<string>('')
@@ -24,13 +23,24 @@ const activeChapterId = ref<string>('')
 async function handleAddChapter() {
   await formRef.value?.validateFields()
   try {
-    const response = createChapter(courseId.value, formState.value)
+    // Generate slug from title
+    const chapterData = {
+      ...formState.value,
+      slug: generateSlug(formState.value.title)
+    }
+    
+    const response = createChapter(courseId.value, chapterData as any)
     if ((await response).success) {
       notification.success({
-        message: 'Create chapter cuccess',
+        message: 'Create chapter success',
       })
       fetchChapters(courseId.value)
       open.value = false
+      // Reset form
+      formState.value = {
+        title: '',
+        description: '',
+      }
     }
   }
   catch (error) {
@@ -75,6 +85,27 @@ onMounted(async () => {
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
         </div>
+        <!-- Empty state for chapters -->
+        <div v-if="!chapters || chapters.length === 0" class="flex flex-col gap-2 items-center text-center py-8">
+          <div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
+            <Icon name="solar:book-2-bold-duotone" size="32" class="text-gray-400" />
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">No chapters yet</h3>
+          <p class="text-sm text-gray-500 mb-4">Create your first chapter to start organizing your course content.</p>
+          <a-button
+            type="primary"
+            size="small"
+            class="!h-8 !flex gap-1 items-center !px-4 rounded-lg text-xs !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            @click="showModal"
+          >
+            <template #icon>
+              <Icon name="solar:add-circle-bold-duotone" size="14" />
+            </template>
+            Create Chapter
+          </a-button>
+        </div>
+
+        <!-- Chapter list -->
         <div
           v-for="ch in chapters"
           :key="ch.id"
@@ -108,30 +139,47 @@ onMounted(async () => {
           <a-input v-model:value="formState.title" size="large" placeholder="Enter chapter title" />
         </a-form-item>
         <a-form-item
-          label="Chapter Slug"
-          name="slug"
+          label="Chapter description"
+          name="description"
           class="w-full"
-          :rules="[
-            { required: true, message: 'Please input your chapter slug!' },
-            { pattern: /^[a-zA-Z0-9_-]+$/, message: 'Enter a valid slug (letters, numbers, underscores, hyphens)' },
-          ]"
         >
-          <a-input v-model:value="formState.slug" size="large" placeholder="Enter chapter slug" />
-        </a-form-item>
-        <a-form-item
-          label="Order"
-          name="order"
-          class="w-full"
-          :rules="[{ required: true, message: 'Please input your order!' }]"
-        >
-          <a-input-number v-model:value="formState.order" class="!w-full" size="large" placeholder="Enter order" />
+          <a-textarea v-model:value="formState.description" size="large" placeholder="Enter chapter description" :auto-size="{ minRows: 3, maxRows: 5 }" />
         </a-form-item>
       </a-form>
     </a-modal>
 
     <!-- Lesson List -->
     <div class="flex-1 bg-white rounded-md shadow p-4">
-      <div v-if="activeChapter">
+      <!-- Empty state when no chapter is selected -->
+      <div v-if="!activeChapter && chapters && chapters.length > 0" class="text-center py-12">
+        <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
+          <Icon name="solar:playlist-bold-duotone" size="40" class="text-gray-400" />
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">Select a chapter</h3>
+        <p class="text-sm text-gray-500">Choose a chapter from the sidebar to view and manage its lessons.</p>
+      </div>
+
+      <!-- Empty state when no chapters exist -->
+      <div v-else-if="!chapters || chapters.length === 0" class="text-center flex flex-col gap-2 items-center py-12">
+        <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
+          <Icon name="solar:book-2-bold-duotone" size="40" class="text-gray-400" />
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">No chapters available</h3>
+        <p class="text-sm text-gray-500 mb-6">Create your first chapter to start organizing your course content.</p>
+        <a-button
+          type="primary"
+          class="!h-10 !flex gap-1 items-center !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+          @click="showModal"
+        >
+          <template #icon>
+            <Icon name="solar:add-circle-bold-duotone" size="16" />
+          </template>
+          Create First Chapter
+        </a-button>
+      </div>
+
+      <!-- Chapter content -->
+      <div v-else-if="activeChapter">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-2xl font-semibold !m-0">
             {{ activeChapter.title }} ({{ activeChapter.lessons.length }} lessons)
@@ -145,7 +193,28 @@ onMounted(async () => {
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
         </div>
-        <LessonsList :chapter-id="activeChapter.id"  :list-lesson="activeChapter.lessons" />
+
+        <!-- Empty state for lessons -->
+        <div v-if="!activeChapter.lessons || activeChapter.lessons.length === 0" class="text-center py-12">
+          <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
+            <Icon name="solar:playlist-bold-duotone" size="40" class="text-gray-400" />
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">No lessons yet</h3>
+          <p class="text-sm text-gray-500 mb-6">This chapter doesn't have any lessons. Create your first lesson to start teaching.</p>
+          <a-button
+            type="primary"
+            class="!h-10 !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
+          >
+            <template #icon>
+              <Icon name="solar:add-circle-bold-duotone" size="16" />
+            </template>
+            Create First Lesson
+          </a-button>
+        </div>
+
+        <!-- Lessons list -->
+        <LessonsList v-else :chapter-id="activeChapter.id" :list-lesson="activeChapter.lessons" />
       </div>
     </div>
   </div>

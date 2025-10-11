@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from 'ant-design-vue'
+import { useCartStore } from '~/stores/cart.store'
 
 const { t } = useI18n()
 

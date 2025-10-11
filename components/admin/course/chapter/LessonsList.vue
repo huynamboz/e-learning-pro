@@ -27,9 +27,9 @@ const router = useRouter()
           <a-button type="link">
             Edit
           </a-button>
-          <a-button class="!text-red-500" type="link">
+          <!-- <a-button class="!text-red-500" type="link">
             Delete
-          </a-button>
+          </a-button> -->
         </div>
       </div>
     </div>

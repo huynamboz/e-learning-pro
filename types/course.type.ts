@@ -67,7 +67,7 @@ export interface CoursePayload {
   description: string
   short_description: string
   category_id: string
-  teacher_id: string
+  teacher_id: number
   video_preview?: string
   level: string
   language: string

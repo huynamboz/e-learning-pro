@@ -5,6 +5,7 @@ import { useCourse } from '#imports'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { notification } from 'ant-design-vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import { generateSlug } from '~/utils/slug'
 
 const props = defineProps<{
   courseId: string
@@ -12,7 +13,11 @@ const props = defineProps<{
   lessonId?: string
 }>()
 
-const { uploadFile } = useCourseApi()
+const route = useRoute()
+const router = useRouter()
+const lessonIdQuery = computed(() => route.query.lessonId as string)
+
+const { uploadFile, deleteLesson } = useCourseApi()
 const { createLesson, updateLesson, detailLesson, currentLesson, fetchChapters, isCreatingLesson } = useCourse()
 
 const formRef = ref<FormInstance>()
@@ -24,11 +29,10 @@ const formState = ref<LessonPayload>({
   video_url: '',
   video_duration: 0,
   content: '',
-  order: null,
   is_preview: true,
   is_published: true,
   is_unlocked: true,
-})
+} as any)
 
 // Upload state
 const videoFileList = ref<UploadFile<any>[]>([])
@@ -36,10 +40,20 @@ const imageFileList = ref<UploadFile<any>[]>([])
 const videoPreviewUrl = ref('')
 const imagePreviewUrl = ref('')
 const uploading = ref(false)
+const uploadProgress = ref(0)
+const isUploading = ref(false)
+const lastUploadedFile = ref<File | null>(null)
 
-onMounted(async () => {
-  if (props.lessonId && props.lessonId !== 'default') {
-    await detailLesson(props.courseId, props.chapterId, props.lessonId)
+// Delete dialog state
+const showDeleteDialog = ref(false)
+const isDeleting = ref(false)
+
+
+// Fetch lesson data
+async function fetchLesson() {
+  const lessonId = lessonIdQuery.value as string
+  if (lessonId && lessonId !== 'default') {
+    await detailLesson(props.courseId, props.chapterId, lessonId)
     if (currentLesson.value) {
       const data = currentLesson.value
       formState.value = {
@@ -49,12 +63,11 @@ onMounted(async () => {
         description: data.description,
         video_url: data.video_url,
         video_duration: data.video_duration,
-        content: data.content || '',
-        order: data.order,
+        content: (data as any).content || '',
         is_preview: data.is_preview,
         is_published: data.is_published,
         is_unlocked: data.is_unlocked,
-      }
+      } as any
 
       // Hiển thị video preview nếu có sẵn
       if (data.video_url) {
@@ -65,8 +78,47 @@ onMounted(async () => {
           status: 'done',
           url: data.video_url,
         }] as any
+        // Set lastUploadedFile to indicate video is already uploaded
+        lastUploadedFile.value = new File([''], 'current_video.mp4', { type: 'video/mp4' })
       }
     }
+  } else {
+    // Reset form for new lesson
+    formState.value = {
+      chapter_id: props.chapterId,
+      title: '',
+      slug: '',
+      description: '',
+      video_url: '',
+      video_duration: 0,
+      content: '',
+      is_preview: true,
+      is_published: true,
+      is_unlocked: true,
+    } as any
+    // Reset video states
+    videoPreviewUrl.value = ''
+    videoFileList.value = []
+    lastUploadedFile.value = null
+  }
+}
+
+onMounted(() => {
+  fetchLesson()
+})
+
+
+// Watch route changes
+watch(() => lessonIdQuery.value, () => {
+  fetchLesson()
+})
+
+// Watch title changes to auto-generate slug
+watch(() => formState.value.title, (newTitle) => {
+  // Only generate slug for new lessons (not when editing existing)
+  const lessonId = lessonIdQuery.value
+  if (!lessonId || lessonId === 'default') {
+    formState.value.slug = generateSlug(newTitle)
   }
 })
 
@@ -100,6 +152,7 @@ function removeVideo() {
   videoPreviewUrl.value = ''
   videoFileList.value = []
   formState.value.video_url = ''
+  lastUploadedFile.value = null
 }
 
 function removeImage() {
@@ -107,6 +160,54 @@ function removeImage() {
     URL.revokeObjectURL(imagePreviewUrl.value)
   imagePreviewUrl.value = ''
   imageFileList.value = []
+}
+
+// Check if file has changed
+function hasFileChanged(currentFile: File): boolean {
+  if (!lastUploadedFile.value) return true
+
+  return (
+    currentFile.name !== lastUploadedFile.value.name ||
+    currentFile.size !== lastUploadedFile.value.size ||
+    currentFile.lastModified !== lastUploadedFile.value.lastModified
+  )
+}
+
+// Upload file with progress tracking
+function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    // Track upload progress
+    xhr.upload.addEventListener('progress', (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100)
+        uploadProgress.value = percentComplete
+      }
+    })
+
+    // Handle successful upload
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        uploadProgress.value = 100
+        // Store the uploaded file info
+        lastUploadedFile.value = file
+        resolve()
+      } else {
+        reject(new Error(`Upload failed with status: ${xhr.status}`))
+      }
+    })
+
+    // Handle upload error
+    xhr.addEventListener('error', () => {
+      reject(new Error('Upload failed'))
+    })
+
+    // Start upload
+    xhr.open('PUT', uploadUrl)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.send(file)
+  })
 }
 
 async function uploadVideoAndSaveLesson() {
@@ -117,38 +218,45 @@ async function uploadVideoAndSaveLesson() {
 
   if (videoFileList.value.length) {
     const file = videoFileList.value[0].originFileObj as File
-    try {
-      uploading.value = true
-      const presign = await uploadFile(props.courseId, {
-        file_name: file.name,
-        content_type: file.type,
-      })
 
-      const uploadUrl = presign?.upload_url || presign?.uploadUrl || presign?.url
-      const publicUrl = presign?.public_url || presign?.publicUrl
+    // Only upload if file has changed
+    if (hasFileChanged(file)) {
+      try {
+        uploading.value = true
+        isUploading.value = true
+        uploadProgress.value = 0
 
-      if (!uploadUrl || !publicUrl)
-        throw new Error('Missing upload URLs')
+        const presign = await uploadFile(props.courseId, {
+          file_name: file.name,
+          content_type: file.type,
+        } as any)
 
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      })
-      if (!putRes.ok)
-        throw new Error(`Upload failed: ${putRes.status}`)
+        const uploadUrl = presign?.upload_url || presign?.uploadUrl || presign?.url
+        const publicUrl = presign?.public_url || presign?.publicUrl
 
-      formState.value.video_url = publicUrl
-    }
-    catch (err) {
-      notification.error({
-        message: 'Upload video failed',
-        description: String(err),
-      })
-      return
-    }
-    finally {
-      uploading.value = false
+        if (!uploadUrl || !publicUrl)
+          throw new Error('Missing upload URLs')
+
+        // Upload file with progress tracking
+        await uploadFileWithProgress(file, uploadUrl)
+        formState.value.video_url = publicUrl
+        isUploading.value = false
+      }
+      catch (err) {
+        notification.error({
+          message: 'Upload video failed',
+          description: String(err),
+        })
+        return
+      }
+      finally {
+        uploading.value = false
+        isUploading.value = false
+        uploadProgress.value = 0
+      }
+    } else {
+      // File hasn't changed, no need to upload
+      console.log('File unchanged, skipping upload')
     }
   }
 
@@ -157,37 +265,115 @@ async function uploadVideoAndSaveLesson() {
 
 async function saveLesson() {
   formState.value.chapter_id = props.chapterId
+  const lessonId = lessonIdQuery.value as string
 
-  let response
-  if (props.lessonId && props.lessonId !== 'default') {
-    response = await updateLesson(
+  if (lessonId && lessonId !== 'default') {
+    const response = await updateLesson(
       props.courseId,
       props.chapterId,
-      props.lessonId,
+      lessonId,
       formState.value,
     )
+    if (response.success) {
+      notification.success({
+        message: 'Update lesson success'
+      })
+    }
+    else {
+      notification.error({
+        message: 'Update lesson failed'
+      })
+    }
   }
   else {
-    response = await createLesson(props.courseId, props.chapterId, formState.value)
+    const response = await createLesson(props.courseId, props.chapterId, formState.value)
+    // If creating new lesson, update URL with new lesson ID
+    if (response.success) {
+      const newLessonId = response.data?.id
+      console.log('newLessonId', newLessonId)
+      if (newLessonId) {
+        notification.success({
+          message: 'Create lesson success'
+        })
+        // Update URL with new lesson ID
+        await router.replace({
+          query: {
+            ...route.query,
+            lessonId: newLessonId
+          }
+        })
+      }
+    }
+    else {
+      notification.error({
+        message: 'Create lesson failed'
+      })
+    }
   }
 
-  if (response?.success) {
-    notification.success({
-      message:
-        props.lessonId && props.lessonId !== 'default'
-          ? 'Update lesson success'
-          : 'Create lesson success',
-    })
-    await fetchChapters(props.courseId)
+  // notification.success({
+  //   message:
+  //     lessonId && lessonId !== 'default'
+  //       ? 'Update lesson success'
+  //       : 'Create lesson success',
+  // })
+}
+
+// Preview lesson function
+function previewLesson() {
+  const lessonId = lessonIdQuery.value
+  if (lessonId && lessonId !== 'default') {
+    // Replace admin/courses with /learning/ in the current URL
+    const currentPath = route.path
+    const learningPath = currentPath.replace('/admin/courses/', '/learning/')
+    
+    // Navigate to learning page with lesson ID
+    navigateTo(`${learningPath}?lessonId=${lessonId}`)
   }
-  else {
-    notification.error({
-      message:
-        props.lessonId && props.lessonId !== 'default'
-          ? 'Update lesson failed'
-          : 'Create lesson failed',
-      description: `${response?.error}`,
+}
+
+// Delete lesson functions
+function showDeleteConfirm() {
+  showDeleteDialog.value = true
+}
+
+function closeDeleteDialog() {
+  showDeleteDialog.value = false
+}
+
+async function confirmDeleteLesson() {
+  const lessonId = lessonIdQuery.value
+  if (!lessonId || lessonId === 'default') return
+
+  try {
+    isDeleting.value = true
+    await deleteLesson(props.courseId, props.chapterId, lessonId)
+    
+    notification.success({
+      message: 'Delete lesson success',
+      description: 'Lesson has been deleted successfully.'
     })
+    
+    // Close dialog and navigate back to chapter
+    showDeleteDialog.value = false
+    
+    // Navigate back to chapter without lesson ID
+    await router.replace({
+      query: {
+        ...route.query,
+        lessonId: undefined
+      }
+    })
+    
+    // Refresh chapters list
+    await fetchChapters(props.courseId)
+  } catch (error) {
+    notification.error({
+      message: 'Delete lesson failed',
+      description: 'An error occurred while deleting the lesson. Please try again.'
+    })
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>
@@ -195,117 +381,124 @@ async function saveLesson() {
 <template>
   <div class="form-courses flex flex-col gap-20">
     <div class="flex flex-col gap-2">
-      <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900 !m-0">
-          {{ props.lessonId && props.lessonId !== 'default' ? 'Edit Lesson' : 'Create Lesson' }}
-        </h2>
+      <!-- Header Section -->
+      <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+          <!-- Title Section -->
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
+              <Icon name="solar:video-library-bold-duotone" size="24" class="text-blue-600" />
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900 !m-0">
+                {{ lessonIdQuery && lessonIdQuery !== 'default' ? 'Edit Lesson' : 'Create New Lesson' }}
+              </h1>
+              <p class="text-sm text-gray-500 mt-1">
+                {{ lessonIdQuery && lessonIdQuery !== 'default' ? 'Update lesson information and content' : 'Add a new lesson to this chapter' }}
+              </p>
+            </div>
+          </div>
 
-        <a-button
-          type="primary"
-          class="mt-6 !h-12 rounded-lg text-sm !font-semibold bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-          :loading="uploading || isCreatingLesson"
-          @click="uploadVideoAndSaveLesson"
-        >
-          {{ props.lessonId && props.lessonId !== 'default' ? 'Update' : 'Add' }} Lesson
-        </a-button>
+          <!-- Action Section -->
+          <div class="flex items-center gap-4">
+            <!-- Progress Section -->
+            <div v-if="isUploading" class="flex items-center gap-3 min-w-[200px]">
+              <div class="flex-1">
+                <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                  <span>Uploading video...</span>
+                  <span>{{ uploadProgress }}%</span>
+                </div>
+                <a-progress 
+                  :percent="uploadProgress" 
+                  :show-info="false" 
+                  status="active" 
+                  stroke-color="#16a34a"
+                  class="!h-2"
+                />
+              </div>
+            </div>
+
+            <!-- Preview Button (only show when editing existing lesson) -->
+            <a-button 
+              v-if="lessonIdQuery && lessonIdQuery !== 'default'"
+              size="large"
+              class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
+              @click="previewLesson"
+            >
+              <template #icon>
+                <Icon name="solar:eye-bold-duotone" size="20" />
+              </template>
+              Preview Lesson
+            </a-button>
+
+            <!-- Delete Button (only show when editing existing lesson) -->
+            <a-button 
+              v-if="lessonIdQuery && lessonIdQuery !== 'default'"
+              size="large"
+              danger
+              class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold"
+              @click="showDeleteConfirm"
+            >
+              <template #icon>
+                <Icon name="solar:trash-bin-trash-bold-duotone" size="20" />
+              </template>
+              Delete Lesson
+            </a-button>
+
+            <!-- Save Button -->
+            <a-button 
+              type="primary"
+              size="large"
+              class="!h-12 !flex items-center justify-center gap-1 !px-8 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
+              :loading="uploading || isCreatingLesson" 
+              :disabled="isUploading" 
+              @click="uploadVideoAndSaveLesson"
+            >
+              <template #icon>
+                <Icon 
+                  :name="isUploading ? 'solar:upload-bold-duotone' : (lessonIdQuery && lessonIdQuery !== 'default' ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')" 
+                  size="26" 
+                />
+              </template>
+              {{ isUploading ? `Uploading... ${uploadProgress}%` : `${lessonIdQuery && lessonIdQuery !== 'default' ? 'Update Lesson' : 'Create Lesson'}` }}
+            </a-button>
+          </div>
+        </div>
       </div>
 
-      <a-form
-        ref="formRef"
-        :model="formState"
-        name="lessonForm"
-        autocomplete="off"
-        layout="vertical"
-        class="flex items-start flex-col !pt-6 w-2/3"
-      >
-        <a-form-item
-          label="Title"
-          name="title"
-          class="w-full"
-          :rules="[{ required: true, message: 'Please input your lesson title!' }]"
-        >
+      <a-form ref="formRef" :model="formState" name="lessonForm" autocomplete="off" layout="vertical"
+        class="flex items-start flex-col !pt-6 w-2/3">
+        <a-form-item label="Title" name="title" class="w-full"
+          :rules="[{ required: true, message: 'Please input your lesson title!' }]">
           <a-input v-model:value="formState.title" size="large" placeholder="Enter lesson title" />
         </a-form-item>
 
-        <a-form-item
-          name="slug"
-          label="Slug"
-          class="w-full"
-          :rules="[
-            { required: true, message: 'Please input your lesson slug!' },
-            { pattern: /^[a-zA-Z0-9_-]+$/, message: 'Enter a valid slug (letters, numbers, underscores, hyphens)' },
-          ]"
-        >
-          <a-input v-model:value="formState.slug" placeholder="Enter lesson slug" size="large" />
+        <a-form-item name="slug" label="Slug" class="w-full">
+          <a-input v-model:value="formState.slug" placeholder="Auto-generated from title" size="large" />
         </a-form-item>
 
-        <div class="flex items-center w-full gap-3">
-          <a-form-item
-            name="video_duration"
-            label="Video Duration (minutes)"
-            class="w-full"
-            :rules="[
-              { type: 'number', min: 0, message: 'Video duration must be ≥ 0!' },
-            ]"
-          >
-            <a-input-number
-              v-model:value="formState.video_duration"
-              placeholder="Enter video duration"
-              class="!w-full"
-              size="large"
-              :min="0"
-            />
+        <a-form-item name="video_duration" label="Video Duration (minutes)" class="w-full" :rules="[
+          { type: 'number', min: 0, message: 'Video duration must be ≥ 0!' },
+        ]">
+          <a-input-number v-model:value="formState.video_duration" placeholder="Enter video duration" class="!w-full"
+            size="large" :min="0" />
           </a-form-item>
-
-          <a-form-item
-            name="order"
-            label="Order"
-            class="w-full"
-            :rules="[
-              { required: true, message: 'Please input your lesson order!' },
-              { type: 'number', min: 0, message: 'Order must be ≥ 0!' },
-            ]"
-          >
-            <a-input-number
-              v-model:value="formState.order"
-              placeholder="Enter order"
-              class="!w-full"
-              size="large"
-              :min="0"
-            />
-          </a-form-item>
-        </div>
 
         <a-form-item name="description" label="Description" class="w-full">
-          <a-textarea
-            v-model:value="formState.description"
-            placeholder="Enter description"
-            :auto-size="{ minRows: 5, maxRows: 5 }"
-          />
+          <a-textarea v-model:value="formState.description" placeholder="Enter description"
+            :auto-size="{ minRows: 5, maxRows: 5 }" />
         </a-form-item>
 
         <!-- Video Upload -->
         <a-form-item name="video" label="Upload Intro Video" class="w-full">
-          <a-upload-dragger
-            v-model:file-list="videoFileList"
-            name="introVideo"
-            :multiple="false"
-            :before-upload="beforeUpload"
-            :max-count="1"
-            :show-upload-list="false"
-            accept="video/mp4,video/quicktime"
-            class="!min-h-[200px] !flex !items-center"
-            @change="handleVideoChange"
-          >
-            <div
-              v-if="videoFileList.length"
-              class="relative w-full flex items-center justify-center px-4"
-            >
+          <a-upload-dragger v-model:file-list="videoFileList" name="introVideo" :multiple="false"
+            :before-upload="beforeUpload" :max-count="1" :show-upload-list="false" accept="video/mp4,video/quicktime"
+            class="!min-h-[200px] !flex !items-center" @change="handleVideoChange">
+            <div v-if="videoFileList.length" class="relative w-full flex items-center justify-center px-4">
               <video :src="videoPreviewUrl" controls class="w-full rounded-lg" />
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
-                @click.stop.prevent="removeVideo"
-              >
+                @click.stop.prevent="removeVideo">
                 <CloseOutlined />
               </div>
             </div>
@@ -326,26 +519,14 @@ async function saveLesson() {
 
         <!-- Image Upload -->
         <a-form-item name="image" label="Upload Intro Image" class="w-full">
-          <a-upload-dragger
-            v-model:file-list="imageFileList"
-            name="introImage"
-            :multiple="false"
-            :before-upload="beforeUpload"
-            :max-count="1"
-            :show-upload-list="false"
-            accept="image/png,image/jpeg"
-            class="!min-h-[200px] !flex !items-center"
-            @change="handleImageChange"
-          >
-            <div
-              v-if="imageFileList.length"
-              class="relative w-full flex items-center justify-center px-4"
-            >
+          <a-upload-dragger v-model:file-list="imageFileList" name="introImage" :multiple="false"
+            :before-upload="beforeUpload" :max-count="1" :show-upload-list="false" accept="image/png,image/jpeg"
+            class="!min-h-[200px] !flex !items-center" @change="handleImageChange">
+            <div v-if="imageFileList.length" class="relative w-full flex items-center justify-center px-4">
               <img :src="imagePreviewUrl" alt="preview" class="h-full rounded-lg object-contain">
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
-                @click.stop.prevent="removeImage"
-              >
+                @click.stop.prevent="removeImage">
                 <CloseOutlined />
               </div>
             </div>
@@ -365,5 +546,38 @@ async function saveLesson() {
         </a-form-item>
       </a-form>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <a-modal
+      v-model:open="showDeleteDialog"
+      title="Delete Lesson"
+      :confirm-loading="isDeleting"
+      @ok="confirmDeleteLesson"
+      @cancel="closeDeleteDialog"
+      ok-text="Delete"
+      cancel-text="Cancel"
+      ok-type="danger"
+    >
+      <div class="py-4">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg">
+            <Icon name="solar:danger-triangle-bold-duotone" size="24" class="text-red-600" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">Delete Lesson</h3>
+            <p class="text-sm text-gray-600">This action cannot be undone.</p>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm text-gray-700 mb-2">
+            <strong>Lesson:</strong> {{ formState.title || 'Untitled Lesson' }}
+          </p>
+          <p class="text-sm text-gray-600">
+            Are you sure you want to delete this lesson? All lesson content, including videos and materials, will be permanently removed.
+          </p>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
