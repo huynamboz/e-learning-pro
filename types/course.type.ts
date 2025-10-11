@@ -68,7 +68,7 @@ export interface CoursePayload {
   short_description: string
   category_id: string
   teacher_id: string
-  video_preview: string
+  video_preview?: string
   level: string
   language: string
   duration_hours: string
@@ -77,6 +77,7 @@ export interface CoursePayload {
   is_free: boolean
   is_published: boolean
   is_featured: boolean
+  thumbnail?: string
 }
 
 export interface Category {

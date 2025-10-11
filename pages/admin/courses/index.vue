@@ -58,6 +58,19 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
       </a-button>
     </div>
 
+    <div
+      v-if="isFetchingCourses"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10"
+    >
+      <div
+        v-for="n in 8"
+        :key="n"
+        class="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800"
+      >
+        <a-skeleton active avatar :paragraph="{ rows: 3 }" />
+      </div>
+    </div>
+
     <div v-if="coursesData.length > 0 || isFetchingCourses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
       <CourseCard
         v-for="course in coursesData"
@@ -80,16 +93,5 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
         Create course
       </a-button>
     </div>
-
-    <!-- <div class="flex justify-center mt-4">
-      <a-pagination
-        :current="currentPage"
-        :page-size="pageSize"
-        :total="totalItems"
-        :show-size-changer="false"
-        :hide-on-single-page="true"
-        @change="handlePageChange"
-      />
-    </div> -->
   </div>
 </template>
