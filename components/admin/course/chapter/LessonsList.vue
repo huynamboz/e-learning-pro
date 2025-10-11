@@ -6,6 +6,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const router = useRouter()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -19,13 +20,13 @@ const router = useRouter()
               {{ item?.title }}
             </h2>
             <p class="!m-0 text-[#0A033C] text-xs !p-0">
-              Time: {{ item?.video_duration }} minutes
+              {{ t('admin.chapterManagement.lessons.time') }}: {{ item?.video_duration }} {{ t('admin.chapterManagement.lessons.minutes') }}
             </p>
           </div>
         </div>
         <div class="flex items-center gap-1">
           <a-button type="link">
-            Edit
+            {{ t('admin.chapterManagement.lessons.edit') }}
           </a-button>
           <!-- <a-button class="!text-red-500" type="link">
             Delete

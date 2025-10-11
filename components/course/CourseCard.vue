@@ -24,13 +24,14 @@ export interface CourseCardProps {
 }
 
 const props = defineProps<CourseCardProps>()
+const { t } = useI18n()
 
 // Computed properties for better performance
 const averageRating = computed(() => Number.parseFloat(props.rating_average) || 0)
 const roundedRating = computed(() => Math.round(averageRating.value))
 const formattedPrice = computed(() => {
   if (props.is_free)
-    return 'Free'
+    return t('courseCard.free')
   if (props.has_discount)
     return `$${props.effective_price}`
   return `$${props.effective_price}`
@@ -53,7 +54,7 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
           v-if="is_featured"
           class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-medium"
         >
-          Featured
+          {{ t('courseCard.featured') }}
         </span>
       </div>
       <div class="space-y-2">
@@ -63,10 +64,10 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
           </h3>
         </div>
         <p class="text-xs sm:text-sm text-gray-600">
-          By {{ teacher?.full_name || 'Unknown Teacher' }}
+          {{ t('courseCard.by') }} {{ teacher?.full_name || t('courseCard.unknownTeacher') }}
         </p>
         <p class="text-xs text-gray-500">
-          {{ category?.name || 'Unknown Category' }}
+          {{ category?.name || t('courseCard.unknownCategory') }}
         </p>
 
         <div v-if="type !== 'admin'" class="flex items-center gap-2">
@@ -78,19 +79,19 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
             />
           </div>
           <span class="text-xs font-semibold text-gray-600">
-            {{ averageRating.toFixed(1) }} ({{ rating_count || 0 }} Ratings)
+            {{ averageRating.toFixed(1) }} ({{ rating_count || 0 }} {{ t('courseCard.ratings') }})
           </span>
         </div>
 
         <p class="text-xs sm:text-sm text-gray-600">
-          {{ duration_hours || '0' }} Total Hours. {{ lessons_count || '0' }} Lectures. {{ level || 'Unknown' }}
+          {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ level || 'Unknown' }}
         </p>
         <p class="text-xs text-gray-500">
-          {{ (enrollment_count || 0).toLocaleString() }} students enrolled
+          {{ (enrollment_count || 0).toLocaleString() }} {{ t('courseCard.studentsEnrolled') }}
         </p>
 
         <div class="text-lg sm:text-xl font-semibold text-gray-900">
-          <span v-if="is_free" class="text-green-600">Free</span>
+          <span v-if="is_free" class="text-green-600">{{ t('courseCard.free') }}</span>
           <span v-else-if="has_discount" class="flex items-center gap-2">
             <span class="text-gray-500 line-through">{{ originalPrice }}</span>
             <span class="text-green-600">{{ formattedPrice }}</span>

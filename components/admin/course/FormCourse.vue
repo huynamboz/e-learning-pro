@@ -8,6 +8,8 @@ import { useCourse } from '@/composables/useCourse'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { generateSlug } from '~/utils/slug'
 
+const { t } = useI18n()
+
 const route = useRoute()
 const router = useRouter()
 const { uploadFile, delete: deleteCourse } = useCourseApi()
@@ -163,7 +165,7 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
 
 async function handleSave() {
   if (!user.value?.id) {
-    notification.error({ message: 'Please login to save the course' })
+    notification.error({ message: t('admin.formCourse.notifications.loginRequired') })
     return
   }
   formState.value.teacher_id = user.value?.id
@@ -193,7 +195,7 @@ async function handleSave() {
           isUploading.value = false
         } else {
           // File hasn't changed, no need to upload
-          console.log('File unchanged, skipping upload')
+          console.log(t('admin.formCourse.upload.fileUnchanged'))
         }
       }
       else {
@@ -203,17 +205,17 @@ async function handleSave() {
       }
 
       await updateCourse(courseId.value, formState.value)
-      notification.success({ message: 'Update course success' })
+      notification.success({ message: t('admin.formCourse.notifications.updateSuccess') })
     }
     else {
       await createCourse(formState.value)
-      notification.success({ message: 'Create course success' })
+      notification.success({ message: t('admin.formCourse.notifications.createSuccess') })
       router.push('/admin/courses')
     }
   }
   catch (error) {
     notification.error({
-      message: courseId.value ? 'Update course failed' : 'Create course failed',
+      message: courseId.value ? t('admin.formCourse.notifications.updateFailed') : t('admin.formCourse.notifications.createFailed'),
       description: `${error}`,
     })
   }
@@ -314,8 +316,8 @@ async function confirmDeleteCourse() {
     await deleteCourse(courseId.value)
     
     notification.success({
-      message: 'Delete course success',
-      description: 'Course has been deleted successfully.'
+      message: t('admin.formCourse.notifications.deleteSuccess'),
+      description: t('admin.formCourse.notifications.deleteSuccessDescription')
     })
     
     // Close dialog and navigate back to courses list
@@ -323,8 +325,8 @@ async function confirmDeleteCourse() {
     await router.push('/admin/courses')
   } catch (error) {
     notification.error({
-      message: 'Delete course failed',
-      description: 'An error occurred while deleting the course. Please try again.'
+      message: t('admin.formCourse.notifications.deleteFailed'),
+      description: t('admin.formCourse.notifications.deleteFailedDescription')
     })
   } finally {
     isDeleting.value = false
@@ -344,10 +346,10 @@ async function confirmDeleteCourse() {
           </div>
           <div>
             <h1 class="text-2xl font-bold text-gray-900 !m-0">
-              {{ courseId ? 'Edit Course' : 'Create New Course' }}
+              {{ courseId ? t('admin.formCourse.title.edit') : t('admin.formCourse.title.create') }}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-              {{ courseId ? 'Update course information and content' : 'Add a new course to your curriculum' }}
+              {{ courseId ? t('admin.formCourse.description.edit') : t('admin.formCourse.description.create') }}
             </p>
           </div>
         </div>
@@ -358,7 +360,7 @@ async function confirmDeleteCourse() {
           <div v-if="isUploading" class="flex items-center gap-3 min-w-[200px]">
             <div class="flex-1">
               <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
-                <span>Uploading video...</span>
+                <span>{{ t('admin.formCourse.upload.uploading') }}</span>
                 <span>{{ uploadProgress }}%</span>
               </div>
               <a-progress 
@@ -381,7 +383,7 @@ async function confirmDeleteCourse() {
             <template #icon>
               <Icon name="solar:eye-bold-duotone" size="20" />
             </template>
-            Preview Course
+            {{ t('admin.formCourse.buttons.previewCourse') }}
           </a-button>
 
           <!-- Delete Button (only show when editing existing course) -->
@@ -395,7 +397,7 @@ async function confirmDeleteCourse() {
             <template #icon>
               <Icon name="solar:trash-bin-trash-bold-duotone" size="20" />
             </template>
-            Delete Course
+            {{ t('admin.formCourse.buttons.deleteCourse') }}
           </a-button>
 
           <!-- Save Button -->
@@ -413,7 +415,7 @@ async function confirmDeleteCourse() {
                 size="20" 
               />
             </template>
-            {{ isUploading ? `Uploading... ${uploadProgress}%` : `${courseId ? 'Update Course' : 'Create Course'}` }}
+            {{ isUploading ? `${t('admin.formCourse.buttons.uploading')} ${uploadProgress}%` : `${courseId ? t('admin.formCourse.buttons.updateCourse') : t('admin.formCourse.buttons.createCourse')}` }}
           </a-button>
         </div>
       </div>
@@ -421,7 +423,7 @@ async function confirmDeleteCourse() {
 
     <div class="flex flex-col gap-3">
       <h2 class="text-2xl font-bold text-gray-900">
-        Course Details
+        {{ t('admin.formCourse.courseDetails') }}
       </h2>
       <a-form
         ref="formRef"
@@ -433,51 +435,51 @@ async function confirmDeleteCourse() {
         @finish="handleSave"
       >
         <a-form-item
-          label="Course Title"
+          :label="t('admin.formCourse.form.title')"
           name="title"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input your course title!' }]"
+          :rules="[{ required: true, message: t('admin.formCourse.form.titleRequired') }]"
         >
-          <a-input v-model:value="formState.title" size="large" placeholder="Enter course title" />
+          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.formCourse.form.titlePlaceholder')" />
         </a-form-item>
         <a-form-item
-          label="Course Slug"
+          :label="t('admin.formCourse.form.slug')"
           name="slug"
           class="w-full"
         >
-          <a-input v-model:value="formState.slug" size="large" placeholder="Auto-generated from title" />
+          <a-input v-model:value="formState.slug" size="large" :placeholder="t('admin.formCourse.form.slugPlaceholder')" />
         </a-form-item>
         <a-form-item
-          label="Course Sort Description"
+          :label="t('admin.formCourse.form.shortDescription')"
           name="short_description"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input your course sort description!' }]"
+          :rules="[{ required: true, message: t('admin.formCourse.form.shortDescriptionRequired') }]"
         >
-          <a-textarea v-model:value="formState.short_description" size="large" placeholder="Enter course sort description" :auto-size="{ minRows: 3, maxRows: 3 }" />
+          <a-textarea v-model:value="formState.short_description" size="large" :placeholder="t('admin.formCourse.form.shortDescriptionPlaceholder')" :auto-size="{ minRows: 3, maxRows: 3 }" />
         </a-form-item>
         <div class="flex items-center w-full gap-3">
           <a-form-item
-            label="Course Category"
+            :label="t('admin.formCourse.form.category')"
             name="category_id"
             class="w-full"
-            :rules="[{ required: true, message: 'Please input your course category!' }]"
+            :rules="[{ required: true, message: t('admin.formCourse.form.categoryRequired') }]"
           >
             <a-select
               v-model:value="formState.category_id"
-              placeholder="Select category"
+              :placeholder="t('admin.formCourse.form.categoryPlaceholder')"
               :options="categoryOptions"
               class="w-full"
             />
           </a-form-item>
           <a-form-item
-            label="Course Level"
+            :label="t('admin.formCourse.form.level')"
             name="level"
             class="w-full"
-            :rules="[{ required: true, message: 'Please input your level!' }]"
+            :rules="[{ required: true, message: t('admin.formCourse.form.levelRequired') }]"
           >
             <a-select
               v-model:value="formState.level"
-              placeholder="Select level"
+              :placeholder="t('admin.formCourse.form.levelPlaceholder')"
               :options="levelOptions"
               class="w-full"
             />
@@ -485,30 +487,30 @@ async function confirmDeleteCourse() {
         </div>
         <div class="flex items-center w-full gap-3">
           <a-form-item
-            label="Course price"
+            :label="t('admin.formCourse.form.price')"
             name="price"
             class="w-full"
-            :rules="[{ required: true, message: 'Please input your course price!' }]"
+            :rules="[{ required: true, message: t('admin.formCourse.form.priceRequired') }]"
           >
-            <a-input-number v-model:value="formState.price" class="!w-full" size="large" placeholder="Enter course price" />
+            <a-input-number v-model:value="formState.price" class="!w-full" size="large" :placeholder="t('admin.formCourse.form.pricePlaceholder')" />
           </a-form-item>
           <a-form-item
-            label="Course discount price"
+            :label="t('admin.formCourse.form.discountPrice')"
             name="discount_price"
             class="w-full"
           >
-            <a-input-number v-model:value="formState.discount_price" class="!w-full" size="large" placeholder="Enter course discount price" />
+            <a-input-number v-model:value="formState.discount_price" class="!w-full" size="large" :placeholder="t('admin.formCourse.form.discountPricePlaceholder')" />
           </a-form-item>
         </div>
         <a-form-item
-          label="Course duration hours"
+          :label="t('admin.formCourse.form.durationHours')"
           name="duration_hours"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input your course duration hours!' }]"
+          :rules="[{ required: true, message: t('admin.formCourse.form.durationHoursRequired') }]"
         >
-          <a-input-number v-model:value="formState.duration_hours" class="!w-full" size="large" placeholder="Enter course duration hours" />
+          <a-input-number v-model:value="formState.duration_hours" class="!w-full" size="large" :placeholder="t('admin.formCourse.form.durationHoursPlaceholder')" />
         </a-form-item>
-        <a-form-item v-if="courseId" name="video" label="Upload Intro Video" class="w-full">
+        <a-form-item v-if="courseId" name="video" :label="t('admin.formCourse.form.introVideo')" class="w-full">
           <a-upload-dragger
             v-model:file-list="videoFileList"
             name="introVideo"
@@ -534,16 +536,16 @@ async function confirmDeleteCourse() {
                 <i class="i-solar-play-bold-duotone text-3xl text-gray-800" />
               </p>
               <p class="ant-upload-text text-lg font-semibold text-gray-900">
-                Drag and drop files, or <span class="text-blue-600">Browse</span>
+                {{ t('admin.formCourse.upload.videoDragText') }} <span class="text-blue-600">{{ t('admin.formCourse.upload.videoBrowse') }}</span>
               </p>
               <p class="ant-upload-hint text-gray-500">
-                Upload Video in Mov, MP4.
+                {{ t('admin.formCourse.upload.videoHint') }}
               </p>
             </template>
           </a-upload-dragger>
         </a-form-item>
 
-        <a-form-item v-if="courseId" name="image" label="Upload Intro Image" class="w-full">
+        <a-form-item v-if="courseId" name="image" :label="t('admin.formCourse.form.introImage')" class="w-full">
           <a-upload-dragger
             v-model:file-list="imageFileList"
             name="introImage"
@@ -570,17 +572,17 @@ async function confirmDeleteCourse() {
                 <i class="i-solar-gallery-add-bold-duotone text-3xl text-gray-800" />
               </p>
               <p class="ant-upload-text text-lg font-semibold text-gray-900">
-                Drag and drop files, or <span class="text-blue-600">Browse</span>
+                {{ t('admin.formCourse.upload.imageDragText') }} <span class="text-blue-600">{{ t('admin.formCourse.upload.imageBrowse') }}</span>
               </p>
               <p class="ant-upload-hint text-gray-500">
-                Upload Thumbnail in JPEG, PNG.
+                {{ t('admin.formCourse.upload.imageHint') }}
               </p>
             </template>
           </a-upload-dragger>
         </a-form-item>
 
-        <a-form-item name="description" label="Description" class="w-full"
-          :rules="[{ required: true, message: 'Please input your course description!' }]"
+        <a-form-item name="description" :label="t('admin.formCourse.form.description')" class="w-full"
+          :rules="[{ required: true, message: t('admin.formCourse.form.descriptionRequired') }]"
         >
           <QuillEditor
             v-model:content="formState.description"
@@ -594,12 +596,12 @@ async function confirmDeleteCourse() {
     <!-- Delete Confirmation Dialog -->
     <a-modal
       v-model:open="showDeleteDialog"
-      title="Delete Course"
+      :title="t('admin.formCourse.deleteDialog.title')"
       :confirm-loading="isDeleting"
       @ok="confirmDeleteCourse"
       @cancel="closeDeleteDialog"
-      ok-text="Delete"
-      cancel-text="Cancel"
+      :ok-text="t('admin.formCourse.buttons.delete')"
+      :cancel-text="t('admin.formCourse.buttons.cancel')"
       ok-type="danger"
     >
       <div class="py-4">
@@ -608,17 +610,17 @@ async function confirmDeleteCourse() {
             <Icon name="solar:danger-triangle-bold-duotone" size="24" class="text-red-600" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">Delete Course</h3>
-            <p class="text-sm text-gray-600">This action cannot be undone.</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ t('admin.formCourse.deleteDialog.confirmTitle') }}</h3>
+            <p class="text-sm text-gray-600">{{ t('admin.formCourse.deleteDialog.confirmMessage') }}</p>
           </div>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
           <p class="text-sm text-gray-700 mb-2">
-            <strong>Course:</strong> {{ formState.title || 'Untitled Course' }}
+            <strong>{{ t('admin.formCourse.deleteDialog.courseLabel') }}</strong> {{ formState.title || 'Untitled Course' }}
           </p>
           <p class="text-sm text-gray-600">
-            Are you sure you want to delete this course? All course content, including chapters, lessons, and materials, will be permanently removed.
+            {{ t('admin.formCourse.deleteDialog.confirmDescription') }}
           </p>
         </div>
       </div>

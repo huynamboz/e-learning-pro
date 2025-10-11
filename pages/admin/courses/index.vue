@@ -8,8 +8,10 @@ definePageMeta({
   middleware: 'admin',
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: 'Course Management',
+  title: t('admin.courses.title'),
 })
 
 const router = useRouter()
@@ -46,7 +48,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
     <!-- Page Header -->
     <div class="flex justify-between items-center gap-4">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Course Management
+        {{ t('admin.courses.title') }}
       </h1>
       <a-button
         type="primary"
@@ -54,7 +56,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
         @click="router.push('/admin/courses/create')"
       >
         <Icon name="i-material-symbols-add-2-rounded" class="text-xl text-white mr-1" />
-        Create course
+        {{ t('admin.courses.createCourse') }}
       </a-button>
     </div>
 
@@ -71,7 +73,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
       </div>
     </div>
 
-    <div v-if="coursesData.length > 0 || isFetchingCourses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+    <div v-if="coursesData.length > 0 || isFetchingCourses" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
       <CourseCard
         v-for="course in coursesData"
         :key="course.id"
@@ -82,7 +84,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
     <div v-else class="text-center flex flex-col justify-center items-center">
       <Icon name="i-solar-document-text-outline" class="text-6xl text-gray-300 mb-4" />
       <h2 class="text-2xl font-bold text-gray-700 mb-2">
-        Course Not Found
+        {{ t('admin.courses.courseNotFound') }}
       </h2>
       <a-button
         type="primary"
@@ -90,7 +92,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
         @click="router.push('/admin/courses/create')"
       >
         <Icon name="i-material-symbols-add-2-rounded" class="text-xl text-white mr-1" />
-        Create course
+        {{ t('admin.courses.createCourse') }}
       </a-button>
     </div>
   </div>

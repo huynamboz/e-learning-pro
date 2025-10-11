@@ -4,6 +4,8 @@ import { useCourseApi } from '~/composables/api'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import CardClassroom from './CardClassroom.vue'
 
+const { t } = useI18n()
+
 interface Props {
   courseId: string
 }
@@ -73,7 +75,7 @@ async function loadCourseDetail() {
   }
   catch (err: any) {
     console.error('Error loading course detail:', err)
-    error.value = err.message || 'Failed to load course detail'
+    error.value = err.message || t('admin.classroom.notifications.loadFailed')
   }
   finally {
     isLoading.value = false
@@ -123,12 +125,12 @@ async function handleOk() {
 
     // Show success message
     const { $message } = useNuxtApp() as unknown as { $message: any }
-    $message.success('Classroom created successfully!')
+    $message.success(t('admin.classroom.notifications.createSuccess'))
   }
   catch (err: any) {
     console.error('Error creating classroom:', err)
     const { $message } = useNuxtApp() as unknown as { $message: any }
-    $message.error(err.message || 'Failed to create classroom')
+    $message.error(err.message || t('admin.classroom.notifications.createFailed'))
   }
   finally {
     confirmLoading.value = false
@@ -161,7 +163,7 @@ onMounted(() => {
       class="!px-6 !h-12 rounded-lg text-sm !font-semibold !flex !items-center !justify-center gap-1 !bg-[#548A1D] !my-6"
       @click="AddNewClassroom"
     >
-      Add new classroom
+      {{ t('admin.classroom.addNewClassroom') }}
       <Icon name="i-material-symbols-add-2-rounded" class="text-[16px] text-white" />
     </a-button>
 
@@ -176,7 +178,7 @@ onMounted(() => {
         {{ error }}
       </p>
       <a-button @click="loadCourseDetail">
-        Try Again
+        {{ t('common.tryAgain') }}
       </a-button>
     </div>
 
@@ -187,9 +189,9 @@ onMounted(() => {
           <Icon name="i-heroicons-building-office-2" size="40" class="text-gray-500" />
         </div>
         <div class="space-y-2">
-          <h3 class="text-xl font-semibold text-gray-900">No classrooms yet</h3>
+          <h3 class="text-xl font-semibold text-gray-900">{{ t('admin.classroom.emptyStates.noClassrooms') }}</h3>
           <p class="text-gray-500 max-w-md text-sm leading-relaxed">
-            Create your first classroom to start organizing your course sessions and manage student enrollment.
+            {{ t('admin.classroom.emptyStates.noClassroomsDescription') }}
           </p>
         </div>
         <a-button
@@ -199,7 +201,7 @@ onMounted(() => {
           @click="AddNewClassroom"
         >
           <Icon name="i-material-symbols-add-2-rounded" size="16" />
-          Create First Classroom
+          {{ t('admin.classroom.createFirstClassroom') }}
         </a-button>
       </div>
     </div>
@@ -213,7 +215,7 @@ onMounted(() => {
       />
     </div>
 
-    <a-modal v-model:open="open" title="Create class room" :confirm-loading="confirmLoading" @ok="handleOk">
+    <a-modal v-model:open="open" :title="t('admin.classroom.form.title')" :confirm-loading="confirmLoading" @ok="handleOk">
       <a-form
         ref="formRef"
         :model="formState"
@@ -223,37 +225,37 @@ onMounted(() => {
         class="flex items-start flex-col w-full"
       >
         <a-form-item
-          label="Classroom Title"
+          :label="t('admin.classroom.form.classroomTitle')"
           name="title"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input classroom title!' }]"
+          :rules="[{ required: true, message: t('admin.classroom.form.classroomTitleRequired') }]"
         >
-          <a-input v-model:value="formState.title" size="large" placeholder="Enter classroom title" />
+          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.classroom.form.classroomTitlePlaceholder')" />
         </a-form-item>
 
         <a-form-item
-          label="Student Count"
+          :label="t('admin.classroom.form.studentCount')"
           name="student_count"
           class="w-full"
           :rules="[
-            { required: true, message: 'Please input student count!' },
-            { type: 'number', min: 1, message: 'Student count must be at least 1!' },
+            { required: true, message: t('admin.classroom.form.studentCountRequired') },
+            { type: 'number', min: 1, message: t('admin.classroom.form.studentCountMin') },
           ]"
         >
           <a-input-number
             v-model:value="formState.student_count"
             size="large"
-            placeholder="Enter student count"
+            :placeholder="t('admin.classroom.form.studentCountPlaceholder')"
             :min="1"
             class="w-full"
           />
         </a-form-item>
 
         <a-form-item
-          label="Schedule"
+          :label="t('admin.classroom.form.schedule')"
           name="schedule"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input schedule!' }]"
+          :rules="[{ required: true, message: t('admin.classroom.form.scheduleRequired') }]"
         >
           <div class="flex flex-col gap-3 w-full">
             <div
@@ -263,9 +265,9 @@ onMounted(() => {
             >
               <a-select
                 v-model:value="item.day"
-                placeholder="Chọn thứ"
+                :placeholder="t('admin.classroom.form.selectDay')"
                 class="h-10 w-1/3"
-                :rules="[{ required: true, message: 'Please select day!' }]"
+                :rules="[{ required: true, message: t('admin.classroom.form.selectDayRequired') }]"
               >
                 <a-select-option
                   v-for="day in daysOfWeek"
@@ -280,7 +282,7 @@ onMounted(() => {
                 v-model:value="item.start"
                 format="HH:mm"
                 :minute-step="30"
-                placeholder="Start time"
+                :placeholder="t('admin.classroom.form.startTime')"
                 size="large"
                 class="w-full"
               />
@@ -291,7 +293,7 @@ onMounted(() => {
                 :minute-step="30"
                 size="large"
                 class="w-full"
-                placeholder="End time"
+                :placeholder="t('admin.classroom.form.endTime')"
               />
 
               <div class="">
@@ -304,7 +306,7 @@ onMounted(() => {
               class="!h-10 !mt-2 !flex !items-center !gap-2 w-[118px]"
               @click="addScheduleItem"
             >
-              Add more
+              {{ t('admin.classroom.form.addMore') }}
               <Icon name="i-material-symbols-add-2-rounded" class="text-[16px] text-white" />
             </a-button>
           </div>

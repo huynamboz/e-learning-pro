@@ -29,6 +29,235 @@
         "noCourses": "No courses yet"
       }
     },
+    "chapterManagement": {
+      "title": "Chapters",
+      "addChapter": "Add chapter",
+      "createChapter": "Create Chapter",
+      "createFirstChapter": "Create First Chapter",
+      "emptyStates": {
+        "noChapters": "No chapters yet",
+        "noChaptersDescription": "Create your first chapter to start organizing your course content.",
+        "selectChapter": "Select a chapter",
+        "selectChapterDescription": "Choose a chapter from the sidebar to view and manage its lessons.",
+        "noChaptersAvailable": "No chapters available",
+        "noChaptersAvailableDescription": "Create your first chapter to start organizing your course content.",
+        "noLessons": "No lessons yet",
+        "noLessonsDescription": "This chapter doesn't have any lessons. Create your first lesson to start teaching.",
+        "createFirstLesson": "Create First Lesson"
+      },
+      "form": {
+        "title": "Add Chapter",
+        "chapterTitle": "Chapter title",
+        "chapterTitlePlaceholder": "Enter chapter title",
+        "chapterTitleRequired": "Please input your chapter title!",
+        "chapterDescription": "Chapter description",
+        "chapterDescriptionPlaceholder": "Enter chapter description"
+      },
+      "lessons": {
+        "addLesson": "Add lesson",
+        "edit": "Edit",
+        "time": "Time",
+        "minutes": "minutes"
+      },
+      "notifications": {
+        "createChapterSuccess": "Create chapter success",
+        "createChapterFailed": "Create chapter failed"
+      }
+    },
+    "formLesson": {
+      "title": {
+        "create": "Create New Lesson",
+        "edit": "Edit Lesson"
+      },
+      "description": {
+        "create": "Add a new lesson to this chapter",
+        "edit": "Update lesson information and content"
+      },
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "Enter lesson title",
+        "titleRequired": "Please input your lesson title!",
+        "slug": "Slug",
+        "slugPlaceholder": "Auto-generated from title",
+        "videoDuration": "Video Duration (minutes)",
+        "videoDurationPlaceholder": "Enter video duration",
+        "videoDurationRequired": "Video duration must be ≥ 0!",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter description",
+        "isPreview": "Preview Settings",
+        "previewLabel": "Allow Preview",
+        "previewNote": "When enabled, users can preview this video (trial video)",
+        "introVideo": "Upload Intro Video",
+        "introImage": "Upload Intro Image"
+      },
+      "upload": {
+        "videoDragText": "Drag and drop files, or",
+        "videoBrowse": "Browse",
+        "videoHint": "Upload Video in MOV, MP4.",
+        "imageDragText": "Drag and drop files, or",
+        "imageBrowse": "Browse",
+        "imageHint": "Upload Thumbnail in JPEG, PNG.",
+        "uploading": "Uploading video...",
+        "fileUnchanged": "File unchanged, skipping upload"
+      },
+      "buttons": {
+        "previewLesson": "Preview Lesson",
+        "deleteLesson": "Delete Lesson",
+        "createLesson": "Create Lesson",
+        "updateLesson": "Update Lesson",
+        "uploading": "Uploading...",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "deleteDialog": {
+        "title": "Delete Lesson",
+        "confirmTitle": "Delete Lesson",
+        "confirmMessage": "This action cannot be undone.",
+        "lessonLabel": "Lesson:",
+        "confirmDescription": "Are you sure you want to delete this lesson? All lesson content, including videos and materials, will be permanently removed."
+      },
+      "notifications": {
+        "uploadVideoFailed": "Upload video failed",
+        "createLessonSuccess": "Create lesson success",
+        "updateLessonSuccess": "Update lesson success",
+        "createLessonFailed": "Create lesson failed",
+        "updateLessonFailed": "Update lesson failed",
+        "deleteLessonSuccess": "Delete lesson success",
+        "deleteLessonSuccessDescription": "Lesson has been deleted successfully.",
+        "deleteLessonFailed": "Delete lesson failed",
+        "deleteLessonFailedDescription": "An error occurred while deleting the lesson. Please try again."
+      }
+    },
+    "classroom": {
+      "title": "Classrooms",
+      "addNewClassroom": "Add new classroom",
+      "createFirstClassroom": "Create First Classroom",
+      "emptyStates": {
+        "noClassrooms": "No classrooms yet",
+        "noClassroomsDescription": "Create your first classroom to start organizing your course sessions and manage student enrollment."
+      },
+      "form": {
+        "title": "Create class room",
+        "classroomTitle": "Classroom Title",
+        "classroomTitlePlaceholder": "Enter classroom title",
+        "classroomTitleRequired": "Please input classroom title!",
+        "studentCount": "Student Count",
+        "studentCountPlaceholder": "Enter student count",
+        "studentCountRequired": "Please input student count!",
+        "studentCountMin": "Student count must be at least 1!",
+        "schedule": "Schedule",
+        "scheduleRequired": "Please input schedule!",
+        "selectDay": "Chọn thứ",
+        "selectDayRequired": "Please select day!",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "addMore": "Add more"
+      },
+      "notifications": {
+        "createSuccess": "Classroom created successfully!",
+        "createFailed": "Failed to create classroom",
+        "loadFailed": "Failed to load course detail"
+      },
+      "card": {
+        "maxStudents": "Max Students",
+        "enrolledStudents": "Enrolled Students",
+        "sessions": "Sessions",
+        "schedule": "Schedule",
+        "viewDetails": "View Details",
+        "attendance": "Attendance"
+      }
+    },
+    "courses": {
+      "title": "Course Management",
+      "createCourse": "Create course",
+      "courseNotFound": "Course Not Found",
+      "tabs": {
+        "classroom": "Classroom",
+        "quiz": "Quiz",
+        "students": "Students",
+        "chapters": "Chapters",
+        "detail": "Detail"
+      },
+      "breadcrumb": {
+        "course": "Course"
+      }
+    },
+    "formCourse": {
+      "title": {
+        "create": "Create New Course",
+        "edit": "Edit Course"
+      },
+      "description": {
+        "create": "Add a new course to your curriculum",
+        "edit": "Update course information and content"
+      },
+      "courseDetails": "Course Details",
+      "form": {
+        "title": "Course Title",
+        "titlePlaceholder": "Enter course title",
+        "titleRequired": "Please input your course title!",
+        "slug": "Course Slug",
+        "slugPlaceholder": "Auto-generated from title",
+        "shortDescription": "Course Short Description",
+        "shortDescriptionPlaceholder": "Enter course short description",
+        "shortDescriptionRequired": "Please input your course short description!",
+        "category": "Course Category",
+        "categoryPlaceholder": "Select category",
+        "categoryRequired": "Please input your course category!",
+        "level": "Course Level",
+        "levelPlaceholder": "Select level",
+        "levelRequired": "Please input your level!",
+        "price": "Course Price",
+        "pricePlaceholder": "Enter course price",
+        "priceRequired": "Please input your course price!",
+        "discountPrice": "Course Discount Price",
+        "discountPricePlaceholder": "Enter course discount price",
+        "durationHours": "Course Duration Hours",
+        "durationHoursPlaceholder": "Enter course duration hours",
+        "durationHoursRequired": "Please input your course duration hours!",
+        "introVideo": "Upload Intro Video",
+        "introImage": "Upload Intro Image",
+        "description": "Description",
+        "descriptionRequired": "Please input your course description!"
+      },
+      "upload": {
+        "videoDragText": "Drag and drop files, or",
+        "videoBrowse": "Browse",
+        "videoHint": "Upload Video in Mov, MP4.",
+        "imageDragText": "Drag and drop files, or",
+        "imageBrowse": "Browse",
+        "imageHint": "Upload Thumbnail in JPEG, PNG.",
+        "uploading": "Uploading video...",
+        "fileUnchanged": "File unchanged, skipping upload"
+      },
+      "buttons": {
+        "previewCourse": "Preview Course",
+        "deleteCourse": "Delete Course",
+        "createCourse": "Create Course",
+        "updateCourse": "Update Course",
+        "uploading": "Uploading...",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "deleteDialog": {
+        "title": "Delete Course",
+        "confirmTitle": "Delete Course",
+        "confirmMessage": "This action cannot be undone.",
+        "courseLabel": "Course:",
+        "confirmDescription": "Are you sure you want to delete this course? All course content, including chapters, lessons, and materials, will be permanently removed."
+      },
+      "notifications": {
+        "loginRequired": "Please login to save the course",
+        "createSuccess": "Create course success",
+        "updateSuccess": "Update course success",
+        "createFailed": "Create course failed",
+        "updateFailed": "Update course failed",
+        "deleteSuccess": "Delete course success",
+        "deleteSuccessDescription": "Course has been deleted successfully.",
+        "deleteFailed": "Delete course failed",
+        "deleteFailedDescription": "An error occurred while deleting the course. Please try again."
+      }
+    },
     "orders": {
       "title": "Order Management",
       "description": "Manage and track all course orders",
@@ -318,6 +547,17 @@
     "language": "Language",
     "lastUpdated": "Last updated",
     "enrolled": "enrolled"
+  },
+  "courseCard": {
+    "featured": "Featured",
+    "by": "By",
+    "unknownTeacher": "Unknown Teacher",
+    "unknownCategory": "Unknown Category",
+    "ratings": "Ratings",
+    "totalHours": "Total Hours",
+    "lectures": "Lectures",
+    "studentsEnrolled": "students enrolled",
+    "free": "Free"
   },
   "checkoutCard": {
     "enrollNow": "Enroll Now",

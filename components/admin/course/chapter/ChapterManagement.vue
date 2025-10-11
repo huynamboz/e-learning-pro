@@ -4,6 +4,8 @@ import { notification } from 'ant-design-vue'
 import LessonsList from './LessonsList.vue'
 import { generateSlug } from '~/utils/slug'
 
+const { t } = useI18n()
+
 const { fetchChapters, createChapter, updateChapter, chapters, isCreatingChapter } = useCourse()
 const route = useRoute()
 
@@ -32,7 +34,7 @@ async function handleAddChapter() {
     const response = createChapter(courseId.value, chapterData as any)
     if ((await response).success) {
       notification.success({
-        message: 'Create chapter success',
+        message: t('admin.chapterManagement.notifications.createChapterSuccess'),
       })
       fetchChapters(courseId.value)
       open.value = false
@@ -45,7 +47,7 @@ async function handleAddChapter() {
   }
   catch (error) {
     notification.error({
-      message: 'Create chapter failed',
+      message: t('admin.chapterManagement.notifications.createChapterFailed'),
     })
   }
 }
@@ -74,14 +76,14 @@ onMounted(async () => {
       <div class="bg-white rounded-md shadow p-3 flex flex-col gap-2">
         <div class="flex items-center justify-between mb-5">
           <h1 class="text-lg font-semibold mb-2 text-gray-600 !m-0">
-            Chapters
+            {{ t('admin.chapterManagement.title') }}
           </h1>
           <a-button
             type="primary"
             class="!h-10 rounded-lg text-sm !font-semibold !flex !items-center !justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
             @click="showModal"
           >
-            Add chapter
+            {{ t('admin.chapterManagement.addChapter') }}
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
         </div>
@@ -90,8 +92,8 @@ onMounted(async () => {
           <div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
             <Icon name="solar:book-2-bold-duotone" size="32" class="text-gray-400" />
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">No chapters yet</h3>
-          <p class="text-sm text-gray-500 mb-4">Create your first chapter to start organizing your course content.</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('admin.chapterManagement.emptyStates.noChapters') }}</h3>
+          <p class="text-sm text-gray-500 mb-4">{{ t('admin.chapterManagement.emptyStates.noChaptersDescription') }}</p>
           <a-button
             type="primary"
             size="small"
@@ -101,7 +103,7 @@ onMounted(async () => {
             <template #icon>
               <Icon name="solar:add-circle-bold-duotone" size="14" />
             </template>
-            Create Chapter
+            {{ t('admin.chapterManagement.createChapter') }}
           </a-button>
         </div>
 
@@ -121,7 +123,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <a-modal v-model:open="open" title="Add Chapter" width="600px" :confirm-loading="isCreatingChapter" @ok="handleAddChapter">
+    <a-modal v-model:open="open" :title="t('admin.chapterManagement.form.title')" width="600px" :confirm-loading="isCreatingChapter" @ok="handleAddChapter">
       <a-form
         ref="formRef"
         :model="formState"
@@ -131,19 +133,19 @@ onMounted(async () => {
         class="flex items-start flex-col w-full"
       >
         <a-form-item
-          label="Chapter title"
+          :label="t('admin.chapterManagement.form.chapterTitle')"
           name="title"
           class="w-full"
-          :rules="[{ required: true, message: 'Please input your chapter title!' }]"
+          :rules="[{ required: true, message: t('admin.chapterManagement.form.chapterTitleRequired') }]"
         >
-          <a-input v-model:value="formState.title" size="large" placeholder="Enter chapter title" />
+          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.chapterManagement.form.chapterTitlePlaceholder')" />
         </a-form-item>
         <a-form-item
-          label="Chapter description"
+          :label="t('admin.chapterManagement.form.chapterDescription')"
           name="description"
           class="w-full"
         >
-          <a-textarea v-model:value="formState.description" size="large" placeholder="Enter chapter description" :auto-size="{ minRows: 3, maxRows: 5 }" />
+          <a-textarea v-model:value="formState.description" size="large" :placeholder="t('admin.chapterManagement.form.chapterDescriptionPlaceholder')" :auto-size="{ minRows: 3, maxRows: 5 }" />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -155,8 +157,8 @@ onMounted(async () => {
         <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
           <Icon name="solar:playlist-bold-duotone" size="40" class="text-gray-400" />
         </div>
-        <h3 class="text-xl font-semibold text-gray-900 mb-3">Select a chapter</h3>
-        <p class="text-sm text-gray-500">Choose a chapter from the sidebar to view and manage its lessons.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ t('admin.chapterManagement.emptyStates.selectChapter') }}</h3>
+        <p class="text-sm text-gray-500">{{ t('admin.chapterManagement.emptyStates.selectChapterDescription') }}</p>
       </div>
 
       <!-- Empty state when no chapters exist -->
@@ -164,8 +166,8 @@ onMounted(async () => {
         <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
           <Icon name="solar:book-2-bold-duotone" size="40" class="text-gray-400" />
         </div>
-        <h3 class="text-xl font-semibold text-gray-900 mb-3">No chapters available</h3>
-        <p class="text-sm text-gray-500 mb-6">Create your first chapter to start organizing your course content.</p>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ t('admin.chapterManagement.emptyStates.noChaptersAvailable') }}</h3>
+        <p class="text-sm text-gray-500 mb-6">{{ t('admin.chapterManagement.emptyStates.noChaptersAvailableDescription') }}</p>
         <a-button
           type="primary"
           class="!h-10 !flex gap-1 items-center !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
@@ -174,7 +176,7 @@ onMounted(async () => {
           <template #icon>
             <Icon name="solar:add-circle-bold-duotone" size="16" />
           </template>
-          Create First Chapter
+          {{ t('admin.chapterManagement.createFirstChapter') }}
         </a-button>
       </div>
 
@@ -182,34 +184,34 @@ onMounted(async () => {
       <div v-else-if="activeChapter">
         <div class="flex items-center justify-between gap-4 mb-6">
           <h2 class="text-2xl font-semibold !m-0">
-            {{ activeChapter.title }} ({{ activeChapter.lessons.length }} lessons)
+            {{ activeChapter.title }} ({{ activeChapter.lessons.length }} {{ t('admin.chapterManagement.lessons.minutes') }})
           </h2>
           <a-button
             type="primary"
             class="!h-12 !mt-4 rounded-lg text-sm !font-semibold !flex !items-center !justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
             @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
           >
-            Add lesson
+            {{ t('admin.chapterManagement.lessons.addLesson') }}
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
         </div>
 
         <!-- Empty state for lessons -->
-        <div v-if="!activeChapter.lessons || activeChapter.lessons.length === 0" class="text-center py-12">
+        <div v-if="!activeChapter.lessons || activeChapter.lessons.length === 0" class="text-center py-12 flex flex-col gap-2 items-center">
           <div class="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6">
             <Icon name="solar:playlist-bold-duotone" size="40" class="text-gray-400" />
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">No lessons yet</h3>
-          <p class="text-sm text-gray-500 mb-6">This chapter doesn't have any lessons. Create your first lesson to start teaching.</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ t('admin.chapterManagement.emptyStates.noLessons') }}</h3>
+          <p class="text-sm text-gray-500 mb-6">{{ t('admin.chapterManagement.emptyStates.noLessonsDescription') }}</p>
           <a-button
             type="primary"
-            class="!h-10 !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            class="!h-10 !flex gap-1 items-center !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
             @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
           >
             <template #icon>
               <Icon name="solar:add-circle-bold-duotone" size="16" />
             </template>
-            Create First Lesson
+            {{ t('admin.chapterManagement.emptyStates.createFirstLesson') }}
           </a-button>
         </div>
 

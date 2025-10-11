@@ -11,34 +11,35 @@ definePageMeta({
 })
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const activeTab = ref(route.query.tab ? (route.query.tab as string) : 'DETAIL',
 
 )
 
-const listOptions = ref([
+const listOptions = computed(() => [
   {
     key: 'CLASSROOM',
-    name: 'Classroom',
+    name: t('admin.courses.tabs.classroom'),
     component: defineAsyncComponent(() => import('~/components/admin/course/classroom/Classroom.vue')),
   },
   {
     key: 'QUIZ',
-    name: 'Quiz',
+    name: t('admin.courses.tabs.quiz'),
     component: defineAsyncComponent(() => import('~/components/admin/course/quiz/QuizManager.vue')),
   },
   {
     key: 'STUDENTS',
-    name: 'Students',
+    name: t('admin.courses.tabs.students'),
     component: defineAsyncComponent(() => import('~/components/admin/course/StudentsManagement.vue')),
   },
   {
     key: 'CHAPTERS',
-    name: 'Chapters',
+    name: t('admin.courses.tabs.chapters'),
     component: defineAsyncComponent(() => import('~/components/admin/course/chapter/ChapterManagement.vue')),
   },
   {
     key: 'DETAIL',
-    name: 'Detail',
+    name: t('admin.courses.tabs.detail'),
     component: defineAsyncComponent(() => import('~/components/admin/course/FormCourse.vue')),
   },
 ])
@@ -67,7 +68,7 @@ onMounted(async () => {
 <template>
   <div class="px-4">
     <div class="flex mb-6 items-center gap-2 text-sm text-[#00000066]">
-      <span>Course</span>
+      <span>{{ t('admin.courses.breadcrumb.course') }}</span>
       <span>/</span>
       <span class="text-black">{{ courseDetail?.title }}</span>
     </div>

@@ -4,6 +4,7 @@ defineProps<{
 }>()
 
 const router = useRouter()
+const { t } = useI18n()
 
 interface ClassroomData {
   id: string
@@ -75,7 +76,7 @@ function formatDate(dateString: string): string {
           {{ classRoomData?.student_count }}
         </div>
         <div class="text-xs text-gray-500 font-medium">
-          Max Students
+          {{ t('admin.classroom.card.maxStudents') }}
         </div>
       </div>
       <div class="text-center p-3 bg-gray-50 rounded-lg">
@@ -83,7 +84,7 @@ function formatDate(dateString: string): string {
           {{ classRoomData?.enrollment_count }}
         </div>
         <div class="text-xs text-gray-500 font-medium">
-          Enrolled Students
+          {{ t('admin.classroom.card.enrolledStudents') }}
         </div>
       </div>
       <div class="text-center p-3 bg-gray-50 rounded-lg">
@@ -91,7 +92,7 @@ function formatDate(dateString: string): string {
           {{ classRoomData?.session_count }}
         </div>
         <div class="text-xs text-gray-500 font-medium">
-          Sessions
+          {{ t('admin.classroom.card.sessions') }}
         </div>
       </div>
     </div>
@@ -100,7 +101,7 @@ function formatDate(dateString: string): string {
     <div class="mb-4">
       <div class="flex items-center gap-2 mb-2">
         <Icon name="tabler:clock" size="16" class="text-gray-500" />
-        <span class="text-sm font-medium text-gray-700">Schedule</span>
+        <span class="text-sm font-medium text-gray-700">{{ t('admin.classroom.card.schedule') }}</span>
       </div>
       <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
         <div class="text-sm font-semibold text-blue-800" v-for="item in classRoomData?.schedule_summary.split(';')" :key="item">
@@ -117,7 +118,7 @@ function formatDate(dateString: string): string {
         @click="router.push(`?classroomId=${classRoomData?.id}`)"
       >
         <Icon name="tabler:eye" size="16" />
-        View Details
+        {{ t('admin.classroom.card.viewDetails') }}
       </a-button>
       <a-button
         type="default"
@@ -125,7 +126,7 @@ function formatDate(dateString: string): string {
         @click="router.push(`?attendanceId=${classRoomData?.id}`)"
       >
         <Icon name="tabler:users" size="16" />
-        Attendance
+        {{ t('admin.classroom.card.attendance') }}
       </a-button>
     </div>
   </div>
