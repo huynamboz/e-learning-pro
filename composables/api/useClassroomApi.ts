@@ -1,6 +1,6 @@
+import type { Classroom, ClassroomSchedule } from '~/types/course.type'
 // Classroom API service
 import { useApiClient } from '~/api/apiClient'
-import type { Classroom, ClassroomSchedule } from '~/types/course.type'
 
 export interface ClassroomPayload {
   course_id: string
@@ -8,8 +8,6 @@ export interface ClassroomPayload {
   student_count: number
   schedules_data: ClassroomSchedule[]
 }
-
-
 
 export function useClassroomApi() {
   const apiClient = useApiClient()

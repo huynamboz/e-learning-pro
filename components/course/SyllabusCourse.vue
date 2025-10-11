@@ -53,7 +53,7 @@ function getChapterDuration(lessons: Lesson[]): string {
     class="border border-gray-200 rounded-lg overflow-hidden syllabus"
   >
     <a-collapse-panel
-      v-for="(chapter, index) in syllabusData"
+      v-for="(chapter) in syllabusData"
       :key="chapter.id"
       :header="chapter.title"
       class="border-b border-gray-100 last:border-b-0"
@@ -66,7 +66,7 @@ function getChapterDuration(lessons: Lesson[]): string {
       <!-- Lessons List -->
       <div class="space-y-2">
         <div
-          v-for="(lesson, lessonIndex) in chapter.lessons"
+          v-for="(lesson) in chapter.lessons"
           :key="lesson.id"
           class="transition-all duration-200"
           :class="{
@@ -155,7 +155,7 @@ function getChapterDuration(lessons: Lesson[]): string {
                 Close
               </a-button>
             </div>
-            <div class="w-full aspect-video bg-black/90 rounded-md overflow-hidden flex items-center justify-center">
+            <div @click.stop class="w-full aspect-video bg-black/90 rounded-md overflow-hidden flex items-center justify-center">
               <video
                 :src="lesson.video_url"
                 controls

@@ -26,15 +26,20 @@ function handleBuyNow() {
       <img v-if="props.courseData.thumbnail" :src="props.courseData?.thumbnail" class="h-[200px] rounded-lg object-cover" alt="image course">
       <img v-else src="/assets/images/course/python.webp" class="h-[200px] rounded-lg object-cover" alt="image course">
       <div class="flex items-center gap-3">
-        <span class="text-black font-bold text-2xl">
+        <span v-if="!courseData.has_discount || !courseData.discount_price || parseFloat(courseData.discount_price) === 0" class="text-black font-bold text-2xl">
           ${{ props.courseData?.price }}
         </span>
-        <span v-if="courseData.has_discount" class="font-bold text-lg text-[#94A3B8] line-through">
-          ${{ courseData?.discount_price }}
-        </span>
-        <span v-if="props.courseData?.has_discount" class="font-bold text-lg text-green">
-          {{ props.courseData?.discount_price }}% Off
-        </span>
+        <template v-else>
+          <span class="font-bold text-lg text-[#94A3B8] line-through">
+            ${{ courseData?.price }}
+          </span>
+          <span class="text-black font-bold text-2xl">
+            ${{ courseData?.discount_price }}
+          </span>
+          <span class="font-bold text-lg text-green">
+            {{ Math.round(((parseFloat(courseData?.price || '0') - parseFloat(courseData?.discount_price || '0')) / parseFloat(courseData?.price || '1')) * 100) }}% Off
+          </span>
+        </template>
       </div>
       <div class="">
         <h3 class="font-semibold">
@@ -64,16 +69,26 @@ function handleBuyNow() {
             </div>
           </div>
         </div>
+        <!-- Thông báo khi không có lớp học -->
+        <div v-if="!props.courseData.classrooms || props.courseData.classrooms.length === 0" class="w-full !mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
+            <span class="text-yellow-800 font-medium">Khóa học này chưa có lớp học</span>
+          </div>
+        </div>
+
         <a-button
           type="primary"
-          class="w-full !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
+          :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+          class="w-full !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
           @click="handleAddToCard"
         >
           {{ $t('checkoutCard.addToCart') }}
         </a-button>
 
         <a-button
-          class="w-full !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
+          :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+          class="w-full !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
           @click="handleBuyNow"
         >
           {{ $t('checkoutCard.buyNow') }}
