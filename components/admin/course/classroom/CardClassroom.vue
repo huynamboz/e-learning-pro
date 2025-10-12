@@ -111,24 +111,38 @@ function formatDate(dateString: string): string {
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex gap-2 pt-4 border-t border-gray-200">
-      <NuxtLink :to="`${classRoomData?.id}/classroom-detail`" class="w-full">
+    <div class="flex flex-col gap-2 pt-4 border-t border-gray-200">
+      <!-- Xem lịch học (View Schedule) -->
+      <NuxtLink :to="`${classRoomData?.id}/calendars`" class="w-full">
         <a-button
-        type="primary"
-        class="flex-1 rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700"
-      >
-        <Icon name="tabler:eye" size="16" />
-        {{ t('admin.classroom.card.viewDetails') }}
-      </a-button>
+          type="primary"
+          class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+        >
+          <Icon name="tabler:calendar" size="16" />
+          Xem lịch học
+        </a-button>
       </NuxtLink>
-      <NuxtLink :to="`${classRoomData?.id}/all-attendance`" class="w-full">  
+      
+      <!-- Danh sách học sinh (Student List) -->
+      <NuxtLink :to="`${classRoomData?.id}/students`" class="w-full">
         <a-button
-        type="default"
-        class="flex-1 rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-      >
-        <Icon name="tabler:users" size="16" />
-        {{ t('admin.classroom.card.attendance') }}
-      </a-button>
+          type="default"
+          class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+        >
+          <Icon name="tabler:users" size="16" />
+          Danh sách học sinh
+        </a-button>
+      </NuxtLink>
+      
+      <!-- Điểm danh (Attendance) -->
+      <NuxtLink :to="`${classRoomData?.id}/all-attendance`" class="w-full">
+        <a-button
+          type="default"
+          class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+        >
+          <Icon name="tabler:clipboard-check" size="16" />
+          Điểm danh
+        </a-button>
       </NuxtLink>
     </div>
   </div>

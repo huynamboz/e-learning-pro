@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import type { Rule } from 'ant-design-vue/es/form'
 import type { CreateQuizPayload, Quiz, QuizFormData, UpdateQuizPayload } from '~/types/quiz.type'
+import type { QuizApiResponse, QuizQuestion } from '~/composables/api/useQuizApi'
+import { useQuizApi } from '~/composables/api/useQuizApi'
+import { useCourseApi } from '~/composables/api/useCourseApi'
+import { notification } from 'ant-design-vue'
 import MultipleChoiceQuestion from './MultipleChoiceQuestion.vue'
 import TextInputQuestion from './TextInputQuestion.vue'
 
 interface Props {
   mode?: 'create' | 'edit'
   quizId?: string
+  courseId?: string
   isCreating?: boolean
   isUpdating?: boolean
   isLoading?: boolean
@@ -14,8 +19,8 @@ interface Props {
 
 interface Emits {
   (e: 'back'): void
-  (e: 'createQuiz', quizData: CreateQuizPayload): void
-  (e: 'updateQuiz', quizData: UpdateQuizPayload): void
+  (e: 'createQuiz', quizData: any): void
+  (e: 'updateQuiz', quizData: any): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -33,11 +38,23 @@ const formData = reactive<QuizFormData>({
   description: '',
   category: '',
   chapter: '',
-  timeType: '',
-  quantity: null,
-  unit: '',
+  timeType: 'limit', // Default to limit since no-limit is not allowed
+  quantity: 30, // Default to 30 minutes
+  unit: 'minute',
 })
-const { loadQuizForEdit } = useQuizManagement()
+
+// API composables
+const { getDetailCourses, getCategories } = useCourseApi()
+
+// State for API data
+const categories = ref<any[]>([])
+const chapters = ref<any[]>([])
+const loadingData = ref(false)
+const loadingQuiz = ref(false)
+
+// Computed loading state
+const isLoading = computed(() => loadingData.value || loadingQuiz.value)
+
 const rules = computed<Record<string, Rule[]>>(() => (
   {
     title: [
@@ -56,39 +73,38 @@ const rules = computed<Record<string, Rule[]>>(() => (
       { required: true, message: 'Please select time type!', trigger: 'change' },
     ],
     quantity: [
-      { required: formData.timeType === 'limit', message: 'Please input quantity!', trigger: 'blur' },
+      { required: true, message: 'Please input quantity!', trigger: 'blur' },
     ],
     unit: [
-      { required: formData.timeType === 'limit', message: 'Please select unit!', trigger: 'change' },
+      { required: true, message: 'Please select unit!', trigger: 'change' },
     ],
   }
 ))
 
-const categoryOptions = ref([
-  { label: 'Italian for Beginners', value: 'italian-beginners' },
-  { label: 'Italian Intermediate', value: 'italian-intermediate' },
-  { label: 'Italian Advanced', value: 'italian-advanced' },
-  { label: 'English Basics', value: 'english-basics' },
-  { label: 'Spanish Fundamentals', value: 'spanish-fundamentals' },
-])
+// Computed options from API data
+const categoryOptions = computed(() => 
+  categories.value.map(cat => ({
+    label: cat.name,
+    value: cat.id,
+  }))
+)
 
-const chapterOptions = ref([
-  { label: 'Chapter 1', value: 'chapter-1' },
-  { label: 'Chapter 2', value: 'chapter-2' },
-  { label: 'Chapter 3', value: 'chapter-3' },
-  { label: 'Chapter 4', value: 'chapter-4' },
-  { label: 'Chapter 5', value: 'chapter-5' },
-])
+const chapterOptions = computed(() => 
+  chapters.value.map(chapter => ({
+    label: chapter.title,
+    value: chapter.id,
+  }))
+)
 
 const timeTypeOptions = ref([
   { label: 'Limit', value: 'limit' },
-  { label: 'No Limit', value: 'no-limit' },
+  // Removed 'no-limit' option as it's not allowed by API
 ])
 
 const unitOptions = ref([
-  { label: 'minute', value: 'minute' },
-  { label: 'hour', value: 'hour' },
-  { label: 'second', value: 'second' },
+  { label: 'Minute', value: 'minute' },
+  { label: 'Hour', value: 'hour' },
+  { label: 'Second', value: 'second' },
 ])
 
 interface Question {
@@ -183,87 +199,222 @@ function updateQuestion(index: number, data: any) {
   }
 }
 
+// Transform questions to API format
+const transformQuestionsToApi = (questions: Question[]) => {
+  return questions.map((q, index) => {
+    const baseQuestion = {
+      question_type: q.type === 'multiple-choice' ? 'multiple_choice' : 'text_input',
+      prompt: q.data.question,
+      explanation: '',
+      order: index + 1,
+    }
+
+    if (q.type === 'multiple-choice') {
+      return {
+        ...baseQuestion,
+        options: q.data.options?.map((option: any) => ({
+          label: option.label,
+          text: option.text,
+          is_correct: option.label === q.data.correctAnswer,
+        })) || [],
+      }
+    } else {
+      return {
+        ...baseQuestion,
+        options: [],
+        sample_answer: {
+          text: q.data.answer || '',
+        },
+      }
+    }
+  })
+}
+
+// Create API payload
+const createApiPayload = (values: QuizFormData) => ({
+  title: values.title,
+  description: values.description,
+  category: values.category,
+  chapter: values.chapter,
+  time_type: values.timeType as 'limit' | 'no-limit',
+  time_value: values.timeType === 'limit' ? values.quantity : null,
+  time_unit: values.timeType === 'limit' ? values.unit : null,
+  is_published: false,
+  questions: transformQuestionsToApi(questions.value),
+})
+
 async function onFinish(values: QuizFormData) {
   if (!questionsValidation.value.isValid) {
+    notification.warning({
+      message: 'Validation Error',
+      description: 'Please fix the form errors before submitting',
+      duration: 3,
+    })
     return
   }
 
   try {
-    const basePayload = {
-      title: values.title,
-      description: values.description,
-      category: values.category,
-      chapter: values.chapter,
-      timeType: values.timeType as 'limit' | 'no-limit',
-      questions: questions.value.map(q => ({
-        id: q.id,
-        type: q.type,
-        question: q.data.question,
-        files: q.data.files || [],
-        answer: q.type === 'text-input' ? q.data.answer : undefined,
-        options: q.type === 'multiple-choice' ? q.data.options : undefined,
-        correctAnswer: q.type === 'multiple-choice' ? q.data.correctAnswer : undefined,
-      })),
-    }
-
-    // Add optional fields only if timeType is 'limit' and values exist
-    const payload = {
-      ...basePayload,
-      ...(values.timeType === 'limit' && values.quantity && {
-        quantity: values.quantity,
-        unit: values.unit as 'minute' | 'hour' | 'second',
-      }),
-    }
+    const apiPayload = createApiPayload(values)
 
     if (props.mode === 'edit' && props.quizId) {
-      emit('updateQuiz', { id: props.quizId, ...payload })
+      emit('updateQuiz', { id: props.quizId, ...apiPayload })
+      notification.success({
+        message: 'Success',
+        description: 'Quiz updated successfully!',
+        duration: 3,
+      })
+    } else {
+      emit('createQuiz', apiPayload)
+      notification.success({
+        message: 'Success',
+        description: 'Quiz created successfully!',
+        duration: 3,
+      })
     }
-    else {
-      emit('createQuiz', payload)
-    }
-  }
-  catch {
-    // Error handling is done in the composable
+  } catch (error: any) {
+    notification.error({
+      message: 'Error',
+      description: error.message || 'Failed to save quiz',
+      duration: 4.5,
+    })
+    console.error('Error creating quiz:', error)
   }
 }
 
-function onFinishFailed(_errorInfo: any) {
-  // Form validation failed
+function onFinishFailed(errorInfo: any) {
+  notification.error({
+    message: 'Form Validation Failed',
+    description: 'Please check all required fields and try again',
+    duration: 4,
+  })
+  console.error('Form validation failed:', errorInfo)
+}
+
+// Fetch API data
+const fetchApiData = async () => {
+  try {
+    loadingData.value = true
+    
+    // Fetch categories and course data in parallel
+    const [categoriesResponse, courseResponse] = await Promise.allSettled([
+      getCategories(),
+      props.courseId ? getDetailCourses(props.courseId) : Promise.resolve(null)
+    ])
+    
+    // Handle categories
+    if (categoriesResponse.status === 'fulfilled') {
+      categories.value = categoriesResponse.value.results
+    } else {
+      throw new Error('Failed to load categories')
+    }
+    
+    // Handle course data
+    if (courseResponse.status === 'fulfilled' && courseResponse.value) {
+      chapters.value = courseResponse.value.chapters
+      
+      // Auto-select the course's category
+      if (courseResponse.value.category && !formData.category) {
+        formData.category = courseResponse.value.category.id
+      }
+    } else if (props.courseId) {
+      throw new Error('Failed to load course data')
+    }
+  } catch (err: any) {
+    const errorMessage = err.message || 'Failed to load data'
+    notification.error({
+      message: 'Error',
+      description: errorMessage,
+      duration: 4.5,
+    })
+    console.error('Error fetching API data:', err)
+  } finally {
+    loadingData.value = false
+  }
 }
 
 // Load quiz data for editing
-onMounted(() => {
-  if (props.mode === 'edit' && props.quizId) {
-    const quiz = loadQuizForEdit(props.quizId)
+const loadQuizData = async () => {
+  if (!props.quizId) return
+  
+  try {
+    loadingQuiz.value = true
+    const { getQuiz } = useQuizApi()
+    const quiz = await getQuiz(props.quizId)
+    
     if (quiz) {
+      // Update form data
       Object.assign(formData, {
         title: quiz.title,
         description: quiz.description,
         category: quiz.category,
         chapter: quiz.chapter,
-        timeType: quiz.timeType,
-        quantity: quiz.quantity,
-        unit: quiz.unit || '',
+        timeType: quiz.time_type,
+        quantity: quiz.time_value,
+        unit: quiz.time_unit || 'minute',
       })
 
-      // Load questions and transform them to the expected format
-      questions.value = (quiz.questions || []).map(q => ({
-        id: q.id,
-        type: q.type,
+      // Map questions from API response to component format
+      questions.value = mapApiQuestionsToComponent(quiz.questions)
+    }
+  } catch (err: any) {
+    const errorMessage = err.message || 'Failed to load quiz data'
+    notification.error({
+      message: 'Error',
+      description: errorMessage,
+      duration: 4.5,
+    })
+    console.error('Error loading quiz for edit:', err)
+  } finally {
+    loadingQuiz.value = false
+  }
+}
+
+// Helper function to map API questions to component format
+const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
+  if (!apiQuestions || apiQuestions.length === 0) return []
+  
+  return apiQuestions.map((apiQuestion: QuizQuestion) => {
+    if (apiQuestion.question_type === 'multiple_choice') {
+      return {
+        id: apiQuestion.id,
+        type: 'multiple-choice' as const,
         data: {
-          question: q.question,
-          files: q.files || [],
-          answer: q.answer || '',
-          options: q.options || [
+          question: apiQuestion.prompt,
+          files: [],
+          options: apiQuestion.options?.map((option) => ({
+            text: option.text,
+            label: option.label,
+          })) || [
             { text: '', label: 'A' },
             { text: '', label: 'B' },
             { text: '', label: 'C' },
             { text: '', label: 'D' },
           ],
-          correctAnswer: q.correctAnswer || '',
+          correctAnswer: apiQuestion.options?.find((opt) => opt.is_correct)?.label || '',
         },
-      }))
+      }
+    } else {
+      // text_input question
+      return {
+        id: apiQuestion.id,
+        type: 'text-input' as const,
+        data: {
+          question: apiQuestion.prompt,
+          files: [],
+          answer: apiQuestion.sample_answer?.text || '',
+        },
+      }
     }
+  })
+}
+
+onMounted(async () => {
+  // First fetch API data
+  await fetchApiData()
+  
+  // Then load quiz data if in edit mode
+  if (props.mode === 'edit') {
+    await loadQuizData()
   }
 })
 
@@ -300,8 +451,20 @@ defineExpose({
         </a-button>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex items-center justify-center py-12">
+        <div class="text-center">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700 mx-auto mb-4"></div>
+          <p class="text-sm text-gray-500">
+            {{ loadingData ? 'Loading categories and chapters...' : 'Loading quiz data...' }}
+          </p>
+        </div>
+      </div>
+
+
       <!-- Form -->
       <a-form
+        v-if="!isLoading"
         :model="formData"
         :rules="rules"
         layout="vertical"
@@ -345,9 +508,11 @@ defineExpose({
           >
             <a-select
               v-model:value="formData.category"
-              placeholder="Italian for Beginners"
+              placeholder="Select a category"
               class="h-12"
               :options="categoryOptions"
+              :loading="loadingData"
+              :disabled="loadingData"
             />
           </a-form-item>
 
@@ -358,9 +523,11 @@ defineExpose({
           >
             <a-select
               v-model:value="formData.chapter"
-              placeholder="Chapter 1"
+              placeholder="Select a chapter"
               class="h-12"
               :options="chapterOptions"
+              :loading="loadingData"
+              :disabled="loadingData"
             />
           </a-form-item>
         </div>
@@ -387,12 +554,11 @@ defineExpose({
           >
             <a-input-number
               v-model:value="formData.quantity"
-              placeholder="45"
+              placeholder="30"
               class="w-full h-10"
               style="width: 100%"
               :min="1"
               :max="999"
-              :disabled="formData.timeType !== 'limit'"
             />
           </a-form-item>
 
@@ -406,7 +572,6 @@ defineExpose({
               placeholder="minute"
               class="h-12"
               :options="unitOptions"
-              :disabled="formData.timeType !== 'limit'"
             />
           </a-form-item>
         </div>

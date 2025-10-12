@@ -745,5 +745,76 @@
     "mobile": {
       "toggleMenu": "Chuyển đổi menu di động"
     }
+  },
+  "quiz": {
+    "management": {
+      "title": "Quản lý Bài kiểm tra",
+      "description": "Tạo và quản lý bài kiểm tra cho khóa học của bạn",
+      "createNewQuiz": "Tạo Bài kiểm tra Mới",
+      "totalQuizzes": "Tổng cộng",
+      "published": "Đã xuất bản",
+      "draft": "Bản nháp",
+      "loading": "Đang tải bài kiểm tra...",
+      "noQuizzes": "Không tìm thấy bài kiểm tra nào",
+      "createFirstQuiz": "Tạo bài kiểm tra đầu tiên của bạn",
+      "tryAgain": "Thử lại",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "publish": "Xuất bản",
+      "unpublish": "Hủy xuất bản",
+      "deleteConfirm": {
+        "title": "Xóa Bài kiểm tra",
+        "message": "Bạn có chắc chắn muốn xóa bài kiểm tra này?",
+        "warning": "Hành động này không thể hoàn tác. Tất cả dữ liệu bài kiểm tra, bao gồm câu hỏi và câu trả lời, sẽ bị xóa vĩnh viễn.",
+        "cancel": "Hủy",
+        "confirm": "Xóa Bài kiểm tra"
+      }
+    },
+    "editor": {
+      "createTitle": "Tạo Bài kiểm tra",
+      "editTitle": "Chỉnh sửa Bài kiểm tra",
+      "backToList": "Quay lại Danh sách Bài kiểm tra",
+      "title": "Tiêu đề bài kiểm tra",
+      "titlePlaceholder": "Bài kiểm tra Tiếng Ý Cơ bản – Trình độ Sơ cấp",
+      "description": "Mô tả bài kiểm tra",
+      "descriptionPlaceholder": "Bài kiểm tra ngắn này được thiết kế để kiểm tra kiến thức tiếng Ý cơ bản của bạn. Bạn sẽ tìm thấy cả câu hỏi trắc nghiệm và câu hỏi tự luận ngắn về lời chào, số đếm và từ vựng đơn giản. Chúc may mắn! 🍀",
+      "category": "Danh mục",
+      "categoryPlaceholder": "Chọn danh mục",
+      "chapter": "Chương",
+      "chapterPlaceholder": "Chọn chương",
+      "timeLimit": "Thời gian giới hạn",
+      "timeLimitPlaceholder": "30",
+      "unit": "Đơn vị",
+      "unitPlaceholder": "phút",
+      "questions": "Câu hỏi",
+      "noQuestions": "Chưa có câu hỏi nào",
+      "addTextInput": "Thêm Câu hỏi Tự luận",
+      "addMultipleChoice": "Thêm Câu hỏi Trắc nghiệm",
+      "validationErrors": "Vui lòng sửa các lỗi sau:",
+      "createQuiz": "Tạo Bài kiểm tra",
+      "updateQuiz": "Cập nhật Bài kiểm tra",
+      "createQuizNoQuestions": "Tạo Bài kiểm tra (Không có câu hỏi)",
+      "updateQuizNoQuestions": "Cập nhật Bài kiểm tra (Không có câu hỏi)",
+      "questionsCount": "câu hỏi",
+      "questionsCountPlural": "câu hỏi",
+      "loadingCategories": "Đang tải danh mục và chương...",
+      "loadingQuiz": "Đang tải dữ liệu bài kiểm tra..."
+    },
+    "messages": {
+      "createSuccess": "Tạo bài kiểm tra thành công!",
+      "updateSuccess": "Cập nhật bài kiểm tra thành công!",
+      "deleteSuccess": "Đã xóa bài kiểm tra \"{title}\" thành công!",
+      "publishSuccess": "Xuất bản bài kiểm tra thành công!",
+      "unpublishSuccess": "Hủy xuất bản bài kiểm tra thành công!",
+      "createError": "Không thể tạo bài kiểm tra",
+      "updateError": "Không thể cập nhật bài kiểm tra",
+      "deleteError": "Không thể xóa bài kiểm tra",
+      "publishError": "Không thể cập nhật trạng thái bài kiểm tra",
+      "loadError": "Không thể tải dữ liệu",
+      "loadQuizError": "Không thể tải dữ liệu bài kiểm tra",
+      "validationError": "Vui lòng sửa các lỗi form trước khi gửi",
+      "formValidationError": "Xác thực form thất bại",
+      "formValidationMessage": "Vui lòng kiểm tra tất cả các trường bắt buộc và thử lại"
+    }
   }
 }

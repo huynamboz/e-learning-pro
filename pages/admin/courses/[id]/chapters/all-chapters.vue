@@ -63,7 +63,7 @@ async function handleAddChapter() {
       notification.success({
         message: t('admin.chapterManagement.notifications.createChapterSuccess'),
       })
-      fetchChapters(courseId.value)
+      await fetchChapters(courseId.value)
       open.value = false
       chaptersList.value = [...chapters.value] as any
       // Reset form

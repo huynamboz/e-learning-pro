@@ -9,6 +9,34 @@ export interface ClassroomPayload {
   schedules_data: ClassroomSchedule[]
 }
 
+export interface ClassroomSession {
+  id: string
+  classroom: string
+  topic: string
+  description: string
+  start_time: string
+  end_time: string
+  location: string
+  meeting_link: string
+  meeting_id: string
+  meeting_pass: string
+  limit: number
+  status: string
+  classroom_title: string
+  course_title: string
+  attendance_count: number
+  present_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ClassroomSessionsResponse {
+  count: number
+  next: string | null
+  previous: string | null
+  results: ClassroomSession[]
+}
+
 export function useClassroomApi() {
   const apiClient = useApiClient()
 
@@ -36,5 +64,9 @@ export function useClassroomApi() {
     // Get classroom detail
     getClassroom: (id: string) =>
       apiClient.get<Classroom>(`/classrooms/${id}/`),
+
+    // Get classroom sessions
+    getClassroomSessions: (classroomId: string) =>
+      apiClient.get<ClassroomSessionsResponse>(`/classrooms/${classroomId}/sessions/`),
   }
 }

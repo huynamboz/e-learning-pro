@@ -293,9 +293,9 @@ async function saveLesson() {
         })
         // Update URL with new lesson ID
         await router.replace({
-          query: {
-            ...route.query,
-            lessonId: newLessonId
+          params: {
+            ...route.params,
+            lessonId: newLessonId,
           }
         })
       }

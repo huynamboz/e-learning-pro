@@ -1,75 +1,45 @@
 <script setup lang="ts">
-import QuizEditor from '~/components/admin/course/quiz/QuizEditor.vue'
 import QuizList from '~/components/admin/course/quiz/QuizList.vue'
-import type { CreateQuizPayload, QuizChapter, UpdateQuizPayload } from '~/types/quiz.type'
+
+// Get route parameters
+const route = useRoute()
+const courseId = route.params.id as string
+const router = useRouter()
+
 // State management
-const currentView = ref<'list' | 'create' | 'edit'>('list')
-const editQuizId = ref<string | undefined>(undefined)
-const listQuizzes = ref<QuizChapter[]>([])
+const currentView = ref<'list' | 'create' | 'edit'>('list') 
 
-const { isCreating, isLoading, isUpdating, getQuizzes, deleteQuiz, createQuiz, updateQuiz } = useQuizManagement()
+// API composable
 
+// Handle view switching
 function switchToCreate() {
-  currentView.value = 'create'
-  editQuizId.value = undefined
+  router.push(`/admin/courses/${courseId}/quiz/create`)
 }
 
 function switchToEdit(quizId: string) {
-  currentView.value = 'edit'
-  editQuizId.value = quizId
+  router.push(`/admin/courses/${courseId}/quiz/${quizId}/edit`)
 }
 
-function handleBack() {
-  currentView.value = 'list'
-  editQuizId.value = undefined
-}
-function handleCreateQuiz(quizData: CreateQuizPayload) {
-  createQuiz(quizData)
-  handleQuizSaved()
-}
-function handleUpdateQuiz(quizData: UpdateQuizPayload) {
-  updateQuiz(quizData)
-  handleQuizSaved()
-}
-function handleQuizSaved() {
-  currentView.value = 'list'
-  editQuizId.value = undefined
-}
-function handleDeleteQuiz(quizId: string) {
-  deleteQuiz(quizId)
-}
-onMounted(async () => {
-  listQuizzes.value = getQuizzes()
+// i18n
+const { t } = useI18n()
+
+// SEO
+useHead({
+  title: () => `${t('quiz.management.title')} - E-Learning Platform`,
+  meta: [
+    { name: 'description', content: () => t('quiz.management.description') }
+  ]
 })
+
 </script>
 
 <template>
   <div class="quiz-management">
     <QuizList
       v-if="currentView === 'list'"
-      :list-quizzes="listQuizzes"
+      :course-id="courseId"
       @create-quiz="switchToCreate"
       @edit-quiz="switchToEdit"
-      @delete-quiz="handleDeleteQuiz"
-    />
-
-    <QuizEditor
-      v-else-if="currentView === 'create'"
-      mode="create"
-      :is-creating="isCreating"
-      :is-loading="isLoading"
-      @back="handleBack"
-      @create-quiz="handleCreateQuiz"
-    />
-
-    <QuizEditor
-      v-else-if="currentView === 'edit'"
-      mode="edit"
-      :quiz-id="editQuizId"
-      :is-loading="isLoading"
-      :is-updating="isUpdating"
-      @back="handleBack"
-      @update-quiz="handleUpdateQuiz"
     />
   </div>
 </template>

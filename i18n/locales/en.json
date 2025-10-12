@@ -745,5 +745,76 @@
     "mobile": {
       "toggleMenu": "Toggle mobile menu"
     }
+  },
+  "quiz": {
+    "management": {
+      "title": "Quiz Management",
+      "description": "Create and manage quizzes for your course",
+      "createNewQuiz": "Create New Quiz",
+      "totalQuizzes": "Total",
+      "published": "Published",
+      "draft": "Draft",
+      "loading": "Loading quizzes...",
+      "noQuizzes": "No quizzes found",
+      "createFirstQuiz": "Create your first quiz",
+      "tryAgain": "Try again",
+      "edit": "Edit",
+      "delete": "Delete",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "deleteConfirm": {
+        "title": "Delete Quiz",
+        "message": "Are you sure you want to delete this quiz?",
+        "warning": "This action cannot be undone. All quiz data, including questions and answers, will be permanently deleted.",
+        "cancel": "Cancel",
+        "confirm": "Delete Quiz"
+      }
+    },
+    "editor": {
+      "createTitle": "Create Quiz",
+      "editTitle": "Edit Quiz",
+      "backToList": "Back to Quizzes List",
+      "title": "Title quiz",
+      "titlePlaceholder": "Basic Italian Quiz – Beginner Level",
+      "description": "Description quiz",
+      "descriptionPlaceholder": "This short quiz is designed to test your basic Italian knowledge. You will find both multiple-choice and short-answer questions covering greetings, numbers, and simple vocabulary. Good luck! 🍀",
+      "category": "Categories",
+      "categoryPlaceholder": "Select a category",
+      "chapter": "Chapter",
+      "chapterPlaceholder": "Select a chapter",
+      "timeLimit": "Time Limit",
+      "timeLimitPlaceholder": "30",
+      "unit": "Unit",
+      "unitPlaceholder": "minute",
+      "questions": "Questions",
+      "noQuestions": "No questions added yet",
+      "addTextInput": "Add Text Input Question",
+      "addMultipleChoice": "Add Multiple Choice Question",
+      "validationErrors": "Please fix the following issues:",
+      "createQuiz": "Create Quiz",
+      "updateQuiz": "Update Quiz",
+      "createQuizNoQuestions": "Create Quiz (No questions)",
+      "updateQuizNoQuestions": "Update Quiz (No questions)",
+      "questionsCount": "question",
+      "questionsCountPlural": "questions",
+      "loadingCategories": "Loading categories and chapters...",
+      "loadingQuiz": "Loading quiz data..."
+    },
+    "messages": {
+      "createSuccess": "Quiz created successfully!",
+      "updateSuccess": "Quiz updated successfully!",
+      "deleteSuccess": "Quiz \"{title}\" has been deleted successfully!",
+      "publishSuccess": "Quiz published successfully!",
+      "unpublishSuccess": "Quiz unpublished successfully!",
+      "createError": "Failed to create quiz",
+      "updateError": "Failed to update quiz",
+      "deleteError": "Failed to delete quiz",
+      "publishError": "Failed to update quiz status",
+      "loadError": "Failed to load data",
+      "loadQuizError": "Failed to load quiz data",
+      "validationError": "Please fix the form errors before submitting",
+      "formValidationError": "Form validation failed",
+      "formValidationMessage": "Please check all required fields and try again"
+    }
   }
 }
