@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import QuizEditor from '~/components/admin/course/quiz/QuizEditor.vue'
+import QuizList from '~/components/admin/course/quiz/QuizList.vue'
 import type { CreateQuizPayload, QuizChapter, UpdateQuizPayload } from '~/types/quiz.type'
-import QuizEditor from './QuizEditor.vue'
-import QuizList from './QuizList.vue'
 // State management
 const currentView = ref<'list' | 'create' | 'edit'>('list')
 const editQuizId = ref<string | undefined>(undefined)

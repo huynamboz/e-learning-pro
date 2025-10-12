@@ -12,6 +12,7 @@ import { useCourseApi } from '~/composables/api/useCourseApi'
 const props = defineProps<Props>()
 const router = useRouter()
 const route = useRoute()
+const courseId = computed(() => route.params.id as string)
 const { t } = useI18n()
 const { patchLesson } = useCourseApi()
 
@@ -53,9 +54,9 @@ async function handleChange(e: DragChangeEvent<Lesson>) {
         <!-- <div class="drag-item">
           {{ element.name }}
         </div> -->
-        <div v-for="item in listLesson" :key="item.id"
+        <NuxtLink :to="`/admin/courses/${courseId}/chapters/${props.chapterId}/lessons-${item.id}`" v-for="item in listLesson" :key="item.id"
           class="drag-item mt-4 flex items-center justify-between border border-gray-200 rounded-lg p-4 cursor-pointer"
-          @click="router.push(`?chapterId=${chapterId}&lessonId=${item?.id}`)">
+          >
           <div class="flex items-center gap-2">
             <Icon name="i-material-symbols-light-play-circle-outline" class="text-2xl text-black" />
             <div class="flex flex-col">
@@ -76,7 +77,7 @@ async function handleChange(e: DragChangeEvent<Lesson>) {
             Delete
           </a-button> -->
           </div>
-        </div>
+        </NuxtLink>
       </draggable>
 
     </div>

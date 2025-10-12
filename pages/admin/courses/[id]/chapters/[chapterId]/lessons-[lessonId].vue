@@ -9,22 +9,19 @@ import { generateSlug } from '~/utils/slug'
 
 const { t } = useI18n()
 
-const props = defineProps<{
-  courseId: string
-  chapterId: string
-  lessonId?: string
-}>()
 
 const route = useRoute()
+const courseId = computed(() => route.params.id as string)
+const chapterId = computed(() => route.params.chapterId as string)
+const lessonId = computed(() => route.params.lessonId as string)
 const router = useRouter()
-const lessonIdQuery = computed(() => route.query.lessonId as string)
 
 const { uploadFile, deleteLesson } = useCourseApi()
 const { createLesson, updateLesson, detailLesson, currentLesson, fetchChapters, isCreatingLesson } = useCourse()
 
 const formRef = ref<FormInstance>()
 const formState = ref<LessonPayload>({
-  chapter_id: props.chapterId,
+  chapter_id: chapterId.value,
   title: '',
   slug: '',
   description: '',
@@ -53,13 +50,12 @@ const isDeleting = ref(false)
 
 // Fetch lesson data
 async function fetchLesson() {
-  const lessonId = lessonIdQuery.value as string
-  if (lessonId && lessonId !== 'default') {
-    await detailLesson(props.courseId, props.chapterId, lessonId)
+  if (lessonId.value && lessonId.value !== 'create') {
+    await detailLesson(courseId.value, chapterId.value, lessonId.value)
     if (currentLesson.value) {
       const data = currentLesson.value
       formState.value = {
-        chapter_id: props.chapterId,
+        chapter_id: chapterId.value,
         title: data.title,
         slug: data.slug,
         description: data.description,
@@ -87,7 +83,7 @@ async function fetchLesson() {
   } else {
     // Reset form for new lesson
     formState.value = {
-      chapter_id: props.chapterId,
+      chapter_id: chapterId.value,
       title: '',
       slug: '',
       description: '',
@@ -111,15 +107,14 @@ onMounted(() => {
 
 
 // Watch route changes
-watch(() => lessonIdQuery.value, () => {
+watch(() => lessonId.value, () => {
   fetchLesson()
 })
 
 // Watch title changes to auto-generate slug
 watch(() => formState.value.title, (newTitle) => {
   // Only generate slug for new lessons (not when editing existing)
-  const lessonId = lessonIdQuery.value
-  if (!lessonId || lessonId === 'default') {
+  if (!lessonId.value || lessonId.value === 'create') {
     formState.value.slug = generateSlug(newTitle)
   }
 })
@@ -215,7 +210,7 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
 async function uploadVideoAndSaveLesson() {
   await formRef.value?.validateFields()
 
-  if (!props.courseId)
+  if (!courseId.value)
     return
 
   if (videoFileList.value.length) {
@@ -228,7 +223,7 @@ async function uploadVideoAndSaveLesson() {
         isUploading.value = true
         uploadProgress.value = 0
 
-        const presign = await uploadFile(props.courseId, {
+        const presign = await uploadFile(courseId.value, {
           file_name: file.name,
           content_type: file.type,
         } as any)
@@ -266,14 +261,13 @@ async function uploadVideoAndSaveLesson() {
 }
 
 async function saveLesson() {
-  formState.value.chapter_id = props.chapterId
-  const lessonId = lessonIdQuery.value as string
+  formState.value.chapter_id = chapterId.value
 
-  if (lessonId && lessonId !== 'default') {
+  if (lessonId.value && lessonId.value !== 'create') {
     const response = await updateLesson(
-      props.courseId,
-      props.chapterId,
-      lessonId,
+      courseId.value,
+      chapterId.value,
+      lessonId.value,
       formState.value,
     )
     if (response.success) {
@@ -288,7 +282,7 @@ async function saveLesson() {
     }
   }
   else {
-    const response = await createLesson(props.courseId, props.chapterId, formState.value)
+    const response = await createLesson(courseId.value, chapterId.value, formState.value)
     // If creating new lesson, update URL with new lesson ID
     if (response.success) {
       const newLessonId = response.data?.id
@@ -315,7 +309,7 @@ async function saveLesson() {
 
   // notification.success({
   //   message:
-  //     lessonId && lessonId !== 'default'
+  //     lessonId && lessonId !== 'create'
   //       ? 'Update lesson success'
   //       : 'Create lesson success',
   // })
@@ -323,14 +317,13 @@ async function saveLesson() {
 
 // Preview lesson function
 function previewLesson() {
-  const lessonId = lessonIdQuery.value
-  if (lessonId && lessonId !== 'default') {
+  if (lessonId.value && lessonId.value !== 'create') {
     // Replace admin/courses with /learning/ in the current URL
     const currentPath = route.path
     const learningPath = currentPath.replace('/admin/courses/', '/learning/')
     
     // Navigate to learning page with lesson ID
-    navigateTo(`${learningPath}?lessonId=${lessonId}`)
+    navigateTo(`${learningPath}?lessonId=${lessonId.value}`)
   }
 }
 
@@ -344,12 +337,11 @@ function closeDeleteDialog() {
 }
 
 async function confirmDeleteLesson() {
-  const lessonId = lessonIdQuery.value
-  if (!lessonId || lessonId === 'default') return
+  if (!lessonId.value || lessonId.value === 'create') return
 
   try {
     isDeleting.value = true
-    await deleteLesson(props.courseId, props.chapterId, lessonId)
+    await deleteLesson(courseId.value, chapterId.value, lessonId.value)
     
     notification.success({
       message: t('admin.formLesson.notifications.deleteLessonSuccess'),
@@ -368,7 +360,7 @@ async function confirmDeleteLesson() {
     })
     
     // Refresh chapters list
-    await fetchChapters(props.courseId)
+    await fetchChapters(courseId.value)
   } catch (error) {
     notification.error({
       message: t('admin.formLesson.notifications.deleteLessonFailed'),
@@ -401,10 +393,10 @@ async function confirmDeleteLesson() {
             </div>
             <div>
               <h1 class="text-2xl font-bold text-gray-900 !m-0">
-                {{ lessonIdQuery && lessonIdQuery !== 'default' ? t('admin.formLesson.title.edit') : t('admin.formLesson.title.create') }}
+                {{ lessonId && lessonId !== 'create' ? t('admin.formLesson.title.edit') : t('admin.formLesson.title.create') }}
               </h1>
               <p class="text-sm text-gray-500 mt-1">
-                {{ lessonIdQuery && lessonIdQuery !== 'default' ? t('admin.formLesson.description.edit') : t('admin.formLesson.description.create') }}
+                {{ lessonId && lessonId !== 'create' ? t('admin.formLesson.description.edit') : t('admin.formLesson.description.create') }}
               </p>
             </div>
           </div>
@@ -430,7 +422,7 @@ async function confirmDeleteLesson() {
 
             <!-- Preview Button (only show when editing existing lesson) -->
             <a-button 
-              v-if="lessonIdQuery && lessonIdQuery !== 'default'"
+              v-if="lessonId && lessonId !== 'create'"
               size="large"
               class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
               @click="previewLesson"
@@ -443,7 +435,7 @@ async function confirmDeleteLesson() {
 
             <!-- Delete Button (only show when editing existing lesson) -->
             <a-button 
-              v-if="lessonIdQuery && lessonIdQuery !== 'default'"
+              v-if="lessonId && lessonId !== 'create'"
               size="large"
               danger
               class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold"
@@ -466,11 +458,11 @@ async function confirmDeleteLesson() {
             >
               <template #icon>
                 <Icon 
-                  :name="isUploading ? 'solar:upload-bold-duotone' : (lessonIdQuery && lessonIdQuery !== 'default' ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')" 
+                  :name="isUploading ? 'solar:upload-bold-duotone' : (lessonId && lessonId !== 'create' ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')" 
                   size="26" 
                 />
               </template>
-              {{ isUploading ? `${t('admin.formLesson.buttons.uploading')} ${uploadProgress}%` : `${lessonIdQuery && lessonIdQuery !== 'default' ? t('admin.formLesson.buttons.updateLesson') : t('admin.formLesson.buttons.createLesson')}` }}
+              {{ isUploading ? `${t('admin.formLesson.buttons.uploading')} ${uploadProgress}%` : `${lessonId && lessonId !== 'create' ? t('admin.formLesson.buttons.updateLesson') : t('admin.formLesson.buttons.createLesson')}` }}
             </a-button>
           </div>
         </div>

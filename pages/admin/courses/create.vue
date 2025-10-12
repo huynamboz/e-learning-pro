@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import FormCourse from '~/components/admin/course/FormCourse.vue'
+// import FormCourse from '~/components/admin/course/FormCourse.vue'
 
 definePageMeta({
   layout: 'admin',

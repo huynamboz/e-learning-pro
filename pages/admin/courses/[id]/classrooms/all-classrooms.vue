@@ -1,17 +1,14 @@
+// Classrooms list
 <script lang="ts" setup>
 import type { ClassroomPayload } from '~/composables/api/useClassroomApi'
 import { useCourseApi } from '~/composables/api'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
-import CardClassroom from './CardClassroom.vue'
+import CardClassroom from '~/components/admin/course/classroom/CardClassroom.vue'
 
 const { t } = useI18n()
 
-interface Props {
-  courseId: string
-}
-
-const props = defineProps<Props>()
-
+const route = useRoute()
+const courseId = computed(() => route.params.id as string)
 const { createClassroom } = useClassroomApi()
 const { getDetailCourses } = useCourseApi()
 
@@ -62,7 +59,7 @@ async function loadCourseDetail() {
   try {
     isLoading.value = true
     error.value = null
-    const response = await getDetailCourses(props.courseId)
+    const response = await getDetailCourses(courseId.value)
     courseDetail.value = response
 
     // Extract classrooms from course detail
@@ -102,7 +99,7 @@ async function handleOk() {
 
     // Transform form data to API format
     const classroomPayload: ClassroomPayload = {
-      course_id: props.courseId,
+      course_id: courseId.value,
       title: formState.value.title,
       student_count: Number.parseInt(formState.value.student_count),
       schedules_data: formState.value.schedule
@@ -279,6 +276,7 @@ onMounted(() => {
               </a-select>
 
               <a-time-picker
+                :allow-clear="false"
                 v-model:value="item.start"
                 format="HH:mm"
                 :minute-step="30"

@@ -41,7 +41,7 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
 
 <template>
   <RouterLink
-    :to="type === 'admin' ? `courses/${id}` : `/courses/${id}`"
+    :to="type === 'admin' ? `courses/${id}/course-detail` : `/courses/${id}`"
     class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
   >
     <div class="space-y-4 relative">

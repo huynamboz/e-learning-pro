@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useCourse } from '#imports'
 import { notification } from 'ant-design-vue'
-import LessonsList from './LessonsList.vue'
 import { generateSlug } from '~/utils/slug'
 import { VueDraggableNext as draggable, type DragChangeEvent } from 'vue-draggable-next'
 import type { Chapter } from '~/types/course.type'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import LessonsList from '~/components/admin/course/chapter/LessonsList.vue'
 
 const { t } = useI18n()
 
@@ -229,14 +229,15 @@ onMounted(async () => {
           <h2 class="text-2xl font-semibold !m-0">
             {{ activeChapter.title }} ({{ activeChapter.lessons.length }} {{ t('admin.chapterManagement.lessons.minutes') }})
           </h2>
-          <a-button
+          <NuxtLink :to="`/admin/courses/${courseId}/chapters/${activeChapter.id}/lessons-create`">
+            <a-button
             type="primary"
             class="!h-12 !mt-4 rounded-lg text-sm !font-semibold !flex !items-center !justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700"
-            @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
           >
             {{ t('admin.chapterManagement.lessons.addLesson') }}
             <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
           </a-button>
+          </NuxtLink>
         </div>
 
         <!-- Empty state for lessons -->
@@ -246,16 +247,17 @@ onMounted(async () => {
           </div>
           <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ t('admin.chapterManagement.emptyStates.noLessons') }}</h3>
           <p class="text-sm text-gray-500 mb-6">{{ t('admin.chapterManagement.emptyStates.noLessonsDescription') }}</p>
-          <a-button
+          <NuxtLink :to="`/admin/courses/${courseId}/chapters/${activeChapter.id}/lessons-create`">
+            <a-button
             type="primary"
             class="!h-10 !flex gap-1 items-center !px-6 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
-            @click="router.push(`?chapterId=${activeChapter.id}&lessonId=default`)"
           >
             <template #icon>
               <Icon name="solar:add-circle-bold-duotone" size="16" />
             </template>
             {{ t('admin.chapterManagement.emptyStates.createFirstLesson') }}
           </a-button>
+          </NuxtLink>
         </div>
 
         <!-- Lessons list -->

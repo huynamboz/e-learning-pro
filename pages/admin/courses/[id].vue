@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import DetailLessonManage from '~/components/admin/course/chapter/DetailLessonManage.vue'
-import AttendanceManagement from '~/components/admin/course/classroom/AttendanceManagement.vue'
-import DetailAttendance from '~/components/admin/course/classroom/DetailAttendance.vue'
-import DetailClassroom from '~/components/admin/course/classroom/DetailClassroom.vue'
+// import DetailLessonManage from '~/components/admin/course/chapter/DetailLessonManage.vue'
+// import AttendanceManagement from '~/components/admin/course/classroom/AttendanceManagement.vue'
+// import DetailAttendance from '~/components/admin/course/classroom/DetailAttendance.vue'
+// import DetailClassroom from '~/components/admin/course/classroom/DetailClassroom.vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 
 definePageMeta({
@@ -12,41 +12,35 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-const activeTab = ref(route.query.tab ? (route.query.tab as string) : 'DETAIL',
-
-)
 
 const listOptions = computed(() => [
   {
-    key: 'CLASSROOM',
+    path: 'classrooms/all-classrooms',
     name: t('admin.courses.tabs.classroom'),
-    component: defineAsyncComponent(() => import('~/components/admin/course/classroom/Classroom.vue')),
   },
   {
-    key: 'QUIZ',
+    path: 'quiz/all-quiz',
     name: t('admin.courses.tabs.quiz'),
-    component: defineAsyncComponent(() => import('~/components/admin/course/quiz/QuizManager.vue')),
   },
   {
-    key: 'STUDENTS',
+    path: 'students',
     name: t('admin.courses.tabs.students'),
-    component: defineAsyncComponent(() => import('~/components/admin/course/StudentsManagement.vue')),
   },
   {
-    key: 'CHAPTERS',
+    path: 'chapters/all-chapters',
     name: t('admin.courses.tabs.chapters'),
-    component: defineAsyncComponent(() => import('~/components/admin/course/chapter/ChapterManagement.vue')),
   },
   {
-    key: 'DETAIL',
+    path: 'course-detail',
     name: t('admin.courses.tabs.detail'),
-    component: defineAsyncComponent(() => import('~/components/admin/course/FormCourse.vue')),
   },
 ])
 
+const activeTab = ref(listOptions.value.find(tab => route.path.includes(tab.path))?.path || '')
+
 function handleChangeTab(key: string) {
-  const query = { ...route.query, tab: key }
-  router.replace({ query })
+  // const query = { ...route.query, tab: key }
+  navigateTo(`/admin/courses/${courseId.value}/${key}`)
 }
 
 const courseId = computed(() => route.params.id as string)
@@ -72,16 +66,17 @@ onMounted(async () => {
       <span>/</span>
       <span class="text-black">{{ courseDetail?.title }}</span>
     </div>
-    <DetailAttendance v-if="attendanceId && !attendanceManageId" />
+    <!-- <DetailAttendance v-if="attendanceId && !attendanceManageId" />
     <DetailLessonManage v-else-if="lessonId" :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
-    <AttendanceManagement v-else-if="attendanceManageId" />
-    <div v-else class="">
+    <AttendanceManagement v-else-if="attendanceManageId" /> -->
+    <div class="">
       <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">
-        <a-tab-pane v-for="tab in listOptions" :key="tab.key" :tab="tab.name">
-          <component :is="tab.component" :type="tab.key" :course-id="courseId" />
+        <a-tab-pane v-for="tab in listOptions" :key="tab.path" :tab="tab.name">
+          <!-- <component :is="tab.component" :type="tab.key" :course-id="courseId" /> -->
         </a-tab-pane>
       </a-tabs>
     </div>
+    <NuxtPage />
   </div>
 </template>
