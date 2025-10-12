@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useCourse } from '#imports'
-import { notification } from 'ant-design-vue'
+import { notification, Modal } from 'ant-design-vue'
 import { generateSlug } from '~/utils/slug'
 import { VueDraggableNext as draggable, type DragChangeEvent } from 'vue-draggable-next'
 import type { Chapter } from '~/types/course.type'
@@ -9,17 +9,26 @@ import LessonsList from '~/components/admin/course/chapter/LessonsList.vue'
 
 const { t } = useI18n()
 
-const { fetchChapters, createChapter, chapters, isCreatingChapter } = useCourse()
+const { fetchChapters, createChapter, updateChapter, deleteChapter, chapters, isCreatingChapter } = useCourse()
 const { patchChapter } = useCourseApi() 
 const route = useRoute()
+const router = useRouter()
 
 const courseId = computed(() => route.params.id as string)
 
-const router = useRouter()
 const open = ref<boolean>(false)
+const editOpen = ref<boolean>(false)
 const formRef = ref()
+const editFormRef = ref()
+const visible = ref<string | null>(null)
 
 const formState = ref({
+  title: '',
+  description: '',
+})
+
+const editFormState = ref({
+  id: '',
   title: '',
   description: '',
 })
@@ -52,18 +61,16 @@ async function handleChapterChange(e: DragChangeEvent<Chapter>) {
 async function handleAddChapter() {
   await formRef.value?.validateFields()
   try {
-    // Generate slug from title
     const chapterData = {
       ...formState.value,
-      slug: generateSlug(formState.value.title)
+      slug: generateSlug(formState.value.title),
     }
-    
-    const response = createChapter(courseId.value, chapterData as any)
-    if ((await response).success) {
+    const response = await createChapter(courseId.value, chapterData as any)
+    if (response.success) {
       notification.success({
         message: t('admin.chapterManagement.notifications.createChapterSuccess'),
       })
-      fetchChapters(courseId.value)
+      await fetchChapters(courseId.value)
       open.value = false
       chaptersList.value = [...chapters.value] as any
       // Reset form
@@ -72,17 +79,75 @@ async function handleAddChapter() {
         description: '',
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     notification.error({
       message: t('admin.chapterManagement.notifications.createChapterFailed'),
     })
   }
 }
 
-const activeChapter = computed(() => {
-  return chapters.value?.find(ch => ch.id === activeChapterId.value)
-})
+function showEditModal(chapter: any) {
+  editFormState.value = {
+    id: chapter.id,
+    title: chapter.title,
+    description: chapter.description || '',
+  }
+  editOpen.value = true
+}
+
+async function handleUpdateChapter() {
+  await editFormRef.value?.validateFields()
+  try {
+    const payload = {
+      ...editFormState.value,
+      slug: generateSlug(editFormState.value.title),
+    }
+    const response = await updateChapter(courseId.value, editFormState.value.id, payload as any)
+    if (response.success) {
+      notification.success({
+        message: t('admin.chapterManagement.notifications.updateChapterSuccess'),
+      })
+      await fetchChapters(courseId.value)
+      editOpen.value = false
+    }
+  } catch (error) {
+    notification.error({
+      message: t('admin.chapterManagement.notifications.updateChapterFailed'),
+    })
+  }
+}
+
+function confirmDeleteChapter(chapterId: string) {
+  Modal.confirm({
+    title: t('admin.chapterManagement.form.confirmDeleteTitle'),
+    content: t('admin.chapterManagement.form.confirmDeleteDescription'),
+    okText: t('admin.chapterManagement.button.delete'),
+    cancelText: t('admin.chapterManagement.button.cancel'),
+    okButtonProps: { danger: true },
+    async onOk() {
+      try {
+        const response = await deleteChapter(courseId.value, chapterId)
+        if (response.success) {
+          notification.success({
+            message: t('admin.chapterManagement.notifications.deleteChapterSuccess'),
+          })
+          await fetchChapters(courseId.value)
+          if (activeChapterId.value === chapterId) {
+            activeChapterId.value = ''
+          }
+        }
+      } catch (error) {
+        notification.error({
+          message: t('admin.chapterManagement.notifications.deleteChapterFailed'),
+        })
+      }
+    },
+  })
+}
+
+const activeChapter = computed(() =>
+  chapters.value?.find((ch) => ch.id === activeChapterId.value)
+)
 
 function showModal() {
   open.value = true
@@ -113,16 +178,29 @@ onMounted(async () => {
             @click="showModal"
           >
             {{ t('admin.chapterManagement.addChapter') }}
-            <Icon name="i-material-symbols-edit-square-outline-rounded" class="text-base ml-2" />
+            <Icon
+              name="i-material-symbols-edit-square-outline-rounded"
+              class="text-base ml-2"
+            />
           </a-button>
         </div>
-        <!-- Empty state for chapters -->
-        <div v-if="!chapters || chapters.length === 0" class="flex flex-col gap-2 items-center text-center py-8">
-          <div class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
+
+        <!-- Empty state -->
+        <div
+          v-if="!chapters || chapters.length === 0"
+          class="flex flex-col gap-2 items-center text-center py-8"
+        >
+          <div
+            class="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4"
+          >
             <Icon name="solar:book-2-bold-duotone" size="32" class="text-gray-400" />
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t('admin.chapterManagement.emptyStates.noChapters') }}</h3>
-          <p class="text-sm text-gray-500 mb-4">{{ t('admin.chapterManagement.emptyStates.noChaptersDescription') }}</p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+            {{ t('admin.chapterManagement.emptyStates.noChapters') }}
+          </h3>
+          <p class="text-sm text-gray-500 mb-4">
+            {{ t('admin.chapterManagement.emptyStates.noChaptersDescription') }}
+          </p>
           <a-button
             type="primary"
             size="small"
@@ -136,64 +214,142 @@ onMounted(async () => {
           </a-button>
         </div>
 
-        <!-- Chapter list -->
-        <draggable 
-          tag="transition-group" 
+        <draggable
+          tag="transition-group"
           :component-data="{
             tag: 'div',
             type: 'transition',
             name: 'fade'
-          }" 
-          :animation="200" 
-          v-model="chaptersList" 
-          group="chapters" 
-          @change="handleChapterChange" 
+          }"
+          :animation="200"
+          v-model="chaptersList"
+          group="chapters"
+          @change="handleChapterChange"
           item-key="id"
         >
           <div
             v-for="ch in chaptersList"
             :key="ch.id"
-            class="px-3 py-2 mt-2 rounded-lg cursor-pointer border transition-all flex items-center drag-item"
+            class="px-3 py-2 mt-2 rounded-lg cursor-pointer border transition-all flex items-center justify-between drag-item"
             :class="activeChapterId === ch.id
               ? 'border-green-500 bg-green-50 font-medium'
               : 'border-gray-300 hover:bg-gray-100'"
-            @click="activeChapterId = ch.id"
           >
-            <Icon v-if="activeChapterId === ch.id" name="i-charm-tick" class="text-lg mr-2 text-green-600" />
-            <span class="truncate">{{ ch.title }}</span>
+            <div class="flex items-center flex-1 truncate" @click="activeChapterId = ch.id">
+              <Icon v-if="activeChapterId === ch.id" name="i-charm-tick" class="text-lg mr-2 text-green-600" />
+              <span class="truncate">{{ ch.title }}</span>
+            </div>
+
+            <!-- Action menu -->
+            <a-popover
+              trigger="click"
+              placement="bottomRight"
+              :open="visible === ch.id"
+              @open-change="val => visible = val ? ch.id : null"
+            >
+              <template #content>
+                <div class="flex flex-col min-w-[80px]">
+                  <a-button
+                    type="text"
+                    size="small"
+                    class="!text-gray-700 hover:!bg-gray-100 text-left"
+                    @click="() => { showEditModal(ch); visible = null }"
+                  >
+                    {{ t('admin.chapterManagement.button.edit') }}
+                  </a-button>
+                  <a-button
+                    type="text"
+                    size="small"
+                    class="!text-red-600 hover:!bg-red-50 text-left"
+                    @click="() => { confirmDeleteChapter(ch.id); visible = null }"
+                  >
+                    {{ t('admin.chapterManagement.button.delete') }}
+                  </a-button>
+                </div>
+              </template>
+
+              <a-button
+                type="text"
+                size="small"
+                class="!text-gray-500 hover:!text-gray-700 !flex items-center justify-center"
+              >
+                <Icon name="i-material-symbols-more-vert" />
+              </a-button>
+            </a-popover>
           </div>
         </draggable>
+
       </div>
     </div>
 
-    <a-modal v-model:open="open" :title="t('admin.chapterManagement.form.title')" width="600px" :confirm-loading="isCreatingChapter" @ok="handleAddChapter">
-      <a-form
-        ref="formRef"
-        :model="formState"
-        name="basic"
-        autocomplete="off"
-        layout="vertical"
-        class="flex items-start flex-col w-full"
-      >
+    <!-- Modal: Create Chapter -->
+    <a-modal
+      v-model:open="open"
+      :title="t('admin.chapterManagement.form.title')"
+      width="600px"
+      :confirm-loading="isCreatingChapter"
+      @ok="handleAddChapter"
+    >
+      <a-form ref="formRef" :model="formState" layout="vertical">
         <a-form-item
           :label="t('admin.chapterManagement.form.chapterTitle')"
           name="title"
-          class="w-full"
           :rules="[{ required: true, message: t('admin.chapterManagement.form.chapterTitleRequired') }]"
         >
-          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.chapterManagement.form.chapterTitlePlaceholder')" />
+          <a-input
+            v-model:value="formState.title"
+            size="large"
+            :placeholder="t('admin.chapterManagement.form.chapterTitlePlaceholder')"
+          />
         </a-form-item>
         <a-form-item
           :label="t('admin.chapterManagement.form.chapterDescription')"
           name="description"
-          class="w-full"
         >
-          <a-textarea v-model:value="formState.description" size="large" :placeholder="t('admin.chapterManagement.form.chapterDescriptionPlaceholder')" :auto-size="{ minRows: 3, maxRows: 5 }" />
+          <a-textarea
+            v-model:value="formState.description"
+            size="large"
+            :placeholder="t('admin.chapterManagement.form.chapterDescriptionPlaceholder')"
+            :auto-size="{ minRows: 3, maxRows: 5 }"
+          />
         </a-form-item>
       </a-form>
     </a-modal>
 
-    <!-- Lesson List -->
+    <!-- Modal: Edit Chapter -->
+    <a-modal
+      v-model:open="editOpen"
+      :title="t('admin.chapterManagement.form.editTitle')"
+      width="600px"
+      @ok="handleUpdateChapter"
+    >
+      <a-form ref="editFormRef" :model="editFormState" layout="vertical">
+        <a-form-item
+          :label="t('admin.chapterManagement.form.chapterTitle')"
+          name="title"
+          :rules="[{ required: true, message: t('admin.chapterManagement.form.chapterTitleRequired') }]"
+        >
+          <a-input
+            v-model:value="editFormState.title"
+            size="large"
+            :placeholder="t('admin.chapterManagement.form.chapterTitlePlaceholder')"
+          />
+        </a-form-item>
+        <a-form-item
+          :label="t('admin.chapterManagement.form.chapterDescription')"
+          name="description"
+        >
+          <a-textarea
+            v-model:value="editFormState.description"
+            size="large"
+            :placeholder="t('admin.chapterManagement.form.chapterDescriptionPlaceholder')"
+            :auto-size="{ minRows: 3, maxRows: 5 }"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <!-- Lessons -->
     <div class="flex-1 bg-white rounded-md shadow p-4">
       <!-- Empty state when no chapter is selected -->
       <div v-if="!activeChapter && chapters && chapters.length > 0" class="text-center py-12">
@@ -266,22 +422,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style scoped lang="css">
-:deep(.ql-editor) {
-  min-height: 200px;
-}
-:deep(.ql-toolbar.ql-snow) {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-:deep(.ql-container.ql-snow) {
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-:deep(.ql-editor) {
-  height: 200px !important;
-  overflow-y: auto;
-}
-</style>

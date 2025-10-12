@@ -48,6 +48,9 @@
       "form": {
         "title": "Thêm chương",
         "chapterTitle": "Tiêu đề chương",
+        "editTitle": "Chỉnh sửa chương",
+        "confirmDeleteTitle": "Xóa chương",
+        "confirmDeleteDescription": "Bạn có chắc chắc muốn xoá chương, tất cả bài học trong chương này sẽ bị xoá",
         "chapterTitlePlaceholder": "Nhập tiêu đề chương",
         "chapterTitleRequired": "Vui lòng nhập tiêu đề chương!",
         "chapterDescription": "Mô tả chương",
@@ -64,8 +67,15 @@
       "notifications": {
         "createChapterSuccess": "Tạo chương thành công",
         "createChapterFailed": "Tạo chương thất bại",
-        "updateOrderSuccess": "Cập nhật thứ tự chương thành công!",
-        "updateOrderFailed": "Cập nhật thứ tự chương thất bại"
+        "updateChapterSuccess": "Chỉnh sửa chương thành công!",
+        "updateChapterFailed": "Chỉnh sửa chương thất bại",
+        "deleteChapterSuccess": "Xoá chương thành công",
+        "deleteChapterFailed": "Xoá chương thất bại"
+      },
+      "button": {
+        "delete": "Xoá",
+        "cancel": "Hủy",
+        "edit": "Chỉnh sửa"
       }
     },
     "formLesson": {

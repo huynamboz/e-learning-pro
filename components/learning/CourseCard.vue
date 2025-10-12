@@ -20,6 +20,7 @@ interface Course {
   lectures: number
   level: string
   price?: number
+  thumnail?: string
 }
 
 interface Props {
@@ -49,7 +50,10 @@ function handleCancelCourse() {
            transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
   >
     <div class="w-full h-[139px] rounded-lg overflow-hidden mb-2">
-      <img :src="course.image" :alt="course.title" class="w-full h-full object-cover">
+       <img
+          :src="course?.thumnail || '/images/course-thumbnail-default.webp'" :alt="title"
+          class="w-full h-32 sm:h-36 lg:h-[139px] object-cover rounded-lg"
+        >
     </div>
 
     <div class="flex flex-col gap-2 flex-1">
@@ -59,7 +63,7 @@ function handleCancelCourse() {
             {{ course.title }}
           </h5>
           <p class="text-sm font-normal text-gray-600 m-0 leading-6">
-            {{ course.instructor }}
+            By {{ course.teacher?.full_name }}
           </p>
         </div>
 

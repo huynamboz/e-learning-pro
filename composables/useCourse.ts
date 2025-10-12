@@ -150,6 +150,24 @@ export function useCourse() {
     }
   }
 
+  async function deleteChapter(idCourse: string, idChapter: string): Promise<{ success: boolean, error?: string }> {
+    isCreatingChapter.value = true
+
+    try {
+      await courseApi.deleteChapter(idCourse, idChapter)
+      return { success: true }
+    }
+    catch (error: any) {
+      return {
+        success: false,
+        error: error.data?.message || error.statusMessage || 'Failed to delete chapter',
+      }
+    }
+    finally {
+      isCreatingChapter.value = false
+    }
+  }
+
   // Fetch all courses with filters
   async function fetchCourses(params?: {
     search?: string
@@ -440,8 +458,7 @@ export function useCourse() {
       const response = await courseApi.getEnrolledCourses()
 
       if (response) {
-        // Extract courses from enrollment objects
-        enrolledCourses.value = response.map(enrollment => enrollment.course)
+        enrolledCourses.value = response?.results.map(enrollment => enrollment)
       }
 
       return { success: true }
@@ -640,6 +657,7 @@ export function useCourse() {
     fetchChapters,
     createChapter,
     updateChapter,
+    deleteChapter,
     createLesson,
     updateLesson,
     detailLesson,

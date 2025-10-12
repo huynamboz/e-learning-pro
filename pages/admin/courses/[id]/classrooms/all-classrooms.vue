@@ -244,7 +244,7 @@ onMounted(() => {
             size="large"
             :placeholder="t('admin.classroom.form.studentCountPlaceholder')"
             :min="1"
-            class="w-full"
+            class="!w-full"
           />
         </a-form-item>
 

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useAuth } from '#imports'
 import { message } from 'ant-design-vue'
+import { useCourse } from '#imports'
 import ProfileSidebar from '~/components/profile/ProfileSidebar.vue'
+import ListCourses from '~/components/profile/ListCourses.vue'
 
 import {
   mockUserProfile,
@@ -17,6 +19,8 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+
+const { fetchEnrolledCourses, enrolledCourses } = useCourse()
 
 // Reactive data
 const { fetchProfile, user } = useAuth()
@@ -56,13 +60,13 @@ function handleShareProfile() {
 
 onMounted(() => {
   fetchProfile()
+  fetchEnrolledCourses()
 })
 </script>
 
 <template>
   <div class="bg-white p-6">
     <div class="flex gap-6 mx-auto items-start sm:flex-row flex-col">
-      <!-- Profile Sidebar -->
       <ProfileSidebar
         :user-profile="userProfile"
         :active-tab="activeTab"
@@ -70,7 +74,7 @@ onMounted(() => {
         @share-profile="handleShareProfile"
       />
 
-      <ProfileListCourses v-if="activeTab === 'MY_COURSES'" />
+      <ListCourses :courses="enrolledCourses" v-if="activeTab === 'MY_COURSES'" />
       <ProfileForm v-if="activeTab === 'PROFILE'" :data-profile="userProfileData" :is-fetching-profile="isFetchingProfile" />
     </div>
   </div>

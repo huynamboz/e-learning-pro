@@ -48,6 +48,9 @@
       "form": {
         "title": "Add Chapter",
         "chapterTitle": "Chapter title",
+        "editTitle": "Update Chapter",
+        "confirmDeleteTitle": "Delete Chapter?",
+        "confirmDeleteDescription": "Are you sure you want to delete this chapter? All its lessons will also be removed.",
         "chapterTitlePlaceholder": "Enter chapter title",
         "chapterTitleRequired": "Please input your chapter title!",
         "chapterDescription": "Chapter description",
@@ -64,8 +67,15 @@
       "notifications": {
         "createChapterSuccess": "Create chapter success",
         "createChapterFailed": "Create chapter failed",
-        "updateOrderSuccess": "Chapter order updated successfully!",
-        "updateOrderFailed": "Failed to update chapter order"
+        "updateChapterSuccess": "Chapter updated successfully!",
+        "updateChapterFailed": "Failed to update chapter.",
+        "deleteChapterSuccess": "Chapter deleted successfully!",
+        "deleteChapterFailed": "Failed to delete chapter."
+      }, 
+      "button": {
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "edit": "Edit"
       }
     },
     "formLesson": {
