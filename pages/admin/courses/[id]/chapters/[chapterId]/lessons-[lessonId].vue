@@ -319,11 +319,9 @@ async function saveLesson() {
 function previewLesson() {
   if (lessonId.value && lessonId.value !== 'create') {
     // Replace admin/courses with /learning/ in the current URL
-    const currentPath = route.path
-    const learningPath = currentPath.replace('/admin/courses/', '/learning/')
     
     // Navigate to learning page with lesson ID
-    navigateTo(`${learningPath}?lessonId=${lessonId.value}`)
+    navigateTo(`/learning/${courseId.value}?lessonId=${lessonId.value}`)
   }
 }
 
