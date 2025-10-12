@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { User } from '~/types/auth.type'
+import type { CourseStudent } from '~/types/course.type'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 import { message } from 'ant-design-vue'
+
+const { t } = useI18n()
 
 // Define page meta
 definePageMeta({
@@ -14,8 +18,11 @@ const courseId = route.params.id as string
 
 // Set page title
 useHead({
-  title: 'Course Students',
+  title: t('admin.students.title'),
 })
+
+// Use course API
+const courseApi = useCourseApi()
 
 // Reactive data
 const searchQuery = ref('')
@@ -23,113 +30,27 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const loading = ref(false)
+const error = ref<string | null>(null)
 
-// Extended interface for course students
-interface CourseStudent extends User {
-  enrollment: {
-    id: string
-    enrolled_at: string
-    progress: number
-    last_accessed: string
-    classroom: {
-      id: string
-      title: string
-      schedule_summary: string
-    }
+// Course students data
+const students = ref<CourseStudent[]>([])
+
+// Load course students
+const loadStudents = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const response = await courseApi.getCourseStudents(courseId)
+    students.value = response.results
+    total.value = response.count
+  } catch (err: any) {
+    console.error('Error loading course students:', err)
+    error.value = err.message || 'Failed to load students'
+    message.error('Failed to load students')
+  } finally {
+    loading.value = false
   }
 }
-
-// Mock course students data
-const students = ref<CourseStudent[]>([
-  {
-    id: 1,
-    email: 'student1@elearning.com',
-    username: 'student_nguyen',
-    first_name: 'Nguyễn',
-    last_name: 'Văn A',
-    is_teacher: false,
-    is_verified: true,
-    role: 'user',
-    createdAt: '2024-02-10T00:00:00Z',
-    enrollment: {
-      id: '1',
-      enrolled_at: '2024-02-12T00:00:00Z',
-      progress: 75,
-      last_accessed: '2024-03-15T10:30:00Z',
-      classroom: {
-        id: '1',
-        title: 'Lớp A1 - Sáng thứ 2,4,6',
-        schedule_summary: 'Mon, Wed, Fri 9:00-11:00'
-      }
-    }
-  },
-  {
-    id: 2,
-    email: 'student2@elearning.com',
-    username: 'student_tran',
-    first_name: 'Trần',
-    last_name: 'Thị B',
-    is_teacher: false,
-    is_verified: true,
-    role: 'user',
-    createdAt: '2024-02-15T00:00:00Z',
-    enrollment: {
-      id: '2',
-      enrolled_at: '2024-02-16T00:00:00Z',
-      progress: 45,
-      last_accessed: '2024-03-14T14:20:00Z',
-      classroom: {
-        id: '1',
-        title: 'Lớp A1 - Sáng thứ 2,4,6',
-        schedule_summary: 'Mon, Wed, Fri 9:00-11:00'
-      }
-    }
-  },
-  {
-    id: 5,
-    email: 'student5@elearning.com',
-    username: 'student_hoang',
-    first_name: 'Hoàng',
-    last_name: 'Văn E',
-    is_teacher: false,
-    is_verified: true,
-    role: 'user',
-    createdAt: '2024-03-01T00:00:00Z',
-    enrollment: {
-      id: '3',
-      enrolled_at: '2024-03-02T00:00:00Z',
-      progress: 90,
-      last_accessed: '2024-03-15T16:45:00Z',
-      classroom: {
-        id: '1',
-        title: 'Lớp A1 - Sáng thứ 2,4,6',
-        schedule_summary: 'Mon, Wed, Fri 9:00-11:00'
-      }
-    }
-  },
-  {
-    id: 6,
-    email: 'student6@elearning.com',
-    username: 'student_vo',
-    first_name: 'Võ',
-    last_name: 'Thị F',
-    is_teacher: false,
-    is_verified: false,
-    role: 'user',
-    createdAt: '2024-03-05T00:00:00Z',
-    enrollment: {
-      id: '4',
-      enrolled_at: '2024-03-06T00:00:00Z',
-      progress: 20,
-      last_accessed: '2024-03-10T09:15:00Z',
-      classroom: {
-        id: '1',
-        title: 'Lớp A1 - Sáng thứ 2,4,6',
-        schedule_summary: 'Mon, Wed, Fri 9:00-11:00'
-      }
-    }
-  },
-])
 
 // Computed properties
 const filteredStudents = computed(() => {
@@ -148,40 +69,43 @@ const filteredStudents = computed(() => {
   return filtered
 })
 
-// Update total when filtered students change
-watch(filteredStudents, (newFiltered) => {
-  total.value = newFiltered.length
-}, { immediate: true })
+// Statistics computed properties
+const totalStudents = computed(() => students.value.length)
+const activeStudents = computed(() => students.value.filter(s => s.enrollment.is_active).length)
+const averageProgress = computed(() => {
+  if (students.value.length === 0) return 0
+  const totalProgress = students.value.reduce((sum, s) => sum + s.enrollment.completion_percentage, 0)
+  return Math.round(totalProgress / students.value.length)
+})
+const recentActivity = computed(() => {
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  return students.value.filter(s => new Date(s.enrollment.enrolled_at) > oneWeekAgo).length
+})
 
 // Table columns
 const columns = [
   {
-    title: 'Student',
+    title: t('admin.students.table.columns.student'),
     key: 'student',
     width: 300,
   },
   {
-    title: 'Classroom',
+    title: t('admin.students.table.columns.classroom'),
     key: 'classroom',
     width: 200,
   },
   {
-    title: 'Progress',
+    title: t('admin.students.table.columns.progress'),
     key: 'progress',
     width: 150,
   },
   {
-    title: 'Last Accessed',
-    key: 'last_accessed',
-    width: 180,
-  },
-  {
-    title: 'Enrolled',
+    title: t('admin.students.table.columns.enrolled'),
     key: 'enrolled',
     width: 140,
   },
   {
-    title: 'Actions',
+    title: t('admin.students.table.columns.actions'),
     key: 'actions',
     width: 100,
     fixed: 'right',
@@ -194,6 +118,38 @@ function getProgressColor(progress: number) {
   if (progress >= 50) return 'bg-blue-500'
   if (progress >= 25) return 'bg-yellow-500'
   return 'bg-red-500'
+}
+
+function getStatusBadge(status: string, isActive: boolean) {
+  if (!isActive) {
+    return {
+      text: t('admin.students.table.status.disabled'),
+      class: 'bg-red-100 text-red-800 border-red-200'
+    }
+  }
+  
+  switch (status.toLowerCase()) {
+    case 'completed':
+      return {
+        text: t('admin.students.table.status.completed'),
+        class: 'bg-green-100 text-green-800 border-green-200'
+      }
+    case 'in_progress':
+      return {
+        text: t('admin.students.table.status.active'),
+        class: 'bg-blue-100 text-blue-800 border-blue-200'
+      }
+    case 'not_started':
+      return {
+        text: t('admin.students.table.status.enrolled'),
+        class: 'bg-gray-100 text-gray-800 border-gray-200'
+      }
+    default:
+      return {
+        text: t('admin.students.table.status.active'),
+        class: 'bg-blue-100 text-blue-800 border-blue-200'
+      }
+  }
 }
 
 function formatDate(dateString: string) {
@@ -217,26 +173,55 @@ function formatEnrolledDate(dateString: string) {
 }
 
 function refreshStudents() {
-  loading.value = true
-  // Simulate API call
-  setTimeout(() => {
-    loading.value = false
-    message.success('Students refreshed successfully')
-  }, 1000)
+  loadStudents()
+  message.success(t('admin.students.messages.refreshSuccess'))
 }
 
 function viewStudentProgress(student: CourseStudent) {
-  message.info(`View progress for ${student.first_name} ${student.last_name}`)
+  message.info(t('admin.students.messages.viewProgressMessage', { name: student.full_name }))
+  // TODO: Navigate to student progress page
+  // navigateTo(`/admin/courses/${courseId}/students/${student.id}/progress`)
 }
 
 function removeStudent(student: CourseStudent) {
-  message.info(`Remove ${student.first_name} ${student.last_name} from course`)
+  message.info(t('admin.students.messages.removeStudentMessage', { name: student.full_name }))
+  // TODO: Implement remove student functionality
+  // This would require a new API endpoint
+}
+
+async function disableStudent(student: CourseStudent) {
+  try {
+    await courseApi.disableStudent(courseId, student.id.toString())
+    message.success(t('admin.students.messages.disableStudentSuccess', { name: student.full_name }))
+    // Refresh the students list to update the status
+    await loadStudents()
+  } catch (err: any) {
+    console.error('Error disabling student:', err)
+    message.error(t('admin.students.messages.disableStudentError'))
+  }
+}
+
+async function enableStudent(student: CourseStudent) {
+  try {
+    await courseApi.enableStudent(courseId, student.id.toString())
+    message.success(t('admin.students.messages.enableStudentSuccess', { name: student.full_name }))
+    // Refresh the students list to update the status
+    await loadStudents()
+  } catch (err: any) {
+    console.error('Error enabling student:', err)
+    message.error(t('admin.students.messages.enableStudentError'))
+  }
 }
 
 function handleTableChange(pagination: any) {
   currentPage.value = pagination.current
   pageSize.value = pagination.pageSize
 }
+
+// Load data on mount
+onMounted(() => {
+  loadStudents()
+})
 </script>
 
 <template>
@@ -249,10 +234,10 @@ function handleTableChange(pagination: any) {
             <div class="size-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
               <Icon name="solar:users-group-rounded-bold-duotone" size="28" class="text-white" />
             </div>
-            Course Students
+            {{ t('admin.students.title') }}
           </h1>
           <p class="text-gray-600 mt-1">
-            Manage students enrolled in this course
+            {{ t('admin.students.description') }}
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -260,7 +245,7 @@ function handleTableChange(pagination: any) {
             <template #icon>
               <Icon name="solar:refresh-bold" size="18" />
             </template>
-            Refresh
+            {{ t('admin.students.actions.refresh') }}
           </a-button>
         </div>
       </div>
@@ -276,10 +261,10 @@ function handleTableChange(pagination: any) {
           </div>
         </div>
         <div class="text-3xl font-bold text-gray-900 mb-1">
-          {{ students.length }}
+          {{ totalStudents }}
         </div>
         <div class="text-sm text-gray-600">
-          Total Students
+          {{ t('admin.students.stats.totalStudents') }}
         </div>
       </div>
 
@@ -291,10 +276,10 @@ function handleTableChange(pagination: any) {
           </div>
         </div>
         <div class="text-3xl font-bold text-gray-900 mb-1">
-          {{ students.filter(s => s.is_verified).length }}
+          {{ activeStudents }}
         </div>
         <div class="text-sm text-gray-600">
-          Active Students
+          {{ t('admin.students.stats.activeStudents') }}
         </div>
       </div>
 
@@ -306,10 +291,10 @@ function handleTableChange(pagination: any) {
           </div>
         </div>
         <div class="text-3xl font-bold text-gray-900 mb-1">
-          {{ Math.round(students.reduce((sum, s) => sum + s.enrollment.progress, 0) / students.length) }}%
+          {{ averageProgress }}%
         </div>
         <div class="text-sm text-gray-600">
-          Avg Progress
+          {{ t('admin.students.stats.averageProgress') }}
         </div>
       </div>
 
@@ -321,10 +306,10 @@ function handleTableChange(pagination: any) {
           </div>
         </div>
         <div class="text-3xl font-bold text-gray-900 mb-1">
-          {{ students.filter(s => new Date(s.enrollment.last_accessed) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length }}
+          {{ recentActivity }}
         </div>
         <div class="text-sm text-gray-600">
-          Active This Week
+          {{ t('admin.students.stats.recentEnrollments') }}
         </div>
       </div>
     </div>
@@ -337,7 +322,7 @@ function handleTableChange(pagination: any) {
             <Icon name="solar:magnifer-linear" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size="18" />
             <a-input
               v-model:value="searchQuery"
-              placeholder="Search students by name, email, or username..."
+              :placeholder="t('admin.students.filters.searchPlaceholder')"
               size="large"
               allow-clear
             />
@@ -346,8 +331,24 @@ function handleTableChange(pagination: any) {
       </div>
     </div>
 
+    <!-- Error State -->
+    <div v-if="error" class="bg-white rounded-xl border border-red-200 shadow-sm p-6 mb-6">
+      <div class="text-center">
+        <Icon name="tabler:alert-circle" class="text-red-500 text-4xl mx-auto mb-4" />
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          {{ t('admin.students.error.title') }}
+        </h3>
+        <p class="text-gray-600 mb-4">
+          {{ error }}
+        </p>
+        <a-button type="primary" @click="loadStudents">
+          {{ t('admin.students.error.tryAgain') }}
+        </a-button>
+      </div>
+    </div>
+
     <!-- Students Table -->
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div v-else class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <a-table
         :columns="columns"
         :data-source="filteredStudents"
@@ -357,7 +358,7 @@ function handleTableChange(pagination: any) {
           pageSize: pageSize,
           total: total,
           showSizeChanger: true,
-          showTotal: (total: number) => `Total Students: ${total}`,
+          showTotal: (total: number) => t('admin.students.table.totalStudents', { total }),
         }"
         :scroll="{ x: 1200 }"
         row-key="id"
@@ -371,13 +372,13 @@ function handleTableChange(pagination: any) {
               <Icon name="solar:users-group-rounded-bold-duotone" size="48" class="text-gray-300 mx-auto" />
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">
-              No students found
+              {{ t('admin.students.table.emptyState.title') }}
             </h3>
             <p class="text-gray-500 mb-4">
-              Try adjusting your search criteria
+              {{ t('admin.students.table.emptyState.description') }}
             </p>
             <a-button @click="searchQuery = ''" class="rounded-lg">
-              Clear Search
+              {{ t('admin.students.table.emptyState.clearSearch') }}
             </a-button>
           </div>
         </template>
@@ -388,15 +389,14 @@ function handleTableChange(pagination: any) {
           <template v-if="column.key === 'student'">
             <div class="flex items-center gap-3">
               <a-avatar 
-                :src="record.avatar" 
                 :size="48"
                 class="!bg-gradient-to-br !from-blue-500 !to-purple-600 !text-white !font-bold"
               >
-                {{ record.first_name.charAt(0) }}{{ record.last_name.charAt(0) }}
+                {{ record.full_name.charAt(0) }}
               </a-avatar>
               <div>
                 <div class="font-semibold text-gray-900">
-                  {{ record.first_name }} {{ record.last_name }}
+                  {{ record.full_name }}
                 </div>
                 <div class="text-gray-500 text-sm">
                   {{ record.email }}
@@ -416,10 +416,7 @@ function handleTableChange(pagination: any) {
               </div>
               <div>
                 <div class="font-medium text-gray-900 text-sm">
-                  {{ record.enrollment.classroom.title }}
-                </div>
-                <div class="text-xs text-gray-500">
-                  {{ record.enrollment.classroom.schedule_summary }}
+                  {{ record.enrollment.classroom_title }}
                 </div>
               </div>
             </div>
@@ -430,24 +427,18 @@ function handleTableChange(pagination: any) {
             <div class="flex items-center gap-3">
               <div class="flex-1">
                 <div class="flex justify-between text-sm mb-1">
-                  <span class="font-medium text-gray-900">{{ record.enrollment.progress }}%</span>
+                  <span class="font-medium text-gray-900">{{ Math.round(record.enrollment.completion_percentage) }}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     class="h-2 rounded-full transition-all duration-300"
-                    :class="getProgressColor(record.enrollment.progress)"
-                    :style="{ width: `${record.enrollment.progress}%` }"
+                    :class="getProgressColor(record.enrollment.completion_percentage)"
+                    :style="{ width: `${record.enrollment.completion_percentage}%` }"
                   />
                 </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- Last Accessed Column -->
-          <template v-else-if="column.key === 'last_accessed'">
-            <div class="text-sm">
-              <div class="text-gray-900">
-                {{ formatDate(record.enrollment.last_accessed) }}
+                <div class="text-xs text-gray-500 mt-1">
+                  {{ record.enrollment.progress_status }}
+                </div>
               </div>
             </div>
           </template>
@@ -455,8 +446,16 @@ function handleTableChange(pagination: any) {
           <!-- Enrolled Column -->
           <template v-else-if="column.key === 'enrolled'">
             <div class="text-sm">
-              <div class="text-gray-900">
+              <div class="text-gray-900 mb-2">
                 {{ formatEnrolledDate(record.enrollment.enrolled_at) }}
+              </div>
+              <div class="flex items-center gap-2">
+                <span 
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+                  :class="getStatusBadge(record.enrollment.progress_status, record.enrollment.is_active).class"
+                >
+                  {{ getStatusBadge(record.enrollment.progress_status, record.enrollment.is_active).text }}
+                </span>
               </div>
             </div>
           </template>
@@ -475,7 +474,28 @@ function handleTableChange(pagination: any) {
                   >
                     <div class="flex items-center gap-2">
                       <Icon name="solar:chart-bold" size="16" />
-                      View Progress
+                      {{ t('admin.students.actions.viewProgress') }}
+                    </div>
+                  </a-menu-item>
+                  <a-menu-divider />
+                  <a-menu-item
+                    v-if="record.enrollment.is_active"
+                    key="disable"
+                    @click="disableStudent(record)"
+                  >
+                    <div class="flex items-center gap-2">
+                      <Icon name="solar:user-blocked-bold" size="16" />
+                      {{ t('admin.students.actions.disableStudent') }}
+                    </div>
+                  </a-menu-item>
+                  <a-menu-item
+                    v-else
+                    key="enable"
+                    @click="enableStudent(record)"
+                  >
+                    <div class="flex items-center gap-2">
+                      <Icon name="solar:user-check-bold" size="16" />
+                      {{ t('admin.students.actions.enableStudent') }}
                     </div>
                   </a-menu-item>
                   <a-menu-divider />
@@ -486,7 +506,7 @@ function handleTableChange(pagination: any) {
                   >
                     <div class="flex items-center w-full gap-2">
                       <Icon name="solar:user-minus-bold" size="16" />
-                      Remove from Course
+                      {{ t('admin.students.actions.removeFromCourse') }}
                     </div>
                   </a-menu-item>
                 </a-menu>

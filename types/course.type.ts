@@ -243,3 +243,31 @@ export interface CourseEnrollment {
   completed_at?: string
   certificate_url?: string
 }
+
+// Course Student
+export interface CourseStudent {
+  id: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  full_name: string
+  enrollment: {
+    id: string
+    classroom_id: string
+    classroom_title: string
+    enrolled_at: string
+    is_active: boolean
+    completion_percentage: number
+    progress_status: string
+    completed_at: string | null
+  }
+}
+
+// Course Students Response
+export interface CourseStudentsResponse {
+  count: number
+  next: string | null
+  previous: string | null
+  results: CourseStudent[]
+}

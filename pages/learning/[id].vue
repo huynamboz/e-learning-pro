@@ -3,6 +3,8 @@ import { VideoPlayer } from '@videojs-player/vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
 import LearningQuizList from '~/components/learning/QuizList.vue'
 import { useLearnStore } from '~/stores/learn.store'
+import { useCourseApi } from '~/composables/api/useCourseApi'
+import type { CourseStudent } from '~/types/course.type'
 import 'video.js/dist/video-js.css'
 
 // Page meta
@@ -17,6 +19,9 @@ const courseId = route.params.id as string
 // Use learn store
 const learnStore = useLearnStore()
 
+// Use course API
+const courseApi = useCourseApi()
+
 // Computed properties from store
 const course = computed(() => learnStore.course)
 const courseChapters = computed(() => learnStore.courseChapters)
@@ -28,20 +33,34 @@ const activeTab = computed({
   set: (value: string) => learnStore.setActiveTab(value),
 })
 
+// Student data
+const courseStudents = ref<CourseStudent[]>([])
+const studentsLoading = ref(false)
+const studentsError = ref<string | null>(null)
+
 // Mock data for demonstration
 const instructorAvatar = ref('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face')
 
-const courseStudents = ref([
-  { id: '1', name: 'Natali Craig', avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b647?w=150&h=150&fit=crop&crop=face' },
-  { id: '2', name: 'Drew Cano', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face' },
-  { id: '3', name: 'Andi Lane', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face' },
-  { id: '4', name: 'Koray Okumus', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' },
-  { id: '5', name: 'Kate Morrison', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face' },
-  { id: '6', name: 'Melody Macy', avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face' },
-])
+// Load course classmates
+const loadCourseStudents = async () => {
+  try {
+    studentsLoading.value = true
+    studentsError.value = null
+    const response = await courseApi.getCourseClassmates(courseId)
+    courseStudents.value = response.results
+  } catch (err: any) {
+    console.error('Error loading course classmates:', err)
+    studentsError.value = err.message || 'Failed to load classmates'
+  } finally {
+    studentsLoading.value = false
+  }
+}
 
 onMounted(async () => {
-  await learnStore.loadCourse(courseId)
+  await Promise.all([
+    learnStore.loadCourse(courseId),
+    loadCourseStudents()
+  ])
 })
 </script>
 
@@ -214,20 +233,52 @@ onMounted(async () => {
           <div class="rounded-2xl p-4 mt-9">
             <div class="mb-4">
               <div class="text-xl font-semibold text-gray-900 mb-2 px-2">
-                Student in course (20)
+                Classmates ({{ courseStudents.length }})
               </div>
             </div>
 
-            <div class="space-y-1">
+            <!-- Loading State -->
+            <div v-if="studentsLoading" class="flex items-center justify-center py-8">
+              <a-spin size="small" />
+              <span class="ml-2 text-gray-600">Loading classmates...</span>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="studentsError" class="text-center py-8">
+              <Icon name="tabler:alert-circle" class="text-red-500 text-2xl mx-auto mb-2" />
+              <p class="text-sm text-red-600 mb-2">{{ studentsError }}</p>
+              <a-button size="small" @click="loadCourseStudents">
+                Try Again
+              </a-button>
+            </div>
+
+            <!-- Students List -->
+            <div v-else-if="courseStudents.length > 0" class="space-y-1">
               <div
                 v-for="student in courseStudents" :key="student.id"
                 class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <a-avatar :size="38" :src="student.avatar" :alt="student.name">
-                  {{ student.name.charAt(0) }}
+                <a-avatar :size="38" :alt="student.full_name">
+                  {{ student.full_name.charAt(0) }}
                 </a-avatar>
-                <span class="text-sm font-medium text-gray-900">{{ student.name }}</span>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-gray-900 truncate">
+                    {{ student.full_name }}
+                  </div>
+                  <div class="text-xs text-gray-500 truncate">
+                    {{ student.username }}
+                  </div>
+                </div>
+                <div class="text-xs text-gray-400">
+                  {{ Math.round(student.enrollment.completion_percentage) }}%
+                </div>
               </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-8">
+              <Icon name="tabler:users" class="text-gray-400 text-2xl mx-auto mb-2" />
+              <p class="text-sm text-gray-500">No classmates yet</p>
             </div>
           </div>
         </div>
@@ -290,3 +341,4 @@ onMounted(async () => {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 </style>
+

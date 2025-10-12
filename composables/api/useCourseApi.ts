@@ -7,6 +7,8 @@ import type {
   CourseFilters,
   CourseListResponse,
   CoursePayload,
+  CourseStudent,
+  CourseStudentsResponse,
   Lesson,
   LessonPayload,
 } from '~/types/course.type'
@@ -192,5 +194,21 @@ export function useCourseApi() {
     // Get course recommendations
     getRecommendations: (userId?: string) =>
       apiClient.get<Course[]>(`/courses/recommendations/${userId ? `?user_id=${userId}` : ''}`),
+
+    // Get course students
+    getCourseStudents: (courseId: string) =>
+      apiClient.get<CourseStudentsResponse>(`/courses/${courseId}/students/`),
+
+    // Get course classmates
+    getCourseClassmates: (courseId: string) =>
+      apiClient.get<CourseStudentsResponse>(`/courses/${courseId}/classmates/`),
+
+    // Disable student from course
+    disableStudent: (courseId: string, studentId: string) =>
+      apiClient.post(`/courses/${courseId}/students/${studentId}/disable/`),
+
+    // Enable student in course
+    enableStudent: (courseId: string, studentId: string) =>
+      apiClient.post(`/courses/${courseId}/students/${studentId}/enable/`),
   }
 }

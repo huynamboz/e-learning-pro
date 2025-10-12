@@ -200,6 +200,62 @@
         "course": "Khóa học"
       }
     },
+    "students": {
+      "title": "Học viên khóa học",
+      "description": "Quản lý học viên đã đăng ký khóa học này",
+      "stats": {
+        "totalStudents": "Tổng học viên",
+        "activeStudents": "Học viên hoạt động",
+        "averageProgress": "Tiến độ trung bình",
+        "recentEnrollments": "Đăng ký gần đây"
+      },
+      "filters": {
+        "searchPlaceholder": "Tìm kiếm học viên theo tên, email hoặc tên đăng nhập..."
+      },
+      "table": {
+        "columns": {
+          "student": "Học viên",
+          "classroom": "Lớp học",
+          "progress": "Tiến độ",
+          "lastAccessed": "Truy cập cuối",
+          "enrolled": "Đã đăng ký",
+          "actions": "Thao tác"
+        },
+        "status": {
+          "active": "Hoạt động",
+          "inactive": "Không hoạt động",
+          "notCompleted": "Chưa hoàn thành",
+          "enrolled": "Đã đăng ký",
+          "disabled": "Bị vô hiệu hóa"
+        },
+        "emptyState": {
+          "title": "Không tìm thấy học viên",
+          "description": "Hãy thử điều chỉnh tiêu chí tìm kiếm",
+          "clearSearch": "Xóa tìm kiếm"
+        },
+        "totalStudents": "Tổng học viên: {total}"
+      },
+      "actions": {
+        "refresh": "Làm mới",
+        "viewProgress": "Xem tiến độ",
+        "removeFromCourse": "Xóa khỏi khóa học",
+        "disableStudent": "Vô hiệu hóa học viên",
+        "enableStudent": "Kích hoạt học viên"
+      },
+      "error": {
+        "title": "Lỗi tải danh sách học viên",
+        "tryAgain": "Thử lại"
+      },
+      "messages": {
+        "refreshSuccess": "Làm mới danh sách học viên thành công",
+        "viewProgressMessage": "Xem tiến độ của {name}",
+        "removeStudentMessage": "Xóa {name} khỏi khóa học",
+        "disableStudentSuccess": "Học viên {name} đã được vô hiệu hóa",
+        "enableStudentSuccess": "Học viên {name} đã được kích hoạt",
+        "disableStudentError": "Không thể vô hiệu hóa học viên",
+        "enableStudentError": "Không thể kích hoạt học viên"
+      }
+    },
     "formCourse": {
       "title": {
         "create": "Tạo khóa học mới",

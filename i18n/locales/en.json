@@ -200,6 +200,62 @@
         "course": "Course"
       }
     },
+    "students": {
+      "title": "Course Students",
+      "description": "Manage students enrolled in this course",
+      "stats": {
+        "totalStudents": "Total Students",
+        "activeStudents": "Active Students",
+        "averageProgress": "Avg Progress",
+        "recentEnrollments": "Recent Enrollments"
+      },
+      "filters": {
+        "searchPlaceholder": "Search students by name, email, or username..."
+      },
+      "table": {
+        "columns": {
+          "student": "Student",
+          "classroom": "Classroom",
+          "progress": "Progress",
+          "lastAccessed": "Last Accessed",
+          "enrolled": "Enrolled",
+          "actions": "Actions"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "notCompleted": "Not completed",
+          "enrolled": "Enrolled",
+          "disabled": "Disabled"
+        },
+        "emptyState": {
+          "title": "No students found",
+          "description": "Try adjusting your search criteria",
+          "clearSearch": "Clear Search"
+        },
+        "totalStudents": "Total Students: {total}"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "viewProgress": "View Progress",
+        "removeFromCourse": "Remove from Course",
+        "disableStudent": "Disable Student",
+        "enableStudent": "Enable Student"
+      },
+      "error": {
+        "title": "Error Loading Students",
+        "tryAgain": "Try Again"
+      },
+      "messages": {
+        "refreshSuccess": "Students refreshed successfully",
+        "viewProgressMessage": "View progress for {name}",
+        "removeStudentMessage": "Remove {name} from course",
+        "disableStudentSuccess": "Student {name} has been disabled",
+        "enableStudentSuccess": "Student {name} has been enabled",
+        "disableStudentError": "Failed to disable student",
+        "enableStudentError": "Failed to enable student"
+      }
+    },
     "formCourse": {
       "title": {
         "create": "Create New Course",

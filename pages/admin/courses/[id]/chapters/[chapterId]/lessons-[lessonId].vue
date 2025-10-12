@@ -174,7 +174,7 @@ function removeImage() {
 
 // Check if file has changed
 function hasFileChanged(currentFile: File): boolean {
-  if (!lastUploadedFile.value) return true
+  if (!lastUploadedFile.value || !currentFile) return true
 
   return (
     currentFile.name !== lastUploadedFile.value.name ||
@@ -262,7 +262,7 @@ async function uploadVideoAndSaveLesson() {
     return
 
   // Upload video if changed
-  if (videoFileList.value.length) {
+  if (videoFileList.value.length && videoFileList.value[0].originFileObj) {
     const file = videoFileList.value[0].originFileObj as File
 
     // Only upload if file has changed
@@ -307,7 +307,7 @@ async function uploadVideoAndSaveLesson() {
   }
 
   // Upload image if changed
-  if (imageFileList.value.length) {
+  if (imageFileList.value.length && imageFileList.value[0].originFileObj) {
     const file = imageFileList.value[0].originFileObj as File
 
     try {
