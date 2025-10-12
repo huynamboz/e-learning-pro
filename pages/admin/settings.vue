@@ -13,12 +13,12 @@ useHead({
 })
 
 // Reactive data
-const activeTab = ref('general')
+const activeTab = ref('language')
 
 const settingsTabs = computed(() => [
-  { id: 'general', label: $t('admin.settings.tabs.general'), icon: 'i-heroicons-cog-6-tooth' },
-  { id: 'users', label: $t('admin.settings.tabs.users'), icon: 'i-heroicons-users' },
-  { id: 'courses', label: $t('admin.settings.tabs.courses'), icon: 'i-heroicons-academic-cap' },
+  // { id: 'general', label: $t('admin.settings.tabs.general'), icon: 'i-heroicons-cog-6-tooth' },
+  // { id: 'users', label: $t('admin.settings.tabs.users'), icon: 'i-heroicons-users' },
+  // { id: 'courses', label: $t('admin.settings.tabs.courses'), icon: 'i-heroicons-academic-cap' },
   { id: 'language', label: $t('admin.settings.tabs.language'), icon: 'i-heroicons-language' },
 ])
 
@@ -29,19 +29,19 @@ const languageCookie = useCookie('locale', {
 })
 
 const settings = ref({
-  general: {
-    platformName: 'E-Learning Platform',
-    platformDescription: 'A comprehensive online learning platform',
-    contactEmail: 'admin@example.com',
-  },
-  users: {
-    allowRegistration: true,
-    emailVerificationRequired: true,
-  },
-  courses: {
-    approvalRequired: true,
-    maxPrice: 1000,
-  },
+  // general: {
+  //   platformName: 'E-Learning Platform',
+  //   platformDescription: 'A comprehensive online learning platform',
+  //   contactEmail: 'admin@example.com',
+  // },
+  // users: {
+  //   allowRegistration: true,
+  //   emailVerificationRequired: true,
+  // },
+  // courses: {
+  //   approvalRequired: true,
+  //   maxPrice: 1000,
+  // },
   language: {
     selectedLanguage: languageCookie.value,
   },
@@ -103,7 +103,7 @@ function saveSettings() {
       <!-- Settings Content -->
       <div class="lg:col-span-2">
         <!-- General Settings -->
-        <div v-if="activeTab === 'general'" class="space-y-6">
+        <!-- <div v-if="activeTab === 'general'" class="space-y-6">
           <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.general.title') }}
@@ -141,10 +141,10 @@ function saveSettings() {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- User Settings -->
-        <div v-if="activeTab === 'users'" class="space-y-6">
+        <!-- <div v-if="activeTab === 'users'" class="space-y-6">
           <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.users.title') }}
@@ -188,10 +188,10 @@ function saveSettings() {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Course Settings -->
-        <div v-if="activeTab === 'courses'" class="space-y-6">
+        <!-- <div v-if="activeTab === 'courses'" class="space-y-6">
           <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold text-gray-900 mb-4">
               {{ $t('admin.settings.courses.title') }}
@@ -227,7 +227,7 @@ function saveSettings() {
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Language Settings -->
         <div v-if="activeTab === 'language'" class="space-y-6">

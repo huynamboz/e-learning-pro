@@ -32,6 +32,7 @@ const fetchQuizzes = async () => {
       params.chapter = props.chapterId
     }
     
+    console.log('params', params)
     const response = await getQuizzes(params)
     quizzes.value = response.results
   } catch (err: any) {

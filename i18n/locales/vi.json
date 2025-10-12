@@ -135,6 +135,7 @@
       },
       "notifications": {
         "uploadVideoFailed": "Tải lên video thất bại",
+        "uploadImageFailed": "Tải lên hình ảnh thất bại",
         "createLessonSuccess": "Tạo bài học thành công",
         "updateLessonSuccess": "Cập nhật bài học thành công",
         "createLessonFailed": "Tạo bài học thất bại",
@@ -272,7 +273,8 @@
         "deleteSuccess": "Xóa khóa học thành công",
         "deleteSuccessDescription": "Khóa học đã được xóa thành công.",
         "deleteFailed": "Xóa khóa học thất bại",
-        "deleteFailedDescription": "Đã xảy ra lỗi khi xóa khóa học. Vui lòng thử lại."
+        "deleteFailedDescription": "Đã xảy ra lỗi khi xóa khóa học. Vui lòng thử lại.",
+        "uploadImageFailed": "Tải lên hình ảnh thất bại"
       }
     },
     "orders": {

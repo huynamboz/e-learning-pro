@@ -135,6 +135,7 @@
       },
       "notifications": {
         "uploadVideoFailed": "Upload video failed",
+        "uploadImageFailed": "Upload image failed",
         "createLessonSuccess": "Create lesson success",
         "updateLessonSuccess": "Update lesson success",
         "createLessonFailed": "Create lesson failed",
@@ -272,7 +273,8 @@
         "deleteSuccess": "Delete course success",
         "deleteSuccessDescription": "Course has been deleted successfully.",
         "deleteFailed": "Delete course failed",
-        "deleteFailedDescription": "An error occurred while deleting the course. Please try again."
+        "deleteFailedDescription": "An error occurred while deleting the course. Please try again.",
+        "uploadImageFailed": "Upload image failed"
       }
     },
     "orders": {

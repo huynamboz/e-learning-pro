@@ -12,7 +12,7 @@ const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
-const { uploadFile, delete: deleteCourse } = useCourseApi()
+const { uploadFile, uploadImage, delete: deleteCourse } = useCourseApi()
 
 const { fetchCategories, categories, fetchCourseDetail, currentCourse, clearCurrentCourse, createCourse, updateCourse, isCreatingCourse } = useCourse()
 const { user } = useAuth()
@@ -33,6 +33,7 @@ const formState = ref<CoursePayload>({
   is_published: true,
   is_featured: false,
   video_preview: '',
+  thumbnail: '',
 })
 
 const formRef = ref()
@@ -130,7 +131,7 @@ function hasFileChanged(currentFile: File): boolean {
 function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    
+
     // Track upload progress
     xhr.upload.addEventListener('progress', (event) => {
       if (event.lengthComputable) {
@@ -138,7 +139,7 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
         uploadProgress.value = percentComplete
       }
     })
-    
+
     // Handle successful upload
     xhr.addEventListener('load', () => {
       if (xhr.status >= 200 && xhr.status < 300) {
@@ -150,12 +151,47 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
         reject(new Error(`Upload failed with status: ${xhr.status}`))
       }
     })
-    
+
     // Handle upload error
     xhr.addEventListener('error', () => {
       reject(new Error('Upload failed'))
     })
-    
+
+    // Start upload
+    xhr.open('PUT', uploadUrl)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.send(file)
+  })
+}
+
+// Upload image with progress tracking
+function uploadImageWithProgress(file: File, uploadUrl: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    // Track upload progress
+    xhr.upload.addEventListener('progress', (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100)
+        uploadProgress.value = percentComplete
+      }
+    })
+
+    // Handle successful upload
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        uploadProgress.value = 100
+        resolve()
+      } else {
+        reject(new Error(`Upload failed with status: ${xhr.status}`))
+      }
+    })
+
+    // Handle upload error
+    xhr.addEventListener('error', () => {
+      reject(new Error('Upload failed'))
+    })
+
     // Start upload
     xhr.open('PUT', uploadUrl)
     xhr.setRequestHeader('Content-Type', file.type)
@@ -174,6 +210,7 @@ async function handleSave() {
 
   try {
     if (courseId.value) {
+      // Upload video if changed
       if (videoFileList.value.length > 0 && videoFileList.value[0].originFileObj) {
         const file = videoFileList.value[0].originFileObj as File
         
@@ -202,6 +239,27 @@ async function handleSave() {
         formState.value.video_preview = ''
         // Reset last uploaded file when no file is selected
         lastUploadedFile.value = null
+      }
+
+      // Upload image if changed
+      if (imageFileList.value.length > 0 && imageFileList.value[0].originFileObj) {
+        const file = imageFileList.value[0].originFileObj as File
+        
+        // Reset progress and start upload
+        uploadProgress.value = 0
+        isUploading.value = true
+
+        const { upload_url, public_url } = await uploadImage({
+          file_name: file.name,
+          content_type: file.type,
+          folder: 'covers'
+        })
+
+        // Upload image with progress tracking
+        await uploadImageWithProgress(file, upload_url)
+        
+        formState.value.thumbnail = public_url
+        isUploading.value = false
       }
 
       await updateCourse(courseId.value, formState.value)
@@ -248,6 +306,7 @@ onMounted(async () => {
       is_free: c.is_free || false,
       price: c.price || '0',
       video_preview: c.video_preview || '',
+      thumbnail: c.thumbnail || '',
       is_featured: c.is_featured || false,
       is_published: c.is_published ?? true,
       language: c.language || 'en',
@@ -265,15 +324,16 @@ onMounted(async () => {
       lastUploadedFile.value = new File([''], 'intro-video.mp4', { type: 'video/mp4' })
     }
 
-    // if (c.thumbnail) {
-    //   imagePreviewUrl.value = c.thumbnail
-    //   imageFileList.value = [{
-    //     uid: '-2',
-    //     name: 'thumbnail.jpg',
-    //     status: 'done',
-    //     url: c.thumbnail,
-    //   }]
-    // }
+    if (c.thumbnail) {
+      imagePreviewUrl.value = c.thumbnail
+      imageFileList.value = [{
+        uid: '-2',
+        name: 'thumbnail.jpg',
+        status: 'done',
+        url: c.thumbnail,
+      }]
+    }
+
   }
 })
 

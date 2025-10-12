@@ -140,11 +140,11 @@ onMounted(async () => {
       v-model:view-date="viewDate"
       class="w-full !h-[80vh] custom-theme calendar min-h-[500px]"
       :time-from="7 * 60"
-      
       :time-step="60"
       :time-to="23 * 60"
       :time-cell-height="72"
       :events="data.events"
+      :views="['month', 'week', 'day']"
     />
   </div>
 </template>

@@ -16,7 +16,7 @@ const chapterId = computed(() => route.params.chapterId as string)
 const lessonId = computed(() => route.params.lessonId as string)
 const router = useRouter()
 
-const { uploadFile, deleteLesson } = useCourseApi()
+const { uploadFile, uploadImage, deleteLesson } = useCourseApi()
 const { createLesson, updateLesson, detailLesson, currentLesson, fetchChapters, isCreatingLesson } = useCourse()
 
 const formRef = ref<FormInstance>()
@@ -31,6 +31,7 @@ const formState = ref<LessonPayload>({
   is_preview: false,
   is_published: true,
   is_unlocked: true,
+  thumbnail: '',
 } as any)
 
 // Upload state
@@ -65,6 +66,7 @@ async function fetchLesson() {
         is_preview: data.is_preview,
         is_published: data.is_published,
         is_unlocked: data.is_unlocked,
+        thumbnail: (data as any).thumbnail || '',
       } as any
 
       // Hiển thị video preview nếu có sẵn
@@ -78,6 +80,17 @@ async function fetchLesson() {
         }] as any
         // Set lastUploadedFile to indicate video is already uploaded
         lastUploadedFile.value = new File([''], 'current_video.mp4', { type: 'video/mp4' })
+      }
+
+      // Hiển thị thumbnail preview nếu có sẵn
+      if ((data as any).thumbnail) {
+        imagePreviewUrl.value = (data as any).thumbnail
+        imageFileList.value = [{
+          uid: '-2',
+          name: 'current_thumbnail.jpg',
+          status: 'done',
+          url: (data as any).thumbnail,
+        }] as any
       }
     }
   } else {
@@ -207,12 +220,48 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
   })
 }
 
+// Upload image with progress tracking
+function uploadImageWithProgress(file: File, uploadUrl: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+
+    // Track upload progress
+    xhr.upload.addEventListener('progress', (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = Math.round((event.loaded / event.total) * 100)
+        uploadProgress.value = percentComplete
+      }
+    })
+
+    // Handle successful upload
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        uploadProgress.value = 100
+        resolve()
+      } else {
+        reject(new Error(`Upload failed with status: ${xhr.status}`))
+      }
+    })
+
+    // Handle upload error
+    xhr.addEventListener('error', () => {
+      reject(new Error('Upload failed'))
+    })
+
+    // Start upload
+    xhr.open('PUT', uploadUrl)
+    xhr.setRequestHeader('Content-Type', file.type)
+    xhr.send(file)
+  })
+}
+
 async function uploadVideoAndSaveLesson() {
   await formRef.value?.validateFields()
 
   if (!courseId.value)
     return
 
+  // Upload video if changed
   if (videoFileList.value.length) {
     const file = videoFileList.value[0].originFileObj as File
 
@@ -254,6 +303,46 @@ async function uploadVideoAndSaveLesson() {
     } else {
       // File hasn't changed, no need to upload
       console.log(t('admin.formLesson.upload.fileUnchanged'))
+    }
+  }
+
+  // Upload image if changed
+  if (imageFileList.value.length) {
+    const file = imageFileList.value[0].originFileObj as File
+
+    try {
+      uploading.value = true
+      isUploading.value = true
+      uploadProgress.value = 0
+
+      const presign = await uploadImage({
+        file_name: file.name,
+        content_type: file.type,
+        folder: 'thumbnails'
+      })
+
+      const uploadUrl = presign?.upload_url
+      const publicUrl = presign?.public_url
+
+      if (!uploadUrl || !publicUrl)
+        throw new Error('Missing upload URLs')
+
+      // Upload image with progress tracking
+      await uploadImageWithProgress(file, uploadUrl)
+      ;(formState.value as any).thumbnail = publicUrl
+      isUploading.value = false
+    }
+    catch (err) {
+      notification.error({
+        message: t('admin.formLesson.notifications.uploadImageFailed'),
+        description: String(err),
+      })
+      return
+    }
+    finally {
+      uploading.value = false
+      isUploading.value = false
+      uploadProgress.value = 0
     }
   }
 
