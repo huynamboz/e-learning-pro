@@ -52,7 +52,6 @@ const lastUploadedFile = ref<File | null>(null)
 const showDeleteDialog = ref(false)
 const isDeleting = ref(false)
 
-
 const levelOptions = ref([
   {
     label: 'Beginner',
@@ -118,12 +117,13 @@ function removeImage() {
 
 // Check if file has changed
 function hasFileChanged(currentFile: File): boolean {
-  if (!lastUploadedFile.value) return true
-  
+  if (!lastUploadedFile.value)
+    return true
+
   return (
-    currentFile.name !== lastUploadedFile.value.name ||
-    currentFile.size !== lastUploadedFile.value.size ||
-    currentFile.lastModified !== lastUploadedFile.value.lastModified
+    currentFile.name !== lastUploadedFile.value.name
+    || currentFile.size !== lastUploadedFile.value.size
+    || currentFile.lastModified !== lastUploadedFile.value.lastModified
   )
 }
 
@@ -147,7 +147,8 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
         // Store the uploaded file info
         lastUploadedFile.value = file
         resolve()
-      } else {
+      }
+      else {
         reject(new Error(`Upload failed with status: ${xhr.status}`))
       }
     })
@@ -182,7 +183,8 @@ function uploadImageWithProgress(file: File, uploadUrl: string): Promise<void> {
       if (xhr.status >= 200 && xhr.status < 300) {
         uploadProgress.value = 100
         resolve()
-      } else {
+      }
+      else {
         reject(new Error(`Upload failed with status: ${xhr.status}`))
       }
     })
@@ -213,7 +215,7 @@ async function handleSave() {
       // Upload video if changed
       if (videoFileList.value.length > 0 && videoFileList.value[0].originFileObj) {
         const file = videoFileList.value[0].originFileObj as File
-        
+
         // Only upload if file has changed
         if (hasFileChanged(file)) {
           // Reset progress and start upload
@@ -227,10 +229,11 @@ async function handleSave() {
 
           // Upload file with progress tracking
           await uploadFileWithProgress(file, upload_url)
-          
+
           formState.value.video_preview = public_url
           isUploading.value = false
-        } else {
+        }
+        else {
           // File hasn't changed, no need to upload
           console.log(t('admin.formCourse.upload.fileUnchanged'))
         }
@@ -244,7 +247,7 @@ async function handleSave() {
       // Upload image if changed
       if (imageFileList.value.length > 0 && imageFileList.value[0].originFileObj) {
         const file = imageFileList.value[0].originFileObj as File
-        
+
         // Reset progress and start upload
         uploadProgress.value = 0
         isUploading.value = true
@@ -252,12 +255,12 @@ async function handleSave() {
         const { upload_url, public_url } = await uploadImage({
           file_name: file.name,
           content_type: file.type,
-          folder: 'covers'
+          folder: 'covers',
         })
 
         // Upload image with progress tracking
         await uploadImageWithProgress(file, upload_url)
-        
+
         formState.value.thumbnail = public_url
         isUploading.value = false
       }
@@ -333,7 +336,6 @@ onMounted(async () => {
         url: c.thumbnail,
       }]
     }
-
   }
 })
 
@@ -369,26 +371,29 @@ function closeDeleteDialog() {
 }
 
 async function confirmDeleteCourse() {
-  if (!courseId.value) return
+  if (!courseId.value)
+    return
 
   try {
     isDeleting.value = true
     await deleteCourse(courseId.value)
-    
+
     notification.success({
       message: t('admin.formCourse.notifications.deleteSuccess'),
-      description: t('admin.formCourse.notifications.deleteSuccessDescription')
+      description: t('admin.formCourse.notifications.deleteSuccessDescription'),
     })
-    
+
     // Close dialog and navigate back to courses list
     showDeleteDialog.value = false
     await router.push('/admin/courses')
-  } catch (error) {
+  }
+  catch (error) {
     notification.error({
       message: t('admin.formCourse.notifications.deleteFailed'),
-      description: t('admin.formCourse.notifications.deleteFailedDescription')
+      description: t('admin.formCourse.notifications.deleteFailedDescription'),
     })
-  } finally {
+  }
+  finally {
     isDeleting.value = false
   }
 }
@@ -423,10 +428,10 @@ async function confirmDeleteCourse() {
                 <span>{{ t('admin.formCourse.upload.uploading') }}</span>
                 <span>{{ uploadProgress }}%</span>
               </div>
-              <a-progress 
-                :percent="uploadProgress" 
-                :show-info="false" 
-                status="active" 
+              <a-progress
+                :percent="uploadProgress"
+                :show-info="false"
+                status="active"
                 stroke-color="#16a34a"
                 class="!h-2"
               />
@@ -434,45 +439,45 @@ async function confirmDeleteCourse() {
           </div>
 
           <!-- Preview Button (only show when editing existing course) -->
-          <a-button 
+          <a-button
             v-if="courseId"
-            size="large"
-            class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
+            size="small"
+            class="!h-8 !flex items-center justify-center gap-2 !px-4 rounded-lg text-xs !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
             @click="previewCourse"
           >
             <template #icon>
-              <Icon name="solar:eye-bold-duotone" size="20" />
+              <Icon name="solar:eye-bold-duotone" size="16" />
             </template>
             {{ t('admin.formCourse.buttons.previewCourse') }}
           </a-button>
 
           <!-- Delete Button (only show when editing existing course) -->
-          <a-button 
+          <a-button
             v-if="courseId"
-            size="large"
+            size="small"
             danger
-            class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold"
+            class="!h-8 !flex items-center justify-center gap-2 !px-4 rounded-lg text-xs !font-semibold"
             @click="showDeleteConfirm"
           >
             <template #icon>
-              <Icon name="solar:trash-bin-trash-bold-duotone" size="20" />
+              <Icon name="solar:trash-bin-trash-bold-duotone" size="16" />
             </template>
             {{ t('admin.formCourse.buttons.deleteCourse') }}
           </a-button>
 
           <!-- Save Button -->
-          <a-button 
+          <a-button
             type="primary"
-            size="large"
-            class="!h-12 !flex items-center justify-center gap-1 !px-8 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
-            :loading="loading" 
-            :disabled="isUploading" 
+            size="small"
+            class="!h-8 !flex items-center justify-center gap-1 !px-6 rounded-lg text-xs !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
+            :loading="loading"
+            :disabled="isUploading"
             @click="handleSave"
           >
             <template #icon>
-              <Icon 
-                :name="isUploading ? 'solar:upload-bold-duotone' : (courseId ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')" 
-                size="20" 
+              <Icon
+                :name="isUploading ? 'solar:upload-bold-duotone' : (courseId ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')"
+                size="16"
               />
             </template>
             {{ isUploading ? `${t('admin.formCourse.buttons.uploading')} ${uploadProgress}%` : `${courseId ? t('admin.formCourse.buttons.updateCourse') : t('admin.formCourse.buttons.createCourse')}` }}
@@ -641,7 +646,8 @@ async function confirmDeleteCourse() {
           </a-upload-dragger>
         </a-form-item>
 
-        <a-form-item name="description" :label="t('admin.formCourse.form.description')" class="w-full"
+        <a-form-item
+          name="description" :label="t('admin.formCourse.form.description')" class="w-full"
           :rules="[{ required: true, message: t('admin.formCourse.form.descriptionRequired') }]"
         >
           <QuillEditor
@@ -658,11 +664,11 @@ async function confirmDeleteCourse() {
       v-model:open="showDeleteDialog"
       :title="t('admin.formCourse.deleteDialog.title')"
       :confirm-loading="isDeleting"
-      @ok="confirmDeleteCourse"
-      @cancel="closeDeleteDialog"
       :ok-text="t('admin.formCourse.buttons.delete')"
       :cancel-text="t('admin.formCourse.buttons.cancel')"
       ok-type="danger"
+      @ok="confirmDeleteCourse"
+      @cancel="closeDeleteDialog"
     >
       <div class="py-4">
         <div class="flex items-center gap-4 mb-4">
@@ -670,11 +676,15 @@ async function confirmDeleteCourse() {
             <Icon name="solar:danger-triangle-bold-duotone" size="24" class="text-red-600" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ t('admin.formCourse.deleteDialog.confirmTitle') }}</h3>
-            <p class="text-sm text-gray-600">{{ t('admin.formCourse.deleteDialog.confirmMessage') }}</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+              {{ t('admin.formCourse.deleteDialog.confirmTitle') }}
+            </h3>
+            <p class="text-sm text-gray-600">
+              {{ t('admin.formCourse.deleteDialog.confirmMessage') }}
+            </p>
           </div>
         </div>
-        
+
         <div class="bg-gray-50 rounded-lg p-4">
           <p class="text-sm text-gray-700 mb-2">
             <strong>{{ t('admin.formCourse.deleteDialog.courseLabel') }}</strong> {{ formState.title || 'Untitled Course' }}

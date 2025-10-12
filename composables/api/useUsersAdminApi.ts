@@ -1,3 +1,4 @@
+import type { ListApiResponse } from '~/api/apiClient'
 import { computed, ref } from 'vue'
 import { useApiClient } from '~/api/apiClient'
 
@@ -11,12 +12,7 @@ export interface User {
   last_login: string
 }
 
-export interface UsersResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: User[]
-}
+export interface UsersResponse extends ListApiResponse<User> {}
 
 export function useUsersAdminApi() {
   const users = ref<User[]>([])

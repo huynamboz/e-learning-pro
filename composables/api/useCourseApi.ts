@@ -1,5 +1,6 @@
 // Course API service
 import type {
+  AllStudentsResponse,
   Chapter,
   ChapterPayload,
   Course,
@@ -7,10 +8,7 @@ import type {
   CourseFilters,
   CourseListResponse,
   CoursePayload,
-  CourseStudent,
   CourseStudentsResponse,
-  AllStudentsResponse,
-  StudentWithStats,
   Lesson,
   LessonPayload,
 } from '~/types/course.type'
@@ -32,7 +30,7 @@ export function useCourseApi() {
       apiClient.upload(`/courses/${courseId}/upload-video-url/`, formData),
 
     // upload image
-    uploadImage: (payload: { file_name: string; content_type: string; folder?: string }) =>
+    uploadImage: (payload: { file_name: string, content_type: string, folder?: string }) =>
       apiClient.post('/system/upload-image/', payload),
 
     // Get courses with filters
@@ -104,7 +102,7 @@ export function useCourseApi() {
 
     // Get user's enrolled courses
     getEnrolledCourses: () =>
-      apiClient.get<CourseEnrollment[]>('/courses/enrolled/'),
+      apiClient.get<CourseListResponse>('/courses/enrolled/'),
 
     // Get course progress
     getCourseProgress: (courseId: string) =>

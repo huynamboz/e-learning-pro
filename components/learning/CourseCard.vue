@@ -1,29 +1,11 @@
 <script setup lang="ts">
 import { ClockCircleOutlined } from '@ant-design/icons-vue'
+import type { Course } from '~/composables/api'
 
-interface Schedule {
-  id: string
-  text: string
-}
-
-interface Course {
-  id: string
-  title: string
-  instructor: string
-  image: string
-  enrolled: boolean
-  progress?: number
-  schedule?: Schedule[]
-  details: string
-  ratings: number
-  totalHours: number
-  lectures: number
-  level: string
-  price?: number
-}
 
 interface Props {
   course: Course
+  hideActions?: boolean
 }
 
 const props = defineProps<Props>()
@@ -49,7 +31,7 @@ function handleCancelCourse() {
            transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
   >
     <div class="w-full h-[139px] rounded-lg overflow-hidden mb-2">
-      <img :src="course.image" :alt="course.title" class="w-full h-full object-cover">
+      <img :src="course.thumbnail" :alt="course.title" class="w-full h-full object-cover">
     </div>
 
     <div class="flex flex-col gap-2 flex-1">
@@ -88,7 +70,7 @@ function handleCancelCourse() {
       </div>
 
       <!-- Action buttons -->
-      <div class="mt-2">
+      <div v-if="!hideActions" class="mt-2">
         <a-button
           v-if="!course.enrolled"
           type="primary"

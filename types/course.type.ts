@@ -61,6 +61,44 @@ export interface Classroom {
   updated_at: string
 }
 
+export interface ClassroomDetail {
+  id: string
+  course: {
+    id: string
+    title: string
+    slug: string
+  }
+  title: string
+  background_url: string
+  student_count: number
+  start_date: string
+  end_date: string
+  meeting_link: string | null
+  schedules: Array<{
+    id: string
+    day_of_week: string
+    day_display: string
+    start_time: string
+    end_time: string
+    created_at: string
+    updated_at: string
+  }>
+  enrollment_count: number
+  session_count: number
+  schedule_summary: string
+  upcoming_sessions: Array<{
+    id: string
+    topic: string
+    start_time: string
+    end_time: string
+    status: string
+    attendance_count: number
+    present_count: number
+  }>
+  created_at: string
+  updated_at: string
+}
+
 export interface CoursePayload {
   title: string
   slug: string
@@ -265,12 +303,9 @@ export interface CourseStudent {
   }
 }
 
-export interface AllStudentsResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: StudentWithStats[]
-}
+// Generic API Response Interface
+
+export interface AllStudentsResponse extends ListApiResponse<StudentWithStats> {}
 
 export interface StudentWithStats {
   id: number
@@ -288,9 +323,7 @@ export interface StudentWithStats {
 }
 
 // Course Students Response
-export interface CourseStudentsResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: CourseStudent[]
-}
+export interface CourseStudentsResponse extends ListApiResponse<CourseStudent> {}
+
+// Course List Response
+export interface CourseListResponse extends ListApiResponse<CourseSummary> {}

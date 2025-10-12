@@ -1,5 +1,5 @@
-import type { Classroom, ClassroomSchedule } from '~/types/course.type'
-// Classroom API service
+import type { ListApiResponse } from '~/api/apiClient'
+import type { Classroom, ClassroomDetail, ClassroomSchedule } from '~/types/course.type'
 import { useApiClient } from '~/api/apiClient'
 
 export interface ClassroomPayload {
@@ -7,6 +7,7 @@ export interface ClassroomPayload {
   title: string
   student_count: number
   schedules_data: ClassroomSchedule[]
+  meeting_link?: string
 }
 
 export interface ClassroomSession {
@@ -30,12 +31,7 @@ export interface ClassroomSession {
   updated_at: string
 }
 
-export interface ClassroomSessionsResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: ClassroomSession[]
-}
+export interface ClassroomSessionsResponse extends ListApiResponse<ClassroomSession> {}
 
 export function useClassroomApi() {
   const apiClient = useApiClient()
@@ -57,6 +53,10 @@ export function useClassroomApi() {
     updateClassroom: (id: string, classroomData: Partial<ClassroomPayload>) =>
       apiClient.put<Classroom>(`/classrooms/${id}/`, classroomData),
 
+    // Patch classroom (for partial updates)
+    patchClassroom: (id: string, classroomData: Partial<ClassroomPayload>) =>
+      apiClient.patch<Classroom>(`/classrooms/${id}/`, classroomData),
+
     // Delete classroom
     deleteClassroom: (id: string) =>
       apiClient.delete(`/classrooms/${id}/`),
@@ -65,8 +65,24 @@ export function useClassroomApi() {
     getClassroom: (id: string) =>
       apiClient.get<Classroom>(`/classrooms/${id}/`),
 
+    // Get classroom detail by classroom ID
+    getClassroomDetail: (classroomId: string) =>
+      apiClient.get<ClassroomDetail>(`/classrooms/${classroomId}/`),
+
     // Get classroom sessions
     getClassroomSessions: (classroomId: string) =>
       apiClient.get<ClassroomSessionsResponse>(`/classrooms/${classroomId}/sessions/`),
+
+    // Create classroom session
+    createClassroomSession: (classroomId: string, sessionData: Partial<ClassroomSession>) =>
+      apiClient.post<ClassroomSession>(`/classrooms/${classroomId}/sessions/`, sessionData),
+
+    // Update classroom session
+    updateClassroomSession: (sessionId: string, sessionData: Partial<ClassroomSession>) =>
+      apiClient.patch<ClassroomSession>(`/classrooms/sessions/${sessionId}/`, sessionData),
+
+    // Delete classroom session
+    deleteClassroomSession: (sessionId: string) =>
+      apiClient.delete(`/classrooms/sessions/${sessionId}/`),
   }
 }

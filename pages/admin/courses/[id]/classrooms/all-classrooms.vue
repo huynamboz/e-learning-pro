@@ -1,9 +1,8 @@
 // Classrooms list
 <script lang="ts" setup>
-import type { ClassroomPayload } from '~/composables/api/useClassroomApi'
+import CardClassroom from '~/components/admin/course/classroom/CardClassroom.vue'
 import { useCourseApi } from '~/composables/api'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
-import CardClassroom from '~/components/admin/course/classroom/CardClassroom.vue'
 
 const { t } = useI18n()
 
@@ -35,6 +34,8 @@ const daysOfWeek = [
 const formState = ref({
   title: '',
   student_count: '',
+  start_date: null as any,
+  end_date: null as any,
   schedule: [
     { day: null, start: null, end: null },
   ],
@@ -91,6 +92,26 @@ function formatTimeForApi(time: any): string {
   return time.toString()
 }
 
+// Validate date range
+function validateDateRange(rule: any, value: any, callback: any) {
+  if (!value) {
+    callback()
+    return
+  }
+
+  if (formState.value.start_date && formState.value.end_date) {
+    if (formState.value.start_date.isAfter && formState.value.start_date.isAfter(formState.value.end_date)) {
+      callback(new Error(t('admin.classroom.form.startDateAfterEndDate')))
+    }
+    else {
+      callback()
+    }
+  }
+  else {
+    callback()
+  }
+}
+
 // Create classroom
 async function handleOk() {
   try {
@@ -98,10 +119,12 @@ async function handleOk() {
     confirmLoading.value = true
 
     // Transform form data to API format
-    const classroomPayload: ClassroomPayload = {
+    const classroomPayload: any = {
       course_id: courseId.value,
       title: formState.value.title,
       student_count: Number.parseInt(formState.value.student_count),
+      start_date: formState.value.start_date ? formState.value.start_date.format('YYYY-MM-DD') : null,
+      end_date: formState.value.end_date ? formState.value.end_date.format('YYYY-MM-DD') : null,
       schedules_data: formState.value.schedule
         .filter(schedule => schedule.day && schedule.start && schedule.end)
         .map(schedule => ({
@@ -139,6 +162,8 @@ function resetForm() {
   formState.value = {
     title: '',
     student_count: '',
+    start_date: null,
+    end_date: null,
     schedule: [
       { day: null, start: null, end: null },
     ],
@@ -186,7 +211,9 @@ onMounted(() => {
           <Icon name="i-heroicons-building-office-2" size="40" class="text-gray-500" />
         </div>
         <div class="space-y-2">
-          <h3 class="text-xl font-semibold text-gray-900">{{ t('admin.classroom.emptyStates.noClassrooms') }}</h3>
+          <h3 class="text-xl font-semibold text-gray-900">
+            {{ t('admin.classroom.emptyStates.noClassrooms') }}
+          </h3>
           <p class="text-gray-500 max-w-md text-sm leading-relaxed">
             {{ t('admin.classroom.emptyStates.noClassroomsDescription') }}
           </p>
@@ -212,7 +239,7 @@ onMounted(() => {
       />
     </div>
 
-    <a-modal v-model:open="open" :title="t('admin.classroom.form.title')" :confirm-loading="confirmLoading" @ok="handleOk">
+    <a-modal v-model:open="open" :title="$t('admin.classroom.form.title')" :confirm-loading="confirmLoading" @ok="handleOk">
       <a-form
         ref="formRef"
         :model="formState"
@@ -222,16 +249,16 @@ onMounted(() => {
         class="flex items-start flex-col w-full"
       >
         <a-form-item
-          :label="t('admin.classroom.form.classroomTitle')"
+          :label="$t('admin.classroom.form.classroomTitle')"
           name="title"
           class="w-full"
           :rules="[{ required: true, message: t('admin.classroom.form.classroomTitleRequired') }]"
         >
-          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.classroom.form.classroomTitlePlaceholder')" />
+          <a-input v-model:value="formState.title" size="large" :placeholder="$t('admin.classroom.form.classroomTitlePlaceholder')" />
         </a-form-item>
 
         <a-form-item
-          :label="t('admin.classroom.form.studentCount')"
+          :label="$t('admin.classroom.form.studentCount')"
           name="student_count"
           class="w-full"
           :rules="[
@@ -242,14 +269,53 @@ onMounted(() => {
           <a-input-number
             v-model:value="formState.student_count"
             size="large"
-            :placeholder="t('admin.classroom.form.studentCountPlaceholder')"
+            :placeholder="$t('admin.classroom.form.studentCountPlaceholder')"
             :min="1"
             class="w-full"
           />
         </a-form-item>
 
+        <div class="flex gap-4 w-full">
+          <a-form-item
+            :label="$t('admin.classroom.form.startDate')"
+            name="start_date"
+            class="w-full"
+            :rules="[
+              { required: true, message: t('admin.classroom.form.startDateRequired') },
+              { validator: validateDateRange, trigger: 'change' },
+            ]"
+          >
+            <a-date-picker
+              v-model:value="formState.start_date"
+              size="large"
+              :placeholder="$t('admin.classroom.form.startDatePlaceholder')"
+              class="w-full"
+              format="YYYY-MM-DD"
+            />
+          </a-form-item>
+
+          <a-form-item
+            :label="$t('admin.classroom.form.endDate')"
+            name="end_date"
+            class="w-full"
+            :rules="[
+              { required: true, message: t('admin.classroom.form.endDateRequired') },
+              { validator: validateDateRange, trigger: 'change' },
+            ]"
+          >
+            <a-date-picker
+              v-model:value="formState.end_date"
+              size="large"
+              :placeholder="$t('admin.classroom.form.endDatePlaceholder')"
+              class="w-full"
+              format="YYYY-MM-DD"
+              :disabled-date="(current: any) => formState.start_date && current && current < formState.start_date.startOf('day')"
+            />
+          </a-form-item>
+        </div>
+
         <a-form-item
-          :label="t('admin.classroom.form.schedule')"
+          :label="$t('admin.classroom.form.schedule')"
           name="schedule"
           class="w-full"
           :rules="[{ required: true, message: t('admin.classroom.form.scheduleRequired') }]"
@@ -262,7 +328,7 @@ onMounted(() => {
             >
               <a-select
                 v-model:value="item.day"
-                :placeholder="t('admin.classroom.form.selectDay')"
+                :placeholder="$t('admin.classroom.form.selectDay')"
                 class="h-10 w-1/3"
                 :rules="[{ required: true, message: t('admin.classroom.form.selectDayRequired') }]"
               >
@@ -276,11 +342,11 @@ onMounted(() => {
               </a-select>
 
               <a-time-picker
-                :allow-clear="false"
                 v-model:value="item.start"
+                :allow-clear="false"
                 format="HH:mm"
                 :minute-step="30"
-                :placeholder="t('admin.classroom.form.startTime')"
+                :placeholder="$t('admin.classroom.form.startTime')"
                 size="large"
                 class="w-full"
               />
@@ -291,7 +357,7 @@ onMounted(() => {
                 :minute-step="30"
                 size="large"
                 class="w-full"
-                :placeholder="t('admin.classroom.form.endTime')"
+                :placeholder="$t('admin.classroom.form.endTime')"
               />
 
               <div class="">

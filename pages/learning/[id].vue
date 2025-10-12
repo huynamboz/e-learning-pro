@@ -112,7 +112,9 @@ onMounted(async () => {
             <div v-else class="w-full h-full bg-gradient-to-br from-green-900 to-green-950 flex items-center justify-center">
               <Icon name="tabler:play-filled" class="text-white text-6xl" />
             </div> -->
+            <img v-if="!activeLesson" :src="course?.thumbnail || undefined" class="w-full h-full object-cover" />
             <VideoPlayer
+              v-if="activeLesson"
               :poster="activeLesson?.thumbnail || undefined"
               class="w-full h-full"
               style="width: 100%; height: 100%;"

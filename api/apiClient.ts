@@ -18,6 +18,13 @@ export interface ApiError {
   data?: any
 }
 
+export interface ListApiResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
+
 // Token management using useCookie directly
 function getTokenFromCookie(): string | null {
   const tokenCookie = useCookie('auth.token')

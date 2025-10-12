@@ -1,3 +1,4 @@
+import type { ListApiResponse } from '~/api/apiClient'
 import { useApiClient } from '~/api/apiClient'
 
 export interface QuizOption {
@@ -47,12 +48,7 @@ export interface QuizApiResponse {
   updated_at: string
 }
 
-export interface QuizListResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: QuizApiResponse[]
-}
+export interface QuizListResponse extends ListApiResponse<QuizApiResponse> {}
 
 export interface QuizListParams {
   category?: string
@@ -70,17 +66,23 @@ export function useQuizApi() {
     // Get all quizzes with optional filters
     getQuizzes: (params?: QuizListParams) => {
       const queryParams = new URLSearchParams()
-      
-      if (params?.category) queryParams.append('category', params.category)
-      if (params?.chapter) queryParams.append('chapter', params.chapter)
-      if (params?.is_published !== undefined) queryParams.append('is_published', params.is_published.toString())
-      if (params?.created_by) queryParams.append('created_by', params.created_by.toString())
-      if (params?.search) queryParams.append('search', params.search)
-      if (params?.ordering) queryParams.append('ordering', params.ordering)
+
+      if (params?.category)
+        queryParams.append('category', params.category)
+      if (params?.chapter)
+        queryParams.append('chapter', params.chapter)
+      if (params?.is_published !== undefined)
+        queryParams.append('is_published', params.is_published.toString())
+      if (params?.created_by)
+        queryParams.append('created_by', params.created_by.toString())
+      if (params?.search)
+        queryParams.append('search', params.search)
+      if (params?.ordering)
+        queryParams.append('ordering', params.ordering)
 
       const queryString = queryParams.toString()
       const url = queryString ? `/quiz/quizzes/?${queryString}` : '/quiz/quizzes/'
-      
+
       return apiClient.get<QuizListResponse>(url)
     },
 

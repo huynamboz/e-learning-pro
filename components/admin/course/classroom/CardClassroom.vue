@@ -3,7 +3,6 @@ defineProps<{
   classRoomData: ClassroomData
 }>()
 
-const router = useRouter()
 const { t } = useI18n()
 
 interface ClassroomData {
@@ -119,18 +118,18 @@ function formatDate(dateString: string): string {
           class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700"
         >
           <Icon name="tabler:calendar" size="16" />
-          Xem lịch học
+          {{ t('admin.classroom.card.viewSchedule') }}
         </a-button>
       </NuxtLink>
       
-      <!-- Danh sách học sinh (Student List) -->
-      <NuxtLink :to="`${classRoomData?.id}/students`" class="w-full">
+      <!-- Xem chi tiết lớp học (View Classroom Details) -->
+      <NuxtLink :to="`${classRoomData?.id}`" class="w-full">
         <a-button
           type="default"
           class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
         >
-          <Icon name="tabler:users" size="16" />
-          Danh sách học sinh
+          <Icon name="tabler:eye" size="16" />
+          {{ t('admin.classroom.card.viewDetails') }}
         </a-button>
       </NuxtLink>
       
@@ -141,7 +140,7 @@ function formatDate(dateString: string): string {
           class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
         >
           <Icon name="tabler:clipboard-check" size="16" />
-          Điểm danh
+          {{ t('admin.classroom.card.attendance') }}
         </a-button>
       </NuxtLink>
     </div>
