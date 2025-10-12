@@ -68,6 +68,9 @@ export function useCourseApi() {
     updateChapter: (idCourse: string, id: string, payload: ChapterPayload) =>
       apiClient.put<ChapterPayload>(`/courses/${idCourse}/chapters/${id}/`, payload),
 
+    patchChapter: (idCourse: string, id: string, payload: ChapterPayload) =>
+      apiClient.patch<ChapterPayload>(`/courses/${idCourse}/chapters/${id}/`, payload),
+
     deleteChapter: (id: string) =>
       apiClient.delete<Chapter[]>(`/courses/${id}/chapters/`),
 
@@ -110,6 +113,10 @@ export function useCourseApi() {
     // Post course lessons
     updateLesson: (courseId: string, chapterId: string, lessonId: string, payload: LessonPayload) =>
       apiClient.put<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`, payload),
+
+    // Patch course lessons
+    patchLesson: (courseId: string, chapterId: string, lessonId: string, payload: LessonPayload) =>
+      apiClient.patch<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`, payload),
 
     // Get lesson detail
     getLesson: (courseId: string, chapterId: string, lessonId: string) =>

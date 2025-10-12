@@ -57,11 +57,15 @@
         "addLesson": "Add lesson",
         "edit": "Edit",
         "time": "Time",
-        "minutes": "minutes"
+        "minutes": "minutes",
+        "updateOrderSuccess": "Lesson order updated successfully!",
+        "updateOrderFailed": "Failed to update lesson order"
       },
       "notifications": {
         "createChapterSuccess": "Create chapter success",
-        "createChapterFailed": "Create chapter failed"
+        "createChapterFailed": "Create chapter failed",
+        "updateOrderSuccess": "Chapter order updated successfully!",
+        "updateOrderFailed": "Failed to update chapter order"
       }
     },
     "formLesson": {

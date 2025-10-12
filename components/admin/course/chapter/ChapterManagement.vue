@@ -3,10 +3,14 @@ import { useCourse } from '#imports'
 import { notification } from 'ant-design-vue'
 import LessonsList from './LessonsList.vue'
 import { generateSlug } from '~/utils/slug'
+import { VueDraggableNext as draggable, type DragChangeEvent } from 'vue-draggable-next'
+import type { Chapter } from '~/types/course.type'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 
 const { t } = useI18n()
 
-const { fetchChapters, createChapter, updateChapter, chapters, isCreatingChapter } = useCourse()
+const { fetchChapters, createChapter, chapters, isCreatingChapter } = useCourse()
+const { patchChapter } = useCourseApi() 
 const route = useRoute()
 
 const courseId = computed(() => route.params.id as string)
@@ -21,6 +25,29 @@ const formState = ref({
 })
 
 const activeChapterId = ref<string>('')
+const chaptersList = ref([...chapters.value])
+
+async function handleChapterChange(e: DragChangeEvent<Chapter>) {
+  if (e.moved) {
+    const { newIndex, element } = e.moved
+    try {
+      // Create a partial payload with just the order field
+      const orderPayload = { order: newIndex } as any
+      await patchChapter(courseId.value, element.id, orderPayload)
+      
+      notification.success({
+        message: t('admin.chapterManagement.notifications.updateOrderSuccess')
+      })
+    } catch (error) {
+      console.error('Failed to update chapter order:', error)
+      // Revert the change on error
+      chaptersList.value = [...chapters.value] as any
+      notification.error({
+        message: t('admin.chapterManagement.notifications.updateOrderFailed')
+      })
+    }
+  }
+}
 
 async function handleAddChapter() {
   await formRef.value?.validateFields()
@@ -38,6 +65,7 @@ async function handleAddChapter() {
       })
       fetchChapters(courseId.value)
       open.value = false
+      chaptersList.value = [...chapters.value] as any
       // Reset form
       formState.value = {
         title: '',
@@ -62,6 +90,7 @@ function showModal() {
 
 onMounted(async () => {
   await fetchChapters(courseId.value)
+  chaptersList.value = [...chapters.value] as any
   // Set first chapter as active if available
   if (chapters.value && chapters.value.length > 0) {
     activeChapterId.value = chapters.value[0].id
@@ -108,18 +137,32 @@ onMounted(async () => {
         </div>
 
         <!-- Chapter list -->
-        <div
-          v-for="ch in chapters"
-          :key="ch.id"
-          class="px-3 py-2 rounded-lg cursor-pointer border transition-all flex items-center"
-          :class="activeChapterId === ch.id
-            ? 'border-green-500 bg-green-50 font-medium'
-            : 'border-gray-300 hover:bg-gray-100'"
-          @click="activeChapterId = ch.id"
+        <draggable 
+          tag="transition-group" 
+          :component-data="{
+            tag: 'div',
+            type: 'transition',
+            name: 'fade'
+          }" 
+          :animation="200" 
+          v-model="chaptersList" 
+          group="chapters" 
+          @change="handleChapterChange" 
+          item-key="id"
         >
-          <Icon v-if="activeChapterId === ch.id" name="i-charm-tick" class="text-lg mr-2 text-green-600" />
-          <span class="truncate">{{ ch.title }}</span>
-        </div>
+          <div
+            v-for="ch in chaptersList"
+            :key="ch.id"
+            class="px-3 py-2 mt-2 rounded-lg cursor-pointer border transition-all flex items-center drag-item"
+            :class="activeChapterId === ch.id
+              ? 'border-green-500 bg-green-50 font-medium'
+              : 'border-gray-300 hover:bg-gray-100'"
+            @click="activeChapterId = ch.id"
+          >
+            <Icon v-if="activeChapterId === ch.id" name="i-charm-tick" class="text-lg mr-2 text-green-600" />
+            <span class="truncate">{{ ch.title }}</span>
+          </div>
+        </draggable>
       </div>
     </div>
 
@@ -216,7 +259,7 @@ onMounted(async () => {
         </div>
 
         <!-- Lessons list -->
-        <LessonsList v-else :chapter-id="activeChapter.id" :list-lesson="activeChapter.lessons" />
+        <LessonsList v-else :chapter-id="activeChapter.id" :list-lesson="activeChapter.lessons" :key="activeChapter.id" />
       </div>
     </div>
   </div>

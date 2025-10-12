@@ -57,11 +57,15 @@
         "addLesson": "Thêm bài học",
         "edit": "Chỉnh sửa",
         "time": "Thời gian",
-        "minutes": "phút"
+        "minutes": "phút",
+        "updateOrderSuccess": "Cập nhật thứ tự bài học thành công!",
+        "updateOrderFailed": "Cập nhật thứ tự bài học thất bại"
       },
       "notifications": {
         "createChapterSuccess": "Tạo chương thành công",
-        "createChapterFailed": "Tạo chương thất bại"
+        "createChapterFailed": "Tạo chương thất bại",
+        "updateOrderSuccess": "Cập nhật thứ tự chương thành công!",
+        "updateOrderFailed": "Cập nhật thứ tự chương thất bại"
       }
     },
     "formLesson": {
