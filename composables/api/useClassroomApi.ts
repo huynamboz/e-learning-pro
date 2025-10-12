@@ -1,5 +1,5 @@
 import type { ListApiResponse } from '~/api/apiClient'
-import type { Classroom, ClassroomDetail, ClassroomSchedule } from '~/types/course.type'
+import type { CalendarApiResponse, Classroom, ClassroomDetail, ClassroomSchedule } from '~/types/course.type'
 import { useApiClient } from '~/api/apiClient'
 
 export interface ClassroomPayload {
@@ -110,5 +110,13 @@ export function useClassroomApi() {
     // Get session attendance
     getSessionAttendance: (sessionId: string) =>
       apiClient.get<SessionAttendance[]>(`/classrooms/sessions/${sessionId}/attendances/`),
+
+    // Get calendar data
+    getCalendarData: (params?: { view?: string; date?: string }) =>
+      apiClient.get<CalendarApiResponse>('/classrooms/calendar/', { params }),
+
+    // Self check-in for session
+    selfCheckInSession: (sessionId: string, classroomId: string) =>
+      apiClient.post(`/classrooms/sessions/${sessionId}/self_checkin/`, { classroom: classroomId }),
   }
 }

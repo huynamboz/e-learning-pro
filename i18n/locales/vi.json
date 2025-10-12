@@ -271,6 +271,14 @@
         "late": "Đi muộn",
         "checkedAt": "Điểm danh lúc"
       },
+      "error": {
+        "cannotJoinClass": "Không thể tham gia buổi học",
+        "checkInFailed": "Không thể tham gia buổi học. Vui lòng thử lại sau.",
+        "checkInTooEarly": "Bạn đang cố gắng vào học quá sớm. Vui lòng đợi đến khi buổi học bắt đầu.",
+        "checkInNotYetAvailable": "Chưa thể điểm danh. Có thể điểm danh từ {time}",
+        "checkInNotYetAvailableFrom": "Chưa thể điểm danh. Có thể điểm danh từ {time}",
+        "Check-in not yet available. Available from 2025-10-13T01:15:00+00:00": "Chưa thể điểm danh. Có thể điểm danh từ 2025-10-13T01:15:00+00:00"
+      },
       "edit": {
         "title": "Chỉnh sửa lớp học",
         "classroomTitle": "Tên lớp học",
@@ -1020,6 +1028,13 @@
       "validationError": "Vui lòng sửa các lỗi form trước khi gửi",
       "formValidationError": "Xác thực form thất bại",
       "formValidationMessage": "Vui lòng kiểm tra tất cả các trường bắt buộc và thử lại"
+    }
+  },
+  "calendar": {
+    "error": {
+      "cannotJoinClass": "Không thể tham gia buổi học",
+      "checkInFailed": "Không thể tham gia buổi học. Vui lòng thử lại sau.",
+      "checkInTooEarly": "Bạn đang cố gắng vào học quá sớm. Vui lòng đợi đến khi buổi học bắt đầu."
     }
   }
 }

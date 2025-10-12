@@ -271,6 +271,14 @@
         "late": "Late",
         "checkedAt": "Checked at"
       },
+      "error": {
+        "cannotJoinClass": "Cannot join class",
+        "checkInFailed": "Unable to join the class. Please try again later.",
+        "checkInTooEarly": "You are trying to join the class too early. Please wait until the class starts.",
+        "checkInNotYetAvailable": "Check-in not yet available. Available from {time}",
+        "checkInNotYetAvailableFrom": "Check-in not yet available. Available from {time}",
+        "Check-in not yet available. Available from 2025-10-13T01:15:00+00:00": "Check-in not yet available. Available from 2025-10-13T01:15:00+00:00"
+      },
       "edit": {
         "title": "Edit Classroom",
         "classroomTitle": "Classroom Title",
@@ -1020,6 +1028,13 @@
       "validationError": "Please fix the form errors before submitting",
       "formValidationError": "Form validation failed",
       "formValidationMessage": "Please check all required fields and try again"
+    }
+  },
+  "calendar": {
+    "error": {
+      "cannotJoinClass": "Cannot join class",
+      "checkInFailed": "Unable to join the class. Please try again later.",
+      "checkInTooEarly": "You are trying to join the class too early. Please wait until the class starts."
     }
   }
 }

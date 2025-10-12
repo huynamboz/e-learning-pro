@@ -1,3 +1,5 @@
+import type { ListApiResponse } from "~/api/apiClient"
+
 export interface Course {
   id: string
   title: string
@@ -327,3 +329,53 @@ export interface CourseStudentsResponse extends ListApiResponse<CourseStudent> {
 
 // Course List Response
 export interface CourseListResponse extends ListApiResponse<CourseSummary> {}
+
+// Calendar API Response Types
+export interface CalendarSession {
+  id: string
+  topic: string
+  start_time: string
+  end_time: string
+  status: string
+  attendance_count: number
+  present_count: number
+  meeting_link: string
+}
+
+export interface CalendarClassroom {
+  id: string
+  title: string
+  background_url: string
+  meeting_link?: string
+  course: {
+    id: string
+    title: string
+    slug: string
+  }
+  student_count: number
+  schedules: Array<{
+    id: string
+    day_of_week: string
+    day_display: string
+    start_time: string
+    end_time: string
+    created_at: string
+    updated_at: string
+  }>
+  sessions: CalendarSession[]
+  enrollment_count: number
+  created_at: string
+}
+
+export interface CalendarApiResponse {
+  view_type: string
+  period: string
+  date_range: {
+    start: string
+    end: string
+  }
+  classrooms: CalendarClassroom[]
+  upcoming_today: any[]
+  total_classrooms: number
+  total_sessions: number
+}

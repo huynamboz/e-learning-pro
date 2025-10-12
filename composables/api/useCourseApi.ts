@@ -199,6 +199,7 @@ export function useCourseApi() {
     getCourseStudents: (courseId: string) =>
       apiClient.get<CourseStudentsResponse>(`/courses/${courseId}/students/`),
 
+
     // Get course classmates
     getCourseClassmates: (courseId: string) =>
       apiClient.get<CourseStudentsResponse>(`/courses/${courseId}/classmates/`),

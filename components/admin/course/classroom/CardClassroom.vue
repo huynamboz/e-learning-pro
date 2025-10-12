@@ -47,7 +47,7 @@ function formatDate(dateString: string): string {
 
 <template>
   <div
-    class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
+    class="bg-white flex flex-col border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group"
   >
     <!-- Header with Course Info -->
     <div class="flex items-start justify-between mb-4">
@@ -110,9 +110,9 @@ function formatDate(dateString: string): string {
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-col gap-2 pt-4 border-t border-gray-200">
+    <div class="flex flex-col gap-2 pt-4 border-t border-gray-200 mt-auto">
       <!-- Xem lịch học (View Schedule) -->
-      <NuxtLink :to="`${classRoomData?.id}/calendars`" class="w-full">
+      <!-- <NuxtLink :to="`${classRoomData?.id}/calendars`" class="w-full">
         <a-button
           type="primary"
           class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 bg-blue-600 border-blue-600 hover:bg-blue-700 hover:border-blue-700"
@@ -120,7 +120,7 @@ function formatDate(dateString: string): string {
           <Icon name="tabler:calendar" size="16" />
           {{ t('admin.classroom.card.viewSchedule') }}
         </a-button>
-      </NuxtLink>
+      </NuxtLink> -->
       
       <!-- Xem chi tiết lớp học (View Classroom Details) -->
       <NuxtLink :to="`${classRoomData?.id}`" class="w-full">
@@ -134,7 +134,7 @@ function formatDate(dateString: string): string {
       </NuxtLink>
       
       <!-- Điểm danh (Attendance) -->
-      <NuxtLink :to="`${classRoomData?.id}/all-attendance`" class="w-full">
+      <!-- <NuxtLink :to="`${classRoomData?.id}/all-attendance`" class="w-full">
         <a-button
           type="default"
           class="w-full rounded-lg text-sm !font-semibold !flex items-center justify-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -142,7 +142,7 @@ function formatDate(dateString: string): string {
           <Icon name="tabler:clipboard-check" size="16" />
           {{ t('admin.classroom.card.attendance') }}
         </a-button>
-      </NuxtLink>
+      </NuxtLink> -->
     </div>
   </div>
 </template>
