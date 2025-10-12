@@ -264,6 +264,28 @@ export interface CourseStudent {
   }
 }
 
+export interface AllStudentsResponse {
+  count: number
+  next: string | null
+  previous: string | null
+  results: StudentWithStats[]
+}
+
+export interface StudentWithStats {
+  id: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  full_name: string
+  stats: {
+    total_courses: number
+    active_courses: number
+    completed_courses: number
+    average_completion: number
+  }
+}
+
 // Course Students Response
 export interface CourseStudentsResponse {
   count: number

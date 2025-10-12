@@ -9,6 +9,8 @@ import type {
   CoursePayload,
   CourseStudent,
   CourseStudentsResponse,
+  AllStudentsResponse,
+  StudentWithStats,
   Lesson,
   LessonPayload,
 } from '~/types/course.type'
@@ -210,5 +212,9 @@ export function useCourseApi() {
     // Enable student in course
     enableStudent: (courseId: string, studentId: string) =>
       apiClient.post(`/courses/${courseId}/students/${studentId}/enable/`),
+
+    // Get all students across all courses
+    getAllStudents: () =>
+      apiClient.get<AllStudentsResponse>('/courses/students/'),
   }
 }
