@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { VideoPlayer } from '@videojs-player/vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
+import LearningQuizList from '~/components/learning/QuizList.vue'
 import { useLearnStore } from '~/stores/learn.store'
 import 'video.js/dist/video-js.css'
 
@@ -174,7 +175,10 @@ onMounted(async () => {
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     Course Quiz
                   </h2>
-                  <a-empty description="No quizzes available for this lesson yet." />
+                  <LearningQuizList 
+                    :course-id="courseId"
+                    :chapter-id="learnStore.currentChapterId || undefined"
+                  />
                 </div>
               </a-tab-pane>
 

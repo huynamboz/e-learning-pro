@@ -47,6 +47,7 @@
       },
       "form": {
         "title": "Add Chapter",
+        "editTitle": "Edit Chapter",
         "chapterTitle": "Chapter title",
         "chapterTitlePlaceholder": "Enter chapter title",
         "chapterTitleRequired": "Please input your chapter title!",
@@ -64,8 +65,20 @@
       "notifications": {
         "createChapterSuccess": "Create chapter success",
         "createChapterFailed": "Create chapter failed",
+        "updateChapterSuccess": "Chapter updated successfully!",
+        "updateChapterFailed": "Failed to update chapter",
+        "deleteChapterSuccess": "Chapter deleted successfully!",
+        "deleteChapterFailed": "Failed to delete chapter",
         "updateOrderSuccess": "Chapter order updated successfully!",
         "updateOrderFailed": "Failed to update chapter order"
+      },
+      "deleteConfirm": {
+        "title": "Delete Chapter",
+        "message": "Are you sure you want to delete this chapter?",
+        "warning": "This action cannot be undone. All chapter content, including lessons and materials, will be permanently removed.",
+        "lessons": "Lessons",
+        "cancel": "Cancel",
+        "confirm": "Delete Chapter"
       }
     },
     "formLesson": {

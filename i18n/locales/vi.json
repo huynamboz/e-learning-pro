@@ -47,6 +47,7 @@
       },
       "form": {
         "title": "Thêm chương",
+        "editTitle": "Chỉnh sửa chương",
         "chapterTitle": "Tiêu đề chương",
         "chapterTitlePlaceholder": "Nhập tiêu đề chương",
         "chapterTitleRequired": "Vui lòng nhập tiêu đề chương!",
@@ -64,8 +65,20 @@
       "notifications": {
         "createChapterSuccess": "Tạo chương thành công",
         "createChapterFailed": "Tạo chương thất bại",
+        "updateChapterSuccess": "Cập nhật chương thành công!",
+        "updateChapterFailed": "Cập nhật chương thất bại",
+        "deleteChapterSuccess": "Xóa chương thành công!",
+        "deleteChapterFailed": "Xóa chương thất bại",
         "updateOrderSuccess": "Cập nhật thứ tự chương thành công!",
         "updateOrderFailed": "Cập nhật thứ tự chương thất bại"
+      },
+      "deleteConfirm": {
+        "title": "Xóa chương",
+        "message": "Bạn có chắc chắn muốn xóa chương này?",
+        "warning": "Hành động này không thể hoàn tác. Tất cả nội dung chương, bao gồm bài học và tài liệu, sẽ bị xóa vĩnh viễn.",
+        "lessons": "Bài học",
+        "cancel": "Hủy",
+        "confirm": "Xóa chương"
       }
     },
     "formLesson": {

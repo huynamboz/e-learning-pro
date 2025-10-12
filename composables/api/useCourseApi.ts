@@ -71,8 +71,8 @@ export function useCourseApi() {
     patchChapter: (idCourse: string, id: string, payload: ChapterPayload) =>
       apiClient.patch<ChapterPayload>(`/courses/${idCourse}/chapters/${id}/`, payload),
 
-    deleteChapter: (id: string) =>
-      apiClient.delete<Chapter[]>(`/courses/${id}/chapters/`),
+    deleteChapter: (courseId: string, chapterId: string) =>
+      apiClient.delete(`/courses/${courseId}/chapters/${chapterId}/`),
 
     // Get featured courses
     getFeaturedCourses: () =>
