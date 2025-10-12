@@ -149,6 +149,7 @@ export interface Lesson {
   is_preview: boolean
   is_published: boolean
   is_unlocked: boolean
+  thumbnail: string | null
 }
 
 // Course API Response Types

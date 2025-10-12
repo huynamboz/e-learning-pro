@@ -113,6 +113,7 @@ onMounted(async () => {
               <Icon name="tabler:play-filled" class="text-white text-6xl" />
             </div> -->
             <VideoPlayer
+              :poster="activeLesson?.thumbnail || undefined"
               class="w-full h-full"
               style="width: 100%; height: 100%;"
               :src="activeLesson?.video_url"
