@@ -6,6 +6,7 @@ import DeleteSessionDialog from '~/components/admin/course/classroom/DeleteSessi
 import EditClassroomDialog from '~/components/admin/course/classroom/EditClassroomDialog.vue'
 import EditSessionDialog from '~/components/admin/course/classroom/EditSessionDialog.vue'
 import StudentListDialog from '~/components/admin/course/classroom/StudentListDialog.vue'
+import SessionAttendanceDialog from '~/components/admin/course/classroom/SessionAttendanceDialog.vue'
 import { useClassroomApi, type ClassroomSession } from '~/composables/api/useClassroomApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 
@@ -50,6 +51,10 @@ const deletingSession = ref<any>(null)
 
 // Student list state
 const isStudentListDialogVisible = ref(false)
+
+// Session attendance state
+const isSessionAttendanceDialogVisible = ref(false)
+const selectedSession = ref<ClassroomSession | null>(null)
 
 // Load classroom detail
 async function loadClassroomDetail() {
@@ -386,6 +391,18 @@ function cancelViewStudents() {
   isStudentListDialogVisible.value = false
 }
 
+// Start viewing session attendance
+function startViewSessionAttendance(session: ClassroomSession) {
+  selectedSession.value = session
+  isSessionAttendanceDialogVisible.value = true
+}
+
+// Cancel viewing session attendance
+function cancelViewSessionAttendance() {
+  isSessionAttendanceDialogVisible.value = false
+  selectedSession.value = null
+}
+
 // Stats cards data
 const statsCards = computed(() => [
   {
@@ -609,8 +626,13 @@ onMounted(async () => {
                   </div>
                   <div class="flex items-center gap-2">
                     <Icon name="i-heroicons-users" class="w-4 h-4" />
-                    <span>{{ session.attendance_count }}/{{ classroom?.student_count }} {{
-                      $t('admin.classroom.detail.attended') }}</span>
+                    <button
+                      class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                      @click="startViewSessionAttendance(session)"
+                    >
+                      {{ session.attendance_count }}/{{ classroom?.student_count }} {{
+                        $t('admin.classroom.detail.attended') }}
+                    </button>
                   </div>
                   <div v-if="session.meeting_link" class="flex items-center gap-2">
                     <Icon name="i-heroicons-link" class="w-4 h-4" />
@@ -689,6 +711,14 @@ onMounted(async () => {
       :classroom-title="classroom?.title"
       :loading="studentsLoading"
       @cancel="cancelViewStudents"
+    />
+
+    <!-- Session Attendance Dialog -->
+    <SessionAttendanceDialog
+      v-model:visible="isSessionAttendanceDialogVisible"
+      :session-id="selectedSession?.id || ''"
+      :session-topic="selectedSession?.topic"
+      @cancel="cancelViewSessionAttendance"
     />
   </div>
 </template>

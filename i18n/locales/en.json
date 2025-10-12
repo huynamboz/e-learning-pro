@@ -262,7 +262,14 @@
         "studentsLoadFailed": "Failed to load students",
         "enrolledOn": "Enrolled on",
         "active": "Active",
-        "inactive": "Inactive"
+        "inactive": "Inactive",
+        "sessionAttendance": "Session Attendance",
+        "attendanceLoadFailed": "Failed to load attendance data",
+        "noAttendance": "No attendance records found",
+        "totalAttendance": "Total Attendance",
+        "present": "Present",
+        "late": "Late",
+        "checkedAt": "Checked at"
       },
       "edit": {
         "title": "Edit Classroom",

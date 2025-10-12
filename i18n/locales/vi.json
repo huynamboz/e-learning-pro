@@ -262,7 +262,14 @@
         "studentsLoadFailed": "Tải danh sách học viên thất bại",
         "enrolledOn": "Đăng ký ngày",
         "active": "Hoạt động",
-        "inactive": "Không hoạt động"
+        "inactive": "Không hoạt động",
+        "sessionAttendance": "Danh sách điểm danh buổi học",
+        "attendanceLoadFailed": "Không thể tải dữ liệu điểm danh",
+        "noAttendance": "Chưa có bản ghi điểm danh nào",
+        "totalAttendance": "Tổng số điểm danh",
+        "present": "Có mặt",
+        "late": "Đi muộn",
+        "checkedAt": "Điểm danh lúc"
       },
       "edit": {
         "title": "Chỉnh sửa lớp học",

@@ -38,8 +38,7 @@ const formState = ref({
   meeting_link: '',
   meeting_id: '',
   meeting_pass: '',
-  limit: 0,
-  status: 'scheduled',
+  limit: 100,
 })
 
 // Handle dialog visibility
@@ -61,7 +60,6 @@ watch(() => props.visible, (newVisible) => {
       meeting_id: '',
       meeting_pass: '',
       limit: props.defaultLimit,
-      status: 'scheduled',
     }
   }
 })
@@ -160,7 +158,6 @@ async function handleSave() {
       meeting_id: formState.value.meeting_id,
       meeting_pass: formState.value.meeting_pass,
       limit: formState.value.limit,
-      status: formState.value.status,
     }
 
     // Make API call to create session
@@ -321,29 +318,6 @@ function handleCancel() {
           />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.classroom.detail.status') }}
-          </label>
-          <a-select
-            v-model:value="formState.status"
-            size="large"
-            class="w-full"
-          >
-            <a-select-option value="scheduled">
-              {{ $t('admin.classroom.detail.scheduled') }}
-            </a-select-option>
-            <a-select-option value="ongoing">
-              {{ $t('admin.classroom.detail.ongoing') }}
-            </a-select-option>
-            <a-select-option value="completed">
-              {{ $t('admin.classroom.detail.completed') }}
-            </a-select-option>
-            <a-select-option value="cancelled">
-              {{ $t('admin.classroom.detail.cancelled') }}
-            </a-select-option>
-          </a-select>
-        </div>
       </div>
     </div>
 

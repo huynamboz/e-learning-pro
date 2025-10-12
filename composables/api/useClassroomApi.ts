@@ -33,6 +33,28 @@ export interface ClassroomSession {
 
 export interface ClassroomSessionsResponse extends ListApiResponse<ClassroomSession> {}
 
+export interface SessionAttendanceUser {
+  id: number
+  username: string
+  email: string
+  first_name: string
+  last_name: string
+  full_name: string
+}
+
+export interface SessionAttendance {
+  id: string
+  session: string
+  user: number
+  user_info: SessionAttendanceUser
+  status: 'present' | 'late'
+  note: string
+  checked_at: string
+  session_topic: string
+  created_at: string
+  updated_at: string
+}
+
 export function useClassroomApi() {
   const apiClient = useApiClient()
 
@@ -84,5 +106,9 @@ export function useClassroomApi() {
     // Delete classroom session
     deleteClassroomSession: (sessionId: string) =>
       apiClient.delete(`/classrooms/sessions/${sessionId}/`),
+
+    // Get session attendance
+    getSessionAttendance: (sessionId: string) =>
+      apiClient.get<SessionAttendance[]>(`/classrooms/sessions/${sessionId}/attendances/`),
   }
 }
