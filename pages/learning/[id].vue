@@ -2,6 +2,7 @@
 import { VideoPlayer } from '@videojs-player/vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
 import LearningQuizList from '~/components/learning/QuizList.vue'
+import CommentList from '~/components/learning/CommentList.vue'
 import { useLearnStore } from '~/stores/learn.store'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import type { CourseStudent } from '~/types/course.type'
@@ -12,8 +13,9 @@ definePageMeta({
   layout: 'default',
 })
 
-// Get route params
+// Get route params and query
 const route = useRoute()
+const router = useRouter()
 const courseId = route.params.id as string
 
 // Use learn store
@@ -28,15 +30,30 @@ const courseChapters = computed(() => learnStore.courseChapters)
 const activeLesson = computed(() => learnStore.activeLesson)
 const isLoading = computed(() => learnStore.isLoading)
 const error = computed(() => learnStore.error)
+
+// Tab management with query persistence
 const activeTab = computed({
-  get: () => learnStore.activeTab,
-  set: (value: string) => learnStore.setActiveTab(value),
+  get: () => {
+    // Get from query first, then fallback to store
+    const queryTab = route.query.tab as string
+    return queryTab || learnStore.activeTab || 'details'
+  },
+  set: (value: string) => {
+    learnStore.setActiveTab(value)
+    // Update query params
+    router.replace({
+      query: { ...route.query, tab: value }
+    })
+  },
 })
 
 // Student data
 const courseStudents = ref<CourseStudent[]>([])
 const studentsLoading = ref(false)
 const studentsError = ref<string | null>(null)
+
+// Comment data
+const commentCount = ref(0)
 
 // Mock data for demonstration
 const instructorAvatar = ref('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face')
@@ -62,6 +79,12 @@ onMounted(async () => {
     learnStore.loadCourse(courseId),
     loadCourseStudents()
   ])
+  
+  // Sync tab state from query to store
+  const queryTab = route.query.tab as string
+  if (queryTab && queryTab !== learnStore.activeTab) {
+    learnStore.setActiveTab(queryTab)
+  }
 })
 </script>
 
@@ -116,7 +139,7 @@ onMounted(async () => {
             <img v-if="!activeLesson" :src="course?.thumbnail || undefined" class="w-full h-full object-cover" />
             <VideoPlayer
               v-if="activeLesson"
-              :poster="activeLesson?.thumbnail || undefined"
+              :poster="activeLesson?.thumbnail || course?.thumbnail || undefined"
               class="w-full h-full"
               style="width: 100%; height: 100%;"
               :src="activeLesson?.video_url"
@@ -205,12 +228,22 @@ onMounted(async () => {
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="comments" tab="Comment (2)">
+              <a-tab-pane key="comments" :tab="`Comments`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     Comments
                   </h2>
-                  <a-empty description="No comments yet. Be the first to comment!" />
+                  <CommentList 
+                    v-if="activeLesson"
+                    :course-id="courseId"
+                    :chapter-id="learnStore.currentChapterId || ''"
+                    :lesson-id="activeLesson.id"
+                    @comment-count-updated="commentCount = $event"
+                  />
+                  <div v-else class="text-center py-8">
+                    <Icon name="tabler:video" class="text-gray-400 text-4xl mx-auto mb-3" />
+                    <p class="text-gray-500">Select a lesson to view comments</p>
+                  </div>
                 </div>
               </a-tab-pane>
             </a-tabs>

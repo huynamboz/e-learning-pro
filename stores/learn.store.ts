@@ -161,7 +161,7 @@ export const useLearnStore = defineStore('learn', {
         // Set course chapters with transformed lessons
         this.setCourseChapters(chaptersData.map((chapter: Chapter) => ({
           ...chapter,
-          isExpanded: false,
+          isExpanded: true,
           lessons: chapter.lessons.map((lesson: Lesson) => ({
             ...lesson,
             is_completed: lesson.is_completed,

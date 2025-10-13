@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLearnStore } from '~/stores/learn.store'
+import { useLearnStore, type CourseChapterStore } from '~/stores/learn.store'
 import CourseLessonItem from './CourseLessonItem.vue'
 
 interface Props {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLearnStore } from '~/stores/learn.store'
+import { useLearnStore, type CourseLesson } from '~/stores/learn.store'
 
 interface Props {
   lesson: CourseLesson
@@ -22,13 +22,19 @@ async function toggleCompletion(e: any) {
     e.target.checked = !e.target.checked
   }
 }
+
+const activeLesson = computed(() => learnStore.activeLesson)
+
+const isLessonActive = computed(() => {
+  return activeLesson.value?.id === props.lesson.id
+})
 </script>
 
 <template>
   <div
     class="flex items-center justify-between py-4 px-4 group lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
     :class="{
-      '!bg-green-600 !text-white': lesson.isActive,
+      '!bg-green-600 !text-white': isLessonActive,
     }"
     @click="selectLesson"
   >
@@ -37,14 +43,14 @@ async function toggleCompletion(e: any) {
         <a-checkbox
           :checked="lesson.is_completed"
           :class="{
-            '!text-white': lesson.isActive,
+            '!text-white': isLessonActive,
             'text-blue-600': !lesson.isActive && lesson.is_completed,
             'text-gray-400': !lesson.isActive && !lesson.is_completed,
           }"
           @change="toggleCompletion"
         />
       </div>
-      <span class="text-sm font-medium lesson-text group-hover:text-white" :class="{ '!text-white': lesson.isActive, 'text-gray-900': !lesson.isActive }">
+      <span class="text-sm font-medium lesson-text group-hover:text-white" :class="{ '!text-white': isLessonActive, 'text-gray-900': !isLessonActive }">
         {{ lessonIndex + 1 }}. {{ lesson.title }}
       </span>
     </div>
