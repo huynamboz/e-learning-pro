@@ -663,7 +663,7 @@
       "viewAll": "Xem tất cả",
       "noCourses": "Chưa có khóa học nào đang học",
       "noCoursesDesc": "Bắt đầu học điều gì đó mới hôm nay!",
-      "browseCourses": "Duyệt khóa học",
+      "browseCourses": "Khám phá khóa học",
       "progress": "Tiến độ",
       "lessonsCompleted": "{completed} trong {total} bài học đã hoàn thành",
       "continue": "Tiếp tục"
@@ -674,15 +674,15 @@
       "viewAll": "Xem tất cả"
     },
     "recentActivity": {
-      "title": "Hoạt động gần đây",
-      "subtitle": "Các hoạt động học tập mới nhất của bạn",
-      "noActivity": "Chưa có hoạt động gần đây",
+      "title": "Khóa học của tôi",
+      "subtitle": "Các khóa học bạn đã đăng ký",
+      "noActivity": "Chưa có khóa học nào",
       "completed": "Đã hoàn thành",
       "continueLearning": "Tiếp tục học"
     },
     "quickActions": {
       "title": "Thao tác nhanh",
-      "browseCourses": "Duyệt khóa học",
+      "browseCourses": "Khám phá khóa học",
       "browseCoursesDesc": "Khám phá các lộ trình học tập mới",
       "myCourses": "Khóa học của tôi",
       "myCoursesDesc": "Xem các khóa học đã đăng ký",
@@ -694,6 +694,15 @@
       "yesterday": "Hôm qua",
       "daysAgo": "{days} ngày trước",
       "weeksAgo": "{weeks} tuần trước"
+    },
+    "pendingCourses": {
+      "title": "Khóa học đang chờ duyệt",
+      "subtitle": "Khám phá các khóa học mới phù hợp với sở thích của bạn",
+      "viewAll": "Xem tất cả",
+      "noPendingCourses": "Không có khóa học đang chờ duyệt",
+      "noPendingCoursesDesc": "Hiện tại bạn chưa có khóa học nào đang chờ duyệt",
+      "browseCourses": "Khám phá khóa học",
+      "statusText": "Đang chờ duyệt"
     }
   },
   "profilePage": {

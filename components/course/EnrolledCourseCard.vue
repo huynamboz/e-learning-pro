@@ -24,29 +24,29 @@ const emit = defineEmits<{
 // Status badge colors
 const statusColors = {
   orange: {
-    bg: 'bg-orange-100 dark:bg-orange-900',
-    text: 'text-orange-800 dark:text-orange-200',
+    bg: 'bg-orange-100',
+    text: 'text-orange-800',
     border: 'border-orange/30',
     hover: 'hover:border-orange/30',
     gradient: 'from-orange/0 via-orange/0 to-orange/5',
   },
   blue: {
-    bg: 'bg-blue-100 dark:bg-blue-900',
-    text: 'text-blue-800 dark:text-blue-200',
+    bg: 'bg-blue-100',
+    text: 'text-blue-800',
     border: 'border-blue/30',
     hover: 'hover:border-blue/30',
     gradient: 'from-blue/0 via-blue/0 to-blue/5',
   },
   green: {
-    bg: 'bg-green-100 dark:bg-green-900',
-    text: 'text-green-800 dark:text-green-200',
+    bg: 'bg-green-100',
+    text: 'text-green-800',
     border: 'border-green/30',
     hover: 'hover:border-green/30',
     gradient: 'from-green/0 via-green/0 to-green/5',
   },
   red: {
-    bg: 'bg-red-100 dark:bg-red-900',
-    text: 'text-red-800 dark:text-red-200',
+    bg: 'bg-red-100',
+    text: 'text-red-800',
     border: 'border-red/30',
     hover: 'hover:border-red/30',
     gradient: 'from-red/0 via-red/0 to-red/5',
@@ -64,7 +64,7 @@ function handleClick() {
 
 <template>
   <div
-    class="group bg-card dark:bg-card border border-border dark:border-border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden relative"
+    class="group bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden relative"
     :class="[
       clickable ? 'cursor-pointer' : '',
       currentColor.hover
@@ -94,50 +94,50 @@ function handleClick() {
 
       <!-- Course Info -->
       <div class="space-y-3">
-        <h3 class="text-lg sm:text-xl font-bold text-shade-9 dark:text-shade-9 group-hover:text-blue transition-colors line-clamp-2">
+        <h3 class="text-lg sm:text-xl font-bold text-shade-9 group-hover:text-blue transition-colors line-clamp-2">
           {{ course.title }}
         </h3>
         
-        <p class="text-sm text-shade-6 dark:text-shade-6 flex items-center gap-2">
+        <p class="text-sm text-shade-6 flex items-center gap-2">
           <Icon name="solar:user-circle-bold" size="16" />
           {{ course.teacher?.full_name || 'Unknown Teacher' }}
         </p>
 
-        <p class="text-sm text-shade-6 dark:text-shade-6 line-clamp-2">
+        <p class="text-sm text-shade-6 line-clamp-2">
           {{ course.short_description }}
         </p>
 
         <!-- Order Info -->
-        <div v-if="course.order" class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 space-y-2">
+        <div v-if="course.order" class="bg-orange-50 rounded-lg p-3 space-y-2">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-orange-700 dark:text-orange-300 font-medium">Mã đơn hàng:</span>
-            <span class="font-mono text-orange-800 dark:text-orange-200">{{ course.order.invoice_code }}</span>
+            <span class="text-orange-700 font-medium">Mã đơn hàng:</span>
+            <span class="font-mono text-orange-800">{{ course.order.invoice_code }}</span>
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-orange-700 dark:text-orange-300 font-medium">Số tiền:</span>
-            <span class="font-bold text-orange-800 dark:text-orange-200">
+            <span class="text-orange-700 font-medium">Số tiền:</span>
+            <span class="font-bold text-orange-800">
               {{ formatCurrency(course.order.price_amount) }}
             </span>
           </div>
         </div>
 
         <!-- Classroom Info -->
-        <div v-if="course.classroom" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 space-y-2">
+        <div v-if="course.classroom" class="bg-blue-50 rounded-lg p-3 space-y-2">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-blue-700 dark:text-blue-300 font-medium">Lớp học:</span>
-            <span class="text-blue-800 dark:text-blue-200">{{ course.classroom.title }}</span>
+            <span class="text-blue-700 font-medium">Lớp học:</span>
+            <span class="text-blue-800">{{ course.classroom.title }}</span>
           </div>
           <div class="text-sm">
-            <span class="text-blue-700 dark:text-blue-300 font-medium block mb-2">Lịch học:</span>
+            <span class="text-blue-700 font-medium block mb-2">Lịch học:</span>
             <div class="space-y-1">
               <div
                 v-for="(schedule, index) in course.classroom.schedules"
                 :key="schedule.id"
-                class="flex items-center gap-2 text-blue-800 dark:text-blue-200"
+                class="flex items-center gap-2 text-blue-800"
               >
-                <Icon name="solar:calendar-bold" size="14" class="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <Icon name="solar:calendar-bold" size="14" class="text-blue-600 flex-shrink-0" />
                 <span class="font-medium">{{ schedule.day_display }}</span>
-                <span class="text-blue-600 dark:text-blue-400">•</span>
+                <span class="text-blue-600">•</span>
                 <span>{{ schedule.start_time.slice(0, 5) }} - {{ schedule.end_time.slice(0, 5) }}</span>
               </div>
             </div>

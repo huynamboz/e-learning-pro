@@ -39,9 +39,7 @@ export function useSidebar() {
       name: t('menu.settings'),
       icon: 'solar:settings-bold',
       subItems: [
-        { name: t('menu.editProfile'), link: '/settings/general' },
-        { name: t('menu.language'), link: '/settings/language' },
-        { name: t('menu.notifications'), link: '/settings/notifications' },
+        { name: t('menu.editProfile'), link: '/profile' },
         { name: t('menu.password'), link: '/settings/password' },
       ],
     },

@@ -53,12 +53,12 @@ const stats = computed(() => {
   const courses = enrolledCourses.value || []
   const total = courses.length
   const inProgress = courses.filter((c: EnrolledCourse) =>
-    c.progress_percentage && c.progress_percentage > 0 && c.progress_percentage < 100,
+    c.enrollment?.completion_percentage && c.enrollment.completion_percentage > 0 && c.enrollment.completion_percentage < 100,
   ).length
   const completed = courses.filter((c: EnrolledCourse) =>
-    c.progress_percentage && c.progress_percentage === 100,
+    c.enrollment?.completion_percentage && c.enrollment.completion_percentage === 100,
   ).length
-  const certificates = courses.filter((c: EnrolledCourse) => c.certificate_url).length
+  const certificates = courses.filter((c: EnrolledCourse) => c.enrollment?.progress_status === 'Completed').length
 
   return { total, inProgress, completed, certificates }
 })
@@ -79,8 +79,8 @@ const recentActivity = computed(() => {
     .map((course: EnrolledCourse) => ({
       id: course.id,
       title: course.title,
-      action: course.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
-      date: course.created_at || course.updated_at,
+      action: course.enrollment?.completion_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
+      date: course.enrollment?.enrolled_at || course.created_at || course.updated_at,
       thumbnail: course.thumbnail,
     }))
 })
@@ -273,24 +273,24 @@ function navigateToCourse(enrollmentId: string) {
                     <div class="flex items-center justify-between text-sm">
                       <span class="text-shade-6 dark:text-shade-6 font-medium">{{ $t('learning.continueLearning.progress') }}</span>
                       <span class="font-bold text-shade-9 dark:text-shade-9">
-                        {{ enrollment.progress_percentage || 0 }}%
+                        {{ enrollment.enrollment?.completion_percentage || 0 }}%
                       </span>
                     </div>
                     <div class="w-full bg-shade-3 dark:bg-shade-3 rounded-full h-2.5 overflow-hidden">
                       <div
                         class="bg-gradient-to-r from-green to-green/80 h-2.5 rounded-full transition-all duration-500 relative"
-                        :style="{ width: `${enrollment.progress_percentage || 0}%` }"
+                        :style="{ width: `${enrollment.enrollment?.completion_percentage || 0}%` }"
                       >
                         <div class="absolute inset-0 bg-white/30 animate-pulse" />
                       </div>
                     </div>
-                    <div class="text-xs text-shade-6 dark:text-shade-6 flex items-center gap-1">
+                    <!-- <div class="text-xs text-shade-6 dark:text-shade-6 flex items-center gap-1">
                       <Icon name="solar:checklist-bold" size="14" />
                       {{ $t('learning.continueLearning.lessonsCompleted', {
-                        completed: enrollment.completed_lessons || 0,
-                        total: enrollment.lessons_count || '0',
+                        completed: Math.round((enrollment.enrollment?.completion_percentage || 0) / 10),
+                        total: 10,
                       }) }}
-                    </div>
+                    </div> -->
                   </div>
                 </div>
 
@@ -311,17 +311,17 @@ function navigateToCourse(enrollmentId: string) {
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
               <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
-                Khóa học đang chờ duyệt
+                {{ $t('learning.pendingCourses.title') }}
               </h2>
               <p class="text-sm text-shade-6 dark:text-shade-6">
-                Khám phá các khóa học mới phù hợp với sở thích của bạn
+                {{ $t('learning.pendingCourses.subtitle') }}
               </p>
             </div>
             <NuxtLink
               to="/courses"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
-              Xem tất cả
+              {{ $t('learning.pendingCourses.viewAll') }}
               <Icon name="solar:alt-arrow-right-line-duotone" size="16" />
             </NuxtLink>
           </div>
@@ -339,14 +339,14 @@ function navigateToCourse(enrollmentId: string) {
           <div v-else-if="pendingCourses.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-8 sm:p-12 text-center">
             <Icon name="solar:clock-circle-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-4" />
             <h3 class="text-lg sm:text-xl font-semibold text-shade-9 dark:text-shade-9 mb-2">
-              Không có khóa học đang chờ duyệt
+              {{ $t('learning.pendingCourses.noPendingCourses') }}
             </h3>
             <p class="text-sm text-shade-6 dark:text-shade-6 mb-6">
-              Hiện tại bạn chưa có khóa học nào đang chờ duyệt
+              {{ $t('learning.pendingCourses.noPendingCoursesDesc') }}
             </p>
             <NuxtLink to="/courses">
               <BaseButton variant="primary" class="mx-auto !text-white">
-                Khám phá khóa học
+                {{ $t('learning.pendingCourses.browseCourses') }}
               </BaseButton>
             </NuxtLink>
           </div>
@@ -358,7 +358,7 @@ function navigateToCourse(enrollmentId: string) {
               :key="course.id"
               :clickable="false"
               :course="course"
-              status-text="Đang chờ duyệt"
+              :status-text="$t('learning.pendingCourses.statusText')"
               status-color="orange"
               @click="navigateToCourse(course.id)"
             />

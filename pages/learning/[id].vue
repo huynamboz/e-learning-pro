@@ -308,7 +308,7 @@ onMounted(async () => {
                     {{ student.username }}
                   </div>
                 </div>
-                <div class="text-xs text-gray-400">
+                <div class="text-xs text-gray-400" v-if="student.enrollment?.completion_percentage">
                   {{ Math.round(student.enrollment.completion_percentage) }}%
                 </div>
               </div>

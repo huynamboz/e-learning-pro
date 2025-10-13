@@ -694,6 +694,15 @@
       "yesterday": "Yesterday",
       "daysAgo": "{days} days ago",
       "weeksAgo": "{weeks} weeks ago"
+    },
+    "pendingCourses": {
+      "title": "Pending Courses",
+      "subtitle": "Explore new courses that match your interests",
+      "viewAll": "View All",
+      "noPendingCourses": "No pending courses",
+      "noPendingCoursesDesc": "You currently have no courses awaiting approval",
+      "browseCourses": "Browse Courses",
+      "statusText": "Pending Approval"
     }
   },
   "profilePage": {

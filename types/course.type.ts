@@ -287,12 +287,29 @@ export interface CourseEnrollment {
   certificate_url?: string
 }
 
-// Enrolled Course (for learning page)
-export interface EnrolledCourse extends Course {
-  progress_percentage?: number
-  completed_lessons?: number
-  certificate_url?: string
-  order_status?: 'enrolled' | 'pending' | 'cancelled' | 'completed'
+// Enrolled Course (for learning page) - matches API response exactly
+export interface EnrolledCourse {
+  id: string
+  title: string
+  slug: string
+  short_description: string
+  category: Category
+  teacher: Teacher
+  thumbnail: string | null
+  level: string
+  language: string
+  duration_hours: string
+  price: string
+  discount_price: string | null
+  effective_price: number
+  has_discount: boolean
+  is_free: boolean
+  is_featured: boolean
+  enrollment_count: number
+  rating_average: string
+  rating_count: number
+  created_at: string
+  updated_at: string
   classroom?: {
     id: string
     title: string
@@ -326,6 +343,7 @@ export interface EnrolledCourse extends Course {
     created_at: string
     notes: string
   }
+  order_status?: 'enrolled' | 'pending' | 'cancelled' | 'completed'
 }
 
 // Course Student

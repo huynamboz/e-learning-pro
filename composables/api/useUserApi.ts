@@ -21,8 +21,8 @@ export function useUserApi() {
     },
 
     // Change password
-    changePassword: (data: { old_password: string, new_password: string }) =>
-      apiClient.post('/user/change-password/', data),
+    changePassword: (data: { old_password: string, new_password: string, new_password2: string }) =>
+      apiClient.post('/auth/password/change/', data),
 
     // Get user settings
     getSettings: () =>
