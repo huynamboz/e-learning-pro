@@ -1,6 +1,7 @@
 export default defineNuxtPlugin(async () => {
-  const { initAuth } = useAuth()
+  const { initAuth, fetchProfile } = useAuth()
 
   // Initialize authentication state on client-side
   await initAuth()
+  await fetchProfile()
 })

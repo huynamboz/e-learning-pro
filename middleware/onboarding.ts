@@ -1,16 +1,14 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { isLoggedIn, isInitializing, user } = useAuth()
-
-  // Don't redirect if still initializing (loading)
-  if (isInitializing.value) {
-    return
+  const { user } = useAuth()
+  
+  // Skip middleware on server side
+  if (process.server) return
+  
+  // If user is not logged in, redirect to login
+  if (!user.value) {
+    return navigateTo('/auth/login')
   }
-
-  // If user is not logged in, redirect to login page
-  if (!isLoggedIn.value) {
-    return navigateTo('/auth/login', { external: true })
-  }
-
+  
   // Check if user has completed onboarding
   const hasCompletedOnboarding = user.value?.first_name && user.value?.last_name
   

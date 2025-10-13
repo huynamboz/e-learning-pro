@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   activeTab: 'MY_COURSES',
 })
 
-const { user } = useAuth()
+const { user, profile } = useAuth()
 
 const emit = defineEmits<{
   tabChange: [tabKey: string]
@@ -50,11 +50,11 @@ function handleShareProfile() {
     <div class="flex flex-col items-center gap-4">
       <a-avatar
         :size="160"
-        :src="user?.avatar"
+        :src="profile?.avatar"
         class="border-4 border-white shadow-sm"
       />
       <h4 class="text-xl font-semibold text-gray-900 m-0 leading-6">
-        {{ user?.first_name }} {{ user?.last_name }}
+        {{ profile?.first_name }} {{ profile?.last_name }}
       </h4>
       <a-button
         type="default"

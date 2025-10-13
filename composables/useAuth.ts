@@ -68,6 +68,7 @@ export function useAuth() {
   async function logout(): Promise<void> {
     token.value = null
     user.value = null
+    profile.value = null
     isInitializing.value = false
     isFetchingUser.value = false
 

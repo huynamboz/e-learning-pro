@@ -3,10 +3,10 @@
     <div class="flex items-start gap-3">
       <a-avatar 
         :size="40" 
-        :src="user?.avatar"
+        :src="profile?.avatar"
         class="flex-shrink-0"
       >
-        {{ user?.first_name?.charAt(0)?.toUpperCase() || 'U' }}
+        {{ profile?.first_name?.charAt(0)?.toUpperCase() || 'U' }}
       </a-avatar>
       
       <div class="flex-1">
@@ -68,7 +68,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
-const { user } = useAuth()
+const { user, profile } = useAuth()
 
 // Local state
 const content = ref(props.initialContent)

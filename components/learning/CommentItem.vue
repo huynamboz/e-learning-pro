@@ -143,7 +143,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const { user } = useAuth()
+const { user, profile } = useAuth()
 
 // Local state
 const showReplyForm = ref(false)

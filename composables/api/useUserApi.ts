@@ -11,14 +11,8 @@ export function useUserApi() {
 
     // Update profile
     updateProfile: (data: Partial<User>) =>
-      apiClient.patch<User>('/auth/me/', data),
+      apiClient.patch<User>('/users/profile/', data),
 
-    // Upload avatar
-    uploadAvatar: (file: File) => {
-      const formData = new FormData()
-      formData.append('avatar', file)
-      return apiClient.upload('/user/avatar/', formData)
-    },
 
     // Change password
     changePassword: (data: { old_password: string, new_password: string, new_password2: string }) =>

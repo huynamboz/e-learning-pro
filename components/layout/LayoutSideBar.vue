@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils'
 import SidebarProgressCard from './SidebarProgressCard.vue'
 
 const { isCollapsed, toggleSidebar, menu } = useSidebar()
-const { user } = useAuth()
+const { user, profile } = useAuth()
 const expandedItems = ref(new Set())
 const route = useRoute()
 
@@ -172,18 +172,18 @@ onMounted(() => {
           <div class="flex-shrink-0">
             <a-avatar
               :size="40"
-              :src="user?.avatar"
+              :src="profile?.avatar"
               class="border-4 border-white shadow-sm"
             >
-            {{ user?.first_name?.charAt(0) }}
+            {{ profile?.first_name?.charAt(0) }}
           </a-avatar>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[#0A1B39] truncate">
-              {{ user?.first_name }} {{ user?.last_name }}
+              {{ profile?.first_name }} {{ profile?.last_name }}
             </p>
             <p class="text-xs text-[#83899F] truncate">
-              {{ user?.email }}
+              {{ profile?.email }}
             </p>
           </div>
         </div>

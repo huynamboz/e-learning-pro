@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { logout, user } = useAuth()
+const { logout, user, profile } = useAuth()
 const { t } = useI18n()
 
 interface ProfileOption {
@@ -58,26 +58,32 @@ async function handleItemClick(item: any) {
 <template>
   <Popover>
     <PopoverTrigger as-child>
-      <BaseAvatar
-        class="cursor-pointer"
-        src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"
-      />
+      <a-avatar
+        :size="40"
+        :src="profile?.avatar"
+        class="border-4 border-white shadow-sm"
+      >
+      {{ profile?.first_name?.charAt(0) }}
+    </a-avatar>
     </PopoverTrigger>
     <PopoverContent class="w-fit border-0 p-3 shadow-none bg-transparent">
       <div class="h-fit border-[1px] bg-shade-1 shadow-none w-[221px] p-0 rounded-[20px]" style="box-shadow: var(--popover-box-shadow);">
         <!-- User Info Section -->
         <div class="p-4 border-b border-shade-3">
           <div class="flex items-center gap-3">
-            <BaseAvatar
-              class="size-10"
-              src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"
-            />
+            <a-avatar
+              :size="40"
+              :src="profile?.avatar"
+              class="border-4 border-white shadow-sm"
+            >
+            {{ profile?.first_name?.charAt(0) }}
+          </a-avatar>
             <div class="flex-1 min-w-0">
               <h3 class="text-sm font-semibold text-shade-9 truncate">
-                {{ user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username || 'User' }}
+                {{ profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : profile?.username || 'User' }}
               </h3>
               <p class="text-xs text-shade-6 truncate">
-                {{ user?.email || '' }}
+                {{ profile?.email || '' }}
               </p>
             </div>
           </div>
