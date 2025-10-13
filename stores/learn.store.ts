@@ -24,7 +24,6 @@ export interface LearningState {
 
   // Learning progress
   activeLesson: CourseLesson | null
-  completedLessons: Set<string>
   currentChapterId: string | null
 
   // Sidebar progress data
@@ -55,7 +54,6 @@ export const useLearnStore = defineStore('learn', {
 
     // Learning progress
     activeLesson: null,
-    completedLessons: new Set(),
     currentChapterId: null,
 
     // Sidebar progress data
@@ -79,12 +77,31 @@ export const useLearnStore = defineStore('learn', {
       return state.activeLesson
     },
 
+    // Get completed lessons from chapters
+    completedLessons: (state: LearningState): Set<string> => {
+      const completed = new Set<string>()
+      state.courseChapters.forEach((chapter: CourseChapterStore) => {
+        chapter.lessons.forEach((lesson: CourseLesson) => {
+          if (lesson.is_completed) {
+            completed.add(lesson.id)
+          }
+        })
+      })
+      return completed
+    },
+
     // Get progress percentage
     progressPercentage: (state: LearningState): number => {
       const totalLessons = state.courseChapters.reduce((acc: number, chapter: CourseChapterStore) => acc + chapter.lessons.length, 0)
       if (totalLessons === 0)
         return 0
-      return Math.round((state.completedLessons.size / totalLessons) * 100)
+      
+      // Calculate completed lessons from chapters
+      const completedCount = state.courseChapters.reduce((acc: number, chapter: CourseChapterStore) => {
+        return acc + chapter.lessons.filter((lesson: CourseLesson) => lesson.is_completed).length
+      }, 0)
+      
+      return Math.round((completedCount / totalLessons) * 100)
     },
 
     // Get expanded chapters
@@ -147,7 +164,7 @@ export const useLearnStore = defineStore('learn', {
           isExpanded: false,
           lessons: chapter.lessons.map((lesson: Lesson) => ({
             ...lesson,
-            is_complete: lesson.is_complete,
+            is_completed: lesson.is_completed,
             isActive: false,
           })) as CourseLesson[],
         })))
@@ -296,18 +313,11 @@ export const useLearnStore = defineStore('learn', {
         // Call API to update lesson completion
         const { patchLesson } = useCourseApi()
         await patchLesson(this.course.id, chapterId, lessonId, {
-          is_complete: completed
+          is_completed: completed
         })
 
         // Update local state only after successful API call
-        lesson.is_complete = completed
-
-        // Update completed lessons set
-        if (completed) {
-          this.completedLessons.add(lessonId)
-        } else {
-          this.completedLessons.delete(lessonId)
-        }
+        lesson.is_completed = completed
 
         // Refresh sidebar progress after lesson completion change
         await this.loadSidebarProgress()
@@ -360,6 +370,9 @@ export const useLearnStore = defineStore('learn', {
         const completedCount = this.completedLessons.size
         const completionPercentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
         
+        console.log('completionPercentage', completionPercentage)
+        console.log('completedCount', completedCount)
+        console.log('totalLessons', totalLessons)
         this.updateSidebarProgress({
           courseCompletion: {
             percentage: completionPercentage,

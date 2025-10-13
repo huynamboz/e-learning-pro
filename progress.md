@@ -24,13 +24,13 @@ The Progress Tracking system allows students to track their learning progress th
 
 **Authentication**: Required (Student must be enrolled)
 
-**Description**: Mark a lesson as completed or incomplete by updating ONLY the `is_complete` field. This is for student progress tracking.
+**Description**: Mark a lesson as completed or incomplete by updating ONLY the `is_completed` field. This is for student progress tracking.
 
 #### Request Body
 
 ```json
 {
-  "is_complete": true  // or false to mark as incomplete
+  "is_completed": true  // or false to mark as incomplete
 }
 ```
 
@@ -60,7 +60,7 @@ curl -X PATCH \
   http://localhost:8000/api/v1/courses/057f65b8-064d-4e5c-840e-f4e9aa847e51/chapters/f9f3374e-20db-461b-b825-4d687b1e0dc5/lessons/e2234340-a89d-4655-bafe-275cd30d22ab/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"is_complete": true}'
+  -d '{"is_completed": true}'
 ```
 
 ---
@@ -214,7 +214,7 @@ async function markLessonComplete(courseId, chapterId, lessonId) {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ is_complete: true }),
+      body: JSON.stringify({ is_completed: true }),
     }
   );
   return await res.json();
@@ -281,7 +281,7 @@ curl -X PATCH \
   http://localhost:8000/api/v1/courses/COURSE_ID/chapters/CHAPTER_ID/lessons/LESSON_ID/ \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"is_complete": true}'
+  -d '{"is_completed": true}'
 ```
 
 ---

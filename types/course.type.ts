@@ -175,7 +175,7 @@ export interface LessonPayload {
   is_preview: boolean
   is_published: boolean
   is_unlocked: boolean
-  is_complete?: boolean
+  is_completed?: boolean
 }
 
 export interface Lesson {
@@ -191,7 +191,7 @@ export interface Lesson {
   is_published: boolean
   is_unlocked: boolean
   thumbnail: string | null
-  is_complete: boolean
+  is_completed: boolean
 }
 
 // Course API Response Types

@@ -35,11 +35,11 @@ async function toggleCompletion(e: any) {
     <div class="flex items-center gap-3">
       <div class="flex items-center justify-center w-5 h-5">
         <a-checkbox
-          :checked="lesson.is_complete"
+          :checked="lesson.is_completed"
           :class="{
             '!text-white': lesson.isActive,
-            'text-blue-600': !lesson.isActive && lesson.is_complete,
-            'text-gray-400': !lesson.isActive && !lesson.is_complete,
+            'text-blue-600': !lesson.isActive && lesson.is_completed,
+            'text-gray-400': !lesson.isActive && !lesson.is_completed,
           }"
           @change="toggleCompletion"
         />
