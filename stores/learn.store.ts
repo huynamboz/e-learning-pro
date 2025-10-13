@@ -1,10 +1,9 @@
-import type { Chapter, Course, Lesson } from '~/types/course.type'
+import type { Chapter, Course, Lesson, LessonPayload } from '~/types/course.type'
 import { defineStore } from 'pinia'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 
 // Define lesson and chapter interfaces for the learning page
 export interface CourseLesson extends Lesson {
-  isCompleted: boolean
   isActive: boolean
 }
 
@@ -27,6 +26,20 @@ export interface LearningState {
   activeLesson: CourseLesson | null
   completedLessons: Set<string>
   currentChapterId: string | null
+
+  // Sidebar progress data
+  sidebarProgress: {
+    attendance: {
+      percentage: number
+      value: string
+      label: string
+    }
+    courseCompletion: {
+      percentage: number
+      value: string
+      label: string
+    }
+  }
 }
 
 export const useLearnStore = defineStore('learn', {
@@ -44,6 +57,20 @@ export const useLearnStore = defineStore('learn', {
     activeLesson: null,
     completedLessons: new Set(),
     currentChapterId: null,
+
+    // Sidebar progress data
+    sidebarProgress: {
+      attendance: {
+        percentage: 0,
+        value: '0/0',
+        label: 'Attendance'
+      },
+      courseCompletion: {
+        percentage: 0,
+        value: '0/0',
+        label: 'Course Completion'
+      }
+    },
   }),
 
   getters: {
@@ -120,13 +147,16 @@ export const useLearnStore = defineStore('learn', {
           isExpanded: false,
           lessons: chapter.lessons.map((lesson: Lesson) => ({
             ...lesson,
-            isCompleted: false,
+            is_complete: lesson.is_complete,
             isActive: false,
           })) as CourseLesson[],
         })))
 
         // Load lesson from URL query after chapters are loaded
         this.loadLessonFromQuery()
+
+        // Load sidebar progress data
+        await this.loadSidebarProgress()
       }
       catch (err) {
         console.error('Error loading course:', err)
@@ -238,33 +268,118 @@ export const useLearnStore = defineStore('learn', {
     },
 
     // Toggle lesson completion
-    toggleLessonCompletion(lessonId: string, completed: boolean) {
-      // Find lesson in all chapters
-      for (const chapter of this.courseChapters) {
-        const lesson = chapter.lessons.find((l: CourseLesson) => l.id === lessonId)
-        if (lesson) {
-          (lesson as any).isCompleted = completed
+    async toggleLessonCompletion(lessonId: string, completed: boolean) {
+      if (!this.course) {
+        console.error('No course loaded')
+        return
+      }
 
-          // Update completed lessons set
-          if (completed) {
-            this.completedLessons.add(lessonId)
-          }
-          else {
-            this.completedLessons.delete(lessonId)
-          }
+      // Find lesson in all chapters to get chapterId
+      let chapterId: string | null = null
+      let lesson: CourseLesson | null = null
+      
+      for (const chapter of this.courseChapters) {
+        const foundLesson = chapter.lessons.find((l: CourseLesson) => l.id === lessonId)
+        if (foundLesson) {
+          chapterId = chapter.id
+          lesson = foundLesson
           break
         }
+      }
+
+      if (!chapterId || !lesson) {
+        console.error('Lesson not found')
+        return
+      }
+
+      try {
+        // Call API to update lesson completion
+        const { patchLesson } = useCourseApi()
+        await patchLesson(this.course.id, chapterId, lessonId, {
+          is_complete: completed
+        })
+
+        // Update local state only after successful API call
+        lesson.is_complete = completed
+
+        // Update completed lessons set
+        if (completed) {
+          this.completedLessons.add(lessonId)
+        } else {
+          this.completedLessons.delete(lessonId)
+        }
+
+        // Refresh sidebar progress after lesson completion change
+        await this.loadSidebarProgress()
+      } catch (error) {
+        console.error('Error updating lesson completion:', error)
+        // Optionally show error notification to user
+        throw error
       }
     },
 
     // Mark lesson as completed
-    completeLesson(lessonId: string) {
-      this.toggleLessonCompletion(lessonId, true)
+    async completeLesson(lessonId: string) {
+      await this.toggleLessonCompletion(lessonId, true)
     },
 
     // Mark lesson as incomplete
-    incompleteLesson(lessonId: string) {
-      this.toggleLessonCompletion(lessonId, false)
+    async incompleteLesson(lessonId: string) {
+      await this.toggleLessonCompletion(lessonId, false)
+    },
+
+    // Update sidebar progress
+    updateSidebarProgress(progress: {
+      attendance?: {
+        percentage: number
+        value: string
+        label: string
+      }
+      courseCompletion?: {
+        percentage: number
+        value: string
+        label: string
+      }
+    }) {
+      if (progress.attendance) {
+        this.sidebarProgress.attendance = progress.attendance
+      }
+      if (progress.courseCompletion) {
+        this.sidebarProgress.courseCompletion = progress.courseCompletion
+      }
+    },
+
+    // Load sidebar progress data
+    async loadSidebarProgress() {
+      try {
+        // This would typically call APIs to get attendance and course completion data
+        // For now, we'll use mock data or calculate from existing data
+        
+        // Calculate course completion from completed lessons
+        const totalLessons = this.courseChapters.reduce((total, chapter) => total + chapter.lessons.length, 0)
+        const completedCount = this.completedLessons.size
+        const completionPercentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+        
+        this.updateSidebarProgress({
+          courseCompletion: {
+            percentage: completionPercentage,
+            value: `${completedCount}/${totalLessons}`,
+            label: 'Course Completion'
+          }
+        })
+        
+        // For attendance, we would need to call a separate API
+        // This is a placeholder - you would implement based on your attendance API
+        this.updateSidebarProgress({
+          attendance: {
+            percentage: 80, // This should come from API
+            value: '4/5', // This should come from API
+            label: 'Attendance'
+          }
+        })
+      } catch (error) {
+        console.error('Error loading sidebar progress:', error)
+      }
     },
 
     // Get previous lesson

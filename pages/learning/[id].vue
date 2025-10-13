@@ -56,6 +56,7 @@ const loadCourseStudents = async () => {
   }
 }
 
+
 onMounted(async () => {
   await Promise.all([
     learnStore.loadCourse(courseId),
@@ -221,13 +222,15 @@ onMounted(async () => {
           <!-- Course Completion Card -->
           <div class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
             <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">
-              Course Completion
+              Course Content
             </h2>
 
             <!-- Chapter Sections with Lessons -->
             <div class="space-y-0">
               <CourseChapterItem
-                v-for="chapter in courseChapters" :key="chapter.id" :chapter="chapter"
+                v-for="chapter in courseChapters" 
+                :key="chapter.id" 
+                :chapter="chapter"
               />
             </div>
           </div>

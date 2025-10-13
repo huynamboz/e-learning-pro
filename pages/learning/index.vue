@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import type { Course } from '~/composables/api'
+import type { EnrolledCourse } from '~/types/course.type'
 import { Icon } from '#components'
 import { useCourseApi } from '@/composables/api/useCourseApi'
+import EnrolledCourseCard from '~/components/course/EnrolledCourseCard.vue'
 
 definePageMeta({
   middleware: 'auth',
@@ -18,7 +19,7 @@ const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncDa
   async () => {
     try {
       const response = await getCourseEnrolled()
-      return response.results || []
+      return response?.results || []
     }
     catch (error) {
       console.error('Error fetching enrolled courses:', error)
@@ -28,16 +29,19 @@ const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncDa
   { default: () => [] },
 )
 
-// Fetch recommended courses
-const { data: recommendedCourses, pending: loadingRecommended } = await useLazyAsyncData(
-  'recommended-courses',
+// Fetch pending courses (courses awaiting approval)
+const { data: pendingCourses, pending: loadingPending } = await useLazyAsyncData(
+  'pending-courses',
   async () => {
     try {
-      const response = await getCourseEnrolled()
-      return response?.results || []
+      const response = await getCourseEnrolled({ include_pending: true })
+      // Filter courses with order_status = 'pending'
+      return (response?.results || []).filter((course: EnrolledCourse) => 
+        course.order_status === 'pending'
+      )
     }
     catch (error) {
-      console.error('Error fetching recommended courses:', error)
+      console.error('Error fetching pending courses:', error)
       return []
     }
   },
@@ -48,23 +52,22 @@ const { data: recommendedCourses, pending: loadingRecommended } = await useLazyA
 const stats = computed(() => {
   const courses = enrolledCourses.value || []
   const total = courses.length
-  const inProgress = courses.filter((c: Course) =>
-    c.progress && c.progress.progress_percentage > 0 && c.progress.progress_percentage < 100,
+  const inProgress = courses.filter((c: EnrolledCourse) =>
+    c.progress_percentage && c.progress_percentage > 0 && c.progress_percentage < 100,
   ).length
-  const completed = courses.filter((c: Course) =>
-    c.progress && c.progress.progress_percentage === 100,
+  const completed = courses.filter((c: EnrolledCourse) =>
+    c.progress_percentage && c.progress_percentage === 100,
   ).length
-  const certificates = courses.filter((c: Course) => c.certificate_url).length
+  const certificates = courses.filter((c: EnrolledCourse) => c.certificate_url).length
 
   return { total, inProgress, completed, certificates }
 })
 
 // Continue learning courses (in progress)
 const continueLearningCourses = computed(() => {
-  return enrolledCourses.value || []
   return (enrolledCourses.value || [])
-    .filter((c: Course) =>
-      c.progress && c.progress.progress_percentage > 0 && c.progress.progress_percentage < 100,
+    .filter((c: EnrolledCourse) =>
+    c.enrollment &&c.enrollment.completion_percentage < 100 
     )
     .slice(0, 3)
 })
@@ -73,13 +76,13 @@ const continueLearningCourses = computed(() => {
 const recentActivity = computed(() => {
   return (enrolledCourses.value || [])
     .slice(0, 5)
-    // .map((enrollment: Course) => ({
-    //   id: enrollment.id,
-    //   title: enrollment.course?.title,
-    //   action: enrollment.progress?.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
-    //   date: enrollment.enrolled_at,
-    //   thumbnail: enrollment.course.thumbnail,
-    // }))
+    .map((course: EnrolledCourse) => ({
+      id: course.id,
+      title: course.title,
+      action: course.progress_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
+      date: course.created_at || course.updated_at,
+      thumbnail: course.thumbnail,
+    }))
 })
 
 // Format date
@@ -101,8 +104,8 @@ function formatDate(dateString: string) {
 }
 
 // Navigate to course
-function navigateToCourse(courseId: string) {
-  navigateTo(`/learning/${courseId}`)
+function navigateToCourse(enrollmentId: string) {
+  navigateTo(`/learning/${enrollmentId}`)
 }
 </script>
 
@@ -285,7 +288,7 @@ function navigateToCourse(courseId: string) {
                       <Icon name="solar:checklist-bold" size="14" />
                       {{ $t('learning.continueLearning.lessonsCompleted', {
                         completed: enrollment.completed_lessons || 0,
-                        total: enrollment.lessons_count || 0,
+                        total: enrollment.lessons_count || '0',
                       }) }}
                     </div>
                   </div>
@@ -303,27 +306,27 @@ function navigateToCourse(courseId: string) {
           </div>
         </section>
 
-        <!-- Recommended Courses Section -->
+        <!-- Pending Courses Section -->
         <section>
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
               <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
-                {{ $t('learning.recommended.title') }}
+                Khóa học đang chờ duyệt
               </h2>
               <p class="text-sm text-shade-6 dark:text-shade-6">
-                {{ $t('learning.recommended.subtitle') }}
+                Khám phá các khóa học mới phù hợp với sở thích của bạn
               </p>
             </div>
             <NuxtLink
               to="/courses"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
-              {{ $t('learning.recommended.viewAll') }}
+              Xem tất cả
               <Icon name="solar:alt-arrow-right-line-duotone" size="16" />
             </NuxtLink>
           </div>
 
-          <div v-if="loadingRecommended" class="grid sm:grid-cols-2 gap-4">
+          <div v-if="loadingPending" class="grid sm:grid-cols-2 gap-4">
             <div v-for="i in 4" :key="i" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-4 animate-pulse">
               <div class="w-full h-32 bg-shade-3 dark:bg-shade-3 rounded-lg mb-4" />
               <div class="space-y-3">
@@ -333,12 +336,31 @@ function navigateToCourse(courseId: string) {
             </div>
           </div>
 
+          <div v-else-if="pendingCourses.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-8 sm:p-12 text-center">
+            <Icon name="solar:clock-circle-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-4" />
+            <h3 class="text-lg sm:text-xl font-semibold text-shade-9 dark:text-shade-9 mb-2">
+              Không có khóa học đang chờ duyệt
+            </h3>
+            <p class="text-sm text-shade-6 dark:text-shade-6 mb-6">
+              Hiện tại bạn chưa có khóa học nào đang chờ duyệt
+            </p>
+            <NuxtLink to="/courses">
+              <BaseButton variant="primary" class="mx-auto !text-white">
+                Khám phá khóa học
+              </BaseButton>
+            </NuxtLink>
+          </div>
+
           <div v-else class="grid sm:grid-cols-2 gap-5">
-            <!-- Use CourseCard component for consistent design -->
-            <CourseCard
-              v-for="course in recommendedCourses"
+            <!-- Use EnrolledCourseCard component -->
+            <EnrolledCourseCard
+              v-for="course in pendingCourses"
               :key="course.id"
-              v-bind="course"
+              :clickable="false"
+              :course="course"
+              status-text="Đang chờ duyệt"
+              status-color="orange"
+              @click="navigateToCourse(course.id)"
             />
           </div>
         </section>

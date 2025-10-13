@@ -41,27 +41,49 @@ const isVisible = computed({
 // Watch for session changes to populate form
 watch(() => props.session, (newSession) => {
   if (newSession) {
+    // Format datetime for input[type="datetime-local"] (YYYY-MM-DDTHH:mm)
+    const formatDateTimeForInput = (dateTimeString: string) => {
+      if (!dateTimeString) return ''
+      const date = new Date(dateTimeString)
+      // Convert to local timezone and format for datetime-local input
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${year}-${month}-${day}T${hours}:${minutes}`
+    }
+
     formState.value = {
       topic: newSession.topic || '',
       description: newSession.description || '',
-      start_time: newSession.start_time ? new Date(newSession.start_time).toISOString().slice(0, 16) : '',
-      end_time: newSession.end_time ? new Date(newSession.end_time).toISOString().slice(0, 16) : '',
+      start_time: formatDateTimeForInput(newSession.start_time),
+      end_time: formatDateTimeForInput(newSession.end_time),
       location: newSession.location || '',
       meeting_link: newSession.meeting_link || '',
       meeting_id: newSession.meeting_id || '',
       meeting_pass: newSession.meeting_pass || '',
-      limit: newSession.limit || 0,
+      limit: newSession.limit || 100,
     }
   }
 }, { immediate: true })
 
 // Handle save
 async function handleSave() {
+  // Convert datetime-local input to ISO string
+  const formatDateTimeForAPI = (dateTimeString: string) => {
+    if (!dateTimeString) return ''
+    // datetime-local input gives us YYYY-MM-DDTHH:mm in local timezone
+    // We need to create a Date object and convert to ISO string
+    const date = new Date(dateTimeString)
+    return date.toISOString()
+  }
+
   const formData = {
     topic: formState.value.topic,
     description: formState.value.description,
-    start_time: new Date(formState.value.start_time).toISOString(),
-    end_time: new Date(formState.value.end_time).toISOString(),
+    start_time: formatDateTimeForAPI(formState.value.start_time),
+    end_time: formatDateTimeForAPI(formState.value.end_time),
     location: formState.value.location,
     meeting_link: formState.value.meeting_link,
     meeting_id: formState.value.meeting_id,

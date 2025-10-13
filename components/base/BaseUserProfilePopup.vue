@@ -65,6 +65,25 @@ async function handleItemClick(item: any) {
     </PopoverTrigger>
     <PopoverContent class="w-fit border-0 p-3 shadow-none bg-transparent">
       <div class="h-fit border-[1px] bg-shade-1 shadow-none w-[221px] p-0 rounded-[20px]" style="box-shadow: var(--popover-box-shadow);">
+        <!-- User Info Section -->
+        <div class="p-4 border-b border-shade-3">
+          <div class="flex items-center gap-3">
+            <BaseAvatar
+              class="size-10"
+              src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&accessoriesType=Blank&hairColor=BrownDark&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Light"
+            />
+            <div class="flex-1 min-w-0">
+              <h3 class="text-sm font-semibold text-shade-9 truncate">
+                {{ user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : user?.username || 'User' }}
+              </h3>
+              <p class="text-xs text-shade-6 truncate">
+                {{ user?.email || '' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Options -->
         <div
           v-for="(option, index) in profileOptions" :key="index" :class="{
             'border-b border-shade-3': index < profileOptions.length - 1,

@@ -147,12 +147,21 @@ async function handleSave() {
   try {
     internalLoading.value = true
 
+    // Convert datetime-local input to ISO string
+    const formatDateTimeForAPI = (dateTimeString: string) => {
+      if (!dateTimeString) return ''
+      // datetime-local input gives us YYYY-MM-DDTHH:mm in local timezone
+      // We need to create a Date object and convert to ISO string
+      const date = new Date(dateTimeString)
+      return date.toISOString()
+    }
+
     const formData = {
       classroom: props.classroomId,
       topic: formState.value.topic,
       description: formState.value.description,
-      start_time: new Date(formState.value.start_time).toISOString(),
-      end_time: new Date(formState.value.end_time).toISOString(),
+      start_time: formatDateTimeForAPI(formState.value.start_time),
+      end_time: formatDateTimeForAPI(formState.value.end_time),
       location: formState.value.location,
       meeting_link: formState.value.meeting_link,
       meeting_id: formState.value.meeting_id,

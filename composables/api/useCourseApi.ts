@@ -8,7 +8,9 @@ import type {
   CourseFilters,
   CourseListResponse,
   CoursePayload,
+  CourseProgress,
   CourseStudentsResponse,
+  EnrolledCourse,
   Lesson,
   LessonPayload,
 } from '~/types/course.type'
@@ -52,8 +54,16 @@ export function useCourseApi() {
     getMyCourses: () =>
       apiClient.get<CourseListResponse>('/courses/mine/'),
 
-    getCourseEnrolled: () =>
-      apiClient.get<CourseListResponse>('/courses/enrolled/'),
+    getCourseEnrolled: (params?: { include_pending?: boolean }) => {
+      const queryParams = new URLSearchParams()
+      if (params?.include_pending) {
+        queryParams.append('include_pending', 'true')
+      }
+      const queryString = queryParams.toString()
+      return apiClient.get<{ results: EnrolledCourse[] }>(
+        `/courses/enrolled/${queryString ? `?${queryString}` : ''}`,
+      )
+    },
 
     createCourse: (courseData: CoursePayload) =>
       apiClient.post<CoursePayload>(`/courses/`, courseData),
@@ -106,7 +116,7 @@ export function useCourseApi() {
 
     // Get course progress
     getCourseProgress: (courseId: string) =>
-      apiClient.get(`/courses/${courseId}/progress/`),
+      apiClient.get<CourseProgress>(`/courses/${courseId}/progress/`),
 
     // Get course lessons
     getLessons: (courseId: string, chapterId: string) =>
@@ -121,7 +131,7 @@ export function useCourseApi() {
       apiClient.put<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`, payload),
 
     // Patch course lessons
-    patchLesson: (courseId: string, chapterId: string, lessonId: string, payload: LessonPayload) =>
+    patchLesson: (courseId: string, chapterId: string, lessonId: string, payload: Partial<LessonPayload>) =>
       apiClient.patch<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`, payload),
 
     // Get lesson detail

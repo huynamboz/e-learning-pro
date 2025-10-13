@@ -175,6 +175,7 @@ export interface LessonPayload {
   is_preview: boolean
   is_published: boolean
   is_unlocked: boolean
+  is_complete?: boolean
 }
 
 export interface Lesson {
@@ -190,6 +191,7 @@ export interface Lesson {
   is_published: boolean
   is_unlocked: boolean
   thumbnail: string | null
+  is_complete: boolean
 }
 
 // Course API Response Types
@@ -283,6 +285,47 @@ export interface CourseEnrollment {
   progress: CourseProgress
   completed_at?: string
   certificate_url?: string
+}
+
+// Enrolled Course (for learning page)
+export interface EnrolledCourse extends Course {
+  progress_percentage?: number
+  completed_lessons?: number
+  certificate_url?: string
+  order_status?: 'enrolled' | 'pending' | 'cancelled' | 'completed'
+  classroom?: {
+    id: string
+    title: string
+    student_count: number
+    start_date: string
+    end_date: string
+    meeting_link: string
+    schedules: Array<{
+      id: string
+      day_of_week: string
+      day_display: string
+      start_time: string
+      end_time: string
+    }>
+    schedule_summary: string
+    created_at: string
+  }
+  enrollment?: {
+    id: string
+    enrolled_at: string
+    completion_percentage: number
+    progress_status: string
+  }
+  order?: {
+    id: string
+    invoice_code: string
+    status: string
+    status_display: string
+    price_amount: number
+    payment_method: string
+    created_at: string
+    notes: string
+  }
 }
 
 // Course Student

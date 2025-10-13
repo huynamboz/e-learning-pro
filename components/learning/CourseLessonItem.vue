@@ -13,8 +13,14 @@ function selectLesson() {
   learnStore.setActiveLesson(props.lesson)
 }
 
-function toggleCompletion(e: any) {
-  learnStore.toggleLessonCompletion(props.lesson.id, e.target.checked)
+async function toggleCompletion(e: any) {
+  try {
+    await learnStore.toggleLessonCompletion(props.lesson.id, e.target.checked)
+  } catch (error) {
+    console.error('Error toggling lesson completion:', error)
+    // Revert checkbox state on error
+    e.target.checked = !e.target.checked
+  }
 }
 </script>
 
@@ -29,11 +35,11 @@ function toggleCompletion(e: any) {
     <div class="flex items-center gap-3">
       <div class="flex items-center justify-center w-5 h-5">
         <a-checkbox
-          :checked="lesson.isCompleted"
+          :checked="lesson.is_complete"
           :class="{
             '!text-white': lesson.isActive,
-            'text-blue-600': !lesson.isActive && lesson.isCompleted,
-            'text-gray-400': !lesson.isActive && !lesson.isCompleted,
+            'text-blue-600': !lesson.isActive && lesson.is_complete,
+            'text-gray-400': !lesson.isActive && !lesson.is_complete,
           }"
           @change="toggleCompletion"
         />
