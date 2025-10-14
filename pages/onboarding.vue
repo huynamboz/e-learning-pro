@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
-import { message } from 'ant-design-vue'
 import { useAuth } from '~/composables/useAuth'
 import { useUserApi } from '~/composables/api/useUserApi'
 import { useFileUpload } from '~/composables/useFileUpload'
+import { notification } from 'ant-design-vue'
 
 definePageMeta({
   middleware: 'auth',
   layout: 'onboarding',
 })
 
-const { user, fetchProfile } = useAuth()
+const { user, fetchProfile, fetchUser } = useAuth()
 const { updateProfile } = useUserApi()
 const { uploading, uploadProgress, isUploading, uploadWithPresignedUrl } = useFileUpload()
 const router = useRouter()
@@ -71,13 +71,13 @@ const handleFileUpload = (event: Event) => {
   if (file) {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      message.error('Vui lòng chọn file ảnh')
+      notification.error({ message: 'Vui lòng chọn file ảnh' })
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      message.error('Kích thước file không được vượt quá 5MB')
+      notification.error({ message: 'Kích thước file không được vượt quá 5MB' })
       return
     }
     
@@ -131,16 +131,18 @@ const handleSubmit = async () => {
 
     // Refresh user data
     await fetchProfile()
+    await fetchUser()
 
     
-    message.success('Cập nhật thông tin thành công!')
-    window.location.reload()
+    notification.success({ message: 'Cập nhật thông tin thành công!' })
+    // window.location.reload()
     // Redirect to learning page
-    await router.push('/learning')
+    router.push('/learning')
+    console.log('router', router)
     
   } catch (error: any) {
     console.error('Error updating profile:', error)
-    message.error('Cập nhật thông tin thất bại')
+    notification.error({ message: 'Cập nhật thông tin thất bại' })
   } finally {
     loading.value = false
   }

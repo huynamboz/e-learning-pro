@@ -438,13 +438,8 @@ async function confirmDeleteLesson() {
     // Close dialog and navigate back to chapter
     showDeleteDialog.value = false
     
-    // Navigate back to chapter without lesson ID
-    await router.replace({
-      query: {
-        ...route.query,
-        lessonId: undefined
-      }
-    })
+    // Navigate back to lessons list page
+    await router.push(`/admin/courses/${courseId.value}/chapters/${chapterId.value}/lessons`)
     
     // Refresh chapters list
     await fetchChapters(courseId.value)
