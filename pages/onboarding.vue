@@ -134,7 +134,7 @@ const handleSubmit = async () => {
 
     
     message.success('Cập nhật thông tin thành công!')
-    
+    window.location.reload()
     // Redirect to learning page
     await router.push('/learning')
     
