@@ -12,6 +12,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const {fetchCourseDetail, currentCourse} = useCourse()
 
 const listOptions = computed(() => [
   {
@@ -50,11 +51,9 @@ const classroomId = computed(() => route.query.classroomId)
 const attendanceId = computed(() => route.query.attendanceId)
 const attendanceManageId = computed(() => route.query.attendanceManageId)
 
-const { getDetailCourses } = useCourseApi()
-const courseDetail = ref<any>(null)
 
 onMounted(async () => {
-  courseDetail.value = await getDetailCourses(courseId.value)
+  await fetchCourseDetail(courseId.value)
 })
 
 </script>
@@ -64,13 +63,13 @@ onMounted(async () => {
     <div class="flex mb-6 items-center gap-2 text-sm text-[#00000066]">
       <span>{{ t('admin.courses.breadcrumb.course') }}</span>
       <span>/</span>
-      <span class="text-black">{{ courseDetail?.title }}</span>
+      <span class="text-black">{{ currentCourse?.title }}</span>
     </div>
     <!-- <DetailAttendance v-if="attendanceId && !attendanceManageId" />
     <DetailLessonManage v-else-if="lessonId" :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
     <AttendanceManagement v-else-if="attendanceManageId" /> -->
-    <div class="">
+    <div class="" v-if="currentCourse">
       <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">
         <a-tab-pane v-for="tab in listOptions" :key="tab.path" :tab="tab.name">
           <!-- <component :is="tab.component" :type="tab.key" :course-id="courseId" /> -->

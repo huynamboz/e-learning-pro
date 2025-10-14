@@ -2,6 +2,8 @@ export interface QuizQuestion {
   id: string
   type: 'text-input' | 'multiple-choice'
   question: string
+  explanation?: string // Add explanation field
+  score?: number // Add score field
   files: any[]
   answer?: string // For text-input questions
   options?: QuestionOption[] // For multiple-choice questions
@@ -20,6 +22,7 @@ export interface Quiz {
   description: string
   category: string
   chapter: string
+  lesson: string // Add lesson field
   timeType: 'limit' | 'no-limit'
   quantity: number | null
   unit: 'minute' | 'hour' | 'second' | null
@@ -40,6 +43,7 @@ export interface QuizFormData {
   description: string
   category: string
   chapter: string
+  lesson: string // Add lesson field
   timeType: string
   quantity: number | null
   unit: string
@@ -50,6 +54,7 @@ export interface CreateQuizPayload {
   description: string
   category: string
   chapter: string
+  lesson: string // Add lesson field
   timeType: 'limit' | 'no-limit'
   quantity?: number
   unit?: 'minute' | 'hour' | 'second'

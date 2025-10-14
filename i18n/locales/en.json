@@ -1,4 +1,9 @@
 {
+  "global": {
+    "loading": {
+      "message": "Loading..."
+    }
+  },
   "admin": {
     "dashboard": {
       "title": "Dashboard Overview",
@@ -966,7 +971,8 @@
     }
   },
   "common": {
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "cancel": "Cancel"
   },
   "quiz": {
     "management": {
@@ -1037,7 +1043,25 @@
       "validationError": "Please fix the form errors before submitting",
       "formValidationError": "Form validation failed",
       "formValidationMessage": "Please check all required fields and try again"
-    }
+    },
+    "freeTime": "Free time",
+    "timeLimit": "{timeValue} {timeUnit}",
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours",
+    "second": "second",
+    "seconds": "seconds",
+    "questions": "questions",
+    "attempts": "attempts",
+    "startQuiz": "Start Quiz",
+    "viewResults": "View Results",
+    "failedToFetchQuizzes": "Failed to fetch quizzes",
+    "loadingQuizzes": "Loading quizzes...",
+    "noQuizzesAvailable": "No quizzes available for this chapter yet.",
+    "startQuizConfirm": "Start Quiz?",
+    "confirmStartMessage": "Are you sure you want to start {title}?",
+    "confirmStartWarning": "Once you start, the timer will begin and you'll need to complete all questions."
   },
   "calendar": {
     "error": {
@@ -1045,5 +1069,27 @@
       "checkInFailed": "Unable to join the class. Please try again later.",
       "checkInTooEarly": "You are trying to join the class too early. Please wait until the class starts."
     }
+  },
+  "course": {
+    "loadingCourse": "Loading course...",
+    "errorLoadingCourse": "Error Loading Course",
+    "defaultTitle": "Introduction to User Experience Design",
+    "details": "Details",
+    "overview": "Course Overview",
+    "instructor": "Instructor",
+    "defaultInstructor": "Ronald Richards",
+    "instructorTitle": "UI/UX Designer",
+    "reviews": "{count} Reviews",
+    "students": "{count} Students",
+    "courses": "{count} Courses",
+    "instructorDescription": "With over a decade of industry experience, Ronald brings a wealth of practical knowledge to the classroom. He has played a pivotal role in designing user-centric interfaces for renowned tech companies, ensuring seamless and engaging user experiences.",
+    "quizTab": "Quiz (1)",
+    "courseQuiz": "Course Quiz",
+    "comments": "Comments",
+    "selectLessonToViewComments": "Select a lesson to view comments",
+    "courseContent": "Course Content",
+    "classmates": "Classmates ({count})",
+    "loadingClassmates": "Loading classmates...",
+    "noClassmatesYet": "No classmates yet"
   }
 }

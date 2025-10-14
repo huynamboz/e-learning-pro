@@ -441,7 +441,7 @@ export function useCourse() {
 
       if (response) {
         // Extract courses from enrollment objects
-        enrolledCourses.value = response.map(enrollment => enrollment.course)
+        enrolledCourses.value = response.results
       }
 
       return { success: true }

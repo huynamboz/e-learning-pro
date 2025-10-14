@@ -20,6 +20,8 @@ const emit = defineEmits<{
 
 interface MultipleChoiceQuestionData {
   question: string
+  explanation: string
+  score: number
   files: any[]
   options: QuestionOption[]
   correctAnswer: string
@@ -27,6 +29,8 @@ interface MultipleChoiceQuestionData {
 
 const questionData = reactive<MultipleChoiceQuestionData>({
   question: props.initialData.question || '',
+  explanation: props.initialData.explanation || '',
+  score: props.initialData.score || 1.0,
   files: props.initialData.files || [],
   options: props.initialData.options || [
     { text: 'Friend', label: 'A', id: 'option-a' },
@@ -40,6 +44,14 @@ const questionData = reactive<MultipleChoiceQuestionData>({
 const rules: Record<string, Rule[]> = {
   question: [
     { required: true, message: 'Please enter the question!', trigger: 'blur' },
+  ],
+  score: [
+    { required: true, message: 'Please enter the score!', trigger: 'blur' },
+    { 
+      pattern: /^\d+(\.\d+)?$/, 
+      message: 'Score must be a positive number!', 
+      trigger: 'blur' 
+    },
   ],
   correctAnswer: [
     { required: true, message: 'Please select the correct answer!', trigger: 'change' },
@@ -114,7 +126,7 @@ function beforeUpload(file: File) {
   }
   return true
 }
-async function handlePreview(file: UploadProps['fileList'][number]) {
+async function handlePreview(file: any) {
   if (!file.url && !file.preview) {
     file.preview = (await getBase64(file.originFileObj as File)) as string
   }
@@ -177,9 +189,39 @@ watch(
           />
         </a-form-item>
 
+        <!-- Explanation and Score Row -->
+        <div class="flex gap-3 mb-3">
+          <a-form-item
+            label="Explanation"
+            class="flex-1"
+          >
+            <a-textarea
+              v-model:value="questionData.explanation"
+              placeholder="Explanation for the answer (optional)"
+              :rows="2"
+              class="rounded-lg border-gray-300"
+            />
+          </a-form-item>
+          <a-form-item
+            label="Score"
+            name="score"
+            class="w-32"
+          >
+            <a-input-number
+              v-model:value="questionData.score"
+              placeholder="1.0"
+              class="w-full"
+              :min="0.1"
+              :max="100"
+              :step="0.1"
+              :precision="1"
+            />
+          </a-form-item>
+        </div>
+
         <!-- Upload File Section -->
         <div class="mb-3">
-          <label class="block text-base font-normal text-gray-800 mb-2">Upload file</label>
+          <label class="block text-base whitespace-nowrap font-normal text-gray-800 mb-2">Upload file</label>
           <a-upload
             v-model:file-list="questionData.files"
             class="upload-area"

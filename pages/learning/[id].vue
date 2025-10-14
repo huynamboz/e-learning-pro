@@ -17,6 +17,7 @@ definePageMeta({
 const route = useRoute()
 const router = useRouter()
 const courseId = route.params.id as string
+const { t } = useI18n()
 
 // Use learn store
 const learnStore = useLearnStore()
@@ -55,8 +56,11 @@ const studentsError = ref<string | null>(null)
 // Comment data
 const commentCount = ref(0)
 
-// Mock data for demonstration
-const instructorAvatar = ref('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face')
+// Instructor data from course
+const instructorAvatar = computed(() => {
+  // Use default avatar since teacher.avatar is not available in the current type
+  return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+})
 
 // Load course classmates
 const loadCourseStudents = async () => {
@@ -96,7 +100,7 @@ onMounted(async () => {
         <a-spin size="large">
           <div class="text-center">
             <p class="text-gray-600 mt-4">
-              Loading course...
+              {{ t('course.loadingCourse') }}
             </p>
           </div>
         </a-spin>
@@ -107,13 +111,13 @@ onMounted(async () => {
         <div class="text-center">
           <Icon name="tabler:alert-circle" class="text-red-500 text-6xl mx-auto mb-4" />
           <h2 class="text-xl font-semibold text-gray-900 mb-2">
-            Error Loading Course
+            {{ t('course.errorLoadingCourse') }}
           </h2>
           <p class="text-gray-600 mb-4">
             {{ error }}
           </p>
           <a-button type="primary" @click="() => navigateTo(route.fullPath, { replace: true })">
-            Try Again
+            {{ t('common.tryAgain') }}
           </a-button>
         </div>
       </div>
@@ -123,7 +127,7 @@ onMounted(async () => {
         <!-- Main Content Area -->
         <div class="lg:col-span-2">
           <h1 class="text-2xl font-semibold text-gray-900 mb-6">
-            {{ course?.title || 'Introduction to User Experience Design' }}
+            {{ course?.title || t('course.defaultTitle') }}
           </h1>
           <!-- Video Player Area -->
           <div class="relative w-full rounded-2xl overflow-hidden mb-6 bg-gray-900 aspect-video">
@@ -151,12 +155,12 @@ onMounted(async () => {
           <!-- Tabs Section -->
           <div class="mb-6">
             <a-tabs v-model:active-key="activeTab" class="course-tabs space-x-6">
-              <a-tab-pane key="details" tab="Details">
+              <a-tab-pane key="details" :tab="$t('course.details')">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <!-- Course Overview -->
                   <div class="mb-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-2">
-                      Course Overview
+                      {{ t('course.overview') }}
                     </h2>
                     <p class="text-gray-700 leading-relaxed" v-html="course?.description" />
                   </div>
@@ -176,7 +180,7 @@ onMounted(async () => {
                   <!-- Instructor Section -->
                   <div class="border-t border-gray-200 pt-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                      Instructor
+                      {{ t('course.instructor') }}
                     </h2>
                     <div class="flex items-start gap-4">
                       <div class="flex-shrink-0">
@@ -185,53 +189,51 @@ onMounted(async () => {
                       <div class="flex-1">
                         <div class="mb-2">
                           <h3 class="text-xl font-semibold text-blue-600">
-                            {{ course?.teacher?.full_name || 'Ronald Richards' }}
+                            {{ course?.teacher?.full_name || t('course.defaultInstructor') }}
                           </h3>
                           <p class="text-gray-700">
-                            UI/UX Designer
+                            {{ t('course.instructorTitle') }}
                           </p>
                         </div>
                         <div class="flex flex-wrap gap-6 mb-4">
                           <div class="flex items-center gap-1">
                             <Icon name="tabler:award" class="text-gray-600" size="20" />
-                            <span class="text-sm text-gray-900">40,445 Reviews</span>
+                            <span class="text-sm text-gray-900">{{ t('course.reviews', { count: '0' }) }}</span>
                           </div>
                           <div class="flex items-center gap-1">
                             <Icon name="tabler:school" class="text-gray-600" size="20" />
-                            <span class="text-sm text-gray-900">500 Students</span>
+                            <span class="text-sm text-gray-900">{{ t('course.students', { count: course?.teacher?.total_students || '0' }) }}</span>
                           </div>
                           <div class="flex items-center gap-1">
                             <Icon name="tabler:play" class="text-gray-600" size="20" />
-                            <span class="text-sm text-gray-900">15 Courses</span>
+                            <span class="text-sm text-gray-900">{{ t('course.courses', { count: course?.teacher?.total_courses || '0' }) }}</span>
                           </div>
                         </div>
-                        <p class="text-gray-700 leading-relaxed">
-                          With over a decade of industry experience, Ronald brings a wealth of practical knowledge to
-                          the classroom. He has played a pivotal role in designing user-centric interfaces for renowned
-                          tech companies, ensuring seamless and engaging user experiences.
-                        </p>
+                        <!-- <p class="text-gray-700 leading-relaxed">
+                          {{ t('course.instructorDescription') }}
+                        </p> -->
                       </div>
                     </div>
                   </div>
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="quiz" tab="Quiz (1)">
+              <a-tab-pane key="quiz" :tab="$t('course.quizTab')">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    Course Quiz
+                    {{ t('course.courseQuiz') }}
                   </h2>
                   <LearningQuizList 
                     :course-id="courseId"
-                    :chapter-id="learnStore.currentChapterId || undefined"
+                    :lesson-id="activeLesson?.id || undefined"
                   />
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="comments" :tab="`Comments`">
+              <a-tab-pane key="comments" :tab="$t('course.comments')">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    Comments
+                    {{ t('course.comments') }}
                   </h2>
                   <CommentList 
                     v-if="activeLesson"
@@ -242,7 +244,7 @@ onMounted(async () => {
                   />
                   <div v-else class="text-center py-8">
                     <Icon name="tabler:video" class="text-gray-400 text-4xl mx-auto mb-3" />
-                    <p class="text-gray-500">Select a lesson to view comments</p>
+                    <p class="text-gray-500">{{ t('course.selectLessonToViewComments') }}</p>
                   </div>
                 </div>
               </a-tab-pane>
@@ -255,7 +257,7 @@ onMounted(async () => {
           <!-- Course Completion Card -->
           <div class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
             <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">
-              Course Content
+              {{ t('course.courseContent') }}
             </h2>
 
             <!-- Chapter Sections with Lessons -->
@@ -272,14 +274,14 @@ onMounted(async () => {
           <div class="rounded-2xl p-4 mt-9">
             <div class="mb-4">
               <div class="text-xl font-semibold text-gray-900 mb-2 px-2">
-                Classmates ({{ courseStudents.length }})
+                {{ t('course.classmates', { count: courseStudents.length }) }}
               </div>
             </div>
 
             <!-- Loading State -->
             <div v-if="studentsLoading" class="flex items-center justify-center py-8">
               <a-spin size="small" />
-              <span class="ml-2 text-gray-600">Loading classmates...</span>
+              <span class="ml-2 text-gray-600">{{ t('course.loadingClassmates') }}</span>
             </div>
 
             <!-- Error State -->
@@ -287,7 +289,7 @@ onMounted(async () => {
               <Icon name="tabler:alert-circle" class="text-red-500 text-2xl mx-auto mb-2" />
               <p class="text-sm text-red-600 mb-2">{{ studentsError }}</p>
               <a-button size="small" @click="loadCourseStudents">
-                Try Again
+                {{ t('common.tryAgain') }}
               </a-button>
             </div>
 
@@ -317,7 +319,7 @@ onMounted(async () => {
             <!-- Empty State -->
             <div v-else class="text-center py-8">
               <Icon name="tabler:users" class="text-gray-400 text-2xl mx-auto mb-2" />
-              <p class="text-sm text-gray-500">No classmates yet</p>
+              <p class="text-sm text-gray-500">{{ t('course.noClassmatesYet') }}</p>
             </div>
           </div>
         </div>

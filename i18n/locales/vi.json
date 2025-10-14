@@ -1,4 +1,9 @@
 {
+  "global": {
+    "loading": {
+      "message": "Đang tải..."
+    }
+  },
   "admin": {
     "dashboard": {
       "title": "Tổng quan Dashboard",
@@ -966,7 +971,8 @@
     }
   },
   "common": {
-    "tryAgain": "Thử lại"
+    "tryAgain": "Thử lại",
+    "cancel": "Hủy"
   },
   "quiz": {
     "management": {
@@ -1037,7 +1043,25 @@
       "validationError": "Vui lòng sửa các lỗi form trước khi gửi",
       "formValidationError": "Xác thực form thất bại",
       "formValidationMessage": "Vui lòng kiểm tra tất cả các trường bắt buộc và thử lại"
-    }
+    },
+    "freeTime": "Thời gian tự do",
+    "timeLimit": "{timeValue} {timeUnit}",
+    "minute": "phút",
+    "minutes": "phút",
+    "hour": "giờ",
+    "hours": "giờ",
+    "second": "giây",
+    "seconds": "giây",
+    "questions": "câu hỏi",
+    "attempts": "lần làm",
+    "startQuiz": "Bắt đầu bài kiểm tra",
+    "viewResults": "Xem kết quả",
+    "failedToFetchQuizzes": "Không thể tải danh sách bài kiểm tra",
+    "loadingQuizzes": "Đang tải bài kiểm tra...",
+    "noQuizzesAvailable": "Chưa có bài kiểm tra nào cho chương này.",
+    "startQuizConfirm": "Bắt đầu bài kiểm tra?",
+    "confirmStartMessage": "Bạn có chắc chắn muốn bắt đầu {title}?",
+    "confirmStartWarning": "Khi bạn bắt đầu, đồng hồ đếm ngược sẽ chạy và bạn cần hoàn thành tất cả câu hỏi."
   },
   "calendar": {
     "error": {
@@ -1045,5 +1069,27 @@
       "checkInFailed": "Không thể tham gia buổi học. Vui lòng thử lại sau.",
       "checkInTooEarly": "Bạn đang cố gắng vào học quá sớm. Vui lòng đợi đến khi buổi học bắt đầu."
     }
+  },
+  "course": {
+    "loadingCourse": "Đang tải khóa học...",
+    "errorLoadingCourse": "Lỗi tải khóa học",
+    "defaultTitle": "Giới thiệu về Thiết kế Trải nghiệm Người dùng",
+    "details": "Chi tiết",
+    "overview": "Tổng quan khóa học",
+    "instructor": "Giảng viên",
+    "defaultInstructor": "Ronald Richards",
+    "instructorTitle": "Nhà thiết kế UI/UX",
+    "reviews": "{count} đánh giá",
+    "students": "{count} học viên",
+    "courses": "{count} khóa học",
+    "instructorDescription": "Với hơn một thập kỷ kinh nghiệm trong ngành, Ronald mang đến sự hiểu biết thực tế phong phú cho lớp học. Ông đã đóng vai trò quan trọng trong việc thiết kế các giao diện tập trung vào người dùng cho các công ty công nghệ nổi tiếng, đảm bảo trải nghiệm người dùng mượt mà và hấp dẫn.",
+    "quizTab": "Bài kiểm tra (1)",
+    "courseQuiz": "Bài kiểm tra khóa học",
+    "comments": "Bình luận",
+    "selectLessonToViewComments": "Chọn một bài học để xem bình luận",
+    "courseContent": "Nội dung khóa học",
+    "classmates": "Bạn cùng lớp ({count})",
+    "loadingClassmates": "Đang tải danh sách bạn cùng lớp...",
+    "noClassmatesYet": "Chưa có bạn cùng lớp nào"
   }
 }

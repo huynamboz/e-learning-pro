@@ -47,7 +47,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
   <div class="admin-courses px-4 flex flex-col gap-8">
     <!-- Page Header -->
     <div class="flex justify-between items-center gap-4">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      <h1 class="text-3xl font-bold text-gray-900">
         {{ t('admin.courses.title') }}
       </h1>
       <a-button
@@ -67,7 +67,7 @@ const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData
       <div
         v-for="n in 8"
         :key="n"
-        class="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800"
+        class="p-4 border rounded-lg shadow-sm bg-white"
       >
         <a-skeleton active avatar :paragraph="{ rows: 3 }" />
       </div>
