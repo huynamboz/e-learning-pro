@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { TableColumnsType, TableProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch, type Ref } from 'vue'
 import { useOrderApi } from '~/composables/api/useOrderApi'
+import { useApiClient } from '~/api/apiClient'
 import { useI18n } from 'vue-i18n'
+import ConfirmReceiveDialog from '~/components/admin/orders/ConfirmReceiveDialog.vue'
+import RejectOrderDialog from '~/components/admin/orders/RejectOrderDialog.vue'
+import OrderDetailDialog from '~/components/admin/orders/OrderDetailDialog.vue'
 
 const { t } = useI18n()
 
@@ -66,30 +70,54 @@ interface OrdersResponse {
 const loading = ref(false)
 const searchText = ref('')
 const selectedStatus = ref<string>('all')
-const dateRange = ref<[string, string] | null>(null)
 const orders = ref<Order[]>([])
 const totalCount = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(10)
+const currentPage: Ref<number> = ref(1)
+const pageSize: Ref<number> = ref(10)
+const hasNext = ref(false)
+const hasPrevious = ref(false)
 
 // Dialog state
 const showConfirmDialog = ref(false)
 const showRejectDialog = ref(false)
 const showDetailDialog = ref(false)
 const currentOrder = ref<Order | null>(null)
-const rejectReason = ref('')
 const isSubmitting = ref(false)
+const rejectReason = ref('')
 
 // Load orders from API
 async function loadOrders() {
   try {
     loading.value = true
-    const { getAll } = useOrderApi()
-    const response = await getAll() as any
+    const apiClient = useApiClient()
+    
+    // Calculate offset based on current page and page size
+    const offset = (currentPage.value - 1) * pageSize.value
+    
+    // Build query parameters
+    const params: any = {
+      limit: pageSize.value,
+      offset: offset
+    }
+    
+    // Add status filter if not 'all'
+    if (selectedStatus.value && selectedStatus.value !== 'all') {
+      params.status = selectedStatus.value
+    }
+    
+    // Add search text if provided
+    if (searchText.value.trim()) {
+      params.search = searchText.value.trim()
+    }
+    
+    
+    const response = await apiClient.get('/orders/', { query: params }) as any
     
     if (response) {
-      orders.value = response.results || response || []
-      totalCount.value = response.count || response.length || 0
+      orders.value = response.results || []
+      totalCount.value = response.count || 0
+      hasNext.value = !!response.next
+      hasPrevious.value = !!response.previous
     }
   } catch (error) {
     console.error('Error loading orders:', error)
@@ -104,6 +132,11 @@ onMounted(() => {
   loadOrders()
 })
 
+// Watch for all changes and reload data
+watch([searchText, selectedStatus, currentPage, pageSize], () => {
+  loadOrders()
+})
+
 // Status options
 const statusOptions = computed(() => [
   { label: t('admin.orders.filters.statusFilter'), value: 'all' },
@@ -112,34 +145,31 @@ const statusOptions = computed(() => [
   { label: t('admin.orders.table.status.cancel'), value: 'cancel' },
 ])
 
-// Filtered orders
-const filteredOrders = computed(() => {
-  let filtered = orders.value
+// No need for client-side filtering since we're using server-side filtering
 
-  // Filter by search text
-  if (searchText.value) {
-    const search = searchText.value.toLowerCase()
-    filtered = filtered.filter(
-      order =>
-        order.invoice_code.toLowerCase().includes(search)
-        || order.student.full_name.toLowerCase().includes(search)
-        || order.student.email.toLowerCase().includes(search)
-        || order.course.title.toLowerCase().includes(search)
-        || order.classroom.title.toLowerCase().includes(search),
-    )
+// Pagination configuration
+const paginationConfig = computed(() => ({
+  current: currentPage.value,
+  pageSize: pageSize.value,
+  total: totalCount.value,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number, range: [number, number]) => 
+    `${range[0]}-${range[1]} of ${total} ${t('admin.orders.stats.totalOrders').toLowerCase()}`,
+  onChange: (page: number, size: number) => {
+    currentPage.value = page
+    pageSize.value = size
+  },
+  onShowSizeChange: (current: number, size: number) => {
+    currentPage.value = 1
+    pageSize.value = size
   }
+}))
 
-  // Filter by status
-  if (selectedStatus.value && selectedStatus.value !== 'all') {
-    filtered = filtered.filter(order => order.status === selectedStatus.value)
-  }
-
-  return filtered
-})
-
-// Statistics
+// Statistics - Note: These are calculated from current page data only
+// For accurate statistics, you might want to add separate API endpoints
 const stats = computed(() => {
-  const totalOrders = orders.value.length
+  const totalOrders = totalCount.value // Use total count from API
   const totalRevenue = orders.value
     .filter(order => order.status === 'complete')
     .reduce((sum, order) => sum + parseFloat(order.price_amount), 0)
@@ -267,11 +297,8 @@ async function confirmReceive() {
   }
 }
 
-async function rejectOrder() {
-  if (!currentOrder.value || !rejectReason.value.trim()) {
-    message.warning('Please provide a reason for rejection')
-    return
-  }
+async function rejectOrder(reason: string) {
+  if (!currentOrder.value) return
   
   try {
     isSubmitting.value = true
@@ -279,15 +306,14 @@ async function rejectOrder() {
     
     await updateOrder(currentOrder.value.id, {
       status: 'cancel',
-      canceled_reason: rejectReason.value.trim(),
-      admin_note: `Order rejected: ${rejectReason.value.trim()}`
+      canceled_reason: reason,
+      admin_note: `Order rejected: ${reason}`
     })
     
     message.success(t('admin.orders.table.actions.reject'))
     await loadOrders()
     showRejectDialog.value = false
     currentOrder.value = null
-    rejectReason.value = ''
   } catch (error) {
     console.error('Error rejecting order:', error)
     message.error('Failed to reject order')
@@ -296,20 +322,26 @@ async function rejectOrder() {
   }
 }
 
-function cancelConfirm() {
+function closeConfirmDialog() {
   showConfirmDialog.value = false
   currentOrder.value = null
 }
 
-function cancelReject() {
+function closeRejectDialog() {
   showRejectDialog.value = false
   currentOrder.value = null
-  rejectReason.value = ''
 }
 
 function closeDetailDialog() {
   showDetailDialog.value = false
   currentOrder.value = null
+}
+
+// Clear all filters
+function clearFilters() {
+  searchText.value = ''
+  selectedStatus.value = 'all'
+  currentPage.value = 1
 }
 
 // Refresh data
@@ -436,12 +468,6 @@ async function handleRefresh() {
           </a-select-option>
         </a-select>
 
-        <!-- Date Range -->
-        <a-range-picker
-          v-model:value="dateRange"
-          size="large"
-          style="width: 100%"
-        />
       </div>
     </div>
 
@@ -449,15 +475,9 @@ async function handleRefresh() {
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <a-table
         :columns="columns"
-        :data-source="filteredOrders"
+        :data-source="orders"
         :loading="loading"
-        :pagination="{
-          current: currentPage,
-          pageSize: pageSize,
-          total: totalCount,
-          showSizeChanger: true,
-          showTotal: (total: number) => `${$t('admin.orders.stats.totalOrders')}: ${total}`,
-        }"
+        :pagination="paginationConfig"
         :scroll="{ x: 1200 }"
         row-key="id"
         class="custom-table"
@@ -469,13 +489,13 @@ async function handleRefresh() {
               <Icon name="solar:cart-large-2-bold" size="48" class="text-gray-300 mx-auto" />
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">
-              {{ $t('admin.orders.emptyState.title') }}
+              {{ $t('admin.orders.table.emptyState.title') }}
             </h3>
             <p class="text-gray-500 mb-4">
-              {{ $t('admin.orders.emptyState.description') }}
+              {{ $t('admin.orders.table.emptyState.description') }}
             </p>
-            <a-button @click="searchText = ''; selectedStatus = 'all'; dateRange = null" class="rounded-lg">
-              {{ $t('admin.orders.emptyState.clearFilters') }}
+            <a-button @click="clearFilters" class="rounded-lg">
+              {{ $t('admin.orders.table.emptyState.clearFilters') }}
             </a-button>
           </div>
         </template>
@@ -600,293 +620,29 @@ async function handleRefresh() {
     </div>
 
     <!-- Confirm Receive Dialog -->
-    <a-modal
-      v-model:open="showConfirmDialog"
-      :title="$t('admin.orders.table.confirmDialog.confirmReceive.title')"
-      :footer="null"
-      centered
-      width="500px"
-    >
-      <div class="py-4">
-        <!-- Icon -->
-        <div class="text-center mb-6">
-          <div class="size-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="solar:check-circle-bold" size="32" class="text-green-600" />
-          </div>
-          
-          <!-- Message -->
-          <p class="text-gray-600 text-base leading-relaxed">
-            {{ $t('admin.orders.table.confirmDialog.confirmReceive.message') }}
-          </p>
-          
-          <!-- Order Info -->
-          <div v-if="currentOrder" class="mt-4 p-4 bg-gray-50 rounded-lg text-left">
-            <div class="text-sm text-gray-600 mb-2">Order Details:</div>
-            <div class="font-medium text-gray-900">{{ currentOrder.invoice_code }}</div>
-            <div class="text-sm text-gray-600">{{ currentOrder.student.full_name }}</div>
-            <div class="text-sm text-gray-600">{{ currentOrder.course.title }}</div>
-            <div class="text-sm font-medium text-green-600">${{ parseFloat(currentOrder.price_amount).toFixed(2) }}</div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex space-x-3 justify-end">
-          <a-button @click="cancelConfirm" :disabled="isSubmitting">
-            {{ $t('admin.orders.table.confirmDialog.confirmReceive.cancel') }}
-          </a-button>
-          <a-button 
-            type="primary" 
-            @click="confirmReceive" 
+    <ConfirmReceiveDialog
+      :visible="showConfirmDialog"
+      :order="currentOrder"
             :loading="isSubmitting"
-            class="bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700"
-          >
-            {{ $t('admin.orders.table.confirmDialog.confirmReceive.confirm') }}
-          </a-button>
-        </div>
-      </div>
-    </a-modal>
+      @close="closeConfirmDialog"
+      @confirm="confirmReceive"
+    />
 
     <!-- Reject Order Dialog -->
-    <a-modal
-      v-model:open="showRejectDialog"
-      :title="$t('admin.orders.table.confirmDialog.reject.title')"
-      :footer="null"
-      centered
-      width="500px"
-    >
-      <div class="py-4">
-        <!-- Icon -->
-        <div class="text-center mb-6">
-          <div class="size-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="solar:close-circle-bold" size="32" class="text-red-600" />
-          </div>
-          
-          <!-- Message -->
-          <p class="text-gray-600 text-base leading-relaxed">
-            {{ $t('admin.orders.table.confirmDialog.reject.message') }}
-          </p>
-          
-          <!-- Order Info -->
-          <div v-if="currentOrder" class="mt-4 p-4 bg-gray-50 rounded-lg text-left">
-            <div class="text-sm text-gray-600 mb-2">Order Details:</div>
-            <div class="font-medium text-gray-900">{{ currentOrder.invoice_code }}</div>
-            <div class="text-sm text-gray-600">{{ currentOrder.student.full_name }}</div>
-            <div class="text-sm text-gray-600">{{ currentOrder.course.title }}</div>
-            <div class="text-sm font-medium text-red-600">${{ parseFloat(currentOrder.price_amount).toFixed(2) }}</div>
-          </div>
-        </div>
-
-        <!-- Reason Input -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.orders.table.confirmDialog.reject.reason') }}
-          </label>
-          <a-textarea
-            v-model:value="rejectReason"
-            :placeholder="$t('admin.orders.table.confirmDialog.reject.reasonPlaceholder')"
-            :rows="4"
-            class="w-full"
-          />
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex space-x-3 justify-end">
-          <a-button @click="cancelReject" :disabled="isSubmitting">
-            {{ $t('admin.orders.table.confirmDialog.reject.cancel') }}
-          </a-button>
-          <a-button 
-            type="primary" 
-            danger
-            @click="rejectOrder" 
-            :loading="isSubmitting"
-            :disabled="!rejectReason.trim()"
-          >
-            {{ $t('admin.orders.table.confirmDialog.reject.confirm') }}
-          </a-button>
-        </div>
-      </div>
-    </a-modal>
+    <RejectOrderDialog
+      :visible="showRejectDialog"
+      :order="currentOrder"
+      :loading="isSubmitting"
+      @close="closeRejectDialog"
+      @reject="rejectOrder"
+    />
 
     <!-- Order Detail Dialog -->
-    <a-modal
-      v-model:open="showDetailDialog"
-      :title="$t('admin.orders.detailDialog.title')"
-      :footer="null"
-      centered
-      width="700px"
-    >
-      <div v-if="currentOrder" class="py-4 max-h-[80vh] overflow-y-auto">
-        <!-- Order Info Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Left Column -->
-          <div class="space-y-4">
-            <!-- Invoice Code -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.invoice') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="font-mono text-sm text-gray-900">{{ currentOrder.invoice_code }}</span>
-              </div>
-            </div>
-
-            <!-- Student Info -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.student') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <a-avatar :size="40">
-                    {{ currentOrder.student.full_name.charAt(0) }}
-                  </a-avatar>
-                  <div>
-                    <div class="font-medium text-gray-900">{{ currentOrder.student.full_name }}</div>
-                    <div class="text-sm text-gray-500">{{ currentOrder.student.email }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Course Info -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.course') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Icon name="solar:play-circle-bold" class="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <div class="font-medium text-gray-900">{{ currentOrder.course.title }}</div>
-                    <div class="text-sm text-gray-500">by {{ currentOrder.course.teacher_name }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Classroom Info -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.classroom') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <div class="font-medium text-gray-900">{{ currentOrder.classroom.title }}</div>
-                <div class="text-sm text-gray-500">{{ currentOrder.classroom.schedule_summary }}</div>
-                <div class="text-sm text-gray-500">{{ currentOrder.classroom.student_count }} students</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column -->
-          <div class="space-y-4">
-            <!-- Amount -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.amount') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="text-2xl font-bold text-green-600">${{ parseFloat(currentOrder.price_amount).toFixed(2) }}</span>
-                <span class="text-sm text-gray-500 ml-2">{{ currentOrder.price_currency }}</span>
-              </div>
-            </div>
-
-            <!-- Status -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.status') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span :class="getStatusBadgeClass(currentOrder.status)" class="px-3 py-1 rounded-full text-sm font-medium border">
-                  {{ currentOrder.status_display }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Payment Method -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.paymentMethod') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="text-sm text-gray-900">{{ currentOrder.payment_method }}</span>
-              </div>
-            </div>
-
-            <!-- Payment Reference -->
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.paymentReference') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="font-mono text-sm text-gray-900">{{ currentOrder.payment_reference }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Full Width Fields -->
-        <div class="mt-6 space-y-4">
-          <!-- Notes -->
-          <div v-if="currentOrder.notes" class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-1">
-              {{ $t('admin.orders.detailDialog.notes') }}
-            </label>
-            <div class="p-3 bg-gray-50 rounded-lg">
-              <p class="text-sm text-gray-900">{{ currentOrder.notes }}</p>
-            </div>
-          </div>
-
-          <!-- Admin Note -->
-          <div v-if="currentOrder.admin_note" class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-1">
-              {{ $t('admin.orders.detailDialog.adminNote') }}
-            </label>
-            <div class="p-3 bg-gray-50 rounded-lg">
-              <p class="text-sm text-gray-900">{{ currentOrder.admin_note }}</p>
-            </div>
-          </div>
-
-          <!-- Canceled Reason -->
-          <div v-if="currentOrder.canceled_reason" class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700 mb-1">
-              {{ $t('admin.orders.detailDialog.canceledReason') }}
-            </label>
-            <div class="p-3 bg-red-50 rounded-lg border border-red-200">
-              <p class="text-sm text-red-800">{{ currentOrder.canceled_reason }}</p>
-            </div>
-          </div>
-
-          <!-- Timestamps -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.createdAt') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="text-sm text-gray-900">{{ formatDate(currentOrder.created_at) }}</span>
-              </div>
-            </div>
-            <div class="flex flex-col">
-              <label class="text-sm font-medium text-gray-700 mb-1">
-                {{ $t('admin.orders.detailDialog.updatedAt') }}
-              </label>
-              <div class="p-3 bg-gray-50 rounded-lg">
-                <span class="text-sm text-gray-900">{{ formatDate(currentOrder.updated_at) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex justify-end mt-6 pt-4 border-t border-gray-200">
-          <a-button @click="closeDetailDialog" type="primary">
-            {{ $t('admin.orders.detailDialog.close') }}
-          </a-button>
-        </div>
-      </div>
-    </a-modal>
+    <OrderDetailDialog
+      :visible="showDetailDialog"
+      :order="currentOrder"
+      @close="closeDetailDialog"
+    />
   </div>
 </template>
 

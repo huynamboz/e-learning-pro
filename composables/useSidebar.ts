@@ -56,11 +56,11 @@ export function useSidebar() {
       icon: 'i-heroicons-academic-cap',
       link: '/admin/courses',
     },
-    {
-      name: t('adminMenu.classroom'),
-      icon: 'i-heroicons-building-office-2',
-      link: '/admin/classrooms',
-    },
+    // {
+    //   name: t('adminMenu.classroom'),
+    //   icon: 'i-heroicons-building-office-2',
+    //   link: '/admin/classrooms',
+    // },
     {
       name: t('adminMenu.students'),
       icon: 'i-heroicons-users',
