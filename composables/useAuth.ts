@@ -1,4 +1,4 @@
-import type { LoginRequest, LoginResponse, User } from '~/types/auth.type'
+import type { LoginRequest, LoginResponse, Profile, User } from '~/types/auth.type'
 import { useApiClient } from '~/api/apiClient'
 
 import { useAuthApi } from '~/composables/api/useAuthApi'
@@ -8,7 +8,7 @@ const authApi = useAuthApi()
 
 export function useAuth() {
   const user = useState<User | null>('auth.user', () => null)
-  const profile = useState<User | null>('auth.profile', () => null)
+  const profile = useState<Profile | null>('auth.profile', () => null)
   const token = useCookie<string | null>('auth.token', {
     default: () => null,
     httpOnly: false,

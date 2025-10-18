@@ -9,7 +9,7 @@ definePageMeta({
   layout: 'default',
 })
 
-const { user } = useAuth()
+const { user, profile } = useAuth()
 const { t } = useI18n()
 const { changePassword } = useUserApi()
 
@@ -256,8 +256,8 @@ const handleReset = () => {
                     <Icon name="solar:user-bold" size="16" class="text-blue-600" />
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-shade-9">{{ user?.full_name || 'N/A' }}</p>
-                    <p class="text-xs text-shade-6">Tên đầy đủ</p>
+                    <p class="text-sm font-medium text-shade-9">{{ profile?.first_name || 'N/A' }}</p>
+                    <p class="text-xs text-shade-6">{{ profile?.last_name || 'N/A' }}</p>
                   </div>
                 </div>
                 
@@ -277,7 +277,7 @@ const handleReset = () => {
                   </div>
                   <div>
                     <p class="text-sm font-medium text-shade-9">
-                      {{ user?.date_joined ? new Date(user.date_joined).toLocaleDateString('vi-VN') : 'N/A' }}
+                      {{ profile?.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : 'N/A' }}
                     </p>
                     <p class="text-xs text-shade-6">Ngày tham gia</p>
                   </div>
