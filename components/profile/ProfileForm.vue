@@ -86,22 +86,19 @@ async function onFinish() {
       <a-form-item
         :label="$t('profileForm.username')"
         name="username"
-        :rules="[{ required: true, message: $t('profileForm.validation.usernameRequired') }]"
+        disabled
         class="w-1/2"
       >
-        <a-input v-model:value="formState.username" size="large" :placeholder="$t('profileForm.enterUsername')" />
+        <a-input v-model:value="formState.username" size="large" :placeholder="$t('profileForm.enterUsername')" disabled />
       </a-form-item>
 
       <a-form-item
         :label="$t('profileForm.email')"
         name="email"
-        :rules="[
-          { required: true, message: $t('profileForm.validation.emailRequired') },
-          { type: 'email', message: $t('profileForm.validation.emailInvalid') }
-        ]"
+        disabled
         class="w-1/2"
       >
-        <a-input v-model:value="formState.email" size="large" :placeholder="$t('profileForm.enterEmail')" />
+        <a-input v-model:value="formState.email" size="large" :placeholder="$t('profileForm.enterEmail')" disabled />
       </a-form-item>
     </div>
 

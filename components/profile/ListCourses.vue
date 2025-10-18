@@ -98,26 +98,6 @@ function handleFilterClick() {
   message.info('Filter options clicked (not implemented)')
 }
 
-function handleJoinCourse(courseId: string) {
-  message.info('Join course functionality not implemented yet')
-  // TODO: Implement join course API call
-}
-
-function handleCancelCourse(courseId: string) {
-  message.info('Cancel course functionality not implemented yet')
-  // TODO: Implement cancel course API call
-}
-
-function handlePageChange(page: number) {
-  currentPage.value = page
-  router.push({ query: { page } })
-  // Scroll to top of courses section
-  document.querySelector('.courses-grid')?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  })
-}
-
 function formatDate(dateString: string) {
   if (!dateString) return 'N/A'
   return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -308,12 +288,12 @@ onMounted(() => {
         </div>
 
         <!-- Pagination -->
-        <CustomPagination
+        <!-- <CustomPagination
           v-if="totalPages > 0"
           :current-page="currentPage"
           :total-pages="totalPages"
           @page-change="handlePageChange"
-        />
+        /> -->
       </div>
     </div>
   </div>
