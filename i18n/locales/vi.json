@@ -4,6 +4,152 @@
       "message": "Đang tải..."
     }
   },
+  "homepage": {
+    "hero": {
+      "badge": "Học với sự hướng dẫn chuyên nghiệp",
+      "title": "Học tiếng Ý cùng cô Tâm",
+      "description": "Cùng học tiếng Ý với cô Phan Thị Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.",
+      "exploreCourses": "Khám phá khóa học",
+      "signUpNow": "Đăng ký ngay",
+      "stats": {
+        "activeStudents": "Học viên hoạt động",
+        "averageRating": "Đánh giá trung bình",
+        "completionRate": "Tỷ lệ hoàn thành"
+      }
+    },
+    "courses": {
+      "title": "Khóa học nổi bật",
+      "description": "Các khóa học được thiết kế cẩn thận để đưa bạn từ người mới bắt đầu đến người nói thành thạo",
+      "badges": {
+        "bestseller": "Bán chạy nhất",
+        "popular": "Phổ biến",
+        "new": "Mới"
+      },
+      "levels": {
+        "beginner": "Người mới bắt đầu",
+        "intermediate": "Trung cấp",
+        "advanced": "Nâng cao"
+      },
+      "course1": {
+        "title": "Tiếng Ý cho người mới bắt đầu",
+        "description": "Bắt đầu hành trình tiếng Ý của bạn với từ vựng cần thiết, nền tảng ngữ pháp và kỹ năng giao tiếp cho các tình huống hàng ngày.",
+        "duration": "12 tuần"
+      },
+      "course2": {
+        "title": "Thành thạo tiếng Ý trung cấp",
+        "description": "Nâng cao tiếng Ý của bạn với ngữ pháp phức tạp, cách diễn đạt thành ngữ và hiểu biết văn hóa để giao tiếp tự tin.",
+        "duration": "16 tuần"
+      },
+      "course3": {
+        "title": "Hội thoại nâng cao",
+        "description": "Hoàn thiện sự lưu loát của bạn với các chủ đề nâng cao, tiếng Ý chuyên nghiệp và giao tiếp tinh tế cho công việc và du lịch.",
+        "duration": "20 tuần"
+      }
+    },
+    "quiz": {
+      "badge": "Quiz tương tác",
+      "title": "Luyện tập tiếng Ý với hệ thống quiz thông minh",
+      "description": "Củng cố kiến thức sau mỗi bài học với bài kiểm tra thích ứng, phản hồi tức thì và thử thách gamify giúp bạn luôn hứng thú.",
+      "metrics": {
+        "questions": {
+          "value": "1.200+",
+          "label": "Câu hỏi luyện tập"
+        },
+        "passRate": {
+          "value": "94%",
+          "label": "Tỷ lệ vượt qua trung bình"
+        },
+        "time": {
+          "value": "10 phút",
+          "label": "Thời lượng mỗi phiên"
+        }
+      },
+      "highlights": {
+        "adaptive": {
+          "title": "Lộ trình thích ứng",
+          "description": "Hệ thống tự điều chỉnh độ khó dựa trên tiến độ để bạn luôn được thử thách vừa sức."
+        },
+        "feedback": {
+          "title": "Phản hồi tức thì",
+          "description": "Mỗi đáp án đều có giải thích, ví dụ và ghi nhớ để bạn hiểu sâu và nhớ lâu."
+        },
+        "certification": {
+          "title": "Sẵn sàng nhận chứng nhận",
+          "description": "Hoàn thành các mốc quiz để mở khóa huy hiệu và chứng nhận ghi nhận nỗ lực của bạn."
+        }
+      },
+      "cta": "Trải nghiệm quiz ngay",
+      "summary": {
+        "title": "Hiệu suất trực tiếp",
+        "value": "92% Chính xác",
+        "caption": "Tiếp tục nhé! Bạn đang tiến rất nhanh để làm chủ vốn từ vựng trình độ trung cấp."
+      },
+      "preview": {
+        "title": "Quiz Từ vựng tiếng Ý",
+        "subtitle": "Câu hỏi 3 - Còn 12 câu",
+        "badge": "Chế độ thích ứng",
+        "topic": "Trọng tâm từ vựng",
+        "question": "Từ \"Buongiorno\" được dịch chính xác là gì?",
+        "options": {
+          "a": "Chào buổi tối",
+          "b": "Chào buổi sáng",
+          "c": "Hẹn gặp lại"
+        },
+        "correct": "Đáp án đúng"
+      },
+      "progress": {
+        "label": "Tiến độ",
+        "value": "Hoàn thành 80%"
+      }
+    },
+    "instructor": {
+      "badge": "Gặp gỡ giảng viên của bạn",
+      "title": "Học cùng cô Tâm",
+      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế, cô Phan Thị Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
+      "experience": "10+ Năm",
+      "experienceText": "Giảng dạy tiếng Ý",
+      "features": {
+        "certified": {
+          "title": "Chuyên gia được chứng nhận",
+          "description": "Bằng thạc sĩ về Ngôn ngữ học tiếng Ý từ Đại học Bologna"
+        },
+        "cultural": {
+          "title": "Đắm mình trong văn hóa",
+          "description": "Sống ở Ý 8 năm, giảng dạy và nghiên cứu văn hóa Ý"
+        },
+        "method": {
+          "title": "Phương pháp đã được chứng minh",
+          "description": "Phát triển phương pháp giảng dạy độc đáo với 98% học viên hài lòng"
+        }
+      },
+      "button": "Liên hệ tư vấn"
+    },
+    "testimonials": {
+      "title": "Học viên nói gì",
+      "description": "Tham gia cùng hàng nghìn người học hài lòng đã đạt được mục tiêu ngôn ngữ Ý của họ",
+      "testimonial1": {
+        "text": "Cô Tâm dạy rất hay và dễ hiểu! Từ chỗ không biết gì về tiếng Ý, giờ mình đã có thể tự tin gọi món ở nhà hàng Ý rồi. Chỉ sau 3 tháng thôi!",
+        "author": "Sarah Martinez",
+        "course": "Khóa học người mới bắt đầu"
+      },
+      "testimonial2": {
+        "text": "Khóa học trung cấp hay hơn mình tưởng nhiều! Cô Tâm không chỉ dạy ngữ pháp mà còn chia sẻ nhiều điều thú vị về văn hóa Ý. Học mà như được đi du lịch vậy!",
+        "author": "James Chen",
+        "course": "Khóa học trung cấp"
+      },
+      "testimonial3": {
+        "text": "Đầu tư học tiếng Ý với cô Tâm là quyết định đúng đắn nhất! Nhờ khóa học nâng cao mà mình đã xin được việc ở Milan. Cô Tâm thực sự là cô giáo tiếng Ý số 1!",
+        "author": "Emma Peterson",
+        "course": "Khóa học nâng cao"
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng bắt đầu hành trình tiếng Ý của bạn?",
+      "description": "Tham gia cộng đồng người học đam mê và khám phá vẻ đẹp của ngôn ngữ Ý",
+      "browseCourses": "Khám phá tất cả khóa học",
+      "signUpNow": "Đăng ký ngay"
+    }
+  },
   "admin": {
     "dashboard": {
       "title": "Tổng quan Dashboard",
@@ -650,9 +796,6 @@
     "actions": "Hành động",
     "logout": "Đăng xuất"
   },
-  "homepage": {
-    "topCourses": "Khóa học hàng đầu"
-  },
   "learning": {
     "welcome": "Chào mừng trở lại, {name}! 👋",
     "welcomeDesc": "Tiếp tục hành trình học tập và đạt được mục tiêu của bạn",
@@ -1064,6 +1207,43 @@
     "confirmStartWarning": "Khi bạn bắt đầu, đồng hồ đếm ngược sẽ chạy và bạn cần hoàn thành tất cả câu hỏi."
   },
   "calendar": {
+    "header": {
+      "subtitle": "Lịch học",
+      "title": "Theo dõi kế hoạch học tập của bạn",
+      "home": "Trang chủ"
+    },
+    "datePicker": {
+      "title": "Chọn ngày",
+      "description": "Sử dụng lịch để chuyển nhanh giữa các tuần và buổi học."
+    },
+    "upcomingEvents": {
+      "title": "Lịch học hôm nay",
+      "hasEvents": "Có lịch",
+      "noEvents": "Trống",
+      "noClassesToday": "Hôm nay chưa có buổi học nào."
+    },
+    "event": {
+      "time": "Thời gian",
+      "course": "Khóa học",
+      "noInfo": "Chưa có thông tin",
+      "ended": "Đã kết thúc",
+      "noMeetingLink": "Không có link học"
+    },
+    "joinClass": {
+      "joinNow": "Vào học ngay"
+    },
+    "detailedCalendar": {
+      "title": "Lịch học chi tiết",
+      "classCount": "{count} buổi học"
+    },
+    "modal": {
+      "title": "Xác nhận vào học",
+      "confirmation": "Bạn có chắc chắn muốn tham gia buổi học này không?",
+      "cancel": "Hủy",
+      "joinNow": "Vào học ngay",
+      "joining": "Đang vào học..."
+    },
+    "loading": "Đang tải lịch...",
     "error": {
       "cannotJoinClass": "Không thể tham gia buổi học",
       "checkInFailed": "Không thể tham gia buổi học. Vui lòng thử lại sau.",
@@ -1091,5 +1271,344 @@
     "classmates": "Bạn cùng lớp ({count})",
     "loadingClassmates": "Đang tải danh sách bạn cùng lớp...",
     "noClassmatesYet": "Chưa có bạn cùng lớp nào"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "rememberMe": "Ghi nhớ đăng nhập",
+      "forgotPassword": "Quên mật khẩu?",
+      "loginButton": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?",
+      "signUp": "Đăng ký ngay",
+      "validation": {
+        "emailRequired": "Vui lòng nhập email!",
+        "emailInvalid": "Vui lòng nhập email hợp lệ!",
+        "passwordRequired": "Vui lòng nhập mật khẩu!",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự!"
+      },
+      "messages": {
+        "loginSuccess": "Đăng nhập thành công!",
+        "loginFailed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+        "invalidCredentials": "Email hoặc mật khẩu không đúng."
+      }
+    },
+    "register": {
+      "title": "Đăng ký",
+      "subtitle": "Tạo tài khoản mới để bắt đầu hành trình học tập của bạn.",
+      "firstName": "Tên",
+      "firstNamePlaceholder": "Nhập tên của bạn",
+      "lastName": "Họ",
+      "lastNamePlaceholder": "Nhập họ của bạn",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+      "agreeTerms": "Tôi đồng ý với",
+      "termsAndConditions": "Điều khoản và Điều kiện",
+      "registerButton": "Đăng ký",
+      "hasAccount": "Đã có tài khoản?",
+      "signIn": "Đăng nhập ngay",
+      "validation": {
+        "firstNameRequired": "Vui lòng nhập tên!",
+        "lastNameRequired": "Vui lòng nhập họ!",
+        "emailRequired": "Vui lòng nhập email!",
+        "emailInvalid": "Vui lòng nhập email hợp lệ!",
+        "passwordRequired": "Vui lòng nhập mật khẩu!",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự!",
+        "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu!",
+        "passwordsNotMatch": "Mật khẩu xác nhận không khớp!",
+        "agreeTermsRequired": "Vui lòng đồng ý với điều khoản và điều kiện!"
+      },
+      "messages": {
+        "registerSuccess": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
+        "registerFailed": "Đăng ký thất bại. Vui lòng thử lại.",
+        "emailAlreadyExists": "Email này đã được sử dụng."
+      }
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "subtitle": "Nhập email của bạn để nhận liên kết đặt lại mật khẩu.",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "sendResetLink": "Gửi liên kết đặt lại",
+      "backToLogin": "Quay lại đăng nhập",
+      "validation": {
+        "emailRequired": "Vui lòng nhập email!",
+        "emailInvalid": "Vui lòng nhập email hợp lệ!"
+      },
+      "messages": {
+        "resetLinkSent": "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn!",
+        "resetLinkFailed": "Không thể gửi liên kết đặt lại. Vui lòng thử lại.",
+        "emailNotFound": "Email này chưa được đăng ký."
+      }
+    }
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "courses": "Khóa học",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "logout": "Đăng xuất",
+    "dashboard": "Bảng điều khiển",
+    "myCourses": "Khóa học của tôi",
+    "calendar": "Lịch học",
+    "admin": "Quản trị",
+    "language": "Ngôn ngữ"
+  },
+  "footer": {
+    "company": {
+      "title": "Công ty",
+      "about": "Giới thiệu",
+      "careers": "Tuyển dụng",
+      "contact": "Liên hệ",
+      "blog": "Blog"
+    },
+    "support": {
+      "title": "Hỗ trợ",
+      "helpCenter": "Trung tâm trợ giúp",
+      "faq": "Câu hỏi thường gặp",
+      "community": "Cộng đồng",
+      "tutorials": "Hướng dẫn"
+    },
+    "legal": {
+      "title": "Pháp lý",
+      "privacy": "Chính sách bảo mật",
+      "terms": "Điều khoản sử dụng",
+      "cookies": "Chính sách cookie",
+      "gdpr": "GDPR"
+    },
+    "social": {
+      "title": "Mạng xã hội",
+      "followUs": "Theo dõi chúng tôi"
+    },
+    "newsletter": {
+      "title": "Đăng ký nhận tin",
+      "description": "Nhận thông tin cập nhật về khóa học mới và ưu đãi đặc biệt.",
+      "emailPlaceholder": "Nhập email của bạn",
+      "subscribe": "Đăng ký",
+      "success": "Đăng ký thành công!",
+      "error": "Đăng ký thất bại. Vui lòng thử lại."
+    },
+    "copyright": "© 2024 Cô Phan Thị Tâm. Tất cả quyền được bảo lưu.",
+    "madeWith": "Được tạo với",
+    "by": "bởi"
+  },
+  "errors": {
+    "pageNotFound": {
+      "title": "Trang không tìm thấy",
+      "description": "Xin lỗi, trang bạn đang tìm kiếm không tồn tại.",
+      "backHome": "Về trang chủ",
+      "errorCode": "Lỗi 404"
+    },
+    "serverError": {
+      "title": "Lỗi máy chủ",
+      "description": "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
+      "tryAgain": "Thử lại",
+      "errorCode": "Lỗi 500"
+    },
+    "networkError": {
+      "title": "Lỗi kết nối",
+      "description": "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối internet của bạn.",
+      "checkConnection": "Kiểm tra kết nối"
+    },
+    "unauthorized": {
+      "title": "Không có quyền truy cập",
+      "description": "Bạn không có quyền truy cập vào trang này.",
+      "login": "Đăng nhập",
+      "errorCode": "Lỗi 401"
+    },
+    "forbidden": {
+      "title": "Truy cập bị cấm",
+      "description": "Bạn không có quyền truy cập vào tài nguyên này.",
+      "contactAdmin": "Liên hệ quản trị viên",
+      "errorCode": "Lỗi 403"
+    }
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "saving": "Đang lưu...",
+    "deleting": "Đang xóa...",
+    "uploading": "Đang tải lên...",
+    "processing": "Đang xử lý...",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "warning": "Cảnh báo",
+    "info": "Thông tin",
+    "confirm": "Xác nhận",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "create": "Tạo mới",
+    "update": "Cập nhật",
+    "view": "Xem",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "finish": "Hoàn thành",
+    "submit": "Gửi",
+    "reset": "Đặt lại",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "export": "Xuất",
+    "import": "Nhập",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "cut": "Cắt",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "refresh": "Làm mới",
+    "reload": "Tải lại",
+    "yes": "Có",
+    "no": "Không",
+    "ok": "OK",
+    "apply": "Áp dụng",
+    "clear": "Xóa",
+    "select": "Chọn",
+    "selectAll": "Chọn tất cả",
+    "deselectAll": "Bỏ chọn tất cả",
+    "selectNone": "Không chọn",
+    "all": "Tất cả",
+    "none": "Không có",
+    "other": "Khác",
+    "more": "Thêm",
+    "less": "Ít hơn",
+    "show": "Hiển thị",
+    "hide": "Ẩn",
+    "expand": "Mở rộng",
+    "collapse": "Thu gọn",
+    "enable": "Bật",
+    "disable": "Tắt",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "available": "Có sẵn",
+    "unavailable": "Không có sẵn",
+    "public": "Công khai",
+    "private": "Riêng tư",
+    "draft": "Bản nháp",
+    "published": "Đã xuất bản",
+    "pending": "Đang chờ",
+    "approved": "Đã phê duyệt",
+    "rejected": "Đã từ chối",
+    "completed": "Đã hoàn thành",
+    "inProgress": "Đang thực hiện",
+    "cancelled": "Đã hủy",
+    "scheduled": "Đã lên lịch",
+    "expired": "Đã hết hạn",
+    "new": "Mới",
+    "old": "Cũ",
+    "recent": "Gần đây",
+    "popular": "Phổ biến",
+    "featured": "Nổi bật",
+    "recommended": "Được đề xuất",
+    "trending": "Xu hướng",
+    "bestSeller": "Bán chạy nhất",
+    "topRated": "Đánh giá cao nhất",
+    "free": "Miễn phí",
+    "paid": "Trả phí",
+    "premium": "Cao cấp",
+    "basic": "Cơ bản",
+    "advanced": "Nâng cao",
+    "beginner": "Người mới bắt đầu",
+    "intermediate": "Trung cấp",
+    "expert": "Chuyên gia",
+    "easy": "Dễ",
+    "medium": "Trung bình",
+    "hard": "Khó",
+    "low": "Thấp",
+    "high": "Cao",
+    "small": "Nhỏ",
+    "large": "Lớn",
+    "short": "Ngắn",
+    "long": "Dài",
+    "fast": "Nhanh",
+    "slow": "Chậm",
+    "early": "Sớm",
+    "late": "Muộn",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "tomorrow": "Ngày mai",
+    "thisWeek": "Tuần này",
+    "lastWeek": "Tuần trước",
+    "nextWeek": "Tuần sau",
+    "thisMonth": "Tháng này",
+    "lastMonth": "Tháng trước",
+    "nextMonth": "Tháng sau",
+    "thisYear": "Năm nay",
+    "lastYear": "Năm ngoái",
+    "nextYear": "Năm sau",
+    "january": "Tháng 1",
+    "february": "Tháng 2",
+    "march": "Tháng 3",
+    "april": "Tháng 4",
+    "may": "Tháng 5",
+    "june": "Tháng 6",
+    "july": "Tháng 7",
+    "august": "Tháng 8",
+    "september": "Tháng 9",
+    "october": "Tháng 10",
+    "november": "Tháng 11",
+    "december": "Tháng 12",
+    "monday": "Thứ 2",
+    "tuesday": "Thứ 3",
+    "wednesday": "Thứ 4",
+    "thursday": "Thứ 5",
+    "friday": "Thứ 6",
+    "saturday": "Thứ 7",
+    "sunday": "Chủ nhật",
+    "morning": "Sáng",
+    "afternoon": "Chiều",
+    "evening": "Tối",
+    "night": "Đêm",
+    "am": "SA",
+    "pm": "CH",
+    "hours": "giờ",
+    "minutes": "phút",
+    "seconds": "giây",
+    "days": "ngày",
+    "weeks": "tuần",
+    "months": "tháng",
+    "years": "năm",
+    "ago": "trước",
+    "fromNow": "từ bây giờ",
+    "now": "bây giờ",
+    "never": "không bao giờ",
+    "always": "luôn luôn",
+    "sometimes": "thỉnh thoảng",
+    "often": "thường xuyên",
+    "rarely": "hiếm khi",
+    "every": "mỗi",
+    "each": "mỗi",
+    "both": "cả hai",
+    "either": "hoặc",
+    "neither": "không ai",
+    "first": "đầu tiên",
+    "last": "cuối cùng",
+    "second": "thứ hai",
+    "third": "thứ ba",
+    "fourth": "thứ tư",
+    "fifth": "thứ năm",
+    "sixth": "thứ sáu",
+    "seventh": "thứ bảy",
+    "eighth": "thứ tám",
+    "ninth": "thứ chín",
+    "tenth": "thứ mười"
   }
 }

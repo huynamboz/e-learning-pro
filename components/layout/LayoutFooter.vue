@@ -20,110 +20,147 @@ interface SocialMedia {
   url: string
 }
 
+// i18n
+const { t } = useI18n()
+
 const footerSections: FooterSection[] = [
   {
-    title: 'Get Help',
+    title: 'Khóa học',
     links: [
-      { title: 'Contact Us', url: '#' },
-      { title: 'Latest Articles', url: '#' },
-      { title: 'FAQ', url: '#' },
+      { title: 'Tiếng Ý cho người mới bắt đầu', url: '/courses' },
+      { title: 'Tiếng Ý trung cấp', url: '/courses' },
+      { title: 'Hội thoại nâng cao', url: '/courses' },
+      { title: 'Xem tất cả khóa học', url: '/courses' },
     ],
   },
   {
-    title: 'Programs',
+    title: 'Hỗ trợ',
     links: [
-      { title: 'Art & Design', url: '/' },
-      { title: 'Business', url: '/' },
-      { title: 'IT & Software', url: '/' },
-      { title: 'Languages', url: '/' },
-      { title: 'Programming', url: '/' },
+      { title: 'Trung tâm trợ giúp', url: '#' },
+      { title: 'Liên hệ với chúng tôi', url: '#' },
+      { title: 'Câu hỏi thường gặp', url: '#' },
+      { title: 'Hướng dẫn sử dụng', url: '#' },
+    ],
+  },
+  {
+    title: 'Công ty',
+    links: [
+      { title: 'Về chúng tôi', url: '#' },
+      { title: 'Đội ngũ giảng viên', url: '#' },
+      { title: 'Tin tức', url: '#' },
+      { title: 'Tuyển dụng', url: '#' },
     ],
   },
 ]
 
 const contactInfo: ContactInfo[] = [
-  { label: 'Address', value: '123 Main Street' },
-  { label: 'Tel', value: '+(123) 456-7890' },
-  { label: 'Mail', value: 'unitech-labs@gmail.com' },
+  { label: 'Địa chỉ', value: 'Hà Nội, Việt Nam' },
+  { label: 'Điện thoại', value: '+(84) 123-456-789' },
+  { label: 'Email', value: 'info@cotamitalian.com' },
 ]
 
 const socialMedia: SocialMedia[] = [
   { name: 'Facebook', icon: 'logos:facebook', url: 'https://facebook.com' },
-  { name: 'GitHub', icon: 'uil:github', url: 'https://github.com' },
-  { name: 'Google', icon: 'devicon:google', url: 'https://google.com' },
-  { name: 'Twitter', icon: 'devicon:twitter', url: 'https://twitter.com' },
+  { name: 'Instagram', icon: 'logos:instagram-icon', url: 'https://instagram.com' },
+  { name: 'YouTube', icon: 'logos:youtube-icon', url: 'https://youtube.com' },
+  { name: 'TikTok', icon: 'logos:tiktok-icon', url: 'https://tiktok.com' },
 ]
 
 const companyInfo = {
-  description: 'Empowering learners through accessible and engaging online education. Byway is a leading online learning platform dedicated to providing high-quality, flexible, and affordable educational experiences.',
+  name: 'Cô Tâm Italian',
+  description: 'Học tiếng Ý cùng cô Phan Thị Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.',
 }
 </script>
 
 <template>
-  <footer class="bg-green-700 py-20">
-    <div class="w-full mx-auto px-20">
-      <div class="grid grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-10">
+  <footer class="bg-gradient-to-br from-green-600 to-green-800 text-white">
+    <!-- Main Footer Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
         <!-- Company Info -->
-        <div class="space-y-4 col-span-2 lg:col-span-3">
-          <NuxtLink to="/" class="flex items-center space-x-2">
-            <img src="@/assets/images/logo.webp" alt="Logo" class="w-10 h-10">
-          </NuxtLink>
-          <p class="text-white text-sm leading-relaxed max-w-md">
+        <div class="lg:col-span-2 space-y-6">
+          <div>
+            <NuxtLink to="/" class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+                <Icon name="i-heroicons-academic-cap" class="w-7 h-7 text-green-600" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-white">{{ companyInfo.name }}</h3>
+                <p class="text-green-100 text-sm">Học tiếng Ý chuyên nghiệp</p>
+              </div>
+            </NuxtLink>
+          </div>
+          
+          <p class="text-green-100 leading-relaxed max-w-md">
             {{ companyInfo.description }}
           </p>
+
+          <!-- Contact Info -->
+          <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+              <Icon name="i-heroicons-map-pin" class="w-5 h-5 text-green-200" />
+              <span class="text-green-100 text-sm">{{ contactInfo[0].value }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <Icon name="i-heroicons-phone" class="w-5 h-5 text-green-200" />
+              <span class="text-green-100 text-sm">{{ contactInfo[1].value }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <Icon name="i-heroicons-envelope" class="w-5 h-5 text-green-200" />
+              <span class="text-green-100 text-sm">{{ contactInfo[2].value }}</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Dynamic Footer Sections -->
+        <!-- Footer Sections -->
         <div
           v-for="section in footerSections"
           :key="section.title"
-          class="space-y-2"
+          class="space-y-4"
         >
-          <h3 class="text-slate-100 font-semibold text-lg mb-2">
+          <h3 class="text-white font-semibold text-lg">
             {{ section.title }}
           </h3>
-          <ul class="space-y-2">
+          <ul class="space-y-3">
             <li v-for="link in section.links" :key="link.title">
               <NuxtLink
                 :to="link.url"
-                class="!text-white text-sm font-medium hover:text-slate-200 transition-colors"
+                class="text-green-100 text-sm hover:text-white transition-colors duration-200 flex items-center group"
               >
+                <Icon name="i-heroicons-chevron-right" class="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 {{ link.title }}
               </NuxtLink>
             </li>
           </ul>
         </div>
+      </div>
+    </div>
 
-        <!-- Contact Section -->
-        <div class="space-y-6 col-span-2">
-          <div class="space-y-2">
-            <h3 class="text-slate-100 font-semibold text-lg mb-2">
-              Contact Us
-            </h3>
-            <ul class="space-y-2">
-              <li
-                v-for="contact in contactInfo"
-                :key="contact.label"
-                class="text-white text-sm font-medium"
-              >
-                {{ contact.label }}: {{ contact.value }}
-              </li>
-            </ul>
+    <!-- Bottom Section -->
+    <div class="border-t border-green-500/30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <!-- Copyright -->
+          <div class="text-green-100 text-sm">
+            © {{ new Date().getFullYear() }} {{ companyInfo.name }}. Tất cả quyền được bảo lưu.
           </div>
 
           <!-- Social Media Links -->
-          <div class="flex space-x-4">
-            <a
-              v-for="social in socialMedia"
-              :key="social.name"
-              :href="social.url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex justify-center items-center w-[46px] h-[46px] bg-white rounded-full hover:bg-gray-100 transition-colors"
-              :title="social.name"
-            >
-              <Icon :name="social.icon" class="text-3xl text-gray-700" />
-            </a>
+          <div class="flex items-center space-x-4">
+            <span class="text-green-100 text-sm mr-2">Theo dõi chúng tôi:</span>
+            <div class="flex space-x-3">
+              <a
+                v-for="social in socialMedia"
+                :key="social.name"
+                :href="social.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex justify-center items-center w-10 h-10 bg-green-500/20 rounded-full hover:bg-green-500/30 transition-all duration-200 group"
+                :title="social.name"
+              >
+                <Icon :name="social.icon" class="w-5 h-5 text-green-100 group-hover:text-white transition-colors" />
+              </a>
+            </div>
           </div>
         </div>
       </div>

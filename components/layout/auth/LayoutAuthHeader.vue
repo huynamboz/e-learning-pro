@@ -2,13 +2,11 @@
 import { Button } from 'ant-design-vue'
 import { useCartStore } from '~/stores/cart.store'
 
-const { t } = useI18n()
-
 const listOfLinks = computed(() => [
-  { name: t('layoutAuthHeader.navigation.courses'), href: '/' },
-  { name: t('layoutAuthHeader.navigation.contact'), href: '#' },
-  { name: t('layoutAuthHeader.navigation.about'), href: '#' },
-  { name: t('layoutAuthHeader.navigation.pricing'), href: '#', hideIcon: true },
+  { name: 'Giới thiệu', href: '#instructor' },
+  { name: 'Các khóa học', href: '#courses' },
+  { name: 'Quiz', href: '#quiz' },
+  { name: 'Video', href: '#video', hideIcon: true },
 ])
 
 const isMobileMenuOpen = ref(false)
@@ -66,7 +64,7 @@ onMounted(() => {
       </div>
 
       <!-- Desktop Navigation - Different for logged in users -->
-      <nav v-if="!isLoggedIn" class="hidden lg:flex items-center space-x-8">
+      <nav class="hidden lg:flex items-center space-x-8">
         <NuxtLink
           v-for="value in listOfLinks" :key="value.name" :to="value.href"
           class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
@@ -77,16 +75,6 @@ onMounted(() => {
             size="18"
             class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
           />
-        </NuxtLink>
-      </nav>
-
-      <!-- Logged in user navigation -->
-      <nav v-else class="hidden lg:flex items-center space-x-8">
-        <NuxtLink to="/learning" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          {{ $t('layoutAuthHeader.navigation.learning') }}
-        </NuxtLink>
-        <NuxtLink to="/profile?tab=MY_COURSES" class="!text-gray-600 hover:text-[#16A34A] transition-colors">
-          {{ $t('layoutAuthHeader.navigation.myCourses') }}
         </NuxtLink>
       </nav>
 
@@ -119,7 +107,6 @@ onMounted(() => {
 
       <!-- Logged in user buttons -->
       <div v-else class="hidden lg:flex items-center space-x-2">
-        
         <!-- Shopping Cart -->
         <NuxtLink to="/checkout" class="relative size-10 flex items-center justify-center hover:bg-gray-100 rounded-md transition-colors">
           <Icon name="solar:bag-heart-bold" class="!text-gray-600" size="26" />
@@ -201,7 +188,7 @@ onMounted(() => {
                 {{ cartStore.totalItems }}
               </span>
             </NuxtLink>
-            
+
             <NuxtLink to="/" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="default" class="w-full rounded-xl text-base">
                 {{ $t('layoutAuthHeader.buttons.contactDirectly') }}

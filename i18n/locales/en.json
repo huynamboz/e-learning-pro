@@ -4,6 +4,152 @@
       "message": "Loading..."
     }
   },
+  "homepage": {
+    "hero": {
+      "badge": "Learn with Expert Guidance",
+      "title": "Learn Italian Effectively and Confidently",
+      "description": "Join thousands of students learning authentic Italian with Phan Tam, an experienced instructor dedicated to making your language journey engaging and effective.",
+      "exploreCourses": "Explore Courses",
+      "signUpNow": "Sign Up Now",
+      "stats": {
+        "activeStudents": "Active Students",
+        "averageRating": "Average Rating",
+        "completionRate": "Completion Rate"
+      }
+    },
+    "courses": {
+      "title": "Featured Courses",
+      "description": "Carefully crafted courses designed to take you from beginner to fluent speaker",
+      "badges": {
+        "bestseller": "Bestseller",
+        "popular": "Popular",
+        "new": "New"
+      },
+      "levels": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
+      "course1": {
+        "title": "Italian for Beginners",
+        "description": "Start your Italian journey with essential vocabulary, grammar foundations, and conversational skills for everyday situations.",
+        "duration": "12 weeks"
+      },
+      "course2": {
+        "title": "Intermediate Italian Mastery",
+        "description": "Elevate your Italian with complex grammar, idiomatic expressions, and cultural insights for confident communication.",
+        "duration": "16 weeks"
+      },
+      "course3": {
+        "title": "Advanced Conversation",
+        "description": "Perfect your fluency with advanced topics, professional Italian, and nuanced communication for business and travel.",
+        "duration": "20 weeks"
+      }
+    },
+    "quiz": {
+      "badge": "Interactive Quizzes",
+      "title": "Master Italian with Smart Quizzes",
+      "description": "Reinforce every lesson with adaptive assessments, instant feedback, and gamified challenges designed to keep you motivated.",
+      "metrics": {
+        "questions": {
+          "value": "1,200+",
+          "label": "Practice Questions"
+        },
+        "passRate": {
+          "value": "94%",
+          "label": "Average Pass Rate"
+        },
+        "time": {
+          "value": "10 min",
+          "label": "Average Session"
+        }
+      },
+      "highlights": {
+        "adaptive": {
+          "title": "Learner-adaptive paths",
+          "description": "Question difficulty adjusts automatically based on your progress to keep you challenged without feeling overwhelmed."
+        },
+        "feedback": {
+          "title": "Instant feedback",
+          "description": "Each answer comes with context, explanations, and examples so you immediately understand the why."
+        },
+        "certification": {
+          "title": "Certificate ready",
+          "description": "Complete quiz milestones to unlock badges and certificates that celebrate every step of your journey."
+        }
+      },
+      "cta": "Try a Quiz Experience",
+      "summary": {
+        "title": "Live Performance",
+        "value": "92% Accuracy",
+        "caption": "Keep up the great work! You're on track to master intermediate-level vocabulary."
+      },
+      "preview": {
+        "title": "Italian Vocabulary Quiz",
+        "subtitle": "Question 3 - 12 remaining",
+        "badge": "Adaptive Mode",
+        "topic": "Vocabulary Focus",
+        "question": "What is the correct translation for \"Buongiorno\"?",
+        "options": {
+          "a": "Good evening",
+          "b": "Good morning",
+          "c": "See you soon"
+        },
+        "correct": "Correct answer"
+      },
+      "progress": {
+        "label": "Progress",
+        "value": "80% completed"
+      }
+    },
+    "instructor": {
+      "badge": "Meet Your Instructor",
+      "title": "Learn from Phan Tam",
+      "description": "With over a decade of experience teaching Italian to international students, Phan Tam brings a unique blend of linguistic expertise and cultural passion to every lesson.",
+      "experience": "10+ Years",
+      "experienceText": "Teaching Italian Language",
+      "features": {
+        "certified": {
+          "title": "Certified Expert",
+          "description": "Master's degree in Italian Linguistics from University of Bologna"
+        },
+        "cultural": {
+          "title": "Cultural Immersion",
+          "description": "Lived in Italy for 8 years, teaching and studying Italian culture"
+        },
+        "method": {
+          "title": "Proven Method",
+          "description": "Developed unique teaching approach with 98% student satisfaction"
+        }
+      },
+      "button": "Book a Free Consultation"
+    },
+    "testimonials": {
+      "title": "What Students Say",
+      "description": "Join thousands of satisfied learners who achieved their Italian language goals",
+      "testimonial1": {
+        "text": "Phan Tam's teaching style is incredible! I went from zero Italian to confidently ordering at restaurants in Rome within 3 months.",
+        "author": "Sarah Martinez",
+        "course": "Beginner Course"
+      },
+      "testimonial2": {
+        "text": "The intermediate course exceeded my expectations. The cultural insights and practical exercises made learning engaging and effective.",
+        "author": "James Chen",
+        "course": "Intermediate Course"
+      },
+      "testimonial3": {
+        "text": "Best investment in my career! The advanced course helped me land a job in Milan. Phan Tam is simply the best Italian teacher.",
+        "author": "Emma Peterson",
+        "course": "Advanced Course"
+      }
+    },
+    "cta": {
+      "title": "Ready to Start Your Italian Journey?",
+      "description": "Join our community of passionate learners and discover the beauty of the Italian language",
+      "browseCourses": "Browse All Courses",
+      "signUpNow": "Sign Up Now"
+    }
+  },
   "admin": {
     "dashboard": {
       "title": "Dashboard Overview",
@@ -650,9 +796,6 @@
     "actions": "Actions",
     "logout": "Logout"
   },
-  "homepage": {
-    "topCourses": "Top Courses"
-  },
   "learning": {
     "welcome": "Welcome back, {name}! 👋",
     "welcomeDesc": "Continue your learning journey and achieve your goals",
@@ -1064,6 +1207,43 @@
     "confirmStartWarning": "Once you start, the timer will begin and you'll need to complete all questions."
   },
   "calendar": {
+    "header": {
+      "subtitle": "Calendar",
+      "title": "Track your learning schedule",
+      "home": "Home"
+    },
+    "datePicker": {
+      "title": "Select Date",
+      "description": "Use the calendar to quickly navigate between weeks and classes."
+    },
+    "upcomingEvents": {
+      "title": "Today's Schedule",
+      "hasEvents": "Scheduled",
+      "noEvents": "Empty",
+      "noClassesToday": "No classes scheduled for today."
+    },
+    "event": {
+      "time": "Time",
+      "course": "Course",
+      "noInfo": "No information available",
+      "ended": "Ended",
+      "noMeetingLink": "No meeting link available"
+    },
+    "joinClass": {
+      "joinNow": "Join Now"
+    },
+    "detailedCalendar": {
+      "title": "Detailed Schedule",
+      "classCount": "{count} classes"
+    },
+    "modal": {
+      "title": "Confirm Join Class",
+      "confirmation": "Are you sure you want to join this class?",
+      "cancel": "Cancel",
+      "joinNow": "Join Now",
+      "joining": "Joining..."
+    },
+    "loading": "Loading calendar...",
     "error": {
       "cannotJoinClass": "Cannot join class",
       "checkInFailed": "Unable to join the class. Please try again later.",
@@ -1091,5 +1271,344 @@
     "classmates": "Classmates ({count})",
     "loadingClassmates": "Loading classmates...",
     "noClassmatesYet": "No classmates yet"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Welcome back! Please sign in to your account.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Login",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up now",
+      "validation": {
+        "emailRequired": "Please enter your email!",
+        "emailInvalid": "Please enter a valid email!",
+        "passwordRequired": "Please enter your password!",
+        "passwordMinLength": "Password must be at least 6 characters!"
+      },
+      "messages": {
+        "loginSuccess": "Login successful!",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "invalidCredentials": "Invalid email or password."
+      }
+    },
+    "register": {
+      "title": "Register",
+      "subtitle": "Create a new account to start your learning journey.",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "agreeTerms": "I agree to the",
+      "termsAndConditions": "Terms and Conditions",
+      "registerButton": "Register",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in now",
+      "validation": {
+        "firstNameRequired": "Please enter your first name!",
+        "lastNameRequired": "Please enter your last name!",
+        "emailRequired": "Please enter your email!",
+        "emailInvalid": "Please enter a valid email!",
+        "passwordRequired": "Please enter your password!",
+        "passwordMinLength": "Password must be at least 6 characters!",
+        "confirmPasswordRequired": "Please confirm your password!",
+        "passwordsNotMatch": "Passwords do not match!",
+        "agreeTermsRequired": "Please agree to the terms and conditions!"
+      },
+      "messages": {
+        "registerSuccess": "Registration successful! Please check your email to verify your account.",
+        "registerFailed": "Registration failed. Please try again.",
+        "emailAlreadyExists": "This email is already in use."
+      }
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive a password reset link.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "sendResetLink": "Send Reset Link",
+      "backToLogin": "Back to Login",
+      "validation": {
+        "emailRequired": "Please enter your email!",
+        "emailInvalid": "Please enter a valid email!"
+      },
+      "messages": {
+        "resetLinkSent": "Password reset link has been sent to your email!",
+        "resetLinkFailed": "Failed to send reset link. Please try again.",
+        "emailNotFound": "This email is not registered."
+      }
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "myCourses": "My Courses",
+    "calendar": "Calendar",
+    "admin": "Admin",
+    "language": "Language"
+  },
+  "footer": {
+    "company": {
+      "title": "Company",
+      "about": "About",
+      "careers": "Careers",
+      "contact": "Contact",
+      "blog": "Blog"
+    },
+    "support": {
+      "title": "Support",
+      "helpCenter": "Help Center",
+      "faq": "FAQ",
+      "community": "Community",
+      "tutorials": "Tutorials"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "gdpr": "GDPR"
+    },
+    "social": {
+      "title": "Social Media",
+      "followUs": "Follow Us"
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Get updates on new courses and special offers.",
+      "emailPlaceholder": "Enter your email",
+      "subscribe": "Subscribe",
+      "success": "Subscription successful!",
+      "error": "Subscription failed. Please try again."
+    },
+    "copyright": "© 2024 Phan Tam. All rights reserved.",
+    "madeWith": "Made with",
+    "by": "by"
+  },
+  "errors": {
+    "pageNotFound": {
+      "title": "Page Not Found",
+      "description": "Sorry, the page you are looking for does not exist.",
+      "backHome": "Back to Home",
+      "errorCode": "Error 404"
+    },
+    "serverError": {
+      "title": "Server Error",
+      "description": "A server error occurred. Please try again later.",
+      "tryAgain": "Try Again",
+      "errorCode": "Error 500"
+    },
+    "networkError": {
+      "title": "Network Error",
+      "description": "Unable to connect to server. Please check your internet connection.",
+      "checkConnection": "Check Connection"
+    },
+    "unauthorized": {
+      "title": "Unauthorized",
+      "description": "You don't have permission to access this page.",
+      "login": "Login",
+      "errorCode": "Error 401"
+    },
+    "forbidden": {
+      "title": "Forbidden",
+      "description": "You don't have permission to access this resource.",
+      "contactAdmin": "Contact Administrator",
+      "errorCode": "Error 403"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "deleting": "Deleting...",
+    "uploading": "Uploading...",
+    "processing": "Processing...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "submit": "Submit",
+    "reset": "Reset",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "undo": "Undo",
+    "redo": "Redo",
+    "refresh": "Refresh",
+    "reload": "Reload",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "apply": "Apply",
+    "clear": "Clear",
+    "select": "Select",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selectNone": "Select None",
+    "all": "All",
+    "none": "None",
+    "other": "Other",
+    "more": "More",
+    "less": "Less",
+    "show": "Show",
+    "hide": "Hide",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "enable": "Enable",
+    "disable": "Disable",
+    "active": "Active",
+    "inactive": "Inactive",
+    "online": "Online",
+    "offline": "Offline",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "public": "Public",
+    "private": "Private",
+    "draft": "Draft",
+    "published": "Published",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "cancelled": "Cancelled",
+    "scheduled": "Scheduled",
+    "expired": "Expired",
+    "new": "New",
+    "old": "Old",
+    "recent": "Recent",
+    "popular": "Popular",
+    "featured": "Featured",
+    "recommended": "Recommended",
+    "trending": "Trending",
+    "bestSeller": "Bestseller",
+    "topRated": "Top Rated",
+    "free": "Free",
+    "paid": "Paid",
+    "premium": "Premium",
+    "basic": "Basic",
+    "advanced": "Advanced",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "expert": "Expert",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "low": "Low",
+    "high": "High",
+    "small": "Small",
+    "large": "Large",
+    "short": "Short",
+    "long": "Long",
+    "fast": "Fast",
+    "slow": "Slow",
+    "early": "Early",
+    "late": "Late",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This Week",
+    "lastWeek": "Last Week",
+    "nextWeek": "Next Week",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "nextMonth": "Next Month",
+    "thisYear": "This Year",
+    "lastYear": "Last Year",
+    "nextYear": "Next Year",
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "night": "Night",
+    "am": "AM",
+    "pm": "PM",
+    "hours": "hours",
+    "minutes": "minutes",
+    "seconds": "seconds",
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "years": "years",
+    "ago": "ago",
+    "fromNow": "from now",
+    "now": "now",
+    "never": "never",
+    "always": "always",
+    "sometimes": "sometimes",
+    "often": "often",
+    "rarely": "rarely",
+    "every": "every",
+    "each": "each",
+    "both": "both",
+    "either": "either",
+    "neither": "neither",
+    "first": "first",
+    "last": "last",
+    "second": "second",
+    "third": "third",
+    "fourth": "fourth",
+    "fifth": "fifth",
+    "sixth": "sixth",
+    "seventh": "seventh",
+    "eighth": "eighth",
+    "ninth": "ninth",
+    "tenth": "tenth"
   }
 }

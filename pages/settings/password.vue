@@ -141,7 +141,7 @@ const handleReset = () => {
       <div class="grid lg:grid-cols-3 gap-8">
         <!-- Form Section -->
         <div class="lg:col-span-2">
-          <div class="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-md">
+          <div class="bg-card border rounded-2xl p-6 sm:p-8 shadow-md">
             <h2 class="text-xl font-bold text-shade-9 mb-6 flex items-center gap-2">
               <Icon name="solar:shield-keyhole-bold" size="20" class="text-blue" />
               Thay đổi mật khẩu
@@ -245,7 +245,7 @@ const handleReset = () => {
         <div class="lg:col-span-1">
           <div class="space-y-6">
             <!-- Account Info -->
-            <div class="bg-card border border-border rounded-2xl p-6 shadow-md">
+            <div class="bg-card border rounded-2xl p-6 shadow-md">
               <h3 class="text-lg font-bold text-shade-9 mb-4 flex items-center gap-2">
                 <Icon name="solar:user-circle-bold" size="20" class="text-blue" />
                 Thông tin tài khoản

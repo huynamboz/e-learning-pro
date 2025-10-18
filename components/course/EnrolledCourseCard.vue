@@ -64,7 +64,7 @@ function handleClick() {
 
 <template>
   <div
-    class="group bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden relative"
+    class="group bg-card border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden relative"
     :class="[
       clickable ? 'cursor-pointer' : '',
       currentColor.hover

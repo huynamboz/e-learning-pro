@@ -36,8 +36,8 @@ const { data: pendingCourses, pending: loadingPending } = await useLazyAsyncData
     try {
       const response = await getCourseEnrolled({ include_pending: true })
       // Filter courses with order_status = 'pending'
-      return (response?.results || []).filter((course: EnrolledCourse) => 
-        course.order_status === 'pending'
+      return (response?.results || []).filter((course: EnrolledCourse) =>
+        course.order_status === 'pending',
       )
     }
     catch (error) {
@@ -67,7 +67,7 @@ const stats = computed(() => {
 const continueLearningCourses = computed(() => {
   return (enrolledCourses.value || [])
     .filter((c: EnrolledCourse) =>
-    c.enrollment &&c.enrollment.completion_percentage < 100 
+      c.enrollment && c.enrollment.completion_percentage < 100,
     )
     .slice(0, 3)
 })
@@ -110,13 +110,13 @@ function navigateToCourse(enrollmentId: string) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-shade-1 via-shade-1 to-shade-2 dark:from-shade-1 dark:via-shade-1 dark:to-shade-2 p-4 sm:p-6 lg:p-8">
+  <div class="min-h-screen bg-gradient-to-br from-shade-1 via-shade-1 to-shade-2 p-4 sm:p-6 lg:p-8">
     <!-- Welcome Header -->
     <div class="mb-8 sm:mb-10">
       <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue via-purple to-blue bg-clip-text text-transparent mb-3">
         {{ $t('learning.welcome', { name: user?.first_name || user?.username || 'Student' }) }}
       </h1>
-      <p class="text-base sm:text-lg text-shade-6 dark:text-shade-6">
+      <p class="text-base sm:text-lg text-shade-6">
         {{ $t('learning.welcomeDesc') }}
       </p>
     </div>
@@ -124,61 +124,61 @@ function navigateToCourse(enrollmentId: string) {
     <!-- Statistics Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-8 sm:mb-10">
       <!-- Total Courses -->
-      <div class="stat-card group bg-gradient-to-br from-blue/5 to-blue/10 dark:from-blue/5 dark:to-blue/10 border border-blue/20 dark:border-blue/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-blue/40 transition-all duration-300">
+      <div class="stat-card group bg-gradient-to-br from-blue/5 to-blue/10 border border-blue/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-blue/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
           <div class="p-3 bg-gradient-to-br from-blue to-blue/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:book-bold" size="30" class="text-white" />
           </div>
         </div>
-        <div class="text-3xl sm:text-4xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+        <div class="text-3xl sm:text-4xl font-bold text-shade-9 mb-1">
           {{ stats.total }}
         </div>
-        <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
+        <div class="text-sm sm:text-base font-medium text-shade-7">
           {{ $t('learning.stats.totalCourses') }}
         </div>
       </div>
 
       <!-- In Progress -->
-      <div class="stat-card group bg-gradient-to-br from-orange/5 to-orange/10 dark:from-orange/5 dark:to-orange/10 border border-orange/20 dark:border-orange/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-orange/40 transition-all duration-300">
+      <div class="stat-card group bg-gradient-to-br from-orange/5 to-orange/10 border border-orange/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-orange/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
           <div class="p-3 bg-gradient-to-br from-orange to-orange/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:play-circle-bold" size="30" class="text-white" />
           </div>
         </div>
-        <div class="text-3xl sm:text-4xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+        <div class="text-3xl sm:text-4xl font-bold text-shade-9 mb-1">
           {{ stats.inProgress }}
         </div>
-        <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
+        <div class="text-sm sm:text-base font-medium text-shade-7">
           {{ $t('learning.stats.inProgress') }}
         </div>
       </div>
 
       <!-- Completed -->
-      <div class="stat-card group bg-gradient-to-br from-green/5 to-green/10 dark:from-green/5 dark:to-green/10 border border-green/20 dark:border-green/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-green/40 transition-all duration-300">
+      <div class="stat-card group bg-gradient-to-br from-green/5 to-green/10 border border-green/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-green/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
           <div class="p-3 bg-gradient-to-br from-green to-green/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:check-circle-bold" size="30" class="text-white" />
           </div>
         </div>
-        <div class="text-3xl sm:text-4xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+        <div class="text-3xl sm:text-4xl font-bold text-shade-9 mb-1">
           {{ stats.completed }}
         </div>
-        <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
+        <div class="text-sm sm:text-base font-medium text-shade-7">
           {{ $t('learning.stats.completed') }}
         </div>
       </div>
 
       <!-- Certificates -->
-      <div class="stat-card group bg-gradient-to-br from-purple/5 to-purple/10 dark:from-purple/5 dark:to-purple/10 border border-purple/20 dark:border-purple/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-purple/40 transition-all duration-300">
+      <div class="stat-card group bg-gradient-to-br from-purple/5 to-purple/10 border border-purple/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-purple/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
           <div class="p-3 bg-gradient-to-br from-purple to-purple/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:diploma-bold" size="30" class="text-white" />
           </div>
         </div>
-        <div class="text-3xl sm:text-4xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+        <div class="text-3xl sm:text-4xl font-bold text-shade-9 mb-1">
           {{ stats.certificates }}
         </div>
-        <div class="text-sm sm:text-base font-medium text-shade-7 dark:text-shade-7">
+        <div class="text-sm sm:text-base font-medium text-shade-7">
           {{ $t('learning.stats.certificates') }}
         </div>
       </div>
@@ -192,10 +192,10 @@ function navigateToCourse(enrollmentId: string) {
         <section>
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
-              <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+              <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 mb-1">
                 {{ $t('learning.continueLearning.title') }}
               </h2>
-              <p class="text-sm text-shade-6 dark:text-shade-6">
+              <p class="text-sm text-shade-6">
                 {{ $t('learning.continueLearning.subtitle') }}
               </p>
             </div>
@@ -210,25 +210,25 @@ function navigateToCourse(enrollmentId: string) {
 
           <!-- Loading State -->
           <div v-if="loadingEnrolled" class="space-y-4">
-            <div v-for="i in 3" :key="i" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-4 sm:p-6 animate-pulse">
+            <div v-for="i in 3" :key="i" class="bg-card border rounded-xl p-4 sm:p-6 animate-pulse">
               <div class="flex gap-4">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-shade-3 dark:bg-shade-3 rounded-lg" />
+                <div class="w-20 h-20 sm:w-24 sm:h-24 bg-shade-3 rounded-lg" />
                 <div class="flex-1 space-y-3">
-                  <div class="h-4 bg-shade-3 dark:bg-shade-3 rounded w-3/4" />
-                  <div class="h-3 bg-shade-3 dark:bg-shade-3 rounded w-1/2" />
-                  <div class="h-2 bg-shade-3 dark:bg-shade-3 rounded" />
+                  <div class="h-4 bg-shade-3 rounded w-3/4" />
+                  <div class="h-3 bg-shade-3 rounded w-1/2" />
+                  <div class="h-2 bg-shade-3 rounded" />
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="continueLearningCourses.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-8 sm:p-12 text-center">
-            <Icon name="solar:book-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-4" />
-            <h3 class="text-lg sm:text-xl font-semibold text-shade-9 dark:text-shade-9 mb-2">
+          <div v-else-if="continueLearningCourses.length === 0" class="bg-card border rounded-xl p-8 sm:p-12 text-center">
+            <Icon name="solar:book-bold" size="40" class="size-12 text-shade-5 mx-auto mb-4" />
+            <h3 class="text-lg sm:text-xl font-semibold text-shade-9 mb-2">
               {{ $t('learning.continueLearning.noCourses') }}
             </h3>
-            <p class="text-sm text-shade-6 dark:text-shade-6 mb-6">
+            <p class="text-sm text-shade-6 mb-6">
               {{ $t('learning.continueLearning.noCoursesDesc') }}
             </p>
             <NuxtLink to="/courses">
@@ -243,7 +243,7 @@ function navigateToCourse(enrollmentId: string) {
             <div
               v-for="enrollment in continueLearningCourses"
               :key="enrollment.id"
-              class="group bg-card dark:bg-card border border-border dark:border-border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl hover:border-blue/30 transition-all duration-300 cursor-pointer overflow-hidden relative"
+              class="group bg-card border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl hover:border-blue/30 transition-all duration-300 cursor-pointer overflow-hidden relative"
               @click="navigateToCourse(enrollment.id)"
             >
               <div class="absolute inset-0 bg-gradient-to-r from-blue/0 via-blue/0 to-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -260,10 +260,10 @@ function navigateToCourse(enrollmentId: string) {
 
                 <!-- Course Info -->
                 <div class="flex-1 min-w-0">
-                  <h3 class="text-lg sm:text-xl font-bold text-shade-9 dark:text-shade-9 mb-2 group-hover:text-blue transition-colors line-clamp-2">
+                  <h3 class="text-lg sm:text-xl font-bold text-shade-9 mb-2 group-hover:text-blue transition-colors line-clamp-2">
                     {{ enrollment?.title }}
                   </h3>
-                  <p class="text-sm text-shade-6 dark:text-shade-6 mb-4 flex items-center gap-2">
+                  <p class="text-sm text-shade-6 mb-4 flex items-center gap-2">
                     <Icon name="solar:user-circle-bold" size="16" />
                     {{ enrollment.teacher?.full_name || 'Unknown Teacher' }}
                   </p>
@@ -271,12 +271,12 @@ function navigateToCourse(enrollmentId: string) {
                   <!-- Progress Bar -->
                   <div class="space-y-2">
                     <div class="flex items-center justify-between text-sm">
-                      <span class="text-shade-6 dark:text-shade-6 font-medium">{{ $t('learning.continueLearning.progress') }}</span>
-                      <span class="font-bold text-shade-9 dark:text-shade-9">
+                      <span class="text-shade-6 font-medium">{{ $t('learning.continueLearning.progress') }}</span>
+                      <span class="font-bold text-shade-9">
                         {{ enrollment.enrollment?.completion_percentage || 0 }}%
                       </span>
                     </div>
-                    <div class="w-full bg-shade-3 dark:bg-shade-3 rounded-full h-2.5 overflow-hidden">
+                    <div class="w-full bg-shade-3 rounded-full h-2.5 overflow-hidden">
                       <div
                         class="bg-gradient-to-r from-green to-green/80 h-2.5 rounded-full transition-all duration-500 relative"
                         :style="{ width: `${enrollment.enrollment?.completion_percentage || 0}%` }"
@@ -284,7 +284,7 @@ function navigateToCourse(enrollmentId: string) {
                         <div class="absolute inset-0 bg-white/30 animate-pulse" />
                       </div>
                     </div>
-                    <!-- <div class="text-xs text-shade-6 dark:text-shade-6 flex items-center gap-1">
+                    <!-- <div class="text-xs text-shade-6 flex items-center gap-1">
                       <Icon name="solar:checklist-bold" size="14" />
                       {{ $t('learning.continueLearning.lessonsCompleted', {
                         completed: Math.round((enrollment.enrollment?.completion_percentage || 0) / 10),
@@ -310,10 +310,10 @@ function navigateToCourse(enrollmentId: string) {
         <section>
           <div class="flex items-center justify-between mb-5 sm:mb-7">
             <div>
-              <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+              <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 mb-1">
                 {{ $t('learning.pendingCourses.title') }}
               </h2>
-              <p class="text-sm text-shade-6 dark:text-shade-6">
+              <p class="text-sm text-shade-6">
                 {{ $t('learning.pendingCourses.subtitle') }}
               </p>
             </div>
@@ -327,21 +327,21 @@ function navigateToCourse(enrollmentId: string) {
           </div>
 
           <div v-if="loadingPending" class="grid sm:grid-cols-2 gap-4">
-            <div v-for="i in 4" :key="i" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-4 animate-pulse">
-              <div class="w-full h-32 bg-shade-3 dark:bg-shade-3 rounded-lg mb-4" />
+            <div v-for="i in 4" :key="i" class="bg-card border rounded-xl p-4 animate-pulse">
+              <div class="w-full h-32 bg-shade-3 rounded-lg mb-4" />
               <div class="space-y-3">
-                <div class="h-4 bg-shade-3 dark:bg-shade-3 rounded" />
-                <div class="h-3 bg-shade-3 dark:bg-shade-3 rounded w-3/4" />
+                <div class="h-4 bg-shade-3 rounded" />
+                <div class="h-3 bg-shade-3 rounded w-3/4" />
               </div>
             </div>
           </div>
 
-          <div v-else-if="pendingCourses.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-8 sm:p-12 text-center">
-            <Icon name="solar:clock-circle-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-4" />
-            <h3 class="text-lg sm:text-xl font-semibold text-shade-9 dark:text-shade-9 mb-2">
+          <div v-else-if="pendingCourses.length === 0" class="bg-card border rounded-xl p-8 sm:p-12 text-center">
+            <Icon name="solar:clock-circle-bold" size="40" class="size-12 text-shade-5 mx-auto mb-4" />
+            <h3 class="text-lg sm:text-xl font-semibold text-shade-9 mb-2">
               {{ $t('learning.pendingCourses.noPendingCourses') }}
             </h3>
-            <p class="text-sm text-shade-6 dark:text-shade-6 mb-6">
+            <p class="text-sm text-shade-6 mb-6">
               {{ $t('learning.pendingCourses.noPendingCoursesDesc') }}
             </p>
             <NuxtLink to="/courses">
@@ -371,36 +371,37 @@ function navigateToCourse(enrollmentId: string) {
         <!-- Recent Activity Section -->
         <section class="sticky top-8 space-y-6">
           <div>
-            <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 dark:text-shade-9 mb-1">
+            <h2 class="text-2xl sm:text-3xl font-bold text-shade-9 mb-1">
               {{ $t('learning.recentActivity.title') }}
             </h2>
-            <p class="text-sm text-shade-6 dark:text-shade-6">
+            <p class="text-sm text-shade-6">
               {{ $t('learning.recentActivity.subtitle') }}
             </p>
           </div>
 
-          <div v-if="loadingEnrolled" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-4 sm:p-6">
-            <div v-for="i in 5" :key="i" class="flex gap-3 pb-4 mb-4 border-b border-border dark:border-border last:border-0 animate-pulse">
-              <div class="w-12 h-12 bg-shade-3 dark:bg-shade-3 rounded-lg" />
+          <div v-if="loadingEnrolled" class="bg-card border rounded-xl p-4 sm:p-6">
+            <div v-for="i in 5" :key="i" class="flex gap-3 pb-4 mb-4 border-b last:border-0 animate-pulse">
+              <div class="w-12 h-12 bg-shade-3 rounded-lg" />
               <div class="flex-1 space-y-2">
-                <div class="h-3 bg-shade-3 dark:bg-shade-3 rounded" />
-                <div class="h-2 bg-shade-3 dark:bg-shade-3 rounded w-2/3" />
+                <div class="h-3 bg-shade-3 rounded" />
+                <div class="h-2 bg-shade-3 rounded w-2/3" />
               </div>
             </div>
           </div>
 
-          <div v-else-if="recentActivity.length === 0" class="bg-card dark:bg-card border border-border dark:border-border rounded-xl p-6 sm:p-8 text-center">
-            <Icon name="solar:history-bold" size="40" class="size-12 text-shade-5 dark:text-shade-5 mx-auto mb-3" />
-            <p class="text-sm text-shade-6 dark:text-shade-6">
+          <div v-else-if="recentActivity.length === 0" class="bg-card border rounded-xl p-6 sm:p-8 text-center">
+            <Icon name="solar:history-bold" size="40" class="size-12 text-shade-5 mx-auto mb-3" />
+            <p class="text-sm text-shade-6">
               {{ $t('learning.recentActivity.noActivity') }}
             </p>
           </div>
 
-          <div v-else class="bg-card dark:bg-card border border-border dark:border-border rounded-2xl p-5 sm:p-6 shadow-md">
-            <div
+          <div v-else class="bg-card border rounded-2xl p-5 sm:p-6 shadow-md">
+            <NuxtLink
               v-for="activity in recentActivity"
               :key="activity.id"
-              class="flex gap-3.5 pb-4 mb-4 border-b border-border/50 dark:border-border/50 last:border-0 last:pb-0 last:mb-0 hover:bg-shade-2/50 dark:hover:bg-shade-2/50 -mx-2 px-2 py-2 rounded-lg transition-colors cursor-pointer"
+              :to="`/learning/${activity.id}`"
+              class="flex gap-3.5 pb-4 mb-4 border-b/50 last:border-0 last:pb-0 last:mb-0 hover:bg-shade-2/50 -mx-2 px-2 py-2 rounded-lg transition-colors cursor-pointer"
             >
               <div class="w-14 h-14 flex-shrink-0 relative overflow-hidden rounded-xl shadow-sm">
                 <img
@@ -410,23 +411,23 @@ function navigateToCourse(enrollmentId: string) {
                 >
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-shade-9 dark:text-shade-9 mb-1.5 line-clamp-2 hover:text-blue transition-colors">
+                <h4 class="text-sm font-bold text-shade-9 mb-1.5 line-clamp-2 hover:text-blue transition-colors">
                   {{ activity?.title }}
                 </h4>
-                <p class="text-xs text-shade-6 dark:text-shade-6 mb-1 flex items-center gap-1">
+                <p class="text-xs text-shade-6 mb-1 flex items-center gap-1">
                   <Icon name="solar:clock-circle-bold" size="12" />
                   {{ activity.action }}
                 </p>
-                <p class="text-xs text-shade-5 dark:text-shade-5 font-medium">
+                <p class="text-xs text-shade-5 font-medium">
                   {{ formatDate(activity.date) }}
                 </p>
               </div>
-            </div>
+            </NuxtLink>
           </div>
 
           <!-- Quick Actions Section -->
-          <div class="bg-card dark:bg-card border border-border dark:border-border rounded-2xl p-5 sm:p-6 shadow-md">
-            <h3 class="text-lg sm:text-xl font-bold text-shade-9 dark:text-shade-9 mb-5 flex items-center gap-2">
+          <div class="bg-card border rounded-2xl p-5 sm:p-6 shadow-md">
+            <h3 class="text-lg sm:text-xl font-bold text-shade-9 mb-5 flex items-center gap-2">
               <div class="size-10 flex items-center justify-center bg-gradient-to-br from-blue to-purple rounded-lg">
                 <Icon name="solar:widget-bold" size="16" class="text-white" />
               </div>
@@ -439,14 +440,14 @@ function navigateToCourse(enrollmentId: string) {
                     <Icon name="solar:magnifer-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
-                    <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-blue transition-colors">
+                    <div class="font-semibold text-shade-9 group-hover:text-blue transition-colors">
                       {{ $t('learning.quickActions.browseCourses') }}
                     </div>
-                    <div class="text-xs text-shade-6 dark:text-shade-6">
+                    <div class="text-xs text-shade-6">
                       {{ $t('learning.quickActions.browseCoursesDesc') }}
                     </div>
                   </div>
-                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-blue group-hover:translate-x-1 transition-all" />
+                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 group-hover:text-blue group-hover:translate-x-1 transition-all" />
                 </div>
               </NuxtLink>
 
@@ -456,14 +457,14 @@ function navigateToCourse(enrollmentId: string) {
                     <Icon name="solar:book-bookmark-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
-                    <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-purple transition-colors">
+                    <div class="font-semibold text-shade-9 group-hover:text-purple transition-colors">
                       {{ $t('learning.quickActions.myCourses') }}
                     </div>
-                    <div class="text-xs text-shade-6 dark:text-shade-6">
+                    <div class="text-xs text-shade-6">
                       {{ $t('learning.quickActions.myCoursesDesc') }}
                     </div>
                   </div>
-                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-purple group-hover:translate-x-1 transition-all" />
+                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 group-hover:text-purple group-hover:translate-x-1 transition-all" />
                 </div>
               </NuxtLink>
 
@@ -473,14 +474,14 @@ function navigateToCourse(enrollmentId: string) {
                     <Icon name="solar:user-circle-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
-                    <div class="font-semibold text-shade-9 dark:text-shade-9 group-hover:text-green transition-colors">
+                    <div class="font-semibold text-shade-9 group-hover:text-green transition-colors">
                       {{ $t('learning.quickActions.myProfile') }}
                     </div>
-                    <div class="text-xs text-shade-6 dark:text-shade-6">
+                    <div class="text-xs text-shade-6">
                       {{ $t('learning.quickActions.myProfileDesc') }}
                     </div>
                   </div>
-                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 dark:text-shade-5 group-hover:text-green group-hover:translate-x-1 transition-all" />
+                  <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 group-hover:text-green group-hover:translate-x-1 transition-all" />
                 </div>
               </NuxtLink>
             </div>

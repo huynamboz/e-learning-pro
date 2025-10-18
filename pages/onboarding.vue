@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
-import { useAuth } from '~/composables/useAuth'
-import { useUserApi } from '~/composables/api/useUserApi'
-import { useFileUpload } from '~/composables/useFileUpload'
 import { notification } from 'ant-design-vue'
+import { useUserApi } from '~/composables/api/useUserApi'
+import { useAuth } from '~/composables/useAuth'
+import { useFileUpload } from '~/composables/useFileUpload'
 
 definePageMeta({
   middleware: 'auth',
@@ -12,7 +11,7 @@ definePageMeta({
 
 const { user, fetchProfile, fetchUser } = useAuth()
 const { updateProfile } = useUserApi()
-const { uploading, uploadProgress, isUploading, uploadWithPresignedUrl } = useFileUpload()
+const { uploadProgress, isUploading, uploadWithPresignedUrl } = useFileUpload()
 const router = useRouter()
 
 // Form state
@@ -54,7 +53,7 @@ const avatarOptions = [
 const selectedAvatar = ref('')
 
 // Handle avatar selection
-const handleAvatarSelect = (avatarId: string) => {
+function handleAvatarSelect(avatarId: string) {
   selectedAvatar.value = avatarId
   const avatar = avatarOptions.find(a => a.id === avatarId)
   if (avatar) {
@@ -62,28 +61,27 @@ const handleAvatarSelect = (avatarId: string) => {
   }
 }
 
-
 // Handle file upload
-const handleFileUpload = (event: Event) => {
+function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  
+
   if (file) {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       notification.error({ message: 'Vui lòng chọn file ảnh' })
       return
     }
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       notification.error({ message: 'Kích thước file không được vượt quá 5MB' })
       return
     }
-    
+
     formData.avatar = file
     selectedAvatar.value = ''
-    
+
     // Create preview
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -94,38 +92,40 @@ const handleFileUpload = (event: Event) => {
 }
 
 // Handle form submission
-const handleSubmit = async () => {
+async function handleSubmit() {
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     // Prepare update data
     const updateData: any = {
       first_name: formData.first_name,
       last_name: formData.last_name,
     }
-    
+
     // Upload avatar if selected
     if (formData.avatar) {
       try {
         const publicUrl = await uploadWithPresignedUrl(
           formData.avatar,
-          'Tải lên avatar thất bại'
+          'Tải lên avatar thất bại',
         )
-        
+
         updateData.avatar = publicUrl
-        
-      } catch (error) {
-        return // Error already handled in composable
       }
-    } else if (selectedAvatar.value) {
+      catch (error) {
+        console.error('Error uploading avatar:', error)
+        return
+      }
+    }
+    else if (selectedAvatar.value) {
       // Use selected avatar
       const avatar = avatarOptions.find(a => a.id === selectedAvatar.value)
       if (avatar) {
         updateData.avatar = avatar.src
       }
     }
-    
+
     // Update profile
     await updateProfile(updateData)
 
@@ -133,21 +133,19 @@ const handleSubmit = async () => {
     await fetchProfile()
     await fetchUser()
 
-    
     notification.success({ message: 'Cập nhật thông tin thành công!' })
     // window.location.reload()
     // Redirect to learning page
     router.push('/learning')
-    console.log('router', router)
-    
-  } catch (error: any) {
+  }
+  catch (error: any) {
     console.error('Error updating profile:', error)
     notification.error({ message: 'Cập nhật thông tin thất bại' })
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
-
 </script>
 
 <template>
@@ -177,8 +175,10 @@ const handleSubmit = async () => {
         >
           <!-- Avatar Section -->
           <div class="mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Chọn avatar</h3>
-            
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Chọn avatar
+            </h3>
+
             <!-- Current Avatar Preview -->
             <div class="flex justify-center mb-6">
               <div class="relative">
@@ -224,7 +224,9 @@ const handleSubmit = async () => {
                   @change="handleFileUpload"
                 >
               </label>
-              <p class="text-xs text-gray-500 mt-2">JPG, PNG tối đa 5MB</p>
+              <p class="text-xs text-gray-500 mt-2">
+                JPG, PNG tối đa 5MB
+              </p>
             </div>
           </div>
 
@@ -261,10 +263,10 @@ const handleSubmit = async () => {
               <span>Đang tải lên avatar...</span>
               <span>{{ uploadProgress }}%</span>
             </div>
-            <a-progress 
-              :percent="uploadProgress" 
-              :show-info="false" 
-              status="active" 
+            <a-progress
+              :percent="uploadProgress"
+              :show-info="false"
+              status="active"
               stroke-color="#3b82f6"
               class="!h-2"
             />
@@ -280,10 +282,10 @@ const handleSubmit = async () => {
               :disabled="isUploading"
               class="min-w-[160px] !flex !items-center !justify-center"
             >
-              <Icon 
-                :name="isUploading ? 'solar:upload-bold' : 'solar:check-circle-bold'" 
-                size="16" 
-                class="mr-2" 
+              <Icon
+                :name="isUploading ? 'solar:upload-bold' : 'solar:check-circle-bold'"
+                size="16"
+                class="mr-2"
               />
               {{ isUploading ? `Đang tải lên ${uploadProgress}%` : 'Hoàn thành' }}
             </a-button>

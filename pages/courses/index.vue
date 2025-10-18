@@ -2,7 +2,7 @@
 import { useCourseApi } from '@/composables/api/useCourseApi'
 
 definePageMeta({
-  middleware: 'auth',
+  middleware: 'guest',
   layout: 'auth',
 })
 

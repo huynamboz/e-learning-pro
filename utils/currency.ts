@@ -12,6 +12,7 @@ export function formatCurrency(amount: number, locale?: string): string {
   const currency = currentLocale !== 'vi' ? 'USD' : 'VND'
   
   // Format the amount
+  return `$${amount}`
   if (currency === 'USD') {
     return `${amount} USD`
   } else {
