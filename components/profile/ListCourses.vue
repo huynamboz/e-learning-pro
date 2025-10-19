@@ -18,6 +18,8 @@ definePageMeta({
 
 const router = useRouter()
 const courseApi = useCourseApi()
+const { user } = useAuth()
+const { t } = useI18n()
 
 // Reactive data
 const courses = ref<Course[]>([])
@@ -26,6 +28,9 @@ const sortBy = ref('relevance')
 const currentPage = ref(1)
 const loading = ref(false)
 const error = ref<string | null>(null)
+
+// Check if user is teacher
+const isTeacher = computed(() => user.value?.is_teacher || false)
 
 // Load enrolled courses
 const loadEnrolledCourses = async () => {
@@ -115,7 +120,10 @@ function formatTime(timeString: string) {
 
 // Load data on mount
 onMounted(() => {
-  loadEnrolledCourses()
+  // Only load enrolled courses if user is not a teacher
+  if (!isTeacher.value) {
+    loadEnrolledCourses()
+  }
 })
 </script>
 
@@ -126,10 +134,12 @@ onMounted(() => {
       <!-- Header with title and search/filter -->
       <div class="flex flex-col gap-4">
         <h4 class="text-xl font-semibold text-gray-900 m-0 leading-6">
-          Courses ({{ totalCourses }})
+          {{ $t('profile.courses.title') }} ({{ totalCourses }})
         </h4>
 
+        <!-- Only show search/filter for non-teachers -->
         <SearchFilter
+          v-if="!isTeacher"
           :search-query="searchQuery"
           :sort-by="sortBy"
           @search-change="handleSearchChange"
@@ -138,11 +148,33 @@ onMounted(() => {
         />
       </div>
 
+      <!-- Teacher Message -->
+      <div v-if="isTeacher" class="text-center py-12">
+        <div class="max-w-md mx-auto flex flex-col items-center justify-center">
+          <Icon name="solar:graduation-cap-bold-duotone" class="text-blue-500 text-6xl mx-auto mb-6" />
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ $t('profile.courses.teacher.title') }}</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            {{ $t('profile.courses.teacher.message') }}
+          </p>
+          <a-button 
+            type="primary" 
+            size="large"
+            class="!h-12 !px-8 !rounded-lg !flex !items-center !gap-2"
+            @click="() => navigateTo('/admin/courses')"
+          >
+            <template #icon>
+              <Icon name="solar:settings-bold" size="18" />
+            </template>
+            {{ $t('profile.courses.teacher.goToDashboard') }}
+          </a-button>
+        </div>
+      </div>
+
       <!-- Loading State -->
-      <div v-if="loading" class="flex items-center justify-center py-12">
+      <div v-else-if="loading" class="flex items-center justify-center py-12">
         <a-spin size="large">
           <div class="text-center">
-            <p class="text-gray-600 mt-4">Loading enrolled courses...</p>
+            <p class="text-gray-600 mt-4">{{ $t('profile.courses.loading') }}</p>
           </div>
         </a-spin>
       </div>
@@ -150,19 +182,19 @@ onMounted(() => {
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
         <Icon name="tabler:alert-circle" class="text-red-500 text-4xl mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Error Loading Courses</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $t('profile.courses.error.title') }}</h3>
         <p class="text-gray-600 mb-4">{{ error }}</p>
-        <a-button type="primary" @click="loadEnrolledCourses">Try Again</a-button>
+        <a-button type="primary" @click="loadEnrolledCourses">{{ $t('profile.courses.error.tryAgain') }}</a-button>
       </div>
 
       <!-- Courses Grid -->
       <div v-else class="flex flex-col gap-10">
         <div v-if="paginatedCourses.length === 0" class="text-center py-12">
           <Icon name="solar:book-2-bold-duotone" class="text-gray-300 text-4xl mx-auto mb-4" />
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No Enrolled Courses</h3>
-          <p class="text-gray-500 mb-4">You haven't enrolled in any courses yet.</p>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">{{ $t('profile.courses.empty.title') }}</h3>
+          <p class="text-gray-500 mb-4">{{ $t('profile.courses.empty.message') }}</p>
           <a-button type="primary" @click="() => navigateTo('/learning')">
-            Browse Courses
+            {{ $t('profile.courses.empty.browseCourses') }}
           </a-button>
         </div>
 
@@ -221,7 +253,7 @@ onMounted(() => {
               <div v-if="course.classroom?.schedules?.length" class="space-y-2">
                 <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
                   <Icon name="solar:calendar-bold" size="16" />
-                  <span>Schedule</span>
+                  <span>{{ $t('profile.courses.schedule') }}</span>
                 </div>
                 <div class="space-y-1">
                   <div 
@@ -240,7 +272,7 @@ onMounted(() => {
               <!-- Progress Section -->
               <div v-if="course.enrollment" class="space-y-2">
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-600">Progress</span>
+                  <span class="text-gray-600">{{ $t('profile.courses.progress') }}</span>
                   <span class="font-medium text-gray-900">{{ Math.round(course.enrollment.completion_percentage) }}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
@@ -279,7 +311,7 @@ onMounted(() => {
                 </div>
                 <div class="text-right">
                   <div class="text-xs text-gray-500">
-                    {{ course.classroom?.title || 'Classroom' }}
+                    {{ course.classroom?.title || $t('profile.courses.classroom') }}
                   </div>
                 </div>
               </div>

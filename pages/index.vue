@@ -250,7 +250,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
           <NuxtLink
             v-for="(course, index) in _coursesData"
             :key="course.id"
-            class="group !bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+            class="group flex flex-col !bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
             :to="`/courses/${course.id}`"
           >
             <div class="relative aspect-video overflow-hidden bg-green-50">
@@ -260,12 +260,11 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               >
               <div
-                v-if="index === 0"
                 class="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium"
               >
-                {{ t('homepage.courses.badges.bestseller') }}
+                {{ getLevelText(course.level) }}
               </div>
-              <div
+              <!-- <div
                 v-else-if="index === 1"
                 class="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium"
               >
@@ -276,9 +275,9 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
                 class="absolute top-4 right-4 bg-green-400 text-white px-3 py-1 rounded-full text-sm font-medium"
               >
                 {{ t('homepage.courses.badges.new') }}
-              </div>
+              </div> -->
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
               <div class="flex items-center gap-2 text-sm">
                 <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full">
                   {{ getLevelText(course.level) }}
@@ -292,7 +291,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
               <p class="text-muted-foreground leading-relaxed">
                 {{ course.description || course.short_description }}
               </p>
-              <div class="flex items-center justify-between pt-4 border-t">
+              <div class="flex items-center justify-between pt-4 border-t mt-auto">
                 <div class="flex items-center gap-1">
                   <span class="text-yellow-500">★</span>
                   <span class="font-semibold">4.9</span>

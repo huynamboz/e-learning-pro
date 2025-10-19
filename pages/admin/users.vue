@@ -21,6 +21,9 @@ useHead({
   title: 'Student Management',
 })
 
+// i18n
+const { t } = useI18n()
+
 // Use course API
 const courseApi = useCourseApi()
 
@@ -300,27 +303,27 @@ const completedStudents = computed(() => users.value.reduce((sum, u) => sum + u.
 // Table columns
 const columns = [
   {
-    title: 'Student',
+    title: t('admin.users.table.student'),
     key: 'user',
     width: 300,
   },
   {
-    title: 'Enrolled Courses',
+    title: t('admin.users.table.enrolledCourses'),
     key: 'courses',
     width: 400,
   },
   {
-    title: 'Status',
+    title: t('admin.users.table.status'),
     key: 'status',
     width: 140,
   },
   {
-    title: 'Joined',
+    title: t('admin.users.table.joined'),
     key: 'joined',
     width: 180,
   },
   {
-    title: 'Actions',
+    title: t('admin.users.table.actions'),
     key: 'actions',
     width: 100,
     fixed: 'right',
@@ -367,35 +370,35 @@ function formatDate(dateString: string | undefined) {
 
 function refreshUsers() {
   loadStudents()
-  message.success('Users refreshed successfully')
+  message.success(t('admin.users.messages.refreshSuccess'))
 }
 
 function editUser(user: StudentWithStats) {
-  message.info(`Edit user: ${user.full_name}`)
+  message.info(t('admin.users.messages.editUser', { name: user.full_name }))
 }
 
 function toggleUserStatus(user: StudentWithStats) {
   const action = user.stats.active_courses > 0 ? 'suspend' : 'activate'
   Modal.confirm({
-    title: `Are you sure you want to ${action} this user?`,
-    content: `This will ${action} ${user.full_name}`,
+    title: t(`admin.users.messages.confirm${action.charAt(0).toUpperCase() + action.slice(1)}.title`),
+    content: t(`admin.users.messages.confirm${action.charAt(0).toUpperCase() + action.slice(1)}.content`, { name: user.full_name }),
     onOk() {
       // Note: This would need API call to actually update status
-      message.success(`User ${action}d successfully`)
+      message.success(t(`admin.users.messages.${action}Success`))
     },
   })
 }
 
 function deleteUser(user: StudentWithStats) {
   Modal.confirm({
-    title: 'Are you sure you want to delete this user?',
-    content: `This will permanently delete ${user.full_name}`,
+    title: t('admin.users.messages.confirmDelete.title'),
+    content: t('admin.users.messages.confirmDelete.content', { name: user.full_name }),
     okType: 'danger',
     onOk() {
       const index = users.value.findIndex(u => u.id === user.id)
       if (index > -1) {
         users.value.splice(index, 1)
-        message.success('User deleted successfully')
+        message.success(t('admin.users.messages.deleteSuccess'))
       }
     },
   })
@@ -422,10 +425,10 @@ onMounted(() => {
         </div>
         <div>
           <h1 class="text-3xl font-bold text-gray-900 !m-0">
-            Student Management
+            {{ t('admin.users.title') }}
           </h1>
           <p class="text-gray-600 mt-1">
-            Manage student accounts and track their learning progress
+            {{ t('admin.users.subtitle') }}
           </p>
         </div>
       </div>
@@ -435,7 +438,7 @@ onMounted(() => {
         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Total Students</p>
+              <p class="text-sm text-gray-600 mb-1">{{ t('admin.users.stats.totalStudents') }}</p>
               <p class="text-2xl font-bold text-gray-900">{{ totalStudents }}</p>
             </div>
             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -447,7 +450,7 @@ onMounted(() => {
         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Active Students</p>
+              <p class="text-sm text-gray-600 mb-1">{{ t('admin.users.stats.activeStudents') }}</p>
               <p class="text-2xl font-bold text-green-600">{{ activeStudents }}</p>
             </div>
             <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -459,7 +462,7 @@ onMounted(() => {
         <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-sm text-gray-600 mb-1">Completed Students</p>
+              <p class="text-sm text-gray-600 mb-1">{{ t('admin.users.stats.completedStudents') }}</p>
               <p class="text-2xl font-bold text-blue-600">{{ completedStudents }}</p>
             </div>
             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -478,7 +481,7 @@ onMounted(() => {
             <Icon name="solar:magnifer-linear" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size="20" />
             <a-input
               v-model:value="searchQuery"
-              placeholder="Search students by name, email, or username..."
+              :placeholder="t('admin.users.search.placeholder')"
               size="large"
               class="!pl-10 !h-12 !rounded-lg"
             />
@@ -496,7 +499,7 @@ onMounted(() => {
             <template #icon>
               <Icon name="solar:refresh-bold-duotone" size="18" />
             </template>
-            Refresh
+            {{ t('admin.users.actions.refresh') }}
           </a-button>
         </div>
       </div>
@@ -507,13 +510,13 @@ onMounted(() => {
       <div class="text-center">
         <Icon name="tabler:alert-circle" class="text-red-500 text-4xl mx-auto mb-4" />
         <h3 class="text-lg font-semibold text-gray-900 mb-2">
-          Error Loading Students
+          {{ t('admin.users.error.title') }}
         </h3>
         <p class="text-gray-600 mb-4">
           {{ error }}
         </p>
         <a-button type="primary" @click="loadStudents">
-          Try Again
+          {{ t('admin.users.error.tryAgain') }}
         </a-button>
       </div>
     </div>
@@ -523,9 +526,9 @@ onMounted(() => {
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">All Students</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{{ t('admin.users.table.title') }}</h3>
             <p class="text-sm text-gray-600 mt-1">
-              Showing {{ filteredUsers.length }} of {{ totalStudents }} students
+              {{ t('admin.users.table.showing', { current: filteredUsers.length, total: totalStudents }) }}
             </p>
           </div>
           <!-- Add Student button hidden -->
@@ -553,7 +556,7 @@ onMounted(() => {
           pageSize,
           total,
           showSizeChanger: true,
-          showTotal: (total: number) => `Total Students: ${total}`,
+          showTotal: (total: number) => t('admin.users.table.totalStudents', { total }),
         }"
         :scroll="{ x: 1400 }"
         row-key="id"
@@ -566,13 +569,13 @@ onMounted(() => {
               <Icon name="solar:users-group-rounded-bold-duotone" size="48" class="text-gray-300 mx-auto" />
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">
-              No students found
+              {{ t('admin.users.empty.title') }}
             </h3>
             <p class="text-gray-500 mb-4">
-              Try adjusting your search criteria
+              {{ t('admin.users.empty.subtitle') }}
             </p>
             <a-button @click="searchQuery = ''" class="rounded-lg">
-              Clear Search
+              {{ t('admin.users.empty.clearSearch') }}
             </a-button>
           </div>
         </template>
@@ -611,13 +614,13 @@ onMounted(() => {
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="font-medium text-gray-900 text-sm line-clamp-1">
-                    {{ record.stats.total_courses }} Course{{ record.stats.total_courses !== 1 ? 's' : '' }}
+                    {{ t('admin.users.courses.count', { count: record.stats.total_courses }) }}
                   </div>
                   <div class="text-xs text-gray-500">
-                    Active: {{ record.stats.active_courses }} | Completed: {{ record.stats.completed_courses }}
+                    {{ t('admin.users.courses.active') }}: {{ record.stats.active_courses }} | {{ t('admin.users.courses.completed') }}: {{ record.stats.completed_courses }}
                   </div>
                   <div class="text-xs text-gray-400">
-                    Avg Progress: {{ Math.round(record.stats.average_completion) }}%
+                    {{ t('admin.users.courses.avgProgress') }}: {{ Math.round(record.stats.average_completion) }}%
                   </div>
                 </div>
               </div>
@@ -631,14 +634,14 @@ onMounted(() => {
                 :class="record.stats.active_courses > 0 ? 'bg-green-50 text-green-600 border-green-200' : 'bg-gray-50 text-gray-600 border-gray-200'"
                 class="px-2 py-1 rounded-full text-xs font-semibold border inline-block"
               >
-                {{ record.stats.active_courses > 0 ? 'Active' : 'Inactive' }}
+                {{ record.stats.active_courses > 0 ? t('admin.users.status.active') : t('admin.users.status.inactive') }}
               </span>
               <div class="text-xs">
                 <span 
                   :class="record.stats.completed_courses > 0 ? 'text-green-600' : 'text-blue-600'"
                   class="font-medium"
                 >
-                  {{ record.stats.completed_courses > 0 ? 'Has Completed' : 'In Progress' }}
+                  {{ record.stats.completed_courses > 0 ? t('admin.users.status.hasCompleted') : t('admin.users.status.inProgress') }}
                 </span>
               </div>
             </div>
@@ -648,7 +651,7 @@ onMounted(() => {
           <template v-else-if="column.key === 'joined'">
             <div class="text-sm">
               <div class="text-gray-900">
-                Student ID: {{ record.id }}
+                {{ t('admin.users.joined.studentId') }}: {{ record.id }}
               </div>
               <div class="text-xs text-gray-500">
                 @{{ record.username }}
@@ -670,7 +673,7 @@ onMounted(() => {
                   >
                     <div class="flex items-center gap-2">
                       <Icon name="solar:pen-bold" size="16" />
-                      Edit User
+                      {{ t('admin.users.actions.editUser') }}
                     </div>
                   </a-menu-item>
                   <a-menu-divider />
@@ -683,7 +686,7 @@ onMounted(() => {
                         :name="record.stats.active_courses > 0 ? 'solar:pause-circle-bold' : 'solar:play-circle-bold'" 
                         size="16" 
                       />
-                      {{ record.stats.active_courses > 0 ? 'Suspend' : 'Activate' }}
+                      {{ record.stats.active_courses > 0 ? t('admin.users.actions.suspend') : t('admin.users.actions.activate') }}
                     </div>
                   </a-menu-item>
                   <a-menu-item
@@ -693,7 +696,7 @@ onMounted(() => {
                   >
                     <div class="flex items-center w-full gap-2">
                       <Icon name="solar:trash-bin-trash-bold" size="16" />
-                      Delete User
+                      {{ t('admin.users.actions.deleteUser') }}
                     </div>
                   </a-menu-item>
                 </a-menu>

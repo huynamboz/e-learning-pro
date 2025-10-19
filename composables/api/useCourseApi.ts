@@ -223,7 +223,14 @@ export function useCourseApi() {
       apiClient.post(`/courses/${courseId}/students/${studentId}/enable/`),
 
     // Get all students across all courses
-    getAllStudents: () =>
-      apiClient.get<AllStudentsResponse>('/courses/students/'),
+    getAllStudents: (params?: { limit?: number, offset?: number, search?: string, ordering?: string }) =>
+      apiClient.get<AllStudentsResponse>('/courses/students/', {
+        params: {
+          limit: params?.limit,
+          offset: params?.offset,
+          search: params?.search,
+          ordering: params?.ordering,
+        },
+      })
   }
 }

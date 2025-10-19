@@ -20,7 +20,7 @@ const profileOptions = computed(() => {
       options: [
         { icon: 'solar-user-linear', name: t('profile.profile'), link: '/profile?tab=PROFILE' },
         { icon: 'solar-book-linear', name: t('profile.myCourses'), link: '/profile?tab=MY_COURSES' },
-        { icon: 'solar-settings-linear', name: t('profile.settings'), link: '/settings' },
+        // { icon: 'solar-settings-linear', name: t('profile.settings'), link: '/settings' },
       ],
     },
   ]
@@ -58,7 +58,7 @@ async function handleItemClick(item: any) {
 <template>
   <Popover>
     <PopoverTrigger as-child>
-      <BaseAvatar :src="profile?.avatar" :size="'40px'" />
+      <BaseAvatar :src="profile?.avatar || ''" :size="'40px'" />
     </PopoverTrigger>
     <PopoverContent class="w-fit border-0 p-3 shadow-none bg-transparent">
       <div class="h-fit border-[1px] bg-shade-1 shadow-none w-[221px] p-0 rounded-[20px]" style="box-shadow: var(--popover-box-shadow);">
@@ -74,7 +74,7 @@ async function handleItemClick(item: any) {
           </a-avatar>
             <div class="flex-1 min-w-0">
               <h3 class="text-sm font-semibold text-shade-9 truncate">
-                {{ profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : profile?.username || 'User' }}
+                {{ profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : 'User' }}
               </h3>
               <p class="text-xs text-shade-6 truncate">
                 {{ profile?.email || '' }}

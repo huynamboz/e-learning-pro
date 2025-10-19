@@ -16,11 +16,6 @@ const { t } = useI18n()
 const { fetchProfile, user, profile } = useAuth()
 const isFetchingProfile = ref(false)
 
-// Use user data directly
-const userProfileData = computed(() => {
-  return user.value || undefined
-})
-
 // Initialize activeTab from query params or default to 'PROFILE'
 const activeTab = ref((route.query.tab as string) || 'PROFILE')
 
@@ -70,20 +65,20 @@ onMounted(() => {
         <div class="flex items-center gap-6">
           <a-avatar :src="profile?.avatar" v-if="profile?.avatar" :size="80" class="bg-green-500 shadow-lg">
             <span class="text-2xl font-semibold text-white">
-              {{ (profile?.first_name || userProfileData?.first_name || 'U')[0].toUpperCase() }}
+              {{ (profile?.first_name || 'U')[0].toUpperCase() }}
             </span>
           </a-avatar>
           <div class="flex-1">
             <h1 class="text-3xl font-bold text-gray-900 mb-1">
-              {{ profile?.first_name || userProfileData?.first_name }} {{ profile?.last_name || userProfileData?.last_name }}
+              {{ profile?.first_name }} {{ profile?.last_name }}
             </h1>
             <p class="text-gray-600 text-lg mb-3">
-              {{ profile?.email || userProfileData?.email }}
+              {{ profile?.email }}
             </p>
             <div class="flex items-center space-x-6 text-sm text-gray-500">
               <div class="flex items-center space-x-2">
                 <Icon name="i-heroicons-calendar-days" class="w-4 h-4" />
-                <span>Tham gia từ {{ formatDate(profile?.created_at || userProfileData?.created_at) }}</span>
+                <span>Tham gia từ {{ formatDate(profile?.created_at) }}</span>
               </div>
               <!-- <div class="flex items-center space-x-2">
                 <Icon name="i-heroicons-academic-cap" class="w-4 h-4" />
@@ -121,7 +116,8 @@ onMounted(() => {
             </template>
             <div class="p-6">
               <ProfileForm
-                :data-profile="userProfileData"
+                v-if="profile"
+                :data-profile="profile"
                 :is-fetching-profile="isFetchingProfile"
               />
             </div>

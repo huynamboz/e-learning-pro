@@ -14,8 +14,18 @@ useHead({
 })
 
 // Use composables
-const { users, loading: isLoadingUsers, fetchLatestUsers } = useUsersAdminApi()
-const { getCourses } = useCourseApi()
+const { getCourses, getAllStudents } = useCourseApi()
+const {
+  statsCards,
+  isLoadingStats,
+  statsError,
+  fetchDashboardStats,
+  refreshDashboardStats,
+} = useAdmin()
+
+// Students data
+const users = ref<any[]>([])
+const isLoadingUsers = ref(false)
 
 // Format functions
 function formatUserDate(dateString: string) {
@@ -40,57 +50,23 @@ function getUserInitials(email: string) {
 }
 
 function getUserDisplayName(user: any) {
-  const emailPrefix = user.email.split('@')[0]
-  return emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)
+  return user.full_name || `${user.first_name} ${user.last_name}`.trim()
 }
 
-// Stats data
-const statsCards = computed(() => [
-  {
-    title: $t('admin.dashboard.stats.totalUsers'),
-    value: '12,543',
-    change: '+15.3%',
-    changeType: 'increase',
-    icon: 'i-heroicons-users-solid',
-    gradient: 'from-blue-500 to-cyan-500',
-    cardBg: 'bg-gradient-to-br from-blue-500 to-cyan-500',
-    iconBg: 'bg-white/20',
-    iconColor: 'text-white',
-  },
-  {
-    title: $t('admin.dashboard.stats.activeCourses'),
-    value: '287',
-    change: '+23.1%',
-    changeType: 'increase',
-    icon: 'i-heroicons-academic-cap-solid',
-    gradient: 'from-purple-500 to-pink-500',
-    cardBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
-    iconBg: 'bg-white/20',
-    iconColor: 'text-white',
-  },
-  {
-    title: $t('admin.dashboard.stats.monthlyRevenue'),
-    value: '₫125.4M',
-    change: '+18.2%',
-    changeType: 'increase',
-    icon: 'i-heroicons-currency-dollar-solid',
-    gradient: 'from-emerald-500 to-teal-500',
-    cardBg: 'bg-gradient-to-br from-emerald-500 to-teal-500',
-    iconBg: 'bg-white/20',
-    iconColor: 'text-white',
-  },
-  {
-    title: $t('admin.dashboard.stats.completionRate'),
-    value: '87.5%',
-    change: '+5.2%',
-    changeType: 'increase',
-    icon: 'i-heroicons-chart-bar-solid',
-    gradient: 'from-orange-500 to-red-500',
-    cardBg: 'bg-gradient-to-br from-orange-500 to-red-500',
-    iconBg: 'bg-white/20',
-    iconColor: 'text-white',
-  },
-])
+// Fetch latest students
+async function fetchLatestStudents() {
+  try {
+    isLoadingUsers.value = true
+    const response = await getAllStudents()
+    // Get only the first 5 students for dashboard
+    users.value = response.results.slice(0, 5)
+  } catch (error) {
+    console.error('Error fetching latest students:', error)
+    users.value = []
+  } finally {
+    isLoadingUsers.value = false
+  }
+}
 
 // Quick actions
 const quickActions = computed(() => [
@@ -106,7 +82,7 @@ const quickActions = computed(() => [
     icon: 'i-heroicons-users',
     color: 'text-white',
     bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
-    to: '/admin/students',
+    to: '/admin/users',
   },
   {
     title: $t('admin.dashboard.quickActions.viewOrders'),
@@ -171,8 +147,9 @@ async function fetchTopCourses() {
 onMounted(async () => {
   try {
     await Promise.all([
-      fetchLatestUsers(5),
+      fetchLatestStudents(),
       fetchTopCourses(),
+      fetchDashboardStats(),
     ])
   }
   catch (error) {
@@ -188,21 +165,58 @@ onMounted(async () => {
       <div>
         <h1 class="text-3xl md:text-4xl !font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           {{ $t('admin.dashboard.title') }}
-      </h1>
+        </h1>
         <p class="mt-2 text-gray-600">
           {{ $t('admin.dashboard.welcome') }}
-      </p>
+        </p>
       </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Show loading skeleton when no data -->
+      <div
+        v-if="statsCards.length === 0 && isLoadingStats"
+        v-for="i in 4"
+        :key="`loading-${i}`"
+        class="group relative overflow-hidden rounded-2xl p-6 bg-gray-200 animate-pulse"
+      >
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="w-10 h-10 bg-gray-300 rounded-xl"></div>
+            <div class="w-20 h-6 bg-gray-300 rounded-full"></div>
+          </div>
+          <div class="space-y-2">
+            <div class="w-24 h-4 bg-gray-300 rounded"></div>
+            <div class="w-16 h-8 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Show actual stats cards -->
       <div
         v-for="stat in statsCards"
         :key="stat.title"
         class="group relative overflow-hidden rounded-2xl p-6 hover:shadow-2xl hover:shadow-black/20 hover:scale-[1.03] transition-all duration-300"
         :class="stat.cardBg"
       >
+        <!-- Loading State -->
+        <div v-if="isLoadingStats" class="absolute inset-0 bg-white/20 backdrop-blur-sm flex items-center justify-center">
+          <a-spin size="large" />
+        </div>
+
+        <!-- Error State -->
+        <div v-if="statsError" class="absolute inset-0 bg-red-500/20 backdrop-blur-sm flex items-center justify-center">
+          <div class="text-center text-white">
+            <Icon name="i-heroicons-exclamation-triangle" class="w-8 h-8 mx-auto mb-2" />
+            <p class="text-sm font-medium">
+              Lỗi tải dữ liệu
+            </p>
+            <a-button size="small" type="primary" ghost class="mt-2" @click="refreshDashboardStats">
+              Thử lại
+            </a-button>
+          </div>
+        </div>
         <div class="absolute top-0 right-0 w-40 h-40 opacity-20">
           <div class="w-full h-full rounded-full blur-3xl bg-white" />
         </div>
@@ -210,7 +224,7 @@ onMounted(async () => {
           <div class="flex items-center justify-between mb-4">
             <div class="size-10 flex items-center justify-center rounded-xl backdrop-blur-sm" :class="stat.iconBg">
               <Icon :name="stat.icon" class="w-7 h-7" :class="stat.iconColor" />
-      </div>
+            </div>
             <span class="inline-flex items-center gap-1 text-sm font-bold text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
               <Icon name="i-heroicons-arrow-trending-up" class="w-4 h-4" />
               {{ stat.change }}
@@ -240,7 +254,7 @@ onMounted(async () => {
           class="group transition-all duration-300 flex flex-col items-center justify-center p-6 rounded-xl hover:scale-105 hover:shadow-lg"
           :class="action.bgColor"
         >
-          <div class="size-10 flex items-center items-center justify-center rounded-full mb-3 bg-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+          <div class="size-10 flex items-center justify-center rounded-full mb-3 bg-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
             <Icon :name="action.icon" class="w-7 h-7" :class="action.color" />
           </div>
           <span class="text-sm font-bold text-white text-center">
@@ -255,11 +269,11 @@ onMounted(async () => {
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900">
           {{ $t('admin.dashboard.latestUsers.title') }}
-      </h2>
+        </h2>
         <NuxtLink to="/admin/users" class="text-sm font-medium text-blue-600 hover:underline">
           {{ $t('admin.dashboard.latestUsers.viewAll') }}
         </NuxtLink>
-          </div>
+      </div>
 
       <!-- Loading State -->
       <div v-if="isLoadingUsers" class="space-y-4">
@@ -269,8 +283,8 @@ onMounted(async () => {
             <div class="h-4 bg-gray-200 rounded animate-pulse mb-2" />
             <div class="h-3 bg-gray-200 rounded animate-pulse w-2/3" />
           </div>
-          </div>
         </div>
+      </div>
 
       <!-- Users List -->
       <div v-else class="space-y-4">
@@ -284,10 +298,10 @@ onMounted(async () => {
               :size="40"
               class="ring-2 ring-gray-200 group-hover:ring-blue-500 transition-all duration-300"
             >
-              {{ getUserInitials(user.email) }}
+              {{ getUserDisplayName(user).charAt(0).toUpperCase() }}
             </a-avatar>
             <div
-              v-if="user.is_active"
+              v-if="user.stats && user.stats.active_courses > 0"
               class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"
             />
           </div>
@@ -298,23 +312,29 @@ onMounted(async () => {
             <p class="text-xs text-gray-500 truncate">
               {{ user.email }}
             </p>
+            <p class="text-xs text-gray-400 truncate">
+              @{{ user.username }}
+            </p>
           </div>
           <div class="text-right">
             <p class="text-xs text-gray-500">
-              {{ formatUserDate(user.date_joined) }}
+              ID: {{ user.id }}
             </p>
             <div class="flex items-center gap-1 mt-1">
               <div
-                :class="user.is_active ? 'bg-emerald-500' : 'bg-gray-400'"
+                :class="user.stats && user.stats.active_courses > 0 ? 'bg-emerald-500' : 'bg-gray-400'"
                 class="w-2 h-2 rounded-full"
               />
               <span
-                :class="user.is_active ? 'text-emerald-600' : 'text-gray-500'"
+                :class="user.stats && user.stats.active_courses > 0 ? 'text-emerald-600' : 'text-gray-500'"
                 class="text-xs font-medium"
               >
-                {{ user.is_active ? $t('admin.dashboard.latestUsers.active') : $t('admin.dashboard.latestUsers.inactive') }}
+                {{ user.stats && user.stats.active_courses > 0 ? 'Active' : 'Inactive' }}
               </span>
-        </div>
+            </div>
+            <div class="text-xs text-gray-400 mt-1">
+              {{ user.stats ? `${user.stats.total_courses} courses` : '0 courses' }}
+            </div>
           </div>
         </div>
       </div>

@@ -180,6 +180,78 @@
         "noCourses": "Chưa có khóa học nào"
       }
     },
+    "users": {
+      "title": "Quản lý học viên",
+      "subtitle": "Quản lý tài khoản học viên và theo dõi tiến độ học tập",
+      "stats": {
+        "totalStudents": "Tổng học viên",
+        "activeStudents": "Học viên hoạt động",
+        "completedStudents": "Học viên đã hoàn thành"
+      },
+      "search": {
+        "placeholder": "Tìm kiếm học viên theo tên, email hoặc tên đăng nhập..."
+      },
+      "actions": {
+        "refresh": "Làm mới",
+        "editUser": "Chỉnh sửa học viên",
+        "suspend": "Tạm dừng",
+        "activate": "Kích hoạt",
+        "deleteUser": "Xóa học viên"
+      },
+      "error": {
+        "title": "Lỗi tải học viên",
+        "tryAgain": "Thử lại"
+      },
+      "table": {
+        "title": "Tất cả học viên",
+        "student": "Học viên",
+        "enrolledCourses": "Khóa học đã đăng ký",
+        "status": "Trạng thái",
+        "joined": "Tham gia",
+        "actions": "Thao tác",
+        "showing": "Hiển thị {current} trong {total} học viên",
+        "totalStudents": "Tổng học viên: {total}"
+      },
+      "courses": {
+        "count": "{count} khóa học",
+        "active": "Hoạt động",
+        "completed": "Hoàn thành",
+        "avgProgress": "Tiến độ trung bình"
+      },
+      "status": {
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "hasCompleted": "Đã hoàn thành",
+        "inProgress": "Đang học"
+      },
+      "joined": {
+        "studentId": "ID học viên"
+      },
+      "empty": {
+        "title": "Không tìm thấy học viên",
+        "subtitle": "Thử điều chỉnh tiêu chí tìm kiếm của bạn",
+        "clearSearch": "Xóa tìm kiếm"
+      },
+      "messages": {
+        "refreshSuccess": "Làm mới học viên thành công",
+        "editUser": "Chỉnh sửa học viên: {name}",
+        "confirmSuspend": {
+          "title": "Bạn có chắc chắn muốn tạm dừng học viên này?",
+          "content": "Điều này sẽ tạm dừng {name}"
+        },
+        "confirmActivate": {
+          "title": "Bạn có chắc chắn muốn kích hoạt học viên này?",
+          "content": "Điều này sẽ kích hoạt {name}"
+        },
+        "confirmDelete": {
+          "title": "Bạn có chắc chắn muốn xóa học viên này?",
+          "content": "Điều này sẽ xóa vĩnh viễn {name}"
+        },
+        "suspendSuccess": "Tạm dừng học viên thành công",
+        "activateSuccess": "Kích hoạt học viên thành công",
+        "deleteSuccess": "Xóa học viên thành công"
+      }
+    },
     "chapterManagement": {
       "title": "Chương",
       "addChapter": "Thêm chương",
@@ -794,7 +866,28 @@
     "settings": "Cài đặt",
     "dashboard": "Bảng điều khiển",
     "actions": "Hành động",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "courses": {
+      "title": "Khóa học của tôi",
+      "loading": "Đang tải khóa học đã đăng ký...",
+      "schedule": "Lịch học",
+      "progress": "Tiến độ",
+      "classroom": "Lớp học",
+      "teacher": {
+        "title": "Bạn là giáo viên",
+        "message": "Vui lòng xem danh sách khóa học ở bảng điều khiển quản trị để quản lý các khóa học của bạn.",
+        "goToDashboard": "Đi đến bảng điều khiển"
+      },
+      "error": {
+        "title": "Lỗi tải khóa học",
+        "tryAgain": "Thử lại"
+      },
+      "empty": {
+        "title": "Chưa có khóa học nào",
+        "message": "Bạn chưa đăng ký khóa học nào.",
+        "browseCourses": "Duyệt khóa học"
+      }
+    }
   },
   "learning": {
     "welcome": "Chào mừng trở lại, {name}! 👋",
@@ -873,6 +966,15 @@
     "enterUsername": "Nhập tên đăng nhập",
     "enterEmail": "Nhập email",
     "updateProfile": "Cập nhật hồ sơ",
+    "avatar": {
+      "title": "Ảnh đại diện",
+      "uploadCustom": "Tải lên ảnh của bạn",
+      "fileFormat": "JPG, PNG tối đa 5MB",
+      "uploading": "Đang tải lên",
+      "invalidFileType": "Vui lòng chọn file ảnh",
+      "fileSizeExceeded": "Kích thước file không được vượt quá 5MB",
+      "uploadFailed": "Tải lên avatar thất bại"
+    },
     "validation": {
       "firstNameRequired": "Vui lòng nhập tên!",
       "lastNameRequired": "Vui lòng nhập họ!",
