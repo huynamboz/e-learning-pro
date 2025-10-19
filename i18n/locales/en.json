@@ -1080,6 +1080,9 @@
       "home": "Home",
       "cart": "Shopping cart"
     },
+    "courseInfo": {
+      "format": "{hours} Total Hours. {lessons} Lectures. {level}"
+    },
     "summary": {
       "coursesInCart": "{count} Course{plural} in cart",
       "emptyCart": {
@@ -1148,18 +1151,18 @@
   },
   "coursesIndex": {
     "hero": {
-      "badge": "Explore Language Courses",
-      "title": "Discover Your Next",
-      "subtitle": "Language Journey",
-      "description": "Master new languages with expert instructors and interactive lessons",
-      "searchPlaceholder": "Search for language courses...",
+      "badge": "Explore Italian Courses",
+      "title": "Discover Your",
+      "subtitle": "Italian Journey",
+      "description": "Master Italian with expert instructors and interactive lessons",
+      "searchPlaceholder": "Search for Italian courses...",
       "searchButton": "Search"
     },
     "stats": {
       "totalCourses": "Total Courses",
       "activeStudents": "Active Students",
-      "expertInstructors": "Expert Instructors",
-      "languagesAvailable": "Languages Available"
+      "expertInstructors": "Expert Instructor",
+      "languagesAvailable": "Specialized Language"
     },
     "filters": {
       "allLevels": "All Levels",
@@ -1195,7 +1198,8 @@
         "description": "Learn at your own pace, anytime, anywhere"
       },
       "startLearningNow": "Start Learning Now",
-      "viewSuccessStories": "View Success Stories"
+      "viewSuccessStories": "View Success Stories",
+      "registerNow": "Register Now"
     }
   },
   "layoutAuthHeader": {
@@ -1224,7 +1228,12 @@
   },
   "common": {
     "tryAgain": "Try Again",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
   },
   "quiz": {
     "management": {

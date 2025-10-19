@@ -355,6 +355,7 @@ export interface CourseStudent {
   first_name: string
   last_name: string
   full_name: string
+  avatar: string
   enrollment: {
     id: string
     classroom_id: string

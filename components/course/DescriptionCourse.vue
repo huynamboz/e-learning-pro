@@ -10,9 +10,9 @@ const { t } = useI18n()
 
 function getLevelText(level: string): string {
   const levelMap: Record<string, string> = {
-    beginner: t('descriptionCourse.levels.beginner'),
-    intermediate: t('descriptionCourse.levels.intermediate'),
-    advanced: t('descriptionCourse.levels.advanced'),
+    beginner: t('common.levels.beginner'),
+    intermediate: t('common.levels.intermediate'),
+    advanced: t('common.levels.advanced'),
   }
   return levelMap[level] || level
 }
@@ -39,7 +39,7 @@ function getLevelText(level: string): string {
             {{ parseFloat(courseData?.lessons_count) }} {{ t('descriptionCourse.lessons') }}.
           </p>
           <p class="!m-0">
-            {{ courseData?.level }}
+            {{ getLevelText(courseData?.level) }}
           </p>
         </div>
       </div>

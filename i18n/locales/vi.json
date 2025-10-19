@@ -1080,6 +1080,9 @@
       "home": "Trang chủ",
       "cart": "Giỏ hàng"
     },
+    "courseInfo": {
+      "format": "{hours} giờ tổng cộng. {lessons} bài học. {level}"
+    },
     "summary": {
       "coursesInCart": "{count} Khóa học trong giỏ hàng",
       "emptyCart": {
@@ -1148,18 +1151,18 @@
   },
   "coursesIndex": {
     "hero": {
-      "badge": "Khám phá khóa học ngôn ngữ",
+      "badge": "Khám phá khóa học tiếng Ý",
       "title": "Khám phá hành trình",
-      "subtitle": "ngôn ngữ tiếp theo của bạn",
-      "description": "Thành thạo ngôn ngữ mới với giảng viên chuyên nghiệp và bài học tương tác",
-      "searchPlaceholder": "Tìm kiếm khóa học ngôn ngữ...",
+      "subtitle": "tiếng Ý của bạn",
+      "description": "Thành thạo tiếng Ý với giảng viên chuyên nghiệp và bài học tương tác",
+      "searchPlaceholder": "Tìm kiếm khóa học tiếng Ý...",
       "searchButton": "Tìm kiếm"
     },
     "stats": {
       "totalCourses": "Tổng khóa học",
       "activeStudents": "Học viên đang học",
       "expertInstructors": "Giảng viên chuyên nghiệp",
-      "languagesAvailable": "Ngôn ngữ có sẵn"
+      "languagesAvailable": "Ngôn ngữ chuyên sâu"
     },
     "filters": {
       "allLevels": "Tất cả cấp độ",
@@ -1195,7 +1198,8 @@
         "description": "Học theo tốc độ của riêng bạn, bất cứ lúc nào, bất cứ đâu"
       },
       "startLearningNow": "Bắt đầu học ngay",
-      "viewSuccessStories": "Xem câu chuyện thành công"
+      "viewSuccessStories": "Xem câu chuyện thành công",
+      "registerNow": "Đăng ký ngay"
     }
   },
   "layoutAuthHeader": {
@@ -1224,7 +1228,12 @@
   },
   "common": {
     "tryAgain": "Thử lại",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "levels": {
+      "beginner": "Cơ bản",
+      "intermediate": "Trung cấp",
+      "advanced": "Nâng cao"
+    }
   },
   "quiz": {
     "management": {

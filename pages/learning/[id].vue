@@ -7,6 +7,7 @@ import { useLearnStore } from '~/stores/learn.store'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import type { CourseStudent } from '~/types/course.type'
 import 'video.js/dist/video-js.css'
+// Nuxt auto-imports `ref`, `computed`, lifecycle hooks
 
 // Page meta
 definePageMeta({
@@ -56,11 +57,88 @@ const studentsError = ref<string | null>(null)
 // Comment data
 const commentCount = ref(0)
 
-// Instructor data from course
-const instructorAvatar = computed(() => {
-  // Use default avatar since teacher.avatar is not available in the current type
-  return 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-})
+// Video player protection
+const playerInstance = ref<any>(null)
+const drmContainer = ref<HTMLElement | null>(null)
+const videoPlayerOptions = {
+  controls: true,
+  preload: 'auto',
+  autoplay: false,
+  responsive: true,
+  fluid: true,
+  controlBar: {
+    pictureInPictureToggle: false,
+    remainingTimeDisplay: false,
+    playToggle: true,
+    progressControl: true,
+    fullscreenToggle: true,
+    currentTimeDisplay: true,
+    volumePanel: {
+      inline: false,
+    },
+  },
+  html5: {
+    nativeTextTracks: false,
+    nativeAudioTracks: false,
+    nativeVideoTracks: false,
+  },
+}
+
+const preventContextMenu = (event: MouseEvent) => {
+  if (!drmContainer.value) {
+    return
+  }
+  const target = event.target as HTMLElement | null
+  if (target && drmContainer.value.contains(target)) {
+    event.preventDefault()
+  }
+}
+
+const preventKeydown = (event: KeyboardEvent) => {
+  const blockedByModifier = (event.ctrlKey || event.metaKey)
+  if (blockedByModifier && ['s', 'S', 'p', 'P', 'u', 'U'].includes(event.key)) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  if (blockedByModifier && event.shiftKey && ['I', 'i', 'C', 'c', 'J', 'j'].includes(event.key)) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  if (event.key === 'F12') {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+}
+
+const applyDrmAttributes = (player: any) => {
+  if (!player) {
+    return
+  }
+  const videoEl = player?.el?.()?.querySelector?.('video') as HTMLVideoElement | null
+  if (videoEl) {
+    videoEl.setAttribute('controlsList', 'nodownload noremoteplayback')
+    videoEl.setAttribute('disablePictureInPicture', 'true')
+    videoEl.setAttribute('playsinline', 'true')
+    videoEl.setAttribute('webkit-playsinline', 'true')
+    videoEl.oncontextmenu = (event) => {
+      event.preventDefault()
+    }
+  }
+
+  player.addClass('vjs-no-picture-in-picture')
+  player.addClass('vjs-drm-protected')
+  player.off('contextmenu')
+  player.on('contextmenu', (e: Event) => {
+    e.preventDefault()
+  })
+}
+
+const handlePlayerReady = (player: any) => {
+  playerInstance.value = player
+  applyDrmAttributes(player)
+}
 
 // Load course classmates
 const loadCourseStudents = async () => {
@@ -83,11 +161,33 @@ onMounted(async () => {
     learnStore.loadCourse(courseId),
     loadCourseStudents()
   ])
+
+  drmContainer.value = document.querySelector('.drm-protected')
+  document.addEventListener('contextmenu', preventContextMenu)
+  document.addEventListener('keydown', preventKeydown)
   
   // Sync tab state from query to store
   const queryTab = route.query.tab as string
   if (queryTab && queryTab !== learnStore.activeTab) {
     learnStore.setActiveTab(queryTab)
+  }
+})
+
+watch(activeLesson, () => {
+  if (!playerInstance.value) {
+    return
+  }
+  nextTick(() => {
+    applyDrmAttributes(playerInstance.value)
+  })
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('contextmenu', preventContextMenu)
+  document.removeEventListener('keydown', preventKeydown)
+
+  if (playerInstance.value?.dispose) {
+    playerInstance.value.dispose()
   }
 })
 </script>
@@ -130,7 +230,7 @@ onMounted(async () => {
             {{ course?.title || t('course.defaultTitle') }}
           </h1>
           <!-- Video Player Area -->
-          <div class="relative w-full rounded-2xl overflow-hidden mb-6 bg-gray-900 aspect-video">
+          <div ref="drmContainer" class="relative w-full rounded-2xl overflow-hidden mb-6 bg-gray-900 aspect-video drm-protected" @contextmenu.prevent>
             <!-- <img
               v-if="course?.thumbnail"
               :src="course.thumbnail"
@@ -146,9 +246,13 @@ onMounted(async () => {
               :poster="activeLesson?.thumbnail || course?.thumbnail || undefined"
               class="w-full h-full"
               style="width: 100%; height: 100%;"
+              :options="videoPlayerOptions"
               :src="activeLesson?.video_url"
-              controls :loop="true"
+              controls
+              :loop="true"
               :volume="0.6"
+              playsinline
+              @ready="handlePlayerReady"
             />
           </div>
           <a-divider />
@@ -184,22 +288,22 @@ onMounted(async () => {
                     </h2>
                     <div class="flex items-start gap-4">
                       <div class="flex-shrink-0">
-                        <a-avatar :size="120" :src="instructorAvatar" />
+                        <a-avatar :size="120" :src="course?.teacher?.avatar || '/assets/images/teacher.webp'" />
                       </div>
                       <div class="flex-1">
                         <div class="mb-2">
                           <h3 class="text-xl font-semibold text-blue-600">
                             {{ course?.teacher?.full_name || t('course.defaultInstructor') }}
                           </h3>
-                          <p class="text-gray-700">
+                          <!-- <p class="text-gray-700">
                             {{ t('course.instructorTitle') }}
-                          </p>
+                          </p> -->
                         </div>
                         <div class="flex flex-wrap gap-6 mb-4">
-                          <div class="flex items-center gap-1">
+                          <!-- <div class="flex items-center gap-1">
                             <Icon name="tabler:award" class="text-gray-600" size="20" />
                             <span class="text-sm text-gray-900">{{ t('course.reviews', { count: '0' }) }}</span>
-                          </div>
+                          </div> -->
                           <div class="flex items-center gap-1">
                             <Icon name="tabler:school" class="text-gray-600" size="20" />
                             <span class="text-sm text-gray-900">{{ t('course.students', { count: course?.teacher?.total_students || '0' }) }}</span>
@@ -299,7 +403,7 @@ onMounted(async () => {
                 v-for="student in courseStudents" :key="student.id"
                 class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <a-avatar :size="38" :alt="student.full_name">
+                <a-avatar :size="38" :alt="student.full_name" :src="student.avatar || '/assets/images/teacher.webp'">
                   {{ student.full_name.charAt(0) }}
                 </a-avatar>
                 <div class="flex-1 min-w-0">
@@ -329,6 +433,27 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+:deep(.vjs-picture-in-picture-control),
+:deep(.vjs-airplay-control),
+:deep(.vjs-remaining-time) {
+  display: none !important;
+}
+
+.drm-protected video::-webkit-media-controls-enclosure {
+  overflow: hidden;
+}
+
+.drm-protected video::-webkit-media-controls-download-button,
+.drm-protected video::-webkit-media-controls-remote-playback-button {
+  display: none !important;
+}
+
+.drm-protected video {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Custom tab styling */
 .course-tabs :deep(.ant-tabs-nav) {
   margin-bottom: 1.5rem;
@@ -382,4 +507,3 @@ onMounted(async () => {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 </style>
-

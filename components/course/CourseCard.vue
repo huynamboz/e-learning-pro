@@ -21,6 +21,7 @@ export interface CourseCardProps {
   rating_count: number
   lessons_count: string
   type?: string
+  discount_price: string | null
 }
 
 const props = defineProps<CourseCardProps>()
@@ -36,7 +37,7 @@ const formattedPrice = computed(() => {
     return `$${props.effective_price}`
   return `$${props.effective_price}`
 })
-const originalPrice = computed(() => props.has_discount ? `$${props.price}` : null)
+const originalPrice = computed(() => props.discount_price && parseFloat(props.discount_price) > 0 ? `$${props.price}` : null)
 </script>
 
 <template>
@@ -92,7 +93,7 @@ const originalPrice = computed(() => props.has_discount ? `$${props.price}` : nu
 
         <div class="text-lg sm:text-xl font-semibold text-gray-900">
           <span v-if="is_free" class="text-green-600">{{ t('courseCard.free') }}</span>
-          <span v-else-if="has_discount" class="flex items-center gap-2">
+          <span v-else-if="originalPrice" class="flex items-center gap-2">
             <span class="text-gray-500 line-through">{{ originalPrice }}</span>
             <span class="text-green-600">{{ formattedPrice }}</span>
           </span>

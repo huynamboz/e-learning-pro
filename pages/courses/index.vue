@@ -60,13 +60,18 @@ const totalPages = computed(() => Math.ceil(totalCourses.value / pageSize.value)
 // Stats
 const stats = computed(() => [
   { icon: 'solar:book-bold', label: t('coursesIndex.stats.totalCourses'), value: totalCourses.value.toLocaleString(), color: 'from-blue-500 to-blue-600' },
-  { icon: 'solar:users-group-rounded-bold', label: t('coursesIndex.stats.activeStudents'), value: '45,283', color: 'from-green-500 to-green-600' },
-  { icon: 'solar:star-bold', label: t('coursesIndex.stats.expertInstructors'), value: '1,250', color: 'from-yellow-500 to-yellow-600' },
-  { icon: 'solar:chat-round-line-bold', label: t('coursesIndex.stats.languagesAvailable'), value: '12+', color: 'from-purple-500 to-purple-600' },
+  { icon: 'solar:users-group-rounded-bold', label: t('coursesIndex.stats.activeStudents'), value: '1,250+', color: 'from-green-500 to-green-600' },
+  { icon: 'solar:star-bold', label: t('coursesIndex.stats.expertInstructors'), value: 'Expert', color: 'from-yellow-500 to-yellow-600' },
+  { icon: 'solar:chat-round-line-bold', label: t('coursesIndex.stats.languagesAvailable'), value: 'Italian', color: 'from-purple-500 to-purple-600' },
 ])
 
 // Filter options
-const levels = computed(() => ['Beginner', 'Intermediate', 'Advanced', t('coursesIndex.filters.allLevels')])
+const levels = computed(() => [
+  t('common.levels.beginner'), 
+  t('common.levels.intermediate'), 
+  t('common.levels.advanced'), 
+  t('coursesIndex.filters.allLevels')
+])
 const priceOptions = computed(() => [
   { label: t('coursesIndex.filters.allPrices'), value: '' },
   { label: t('coursesIndex.filters.free'), value: 'free' },
@@ -370,10 +375,7 @@ function handlePageChange(page: number) {
         <div class="text-center">
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button class="px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 !text-white rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-xl">
-              {{ $t('coursesIndex.successStories.startLearningNow') }}
-            </button>
-            <button class="px-8 py-4 bg-white text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all border border-gray-200 shadow-lg">
-              {{ $t('coursesIndex.successStories.viewSuccessStories') }}
+              {{ $t('coursesIndex.successStories.registerNow') }}
             </button>
           </div>
         </div>

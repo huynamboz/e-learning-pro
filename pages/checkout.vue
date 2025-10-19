@@ -38,6 +38,16 @@ function formatDate(dateString: string): string {
   return date.toLocaleDateString('vi-VN')
 }
 
+// Format level for display
+function formatLevel(level: string): string {
+  const levelMap: Record<string, string> = {
+    beginner: t('homepage.courses.levels.beginner'),
+    intermediate: t('homepage.courses.levels.intermediate'),
+    advanced: t('homepage.courses.levels.advanced'),
+  }
+  return levelMap[level] || level
+}
+
 // Remove item from cart
 function removeFromCart(itemId: string) {
   cartStore.removeFromCart(itemId)
@@ -231,12 +241,16 @@ function cancelLogin() {
                       <Icon name="solar:star-half-bold" class="w-4 h-4 text-yellow-400" />
                     </div>
                     <span class="ml-2 text-sm font-medium text-gray-900">4.6</span>
-                    <span class="ml-1 text-sm text-gray-500">(250 rating)</span>
+                    <!-- <span class="ml-1 text-sm text-gray-500">(250 rating)</span> -->
                   </div>
 
                   <!-- Course Info -->
                   <p class="text-sm text-gray-600 mb-4">
-                    {{ item.course.duration_hours }} Total Hours. {{ item.course.lessons_count }} Lectures. {{ item.course.level }}
+                    {{ $t('checkout.courseInfo.format', {
+                      hours: item.course.duration_hours,
+                      lessons: item.course.lessons_count,
+                      level: formatLevel(item.course.level)
+                    }) }}
                   </p>
 
                   <!-- Action Links -->
