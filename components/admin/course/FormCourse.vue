@@ -210,6 +210,14 @@ async function handleSave() {
   await formRef.value?.validateFields()
   loading.value = true
 
+  // Prepare payload
+  const payload = { ...formState.value }
+  
+  // If course is free, set discount_price to null
+  if (payload.is_free) {
+    payload.discount_price = null as any
+  }
+
   try {
     if (courseId.value) {
       // Upload video if changed
@@ -265,11 +273,11 @@ async function handleSave() {
         isUploading.value = false
       }
 
-      await updateCourse(courseId.value, formState.value)
+      await updateCourse(courseId.value, payload)
       notification.success({ message: t('admin.formCourse.notifications.updateSuccess') })
     }
     else {
-      await createCourse(formState.value)
+      await createCourse(payload)
       notification.success({ message: t('admin.formCourse.notifications.createSuccess') })
       router.push('/admin/courses')
     }
@@ -358,6 +366,26 @@ function previewCourse() {
   if (courseId.value) {
     // Navigate to course detail page
     navigateTo(`/courses/${courseId.value}`)
+  }
+}
+
+// Handle free course toggle
+function handleFreeToggle(checked: boolean) {
+  if (checked) {
+    // If toggle is turned on, set price to 0
+    formState.value.price = '0'
+    formState.value.discount_price = '0'
+  }
+}
+
+// Handle price change
+function handlePriceChange(value: number | null) {
+  console.log(value)
+  if (value && value > 0) {
+    // If price is greater than 0, turn off free toggle
+    formState.value.is_free = false
+  } else if (value === 0) {
+    formState.value.is_free = true
   }
 }
 
@@ -550,6 +578,20 @@ async function confirmDeleteCourse() {
             />
           </a-form-item>
         </div>
+        <!-- Free Course Toggle -->
+        <a-form-item
+          :label="t('admin.formCourse.form.isFree')"
+          name="is_free"
+          class="w-full"
+        >
+          <a-switch
+            v-model:checked="formState.is_free"
+            :checked-children="t('admin.formCourse.form.free')"
+            :un-checked-children="t('admin.formCourse.form.paid')"
+            @change="handleFreeToggle"
+          />
+        </a-form-item>
+
         <div class="flex items-center w-full gap-3">
           <a-form-item
             :label="t('admin.formCourse.form.price')"
@@ -557,14 +599,27 @@ async function confirmDeleteCourse() {
             class="w-full"
             :rules="[{ required: true, message: t('admin.formCourse.form.priceRequired') }]"
           >
-            <a-input-number v-model:value="formState.price" class="!w-full" size="large" :placeholder="t('admin.formCourse.form.pricePlaceholder')" />
+            <a-input-number 
+              v-model:value="formState.price" 
+              class="!w-full" 
+              size="large" 
+              :placeholder="t('admin.formCourse.form.pricePlaceholder')"
+              :disabled="formState.is_free"
+              @change="handlePriceChange"
+            />
           </a-form-item>
           <a-form-item
             :label="t('admin.formCourse.form.discountPrice')"
             name="discount_price"
             class="w-full"
           >
-            <a-input-number v-model:value="formState.discount_price" class="!w-full" size="large" :placeholder="t('admin.formCourse.form.discountPricePlaceholder')" />
+            <a-input-number 
+              v-model:value="formState.discount_price" 
+              class="!w-full" 
+              size="large" 
+              :placeholder="t('admin.formCourse.form.discountPricePlaceholder')"
+              :disabled="formState.is_free"
+            />
           </a-form-item>
         </div>
         <a-form-item

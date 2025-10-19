@@ -85,7 +85,7 @@ const originalPrice = computed(() => props.discount_price && parseFloat(props.di
         </div>
 
         <p class="text-xs sm:text-sm text-gray-600">
-          {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ level || 'Unknown' }}
+          {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ $t('homepage.courses.levels.' + level) || 'Unknown' }}
         </p>
         <p class="text-xs text-gray-500">
           {{ (enrollment_count || 0).toLocaleString() }} {{ t('courseCard.studentsEnrolled') }}
