@@ -1019,7 +1019,8 @@
     "level": "Cấp độ",
     "language": "Ngôn ngữ",
     "lastUpdated": "Cập nhật lần cuối",
-    "enrolled": "đã đăng ký"
+    "enrolled": "đã đăng ký",
+    "rating": "đánh giá"
   },
   "courseCard": {
     "featured": "Nổi bật",
@@ -1048,6 +1049,7 @@
     "assignments": "Bài tập",
     "moneyBack": "Đảm bảo hoàn tiền 30 ngày",
     "share": "Chia sẻ",
+    "copyLink": "Sao chép liên kết",
     "wishlist": "Thêm vào danh sách yêu thích",
     "gift": "Tặng khóa học này",
     "messages": {
@@ -1060,11 +1062,16 @@
       "alreadyInCartDesc": "Khóa học \"{title}\" với lớp \"{classroom}\" đã có trong giỏ hàng.",
       "classroomChanged": "Đã thay đổi lớp học",
       "classroomChangedDesc": "Đã thay đổi lớp học cho khóa học \"{title}\".",
-      "noClassroom": "Khóa học này chưa có lớp học"
+      "noClassroom": "Khóa học này chưa có lớp học",
+      "linkCopied": "Đã sao chép liên kết",
+      "linkCopiedDesc": "Liên kết khóa học đã được sao chép vào clipboard",
+      "copyFailed": "Không thể sao chép",
+      "copyFailedDesc": "Không thể sao chép liên kết vào clipboard"
     },
     "buttons": {
       "checkoutNow": "Thanh toán ngay",
-      "viewCart": "Xem giỏ hàng"
+      "viewCart": "Xem giỏ hàng",
+      "editCourse": "Chỉnh sửa khóa học"
     }
   },
   "checkout": {

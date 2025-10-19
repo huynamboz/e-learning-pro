@@ -8,9 +8,13 @@ interface Props {
 defineProps<Props>()
 const { t } = useI18n()
 
-function convertLanguage(language: string) {
-  if (language === 'en')
-    return 'English'
+function getLevelText(level: string): string {
+  const levelMap: Record<string, string> = {
+    beginner: t('descriptionCourse.levels.beginner'),
+    intermediate: t('descriptionCourse.levels.intermediate'),
+    advanced: t('descriptionCourse.levels.advanced'),
+  }
+  return levelMap[level] || level
 }
 </script>
 
@@ -27,14 +31,6 @@ function convertLanguage(language: string) {
         {{ courseData?.short_description }}
       </p>
       <div class="flex items-center flex-wrap gap-2 text-[#334155]">
-        <div class="flex items-center gap-1">
-          <span class="text-base text-yellow-500 font-medium">{{ parseFloat(courseData?.rating_average) }}</span>
-          <Icon name="i-material-symbols-star-rounded" class="text-[16px] text-yellow-500" />
-          <span>{{ `(${courseData?.rating_count} ${t('descriptionCourse.rating')})` }}</span>
-        </div>
-        <div class="text-[#334155]">
-          |
-        </div>
         <div class="flex items-center gap-2">
           <p class="!m-0">
             {{ parseFloat(courseData?.duration_hours) }} {{ t('descriptionCourse.hours') }}.
@@ -49,16 +45,10 @@ function convertLanguage(language: string) {
       </div>
       <div class="flex flex-col gap-5 mt-3">
         <div class="flex items-center gap-3">
-          <img src="/assets/images/teacher.webp" class="rounded-full w-10 h-10 object-cover" alt="avatar-teacher">
+          <img :src="courseData?.teacher?.avatar" class="rounded-full w-10 h-10 object-cover" alt="avatar-teacher">
           <p class="!p-0 !m-0">
             Created by <span class="text-[#49ba61]">{{ courseData?.teacher?.full_name || 'Unknown Teacher' }}</span>
           </p>
-        </div>
-        <div class="flex items-center gap-2">
-          <Icon name="i-tabler-world" class="text-[20px] text-gray-700" />
-          <div class="flex items-center gap-2 text-gray-700">
-            <span>{{ convertLanguage(courseData?.language) }}</span>
-          </div>
         </div>
       </div>
     </div>
@@ -96,15 +86,11 @@ function convertLanguage(language: string) {
         </p>
       </div>
       <div class="flex items-center flex-wrap gap-4 mt-5">
-        <img src="/assets/images/teacher.webp" class="rounded-full w-40 h-40 object-cover" alt="avatar-teacher">
+        <img :src="courseData?.teacher?.avatar" class="rounded-full w-40 h-40 object-cover" alt="avatar-teacher">
         <div class="flex flex-col gap-2 text-gray-900">
           <div class="flex items-center gap-2">
-            <Icon name="i-mingcute-certificate-line" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.rating_count || 0 }} {{ $t('descriptionCourse.reviews') }}</span>
-          </div>
-          <div class="flex items-center gap-2">
             <Icon name="i-ph-student-fill" class="text-[24px] text-gray-700" />
-            <span>{{ courseData?.enrollment_count || 0 }} {{ $t('descriptionCourse.students') }}</span>
+            <span>{{ courseData?.teacher?.total_students || 0 }} {{ $t('descriptionCourse.students') }}</span>
           </div>
           <div class="flex items-center gap-2">
             <Icon name="i-material-symbols-play-arrow-outline-rounded" class="text-[24px] text-gray-700" />

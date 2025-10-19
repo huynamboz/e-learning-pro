@@ -10,6 +10,10 @@ interface Props {
 const props = defineProps<Props>()
 const cartStore = useCartStore()
 const { t } = useI18n()
+const { user } = useAuth()
+
+// Check if user is teacher
+const isTeacher = computed(() => user.value?.is_teacher || false)
 
 const selectedCalendar = ref<string>('')
 
@@ -105,6 +109,49 @@ function handleBuyNow() {
     navigateTo('/checkout')
   }
 }
+
+function copyCourseLink() {
+  const courseUrl = `${window.location.origin}/courses/${props.courseData.id}`
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(courseUrl).then(() => {
+      notification.success({
+        message: t('checkoutCard.messages.linkCopied'),
+        description: t('checkoutCard.messages.linkCopiedDesc'),
+      })
+    }).catch(() => {
+      fallbackCopyTextToClipboard(courseUrl)
+    })
+  } else {
+    fallbackCopyTextToClipboard(courseUrl)
+  }
+}
+
+function fallbackCopyTextToClipboard(text: string) {
+  const textArea = document.createElement('textarea')
+  textArea.value = text
+  textArea.style.top = '0'
+  textArea.style.left = '0'
+  textArea.style.position = 'fixed'
+  document.body.appendChild(textArea)
+  textArea.focus()
+  textArea.select()
+  
+  try {
+    document.execCommand('copy')
+    notification.success({
+      message: t('checkoutCard.messages.linkCopied'),
+      description: t('checkoutCard.messages.linkCopiedDesc'),
+    })
+  } catch (err) {
+    notification.error({
+      message: t('checkoutCard.messages.copyFailed'),
+      description: t('checkoutCard.messages.copyFailedDesc'),
+    })
+  }
+  
+  document.body.removeChild(textArea)
+}
 </script>
 
 <template>
@@ -164,67 +211,71 @@ function handleBuyNow() {
           </div>
         </div>
 
-        <!-- Show different buttons based on cart status -->
-        <template v-if="isInCart">
-          <!-- Already in cart - show checkout button -->
+        <!-- Show different buttons based on user role -->
+        <template v-if="isTeacher">
+          <!-- Teacher - show edit course button -->
           <a-button
             type="primary"
-            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-            @click="handleBuyNow"
+            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+            @click="navigateTo(`/admin/courses/${props.courseData.id}/course-detail`)"
           >
-            <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
-            {{ $t('checkoutCard.buttons.checkoutNow') }}
-          </a-button>
-          <a-button
-            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
-            @click="navigateTo('/checkout')"
-          >
-            <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
-            {{ $t('checkoutCard.buttons.viewCart') }}
+            <Icon name="solar:settings-bold" size="20" class="mr-2" />
+            {{ $t('checkoutCard.buttons.editCourse') }}
           </a-button>
         </template>
         <template v-else>
-          <!-- Not in cart - show add to cart button -->
-          <a-button
-            type="primary"
-            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-            @click="handleAddToCard"
-          >
-            {{ $t('checkoutCard.addToCart') }}
-          </a-button>
+          <!-- Student - show cart buttons -->
+          <template v-if="isInCart">
+            <!-- Already in cart - show checkout button -->
+            <a-button
+              type="primary"
+              class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
+              @click="handleBuyNow"
+            >
+              <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
+              {{ $t('checkoutCard.buttons.checkoutNow') }}
+            </a-button>
+            <a-button
+              class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
+              @click="navigateTo('/checkout')"
+            >
+              <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
+              {{ $t('checkoutCard.buttons.viewCart') }}
+            </a-button>
+          </template>
+          <template v-else>
+            <!-- Not in cart - show add to cart button -->
+            <a-button
+              type="primary"
+              :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+              class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+              @click="handleAddToCard"
+            >
+              {{ $t('checkoutCard.addToCart') }}
+            </a-button>
 
-          <a-button
-            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-            @click="handleBuyNow"
-          >
-            {{ $t('checkoutCard.buyNow') }}
-          </a-button>
+            <a-button
+              :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+              class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+              @click="handleBuyNow"
+            >
+              {{ $t('checkoutCard.buyNow') }}
+            </a-button>
+          </template>
         </template>
       </div>
     </div>
 
     <div class="line border-b border-[#E2E8F0]" />
-    <div class="flex flex-col items-start justify-center gap-2 px-10 py-5">
-      <span>{{ $t('checkoutCard.share') }}</span>
-      <div class="flex items-center justify-center gap-5 w-full">
-        <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-facebook" size="16" />
-        </a>
-        <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-github-icon" size="16" />
-        </a>
-        <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-devicon-google" size="16" />
-        </a>
-        <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-devicon-twitter" size="16" />
-        </a>
-        <a href="#" class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-[#E2E8F0]">
-          <Icon name="i-logos-microsoft-icon" size="16" />
-        </a>
-      </div>
+    <div class="flex flex-col items-center justify-center gap-3 px-10 py-5">
+      <span class="text-sm text-gray-600">{{ $t('checkoutCard.share') }}</span>
+      <a-button
+        class="!flex !items-center !justify-center !gap-2 !h-10 !px-4 !rounded-lg !text-sm !font-medium !bg-gray-50 !border-gray-200 !text-gray-700 hover:!bg-gray-100 hover:!border-gray-300"
+        @click="copyCourseLink"
+      >
+        <Icon name="solar:link-bold" size="16" />
+        {{ $t('checkoutCard.copyLink') }}
+      </a-button>
     </div>
   </div>
 </template>

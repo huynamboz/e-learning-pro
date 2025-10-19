@@ -67,7 +67,7 @@ onMounted(() => {
       </div>
 
       <!-- Search bar - hide when collapsed -->
-      <div v-if="!isCollapsed" class="relative my-5">
+      <!-- <div v-if="!isCollapsed" class="relative my-5">
         <Icon
           name="solar-magnifer-line-duotone"
           class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"
@@ -77,7 +77,7 @@ onMounted(() => {
           :placeholder="$t('sidebar.search')"
           class="w-full pl-10 pr-4 py-3 bg-[#F5F6F8] border-0 rounded-xl text-sm placeholder-gray-400 placeholder:text-sm focus:ring-2 focus:ring-[#15803D] focus:outline-none transition-all"
         >
-      </div>
+      </div> -->
 
       <!-- Menu -->
       <ul>

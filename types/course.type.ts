@@ -142,6 +142,7 @@ export interface Teacher {
   full_name: string
   total_courses: number
   total_students: number
+  avatar: string
 }
 
 export interface ChapterPayload {

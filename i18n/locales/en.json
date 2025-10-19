@@ -1019,7 +1019,8 @@
     "level": "Level",
     "language": "Language",
     "lastUpdated": "Last updated",
-    "enrolled": "enrolled"
+    "enrolled": "enrolled",
+    "rating": "ratings"
   },
   "courseCard": {
     "featured": "Featured",
@@ -1048,6 +1049,7 @@
     "assignments": "Assignments",
     "moneyBack": "30-day money-back guarantee",
     "share": "Share",
+    "copyLink": "Copy Link",
     "wishlist": "Add to Wishlist",
     "gift": "Gift this course",
     "messages": {
@@ -1060,11 +1062,16 @@
       "alreadyInCartDesc": "Course \"{title}\" with classroom \"{classroom}\" is already in cart.",
       "classroomChanged": "Classroom changed",
       "classroomChangedDesc": "Classroom has been changed for course \"{title}\".",
-      "noClassroom": "This course has no classrooms yet"
+      "noClassroom": "This course has no classrooms yet",
+      "linkCopied": "Link copied",
+      "linkCopiedDesc": "Course link has been copied to clipboard",
+      "copyFailed": "Failed to copy",
+      "copyFailedDesc": "Could not copy link to clipboard"
     },
     "buttons": {
       "checkoutNow": "Checkout Now",
-      "viewCart": "View Cart"
+      "viewCart": "View Cart",
+      "editCourse": "Edit Course"
     }
   },
   "checkout": {

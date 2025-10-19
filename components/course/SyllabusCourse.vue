@@ -12,6 +12,10 @@ const expandIconPosition = ref<CollapseProps['expandIconPosition']>('start')
 const expandedLessonId = ref<string | null>(null)
 
 function handleLessonClick(lesson: Lesson, event: MouseEvent) {
+  if (!lesson.is_preview) {
+    return
+  }
+
   event.stopPropagation()
 
   if (!lesson.is_unlocked) {
