@@ -3,6 +3,7 @@ import type { ResetRequest } from '~/types/auth.type'
 import { notification } from 'ant-design-vue'
 
 const { resetPassword, confirmPassword } = useAuth()
+const { t } = useI18n()
 
 definePageMeta({
   layout: 'auth',
@@ -32,19 +33,19 @@ async function onFinish() {
         }
         isReset.value = true
         notification.success({
-          message: 'Password reset email sent successfully!',
+          message: t('auth.forgotPassword.notifications.emailSent'),
         })
       }
       else {
         notification.error({
-          message: result.error || 'Failed to send password reset email',
+          message: result.error || t('auth.forgotPassword.notifications.emailFailed'),
         })
       }
     }
     else {
       if (formState.new_password !== formState.new_password2) {
         notification.error({
-          message: 'Password confirmation does not match',
+          message: t('auth.forgotPassword.notifications.passwordMismatch'),
         })
         return
       }
@@ -59,20 +60,20 @@ async function onFinish() {
 
       if (result.success) {
         notification.success({
-          message: 'Password reset successful! Please login.',
+          message: t('auth.forgotPassword.notifications.resetSuccess'),
         })
         await navigateTo('/auth/login')
       }
       else {
         notification.error({
-          message: result.error || 'Password reset failed',
+          message: result.error || t('auth.forgotPassword.notifications.resetFailed'),
         })
       }
     }
   }
   catch {
     notification.error({
-      message: 'An error occurred, please try again',
+      message: t('auth.forgotPassword.notifications.error'),
     })
   }
   finally {
@@ -109,28 +110,28 @@ function goBack() {
               <Icon name="solar:lock-password-unlocked-bold" size="64" class="text-white" />
             </div>
             <h1 class="text-gray-900 dark:text-white text-3xl sm:text-4xl font-bold mb-2">
-              {{ !isReset ? 'Forgot Password?' : 'Reset Password' }}
+              {{ !isReset ? t('auth.forgotPassword.form.title') : t('auth.forgotPassword.form.resetTitle') }}
             </h1>
             <p class="text-gray-600 dark:text-gray-400 text-base">
-              {{ !isReset ? 'No worries, we\'ll send you reset instructions' : 'Enter your new password below' }}
+              {{ !isReset ? t('auth.forgotPassword.form.subtitle') : t('auth.forgotPassword.form.resetSubtitle') }}
             </p>
           </div>
 
           <!-- Email Input -->
           <div v-if="!isReset">
             <a-form-item
-              label="Email Address"
+              :label="t('auth.forgotPassword.form.email')"
               name="email"
               :rules="[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: t('auth.forgotPassword.form.emailRequired') },
+                { type: 'email', message: t('auth.forgotPassword.form.emailInvalid') }
               ]"
               class="mb-0"
             >
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                placeholder="your.email@example.com"
+                :placeholder="t('auth.forgotPassword.form.emailPlaceholder')"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -143,17 +144,17 @@ function goBack() {
           <!-- Reset Password Form -->
           <div v-else class="space-y-4">
             <a-form-item
-              label="New Password"
+              :label="t('auth.forgotPassword.form.newPassword')"
               name="new_password"
               :rules="[
-                { required: true, message: 'Please input your new password!' },
-                { min: 8, message: 'Password must be at least 8 characters long' }
+                { required: true, message: t('auth.forgotPassword.form.newPasswordRequired') },
+                { min: 8, message: t('auth.forgotPassword.form.passwordMinLength') }
               ]"
               class="mb-0"
             >
               <a-input-password
                 v-model:value="formState.new_password"
-                placeholder="Create a new password"
+                :placeholder="t('auth.forgotPassword.form.newPasswordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
               >
@@ -164,17 +165,17 @@ function goBack() {
             </a-form-item>
 
             <a-form-item
-              label="Confirm Password"
+              :label="t('auth.forgotPassword.form.confirmPassword')"
               name="new_password2"
               :rules="[
-                { required: true, message: 'Please confirm your password!' },
-                { min: 8, message: 'Confirm password must be at least 8 characters long' }
+                { required: true, message: t('auth.forgotPassword.form.confirmPasswordRequired') },
+                { min: 8, message: t('auth.forgotPassword.form.confirmPasswordMinLength') }
               ]"
               class="mb-0"
             >
               <a-input-password
                 v-model:value="formState.new_password2"
-                placeholder="Re-enter your new password"
+                :placeholder="t('auth.forgotPassword.form.confirmPasswordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
               >
@@ -193,7 +194,7 @@ function goBack() {
             :loading="loading"
             :disabled="loading"
           >
-            <span v-if="!loading">{{ !isReset ? 'Send Reset Email' : 'Reset Password' }}</span>
+            <span v-if="!loading">{{ !isReset ? t('auth.forgotPassword.form.sendButton') : t('auth.forgotPassword.form.resetButton') }}</span>
             <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
           </a-button>
 
@@ -205,7 +206,7 @@ function goBack() {
               @click="goBack"
             >
               <Icon name="solar:arrow-left-bold" size="18" class="mr-2" />
-              {{ isReset ? 'Back to Email' : 'Back to Login' }}
+              {{ isReset ? t('auth.forgotPassword.form.backToEmail') : t('auth.forgotPassword.form.backToLogin') }}
             </a-button>
           </div>
 
@@ -214,8 +215,8 @@ function goBack() {
             <div class="flex items-start gap-3">
               <Icon name="solar:info-circle-bold" size="20" class="text-blue-600 mt-0.5" />
               <div class="text-sm text-gray-700 text-left">
-                <p class="font-semibold mb-1">Can't find the email?</p>
-                <p class="text-gray-600">Check your spam folder or try using a different email address.</p>
+                <p class="font-semibold mb-1">{{ t('auth.forgotPassword.form.helpTitle') }}</p>
+                <p class="text-gray-600">{{ t('auth.forgotPassword.form.helpText') }}</p>
               </div>
             </div>
           </div>
@@ -234,10 +235,10 @@ function goBack() {
         <div class="mb-8">
           <Icon name="solar:shield-check-bold" size="64" class="text-white/90 mb-6" />
           <h2 class="text-4xl font-bold mb-4">
-            Account Security
+            {{ t('auth.forgotPassword.hero.title') }}
           </h2>
           <p class="text-lg text-white/90 leading-relaxed">
-            We take your account security seriously. Follow the instructions sent to your email to reset your password safely.
+            {{ t('auth.forgotPassword.hero.description') }}
           </p>
         </div>
 
@@ -247,19 +248,19 @@ function goBack() {
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:check-circle-bold" size="24" />
             </div>
-            <span class="text-white/90">Use a strong, unique password</span>
+            <span class="text-white/90">{{ t('auth.forgotPassword.securityTips.strongPassword') }}</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:check-circle-bold" size="24" />
             </div>
-            <span class="text-white/90">Don't share your password</span>
+            <span class="text-white/90">{{ t('auth.forgotPassword.securityTips.dontShare') }}</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:check-circle-bold" size="24" />
             </div>
-            <span class="text-white/90">Enable two-factor authentication</span>
+            <span class="text-white/90">{{ t('auth.forgotPassword.securityTips.twoFactor') }}</span>
           </div>
         </div>
 
@@ -268,12 +269,12 @@ function goBack() {
           <div class="flex items-start gap-3">
             <Icon name="solar:question-circle-bold" size="24" class="text-white/90 mt-1" />
             <div>
-              <h3 class="font-semibold text-lg mb-2">Need Help?</h3>
+              <h3 class="font-semibold text-lg mb-2">{{ t('auth.forgotPassword.support.title') }}</h3>
               <p class="text-sm text-white/80 mb-3">
-                If you're having trouble resetting your password, our support team is here to help.
+                {{ t('auth.forgotPassword.support.description') }}
               </p>
               <a href="#" class="text-sm font-semibold text-white underline hover:text-white/80 transition-colors">
-                Contact Support →
+                {{ t('auth.forgotPassword.support.contactLink') }}
               </a>
             </div>
           </div>

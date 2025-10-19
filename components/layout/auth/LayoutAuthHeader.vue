@@ -4,9 +4,9 @@ import { useCartStore } from '~/stores/cart.store'
 
 const listOfLinks = computed(() => [
   { name: 'Giới thiệu', href: '#instructor' },
-  { name: 'Các khóa học', href: '#courses' },
-  { name: 'Quiz', href: '#quiz' },
-  { name: 'Video', href: '#video', hideIcon: true },
+  { name: 'Các khóa học', href: '/courses' },
+  { name: 'Quiz', href: '/#quiz' },
+  { name: 'Video', href: '/#video', hideIcon: true },
 ])
 
 const isMobileMenuOpen = ref(false)

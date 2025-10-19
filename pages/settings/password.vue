@@ -265,8 +265,8 @@ const handleReset = () => {
                   <div class="size-10 flex items-center justify-center bg-green-100 rounded-lg">
                     <Icon name="solar:letter-unread-bold" size="16" class="text-green-600" />
                   </div>
-                  <div>
-                    <p class="text-sm font-medium text-shade-9">{{ user?.email || 'N/A' }}</p>
+                  <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-medium text-shade-9 line-clamp-1 truncate">{{ user?.email || 'N/A' }}</p>
                     <p class="text-xs text-shade-6">Email</p>
                   </div>
                 </div>

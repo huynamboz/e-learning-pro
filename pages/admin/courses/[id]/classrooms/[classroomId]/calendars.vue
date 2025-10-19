@@ -44,6 +44,15 @@ const classroomId = route.params.classroomId as string
 // API composable
 const { getClassroomSessions } = useClassroomApi()
 
+// Helper function to safely extract time from date string
+function extractTimeFromDateString(dateString: string | undefined): string {
+  if (!dateString || typeof dateString !== 'string') {
+    return ''
+  }
+  const parts = dateString.split(' ')
+  return parts.length > 1 ? parts[1] : ''
+}
+
 // Convert session data to calendar events
 const convertSessionToEvent = (session: ClassroomSession): CalendarEvent => {
   const startDate = new Date(session.start_time)
@@ -118,7 +127,7 @@ onMounted(async () => {
       </div>
       <div v-else-if="upcomingEvent" class="grid text-xs">
         <b>{{ upcomingEvent.title }}</b>
-        <span>At: <b class="text-[#15803D]">{{ upcomingEvent.start.split(' ')[1] }} - {{ upcomingEvent.end.split(' ')[1] }}</b></span>
+        <span>At: <b class="text-[#15803D]">{{ extractTimeFromDateString(upcomingEvent.start) }} - {{ extractTimeFromDateString(upcomingEvent.end) }}</b></span>
         <span v-if="upcomingEvent.meeting_link" class="break-all">Link: {{ upcomingEvent.meeting_link }}</span>
         <span v-else class="text-gray-500">No meeting link provided</span>
       </div>

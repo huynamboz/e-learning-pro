@@ -8,6 +8,7 @@ definePageMeta({
 })
 
 const { login } = useAuth()
+const { t } = useI18n()
 
 const formState = reactive<LoginRequest>({
   email: '',
@@ -23,14 +24,14 @@ async function onFinish() {
     const result = await login(formState)
 
     if (result.success) {
-      notification.success({ message: 'Đăng nhập thành công!' })
+      notification.success({ message: t('auth.login.notifications.success') })
     }
     else {
-      notification.error({ message: result.error || 'Đăng nhập thất bại' })
+      notification.error({ message: result.error || t('auth.login.notifications.failed') })
     }
   }
   catch {
-    notification.error({ message: 'Có lỗi xảy ra, vui lòng thử lại' })
+    notification.error({ message: t('auth.login.notifications.error') })
   }
   finally {
     loading.value = false
@@ -57,28 +58,28 @@ async function onFinish() {
               <img src="@/assets/images/logo.png" class="rounded-lg w-16 h-16 sm:w-20 sm:h-20 object-cover" alt="logo">
             </div>
             <h1 class="text-gray-900 dark:text-white text-3xl sm:text-4xl font-bold mb-2">
-              Welcome Back!
+              {{ t('auth.login.form.title') }}
             </h1>
             <p class="text-gray-600 dark:text-gray-400 text-base">
-              Sign in to continue your learning journey
+              {{ t('auth.login.form.subtitle') }}
             </p>
           </div>
 
           <!-- Form Fields -->
           <div class="space-y-5">
             <a-form-item
-              label="Email Address"
+              :label="t('auth.login.form.email')"
               name="email"
               :rules="[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: t('auth.login.form.emailRequired') },
+                { type: 'email', message: t('auth.login.form.emailInvalid') }
               ]"
               class="mb-0"
             >
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                placeholder="your.email@example.com"
+                :placeholder="t('auth.login.form.emailPlaceholder')"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -88,14 +89,14 @@ async function onFinish() {
             </a-form-item>
 
             <a-form-item
-              label="Password"
+              :label="t('auth.login.form.password')"
               name="password"
-              :rules="[{ required: true, message: 'Please input your password!' }]"
+              :rules="[{ required: true, message: t('auth.login.form.passwordRequired') }]"
               class="mb-0"
             >
               <a-input-password
                 v-model:value="formState.password"
-                placeholder="Enter your password"
+                :placeholder="t('auth.login.form.passwordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
               >
@@ -109,13 +110,13 @@ async function onFinish() {
           <!-- Remember & Forgot Password -->
           <div class="flex items-center justify-between">
             <a-checkbox class="text-sm text-gray-600">
-              Remember me
+              {{ t('auth.login.form.rememberMe') }}
             </a-checkbox>
             <NuxtLink
               class="text-green-600 hover:text-green-700 text-sm font-semibold transition-colors"
               to="/auth/forgot-password"
             >
-              Forgot password?
+              {{ t('auth.login.form.forgotPassword') }}
             </NuxtLink>
           </div>
 
@@ -127,10 +128,10 @@ async function onFinish() {
             :loading="loading"
             :disabled="loading"
           >
-            <span v-if="!loading">Sign in</span>
+            <span v-if="!loading">{{ t('auth.login.form.submitButton') }}</span>
               <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
               <span v-if="loading" class="ml-2">
-                Loading...
+                {{ t('auth.login.form.loading') }}
               </span>
           </a-button>
 
@@ -141,7 +142,7 @@ async function onFinish() {
             </div>
             <div class="relative flex justify-center text-sm">
               <span class="px-4 bg-white text-gray-500 font-medium">
-                Or continue with
+                {{ t('auth.login.form.divider') }}
               </span>
             </div>
           </div>
@@ -154,18 +155,18 @@ async function onFinish() {
               <template #icon>
                 <Icon class="mr-2 text-xl" name="logos:google-icon" />
               </template>
-              Google
+              {{ t('auth.login.form.googleButton') }}
             </a-button>
           </div>
 
           <!-- Sign Up Link -->
           <div class="text-center mt-6 p-4 bg-gray-50 rounded-xl">
-            <span class="text-gray-600">Don't have an account? </span>
+            <span class="text-gray-600">{{ t('auth.login.form.registerPrompt') }} </span>
             <NuxtLink
               to="/auth/register"
               class="text-green-600 hover:text-green-700 font-semibold transition-colors"
             >
-              Sign up now
+              {{ t('auth.login.form.registerLink') }}
             </NuxtLink>
           </div>
         </a-form>
@@ -173,62 +174,8 @@ async function onFinish() {
     </div>
 
     <!-- Image Section -->
-    <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-green-500 to-green-700 items-center justify-center p-12">
-      <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-10 right-10 w-72 h-72 bg-white rounded-full blur-3xl" />
-        <div class="absolute bottom-10 left-10 w-96 h-96 bg-white rounded-full blur-3xl" />
-      </div>
-
-      <div class="relative z-10 text-white max-w-lg">
-        <div class="mb-8">
-          <Icon name="solar:book-bookmark-bold" size="64" class="text-white/90 mb-6" />
-          <h2 class="text-4xl font-bold mb-4">
-            Start Your Learning Journey
-          </h2>
-          <p class="text-lg text-white/90 leading-relaxed">
-            Join thousands of students learning Italian with interactive courses,
-            expert instructors, and personalized learning paths.
-          </p>
-        </div>
-
-        <!-- Features -->
-        <div class="space-y-4">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
-              <Icon name="solar:check-circle-bold" size="24" />
-            </div>
-            <span class="text-white/90">Access to 100+ courses</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
-              <Icon name="solar:check-circle-bold" size="24" />
-            </div>
-            <span class="text-white/90">Learn at your own pace</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
-              <Icon name="solar:check-circle-bold" size="24" />
-            </div>
-            <span class="text-white/90">Get certified on completion</span>
-          </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
-          <div>
-            <div class="text-3xl font-bold">10K+</div>
-            <div class="text-sm text-white/80">Students</div>
-          </div>
-          <div>
-            <div class="text-3xl font-bold">100+</div>
-            <div class="text-sm text-white/80">Courses</div>
-          </div>
-          <div>
-            <div class="text-3xl font-bold">4.8★</div>
-            <div class="text-sm text-white/80">Rating</div>
-          </div>
-        </div>
-      </div>
+    <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-green-500 to-green-700 items-center justify-center">
+      <img src="/images/italia.jpg" class="w-full h-full object-cover" alt="">
     </div>
   </div>
 </template>

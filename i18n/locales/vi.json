@@ -1348,7 +1348,16 @@
       "course": "Khóa học",
       "noInfo": "Chưa có thông tin",
       "ended": "Đã kết thúc",
-      "noMeetingLink": "Không có link học"
+      "noMeetingLink": "Không có link học",
+      "session": "Buổi học",
+      "classroom": "Phòng học",
+      "description": "Mô tả",
+      "meetingLinkNote": "Lưu ý quan trọng",
+      "meetingLinkWarning": "Nếu bạn bấm vào link để vào lớp thì sẽ không được ghi nhận điểm danh",
+      "studentCount": "Số học viên",
+      "students": "học viên",
+      "enrollmentCount": "Đã điểm danh",
+      "enrolled": "người điểm danh"
     },
     "joinClass": {
       "joinNow": "Vào học ngay"
@@ -1395,62 +1404,131 @@
   },
   "auth": {
     "login": {
-      "title": "Đăng nhập",
-      "subtitle": "Chào mừng trở lại! Vui lòng đăng nhập vào tài khoản của bạn.",
-      "email": "Email",
-      "emailPlaceholder": "Nhập email của bạn",
-      "password": "Mật khẩu",
-      "passwordPlaceholder": "Nhập mật khẩu của bạn",
-      "rememberMe": "Ghi nhớ đăng nhập",
-      "forgotPassword": "Quên mật khẩu?",
-      "loginButton": "Đăng nhập",
-      "noAccount": "Chưa có tài khoản?",
-      "signUp": "Đăng ký ngay",
-      "validation": {
+      "form": {
+        "title": "Chào mừng trở lại!",
+        "subtitle": "Đăng nhập để tiếp tục hành trình học tập của bạn",
+        "email": "Địa chỉ email",
+        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
+        "password": "Mật khẩu",
+        "passwordPlaceholder": "Nhập mật khẩu của bạn",
         "passwordRequired": "Vui lòng nhập mật khẩu!",
-        "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự!"
+        "rememberMe": "Ghi nhớ đăng nhập",
+        "forgotPassword": "Quên mật khẩu?",
+        "submitButton": "Đăng nhập",
+        "loading": "Đang tải...",
+        "divider": "Hoặc tiếp tục với",
+        "googleButton": "Google",
+        "registerPrompt": "Chưa có tài khoản?",
+        "registerLink": "Đăng ký ngay"
       },
-      "messages": {
-        "loginSuccess": "Đăng nhập thành công!",
-        "loginFailed": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
-        "invalidCredentials": "Email hoặc mật khẩu không đúng."
+      "notifications": {
+        "success": "Đăng nhập thành công!",
+        "failed": "Đăng nhập thất bại",
+        "error": "Có lỗi xảy ra, vui lòng thử lại"
       }
     },
     "register": {
-      "title": "Đăng ký",
-      "subtitle": "Tạo tài khoản mới để bắt đầu hành trình học tập của bạn.",
-      "firstName": "Tên",
-      "firstNamePlaceholder": "Nhập tên của bạn",
-      "lastName": "Họ",
-      "lastNamePlaceholder": "Nhập họ của bạn",
-      "email": "Email",
-      "emailPlaceholder": "Nhập email của bạn",
-      "password": "Mật khẩu",
-      "passwordPlaceholder": "Nhập mật khẩu của bạn",
-      "confirmPassword": "Xác nhận mật khẩu",
-      "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
-      "agreeTerms": "Tôi đồng ý với",
-      "termsAndConditions": "Điều khoản và Điều kiện",
-      "registerButton": "Đăng ký",
-      "hasAccount": "Đã có tài khoản?",
-      "signIn": "Đăng nhập ngay",
-      "validation": {
-        "firstNameRequired": "Vui lòng nhập tên!",
-        "lastNameRequired": "Vui lòng nhập họ!",
+      "hero": {
+        "title": "Tham gia cộng đồng của chúng tôi",
+        "description": "Tạo tài khoản và mở khóa quyền truy cập vào các khóa học tiếng Ý tốt nhất."
+      },
+      "benefits": {
+        "freeTrial": "Dùng thử miễn phí cho thành viên mới",
+        "lifetimeAccess": "Truy cập trọn đời tài liệu",
+        "qualityInstructors": "Giảng viên chất lượng"
+      },
+      "testimonial": {
+        "name": "Maria Rossi",
+        "role": "Học viên",
+        "quote": "Nền tảng học tiếng Ý tốt nhất! Các khóa học được cấu trúc tốt và giáo viên rất tuyệt vời."
+      },
+      "form": {
+        "title": "Tạo tài khoản",
+        "subtitle": "Bắt đầu hành trình học tập của bạn ngay hôm nay",
+        "username": "Tên người dùng",
+        "usernamePlaceholder": "Chọn tên người dùng",
+        "usernameRequired": "Vui lòng nhập tên người dùng!",
+        "usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự",
+        "email": "Địa chỉ email",
+        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
+        "password": "Mật khẩu",
+        "passwordPlaceholder": "Tạo mật khẩu mạnh",
         "passwordRequired": "Vui lòng nhập mật khẩu!",
-        "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự!",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
         "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu!",
-        "passwordsNotMatch": "Mật khẩu xác nhận không khớp!",
-        "agreeTermsRequired": "Vui lòng đồng ý với điều khoản và điều kiện!"
+        "termsText": "Tôi đồng ý với",
+        "termsLink": "Điều khoản và Điều kiện",
+        "and": "và",
+        "privacyLink": "Chính sách Bảo mật",
+        "submitButton": "Tạo tài khoản",
+        "divider": "Hoặc đăng ký bằng",
+        "googleButton": "Tiếp tục với Google",
+        "loginPrompt": "Đã có tài khoản?",
+        "loginLink": "Đăng nhập"
       },
-      "messages": {
-        "registerSuccess": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.",
-        "registerFailed": "Đăng ký thất bại. Vui lòng thử lại.",
-        "emailAlreadyExists": "Email này đã được sử dụng."
+      "validation": {
+        "termsRequired": "Vui lòng đồng ý với Điều khoản và Điều kiện",
+        "passwordLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "passwordMismatch": "Mật khẩu xác nhận không khớp"
+      },
+      "notifications": {
+        "success": "Đăng ký thành công! Vui lòng đăng nhập.",
+        "failed": "Đăng ký thất bại",
+        "error": "Có lỗi xảy ra, vui lòng thử lại"
+      }
+    },
+    "forgotPassword": {
+      "hero": {
+        "title": "Bảo mật tài khoản",
+        "description": "Chúng tôi coi trọng bảo mật tài khoản của bạn. Làm theo hướng dẫn được gửi đến email để đặt lại mật khẩu một cách an toàn."
+      },
+      "securityTips": {
+        "strongPassword": "Sử dụng mật khẩu mạnh, duy nhất",
+        "dontShare": "Không chia sẻ mật khẩu",
+        "twoFactor": "Bật xác thực hai yếu tố"
+      },
+      "support": {
+        "title": "Cần hỗ trợ?",
+        "description": "Nếu bạn gặp khó khăn trong việc đặt lại mật khẩu, đội ngũ hỗ trợ của chúng tôi sẵn sàng giúp đỡ.",
+        "contactLink": "Liên hệ hỗ trợ →"
+      },
+      "form": {
+        "title": "Quên mật khẩu?",
+        "subtitle": "Đừng lo lắng, chúng tôi sẽ gửi hướng dẫn đặt lại cho bạn",
+        "resetTitle": "Đặt lại mật khẩu",
+        "resetSubtitle": "Nhập mật khẩu mới bên dưới",
+        "email": "Địa chỉ email",
+        "emailPlaceholder": "your.email@example.com",
+        "emailRequired": "Vui lòng nhập email!",
+        "emailInvalid": "Vui lòng nhập email hợp lệ!",
+        "newPassword": "Mật khẩu mới",
+        "newPasswordPlaceholder": "Tạo mật khẩu mới",
+        "newPasswordRequired": "Vui lòng nhập mật khẩu mới!",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "confirmPassword": "Xác nhận mật khẩu",
+        "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+        "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu!",
+        "confirmPasswordMinLength": "Mật khẩu xác nhận phải có ít nhất 8 ký tự",
+        "sendButton": "Gửi email đặt lại",
+        "resetButton": "Đặt lại mật khẩu",
+        "backToEmail": "Quay lại email",
+        "backToLogin": "Quay lại đăng nhập",
+        "helpTitle": "Không tìm thấy email?",
+        "helpText": "Kiểm tra thư mục spam hoặc thử sử dụng địa chỉ email khác."
+      },
+      "notifications": {
+        "emailSent": "Email đặt lại mật khẩu đã được gửi thành công!",
+        "emailFailed": "Không thể gửi email đặt lại mật khẩu",
+        "passwordMismatch": "Mật khẩu xác nhận không khớp",
+        "resetSuccess": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.",
+        "resetFailed": "Đặt lại mật khẩu thất bại",
+        "error": "Có lỗi xảy ra, vui lòng thử lại"
       }
     },
     "forgotPassword": {

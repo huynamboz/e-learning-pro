@@ -1348,7 +1348,16 @@
       "course": "Course",
       "noInfo": "No information available",
       "ended": "Ended",
-      "noMeetingLink": "No meeting link available"
+      "noMeetingLink": "No meeting link available",
+      "session": "Session",
+      "classroom": "Classroom",
+      "description": "Description",
+      "meetingLinkNote": "Important Note",
+      "meetingLinkWarning": "If you click the link to join the class, you will not be marked as present",
+      "studentCount": "Student Count",
+      "students": "students",
+      "enrollmentCount": "Enrolled",
+      "enrolled": "enrolled"
     },
     "joinClass": {
       "joinNow": "Join Now"
@@ -1395,62 +1404,131 @@
   },
   "auth": {
     "login": {
-      "title": "Login",
-      "subtitle": "Welcome back! Please sign in to your account.",
-      "email": "Email",
-      "emailPlaceholder": "Enter your email",
-      "password": "Password",
-      "passwordPlaceholder": "Enter your password",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "loginButton": "Login",
-      "noAccount": "Don't have an account?",
-      "signUp": "Sign up now",
-      "validation": {
-        "emailRequired": "Please enter your email!",
+      "form": {
+        "title": "Welcome Back!",
+        "subtitle": "Sign in to continue your learning journey",
+        "email": "Email Address",
+        "emailPlaceholder": "your.email@example.com",
+        "emailRequired": "Please input your email!",
         "emailInvalid": "Please enter a valid email!",
-        "passwordRequired": "Please enter your password!",
-        "passwordMinLength": "Password must be at least 6 characters!"
+        "password": "Password",
+        "passwordPlaceholder": "Enter your password",
+        "passwordRequired": "Please input your password!",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot password?",
+        "submitButton": "Sign in",
+        "loading": "Loading...",
+        "divider": "Or continue with",
+        "googleButton": "Google",
+        "registerPrompt": "Don't have an account?",
+        "registerLink": "Sign up now"
       },
-      "messages": {
-        "loginSuccess": "Login successful!",
-        "loginFailed": "Login failed. Please check your credentials.",
-        "invalidCredentials": "Invalid email or password."
+      "notifications": {
+        "success": "Login successful!",
+        "failed": "Login failed",
+        "error": "An error occurred, please try again"
       }
     },
     "register": {
-      "title": "Register",
-      "subtitle": "Create a new account to start your learning journey.",
-      "firstName": "First Name",
-      "firstNamePlaceholder": "Enter your first name",
-      "lastName": "Last Name",
-      "lastNamePlaceholder": "Enter your last name",
-      "email": "Email",
-      "emailPlaceholder": "Enter your email",
-      "password": "Password",
-      "passwordPlaceholder": "Enter your password",
-      "confirmPassword": "Confirm Password",
-      "confirmPasswordPlaceholder": "Re-enter your password",
-      "agreeTerms": "I agree to the",
-      "termsAndConditions": "Terms and Conditions",
-      "registerButton": "Register",
-      "hasAccount": "Already have an account?",
-      "signIn": "Sign in now",
-      "validation": {
-        "firstNameRequired": "Please enter your first name!",
-        "lastNameRequired": "Please enter your last name!",
-        "emailRequired": "Please enter your email!",
-        "emailInvalid": "Please enter a valid email!",
-        "passwordRequired": "Please enter your password!",
-        "passwordMinLength": "Password must be at least 6 characters!",
-        "confirmPasswordRequired": "Please confirm your password!",
-        "passwordsNotMatch": "Passwords do not match!",
-        "agreeTermsRequired": "Please agree to the terms and conditions!"
+      "hero": {
+        "title": "Join Our Community",
+        "description": "Create your account and unlock access to world-class Italian courses, connect with expert teachers, and join a thriving community of learners."
       },
-      "messages": {
-        "registerSuccess": "Registration successful! Please check your email to verify your account.",
-        "registerFailed": "Registration failed. Please try again.",
-        "emailAlreadyExists": "This email is already in use."
+      "benefits": {
+        "freeTrial": "Free trial for new members",
+        "lifetimeAccess": "Lifetime access to materials",
+        "qualityInstructors": "Quality instructors"
+      },
+      "testimonial": {
+        "name": "Maria Rossi",
+        "role": "Student",
+        "quote": "Best Italian learning platform! The courses are well-structured and the teachers are amazing."
+      },
+      "form": {
+        "title": "Create Account",
+        "subtitle": "Start your learning journey today",
+        "username": "Username",
+        "usernamePlaceholder": "Choose a username",
+        "usernameRequired": "Please input your username!",
+        "usernameMinLength": "Username must be at least 3 characters",
+        "email": "Email Address",
+        "emailPlaceholder": "your.email@example.com",
+        "emailRequired": "Please input your email!",
+        "emailInvalid": "Please enter a valid email!",
+        "password": "Password",
+        "passwordPlaceholder": "Create a strong password",
+        "passwordRequired": "Please input your password!",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Re-enter your password",
+        "confirmPasswordRequired": "Please confirm your password!",
+        "termsText": "I agree to the",
+        "termsLink": "Terms and Conditions",
+        "and": "and",
+        "privacyLink": "Privacy Policy",
+        "submitButton": "Create Account",
+        "divider": "Or sign up with",
+        "googleButton": "Continue with Google",
+        "loginPrompt": "Already have an account?",
+        "loginLink": "Sign in"
+      },
+      "validation": {
+        "termsRequired": "Please agree to the Terms and Conditions",
+        "passwordLength": "Password must be at least 8 characters",
+        "passwordMismatch": "Password confirmation does not match"
+      },
+      "notifications": {
+        "success": "Registration successful! Please login.",
+        "failed": "Registration failed",
+        "error": "An error occurred, please try again"
+      }
+    },
+    "forgotPassword": {
+      "hero": {
+        "title": "Account Security",
+        "description": "We take your account security seriously. Follow the instructions sent to your email to reset your password safely."
+      },
+      "securityTips": {
+        "strongPassword": "Use a strong, unique password",
+        "dontShare": "Don't share your password",
+        "twoFactor": "Enable two-factor authentication"
+      },
+      "support": {
+        "title": "Need Help?",
+        "description": "If you're having trouble resetting your password, our support team is here to help.",
+        "contactLink": "Contact Support →"
+      },
+      "form": {
+        "title": "Forgot Password?",
+        "subtitle": "No worries, we'll send you reset instructions",
+        "resetTitle": "Reset Password",
+        "resetSubtitle": "Enter your new password below",
+        "email": "Email Address",
+        "emailPlaceholder": "your.email@example.com",
+        "emailRequired": "Please input your email!",
+        "emailInvalid": "Please enter a valid email!",
+        "newPassword": "New Password",
+        "newPasswordPlaceholder": "Create a new password",
+        "newPasswordRequired": "Please input your new password!",
+        "passwordMinLength": "Password must be at least 8 characters long",
+        "confirmPassword": "Confirm Password",
+        "confirmPasswordPlaceholder": "Re-enter your new password",
+        "confirmPasswordRequired": "Please confirm your password!",
+        "confirmPasswordMinLength": "Confirm password must be at least 8 characters long",
+        "sendButton": "Send Reset Email",
+        "resetButton": "Reset Password",
+        "backToEmail": "Back to Email",
+        "backToLogin": "Back to Login",
+        "helpTitle": "Can't find the email?",
+        "helpText": "Check your spam folder or try using a different email address."
+      },
+      "notifications": {
+        "emailSent": "Password reset email sent successfully!",
+        "emailFailed": "Failed to send password reset email",
+        "passwordMismatch": "Password confirmation does not match",
+        "resetSuccess": "Password reset successful! Please login.",
+        "resetFailed": "Password reset failed",
+        "error": "An error occurred, please try again"
       }
     },
     "forgotPassword": {

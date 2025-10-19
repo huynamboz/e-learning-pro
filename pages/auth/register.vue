@@ -8,6 +8,7 @@ definePageMeta({
 })
 
 const { register } = useAuth()
+const { t } = useI18n()
 
 const formState = reactive<RegisterRequest>({
   email: '',
@@ -23,7 +24,7 @@ async function onFinish() {
   // Validate terms agreement
   if (!agreedToTerms.value) {
     notification.error({
-      message: 'Please agree to the Terms and Conditions',
+      message: t('auth.register.validation.termsRequired'),
     })
     return
   }
@@ -31,7 +32,7 @@ async function onFinish() {
   // Validate password length
   if (formState.password.length < 8) {
     notification.error({
-      message: 'Mật khẩu phải có ít nhất 8 ký tự',
+      message: t('auth.register.validation.passwordLength'),
     })
     return
   }
@@ -39,7 +40,7 @@ async function onFinish() {
   // Validate passwords match
   if (formState.password !== formState.password2) {
     notification.error({
-      message: 'Mật khẩu xác nhận không khớp',
+      message: t('auth.register.validation.passwordMismatch'),
     })
     return
   }
@@ -51,19 +52,19 @@ async function onFinish() {
 
     if (result.success) {
       notification.success({
-        message: 'Đăng ký thành công! Vui lòng đăng nhập.',
+        message: t('auth.register.notifications.success'),
       })
       await navigateTo('/auth/login')
     }
     else {
       notification.error({
-        message: result.error || 'Đăng ký thất bại',
+        message: result.error || t('auth.register.notifications.failed'),
       })
     }
   }
   catch {
     notification.error({
-      message: 'Có lỗi xảy ra, vui lòng thử lại',
+      message: t('auth.register.notifications.error'),
     })
   }
   finally {
@@ -85,11 +86,10 @@ async function onFinish() {
         <div class="mb-8">
           <Icon name="solar:users-group-rounded-bold" size="64" class="text-white/90 mb-6" />
           <h2 class="text-4xl font-bold mb-4">
-            Join Our Community
+            {{ t('auth.register.hero.title') }}
           </h2>
           <p class="text-lg text-white/90 leading-relaxed">
-            Create your account and unlock access to world-class Italian courses,
-            connect with expert teachers, and join a thriving community of learners.
+            {{ t('auth.register.hero.description') }}
           </p>
         </div>
 
@@ -99,19 +99,19 @@ async function onFinish() {
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:verified-check-bold" size="24" />
             </div>
-            <span class="text-white/90">Free trial for new members</span>
+            <span class="text-white/90">{{ t('auth.register.benefits.freeTrial') }}</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:verified-check-bold" size="24" />
             </div>
-            <span class="text-white/90">Lifetime access to materials</span>
+            <span class="text-white/90">{{ t('auth.register.benefits.lifetimeAccess') }}</span>
           </div>
           <div class="flex items-center gap-3">
             <div class="p-2 bg-white/20 rounded-lg backdrop-blur">
               <Icon name="solar:verified-check-bold" size="24" />
             </div>
-            <span class="text-white/90">Certificate of completion</span>
+            <span class="text-white/90">{{ t('auth.register.benefits.qualityInstructors') }}</span>
           </div>
         </div>
 
@@ -120,12 +120,12 @@ async function onFinish() {
           <div class="flex items-center gap-3 mb-3">
             <img src="/images/avatar.jpg" alt="user" class="w-12 h-12 rounded-full border-2 border-white/50">
             <div>
-              <div class="font-semibold">Maria Rossi</div>
-              <div class="text-sm text-white/80">Student</div>
+              <div class="font-semibold">{{ t('auth.register.testimonial.name') }}</div>
+              <div class="text-sm text-white/80">{{ t('auth.register.testimonial.role') }}</div>
             </div>
           </div>
           <p class="text-sm text-white/90 italic">
-            "Best Italian learning platform! The courses are well-structured and the teachers are amazing."
+            "{{ t('auth.register.testimonial.quote') }}"
           </p>
           <div class="flex gap-1 mt-2">
             <Icon v-for="i in 5" :key="i" name="solar:star-bold" size="16" class="text-yellow-400" />
@@ -148,10 +148,10 @@ async function onFinish() {
           <!-- Logo & Header -->
           <div class="text-center mb-8">
             <h1 class="text-gray-900 dark:text-white text-3xl sm:text-4xl font-bold mb-2">
-              Create Account
+              {{ t('auth.register.form.title') }}
             </h1>
             <p class="text-gray-600 dark:text-gray-400 text-base">
-              Start your learning journey today
+              {{ t('auth.register.form.subtitle') }}
             </p>
           </div>
 
@@ -159,18 +159,18 @@ async function onFinish() {
           <div class="space-y-4">
             <!-- Username -->
             <a-form-item
-              label="Username"
+              :label="t('auth.register.form.username')"
               name="username"
               :rules="[
-                { required: true, message: 'Please input your username!' },
-                { min: 3, message: 'Username must be at least 3 characters' }
+                { required: true, message: t('auth.register.form.usernameRequired') },
+                { min: 3, message: t('auth.register.form.usernameMinLength') }
               ]"
               class="mb-0"
             >
               <a-input
                 v-model:value="formState.username"
                 size="large"
-                placeholder="Choose a username"
+                :placeholder="t('auth.register.form.usernamePlaceholder')"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -181,18 +181,18 @@ async function onFinish() {
 
             <!-- Email -->
             <a-form-item
-              label="Email Address"
+              :label="t('auth.register.form.email')"
               name="email"
               :rules="[
-                { required: true, message: 'Please input your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: t('auth.register.form.emailRequired') },
+                { type: 'email', message: t('auth.register.form.emailInvalid') }
               ]"
               class="mb-0"
             >
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                placeholder="your.email@example.com"
+                :placeholder="t('auth.register.form.emailPlaceholder')"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -203,17 +203,17 @@ async function onFinish() {
 
             <!-- Password -->
             <a-form-item
-              label="Password"
+              :label="t('auth.register.form.password')"
               name="password"
               :rules="[
-                { required: true, message: 'Please input your password!' },
-                { min: 8, message: 'Password must be at least 8 characters' }
+                { required: true, message: t('auth.register.form.passwordRequired') },
+                { min: 8, message: t('auth.register.form.passwordMinLength') }
               ]"
               class="mb-0"
             >
               <a-input-password
                 v-model:value="formState.password"
-                placeholder="Create a strong password"
+                :placeholder="t('auth.register.form.passwordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
               >
@@ -225,17 +225,17 @@ async function onFinish() {
 
             <!-- Confirm Password -->
             <a-form-item
-              label="Confirm Password"
+              :label="t('auth.register.form.confirmPassword')"
               name="password2"
               :rules="[
-                { required: true, message: 'Please confirm your password!' },
-                { min: 8, message: 'Password must be at least 8 characters' }
+                { required: true, message: t('auth.register.form.confirmPasswordRequired') },
+                { min: 8, message: t('auth.register.form.passwordMinLength') }
               ]"
               class="mb-0"
             >
               <a-input-password
                 v-model:value="formState.password2"
-                placeholder="Re-enter your password"
+                :placeholder="t('auth.register.form.confirmPasswordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
               >
@@ -250,10 +250,10 @@ async function onFinish() {
           <div class="flex items-start gap-2 pt-2">
             <a-checkbox v-model:checked="agreedToTerms" class="mt-1" />
             <span class="text-sm text-gray-600">
-              I agree to the
-              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">Terms and Conditions</a>
-              and
-              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">Privacy Policy</a>
+              {{ t('auth.register.form.termsText') }}
+              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">{{ t('auth.register.form.termsLink') }}</a>
+              {{ t('auth.register.form.and') }}
+              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">{{ t('auth.register.form.privacyLink') }}</a>
             </span>
           </div>
 
@@ -265,7 +265,7 @@ async function onFinish() {
             :loading="loading"
             :disabled="loading"
           >
-            <span v-if="!loading">Create Account</span>
+            <span v-if="!loading">{{ t('auth.register.form.submitButton') }}</span>
             <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
           </a-button>
 
@@ -276,7 +276,7 @@ async function onFinish() {
             </div>
             <div class="relative flex justify-center text-sm">
               <span class="px-4 bg-white text-gray-500 font-medium">
-                Or sign up with
+                {{ t('auth.register.form.divider') }}
               </span>
             </div>
           </div>
@@ -286,17 +286,17 @@ async function onFinish() {
             class="w-full !h-12 !rounded-xl text-base font-medium border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all shadow-sm hover:shadow"
           >
             <Icon class="mr-3 text-xl" name="logos:google-icon" />
-            Continue with Google
+            {{ t('auth.register.form.googleButton') }}
           </a-button>
 
           <!-- Sign In Link -->
           <div class="text-center mt-6 p-4 bg-gray-50 rounded-xl">
-            <span class="text-gray-600">Already have an account? </span>
+            <span class="text-gray-600">{{ t('auth.register.form.loginPrompt') }} </span>
             <NuxtLink
               to="/auth/login"
               class="text-green-600 hover:text-green-700 font-semibold transition-colors"
             >
-              Sign in
+              {{ t('auth.register.form.loginLink') }}
             </NuxtLink>
           </div>
         </a-form>

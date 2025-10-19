@@ -3,8 +3,9 @@ import type { CalendarClassroom, CalendarSession } from '~/types/course.type'
 import { formatDate, VueCal } from 'vue-cal'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import 'vue-cal/style'
+import EventDetailDialog from '~/components/calendar/EventDetailDialog.vue'
 
-interface CalendarEvent {
+export interface CalendarEvent {
   start: string
   end: string
   title: string
@@ -18,6 +19,7 @@ interface CalendarEvent {
   description?: string
   meeting_link?: string
   classroom_id?: string
+  classroom?: CalendarClassroom
   course_title?: string
 }
 
@@ -36,6 +38,10 @@ const selectedEventForJoin = ref<CalendarEvent | null>(null)
 const isJoiningClass = ref(false)
 const checkInError = ref<string | null>(null)
 
+// Event detail dialog state
+const showEventDetailDialog = ref(false)
+const selectedEventForDetail = ref<CalendarEvent | null>(null)
+
 const data: Ref<DemoExample> = ref({
   editable: false,
   events: [],
@@ -48,6 +54,15 @@ const currentView: Ref<string> = ref('week')
 // API composable
 const { getCalendarData, selfCheckInSession } = useClassroomApi()
 
+// Helper function to safely extract time from date string
+function extractTimeFromDateString(dateString: string | undefined): string {
+  if (!dateString || typeof dateString !== 'string') {
+    return ''
+  }  
+  const parts = dateString.split(' ')
+  return parts.length > 1 ? parts[1] : ''
+}
+
 
 // Convert session data to calendar events
 function convertSessionToEvent(session: CalendarSession, classroom: CalendarClassroom): CalendarEvent {
@@ -58,7 +73,8 @@ function convertSessionToEvent(session: CalendarSession, classroom: CalendarClas
     id: session.id,
     start: `${formatDate(startDate)} ${startDate.toTimeString().slice(0, 5)}`,
     end: `${formatDate(endDate)} ${endDate.toTimeString().slice(0, 5)}`,
-    title: session.topic,
+    title: classroom.title,
+    classroom: classroom,
     classroom_id: classroom.id,
     course_title: classroom.course.title,
     meeting_link: session.meeting_link || '',
@@ -134,8 +150,17 @@ watch(viewDate, async (newViewDate) => {
 //   await fetchCalendarData()
 // })
 
+// Handle event click to show detail dialog
+function openEventDetail(event: CalendarEvent) {
+  selectedEventForDetail.value = (event as any).event
+  console.log(selectedEventForDetail.value)
+  showEventDetailDialog.value = true
+}
+
 // Handle join class
 function startJoinClass(event: CalendarEvent) {
+  // close event detail dialog
+  console.log('startJoinClass', event)
   selectedEventForJoin.value = event
   checkInError.value = null // Reset error when opening dialog
   isJoinClassDialogVisible.value = true
@@ -314,7 +339,7 @@ onMounted(async () => {
                       <div class="mt-2 flex flex-col items-start gap-2 text-sm text-slate-600">
                         <div class="flex items-center gap-1.5 max-w-full">
                           <Icon name="i-heroicons-clock" size="16" class="h-4 w-4 text-slate-400" />
-                          <span class="font-medium">{{ event.start.split(' ')[1] }} - {{ event.end.split(' ')[1] }}</span>
+                          <span class="font-medium">{{ extractTimeFromDateString(event.start) }} - {{ extractTimeFromDateString(event.end) }}</span>
                         </div>
                         <div class="flex items-center gap-1.5 max-w-full">
                           <Icon name="i-heroicons-academic-cap" size="16" class="h-4 w-4 text-slate-400" />
@@ -388,6 +413,7 @@ onMounted(async () => {
               :views="['week']"
               time-at-cursor
               @ready="({ view }: any) => view.scrollToCurrentTime()"
+              @event-click="openEventDetail"
             />
           </div>
         </section>
@@ -420,12 +446,12 @@ onMounted(async () => {
         </p>
         <dl class="mt-4 space-y-3 text-sm text-slate-600">
           <div class="flex items-center justify-between gap-3">
-            <dt class="flex items-center gap-2 font-medium text-slate-400">
+            <dt v-if="extractTimeFromDateString(selectedEventForJoin.start) && extractTimeFromDateString(selectedEventForJoin.end)" class="flex items-center gap-2 font-medium text-slate-400">
               <Icon name="i-heroicons-clock" class="h-5 w-5 text-slate-300" />
               {{ $t('calendar.event.time') }}
             </dt>
             <dd class="font-semibold text-slate-600">
-              {{ selectedEventForJoin.start.split(' ')[1] }} - {{ selectedEventForJoin.end.split(' ')[1] }}
+              {{ extractTimeFromDateString(selectedEventForJoin.start) }} - {{ extractTimeFromDateString(selectedEventForJoin.end) }}
             </dd>
           </div>
           <div class="flex items-center justify-between gap-3">
@@ -486,6 +512,14 @@ onMounted(async () => {
       </div>
     </div>
   </a-modal>
+
+  <!-- Event Detail Dialog -->
+  <EventDetailDialog
+    v-model:visible="showEventDetailDialog"
+    :event="selectedEventForDetail"
+    @close="selectedEventForDetail = null"
+    @joinClass="startJoinClass"
+  />
 </template>
 
 <style>
