@@ -21,7 +21,7 @@ const bottomBarItems = [
   {
     name: 'Settings',
     icon: 'solar:settings-bold',
-    link: '/settings',
+    link: '#',
   },
 ]
 

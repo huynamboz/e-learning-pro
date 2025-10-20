@@ -248,7 +248,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
         <!-- Courses Grid -->
         <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <NuxtLink
-            v-for="(course, index) in _coursesData"
+            v-for="(course) in _coursesData"
             :key="course.id"
             class="group flex flex-col !bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
             :to="`/courses/${course.id}`"

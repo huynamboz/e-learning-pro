@@ -192,7 +192,7 @@ async function onFinish() {
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                :placeholder="t('auth.register.form.emailPlaceholder')"
+                placeholder="email@example.com"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -269,28 +269,8 @@ async function onFinish() {
             <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
           </a-button>
 
-          <!-- Divider -->
-          <div class="relative my-6">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-300" />
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-4 bg-white text-gray-500 font-medium">
-                {{ t('auth.register.form.divider') }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Google Sign Up -->
-          <a-button
-            class="w-full !h-12 !rounded-xl text-base font-medium border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all shadow-sm hover:shadow"
-          >
-            <Icon class="mr-3 text-xl" name="logos:google-icon" />
-            {{ t('auth.register.form.googleButton') }}
-          </a-button>
-
           <!-- Sign In Link -->
-          <div class="text-center mt-6 p-4 bg-gray-50 rounded-xl">
+          <div class="flex justify-center gap-1 text-center mt-6 p-4 bg-gray-50 rounded-xl">
             <span class="text-gray-600">{{ t('auth.register.form.loginPrompt') }} </span>
             <NuxtLink
               to="/auth/login"

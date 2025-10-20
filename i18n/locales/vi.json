@@ -1408,7 +1408,6 @@
         "title": "Chào mừng trở lại!",
         "subtitle": "Đăng nhập để tiếp tục hành trình học tập của bạn",
         "email": "Địa chỉ email",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
         "password": "Mật khẩu",
@@ -1420,13 +1419,21 @@
         "loading": "Đang tải...",
         "divider": "Hoặc tiếp tục với",
         "googleButton": "Google",
+        "googleLoading": "Đang đăng nhập...",
         "registerPrompt": "Chưa có tài khoản?",
         "registerLink": "Đăng ký ngay"
       },
       "notifications": {
         "success": "Đăng nhập thành công!",
         "failed": "Đăng nhập thất bại",
-        "error": "Có lỗi xảy ra, vui lòng thử lại"
+        "error": "Có lỗi xảy ra, vui lòng thử lại",
+        "googleSuccess": "Chào mừng bạn trở lại!",
+        "googleWelcome": "Chào mừng! Tài khoản của bạn đã được tạo thành công.",
+        "googleFailed": "Đăng nhập Google thất bại",
+        "googleNotConfigured": "Đăng nhập Google chưa được cấu hình",
+        "googlePopupClosed": "Đăng nhập đã bị hủy",
+        "googleAccessDenied": "Truy cập bị từ chối bởi Google",
+        "googlePopupBlocked": "Popup bị chặn. Vui lòng cho phép popup cho trang web này."
       }
     },
     "register": {
@@ -1452,7 +1459,6 @@
         "usernameRequired": "Vui lòng nhập tên người dùng!",
         "usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự",
         "email": "Địa chỉ email",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
         "password": "Mật khẩu",
@@ -1504,7 +1510,6 @@
         "resetTitle": "Đặt lại mật khẩu",
         "resetSubtitle": "Nhập mật khẩu mới bên dưới",
         "email": "Địa chỉ email",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
         "newPassword": "Mật khẩu mới",

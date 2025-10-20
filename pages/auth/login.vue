@@ -1,14 +1,64 @@
 <script setup lang="ts">
 import type { LoginRequest } from '~/types/auth.type'
 import { notification } from 'ant-design-vue'
+import { GoogleSignInButton } from 'vue3-google-signin'
 
 definePageMeta({
   layout: 'auth',
   middleware: 'guest',
 })
 
-const { login } = useAuth()
+const { login, loginWithGoogle } = useAuth()
 const { t } = useI18n()
+const config = useRuntimeConfig()
+const googleLoading = ref(false)
+
+// Handle Google login success
+async function handleGoogleSuccess(response: any) {
+  if (response.credential) {
+    googleLoading.value = true
+    const result = await loginWithGoogle(response.credential)
+
+    if (result.success) {
+      if (result.isNewUser) {
+        notification.success({
+          message: t('auth.login.notifications.googleWelcome') || 'Welcome! Your account has been created successfully.',
+        })
+      }
+      else {
+        notification.success({
+          message: t('auth.login.notifications.googleSuccess') || 'Welcome back!',
+        })
+      }
+    }
+    else {
+      notification.error({
+        message: result.error || t('auth.login.notifications.googleFailed') || 'Google login failed',
+      })
+    }
+  }
+  googleLoading.value = false
+}
+
+// Handle Google login error
+function handleGoogleError(error: any) {
+  console.error('Google login error:', error)
+
+  // Handle specific Google OAuth errors
+  let errorMessage = t('auth.login.notifications.googleFailed') || 'Google login failed'
+
+  if (error?.type === 'popup_closed_by_user') {
+    errorMessage = t('auth.login.notifications.googlePopupClosed') || 'Login was cancelled'
+  }
+  else if (error?.type === 'access_denied') {
+    errorMessage = t('auth.login.notifications.googleAccessDenied') || 'Access denied by Google'
+  }
+  else if (error?.type === 'popup_blocked') {
+    errorMessage = t('auth.login.notifications.googlePopupBlocked') || 'Popup was blocked. Please allow popups for this site.'
+  }
+
+  notification.error({ message: errorMessage })
+}
 
 const formState = reactive<LoginRequest>({
   email: '',
@@ -72,14 +122,14 @@ async function onFinish() {
               name="email"
               :rules="[
                 { required: true, message: t('auth.login.form.emailRequired') },
-                { type: 'email', message: t('auth.login.form.emailInvalid') }
+                { type: 'email', message: t('auth.login.form.emailInvalid') },
               ]"
               class="mb-0"
             >
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                :placeholder="t('auth.login.form.emailPlaceholder')"
+                placeholder="email@example.com"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>
@@ -129,10 +179,10 @@ async function onFinish() {
             :disabled="loading"
           >
             <span v-if="!loading">{{ t('auth.login.form.submitButton') }}</span>
-              <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
-              <span v-if="loading" class="ml-2">
-                {{ t('auth.login.form.loading') }}
-              </span>
+            <Icon v-if="!loading" class="ml-2 text-lg" name="solar:arrow-right-bold" />
+            <span v-if="loading" class="ml-2">
+              {{ t('auth.login.form.loading') }}
+            </span>
           </a-button>
 
           <!-- Divider -->
@@ -148,19 +198,17 @@ async function onFinish() {
           </div>
 
           <!-- Social Sign In -->
-          <div class="grid grid-cols-1 gap-3">
-            <a-button
-              class="!h-12 !flex items-center justify-center !rounded-xl text-sm font-medium border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all shadow-sm hover:shadow"
-            >
-              <template #icon>
-                <Icon class="mr-2 text-xl" name="logos:google-icon" />
-              </template>
-              {{ t('auth.login.form.googleButton') }}
-            </a-button>
+          <div class="flex justify-center">
+            <GoogleSignInButton
+              v-if="config.public.googleClientId"
+              :loading="googleLoading"
+              @success="handleGoogleSuccess"
+              @error="handleGoogleError"
+            />
           </div>
 
           <!-- Sign Up Link -->
-          <div class="text-center mt-6 p-4 bg-gray-50 rounded-xl">
+          <div class="flex justify-center gap-1 text-center mt-6 p-4 bg-gray-50 rounded-xl">
             <span class="text-gray-600">{{ t('auth.login.form.registerPrompt') }} </span>
             <NuxtLink
               to="/auth/register"

@@ -131,7 +131,7 @@ function goBack() {
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                :placeholder="t('auth.forgotPassword.form.emailPlaceholder')"
+                placeholder="email@example.com"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>

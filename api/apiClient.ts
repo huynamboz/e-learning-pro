@@ -27,8 +27,8 @@ export interface ListApiResponse<T> {
 
 // Token management using useCookie directly
 function getTokenFromCookie(): string | null {
-  const tokenCookie = useCookie('auth.token')
-  return tokenCookie.value || null
+  const { token } = useAuth()
+  return token.value || null
 }
 
 function setTokenToCookie(newToken: string | null): void {

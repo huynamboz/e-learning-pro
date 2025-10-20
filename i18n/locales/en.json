@@ -1408,7 +1408,6 @@
         "title": "Welcome Back!",
         "subtitle": "Sign in to continue your learning journey",
         "email": "Email Address",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Please input your email!",
         "emailInvalid": "Please enter a valid email!",
         "password": "Password",
@@ -1420,13 +1419,21 @@
         "loading": "Loading...",
         "divider": "Or continue with",
         "googleButton": "Google",
+        "googleLoading": "Signing in...",
         "registerPrompt": "Don't have an account?",
         "registerLink": "Sign up now"
       },
       "notifications": {
         "success": "Login successful!",
         "failed": "Login failed",
-        "error": "An error occurred, please try again"
+        "error": "An error occurred, please try again",
+        "googleSuccess": "Welcome back!",
+        "googleWelcome": "Welcome! Your account has been created successfully.",
+        "googleFailed": "Google login failed",
+        "googleNotConfigured": "Google login is not configured",
+        "googlePopupClosed": "Login was cancelled",
+        "googleAccessDenied": "Access denied by Google",
+        "googlePopupBlocked": "Popup was blocked. Please allow popups for this site."
       }
     },
     "register": {
@@ -1452,7 +1459,6 @@
         "usernameRequired": "Please input your username!",
         "usernameMinLength": "Username must be at least 3 characters",
         "email": "Email Address",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Please input your email!",
         "emailInvalid": "Please enter a valid email!",
         "password": "Password",
@@ -1504,7 +1510,6 @@
         "resetTitle": "Reset Password",
         "resetSubtitle": "Enter your new password below",
         "email": "Email Address",
-        "emailPlaceholder": "your.email@example.com",
         "emailRequired": "Please input your email!",
         "emailInvalid": "Please enter a valid email!",
         "newPassword": "New Password",

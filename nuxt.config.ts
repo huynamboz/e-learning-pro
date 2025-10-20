@@ -60,7 +60,7 @@ export default defineNuxtConfig({
     'highlight.js/styles/atom-one-dark.css',
   ],
 
-  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt'],
+  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt', 'nuxt-vue3-google-signin'],
 
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -105,7 +105,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1',
+      googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     },
+  },
+
+  googleSignIn: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
   },
 
   i18n: {
@@ -114,7 +119,8 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  routeRules:{
+  routeRules: {
     '/learning/**': { ssr: false },
-  }
+    '/auth/**': { ssr: false },
+  },
 })

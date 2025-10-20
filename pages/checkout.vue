@@ -23,21 +23,6 @@ onMounted(() => {
   cartStore.loadCart()
 })
 
-// Format time for display
-function formatTime(time: string): string {
-  if (!time)
-    return ''
-  return time.substring(0, 5)
-}
-
-// Format date for display
-function formatDate(dateString: string): string {
-  if (!dateString)
-    return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('vi-VN')
-}
-
 // Format level for display
 function formatLevel(level: string): string {
   const levelMap: Record<string, string> = {

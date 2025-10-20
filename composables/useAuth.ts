@@ -3,7 +3,6 @@ import { useApiClient } from '~/api/apiClient'
 
 import { useAuthApi } from '~/composables/api/useAuthApi'
 
-
 const authApi = useAuthApi()
 
 export function useAuth() {
@@ -86,10 +85,10 @@ export function useAuth() {
         user.value = response.user
 
         if (user.value?.is_teacher) {
-          await navigateTo('/admin')
+          window.location.href = '/admin'
         }
         else {
-          await navigateTo('/learning')
+          window.location.href = '/learning'
         }
 
         return { success: true }
@@ -102,6 +101,79 @@ export function useAuth() {
       return {
         success: false,
         error: error.data?.message || error.statusMessage || 'Login failed',
+      }
+    }
+  }
+
+  // Google OAuth login function
+  async function loginWithGoogle(idToken: string): Promise<{ success: boolean, error?: string, isNewUser?: boolean }> {
+    try {
+      const response = await apiClient.post<LoginResponse & { is_new_user?: boolean }>('/auth/google/', {
+        id_token: idToken,
+      })
+
+      if (response?.access && response?.user) {
+        token.value = response.access
+        user.value = response.user
+
+        if (user.value?.is_teacher) {
+          window.location.href = '/admin'
+        }
+        else {
+          window.location.href = '/learning'
+        }
+
+        return {
+          success: true,
+          isNewUser: response.is_new_user || false,
+        }
+      }
+
+      return { success: false, error: 'Invalid response from server' }
+    }
+    catch (error: any) {
+      console.error('Google login error:', error)
+
+      // Handle specific Google OAuth errors
+      let errorMessage = 'Google login failed'
+
+      if (error.data?.details?.id_token) {
+        const tokenError = error.data.details.id_token[0]
+        if (tokenError.includes('Token expired')) {
+          errorMessage = 'Google token expired. Please try again.'
+        }
+        else if (tokenError.includes('Email not verified')) {
+          errorMessage = 'Please verify your email with Google first.'
+        }
+        else if (tokenError.includes('Invalid token issuer')) {
+          errorMessage = 'Invalid Google token. Please try again.'
+        }
+        else if (tokenError.includes('Google OAuth is not configured')) {
+          errorMessage = 'Google login is not available. Please contact administrator.'
+        }
+        else {
+          errorMessage = tokenError
+        }
+      }
+      else if (error.data?.details?.non_field_errors) {
+        const nonFieldError = error.data.details.non_field_errors[0]
+        if (nonFieldError.includes('User account is disabled')) {
+          errorMessage = 'Your account has been disabled. Please contact administrator.'
+        }
+        else {
+          errorMessage = nonFieldError
+        }
+      }
+      else if (error.data?.message) {
+        errorMessage = error.data.message
+      }
+      else if (error.statusMessage) {
+        errorMessage = error.statusMessage
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
       }
     }
   }
@@ -234,6 +306,7 @@ export function useAuth() {
     isTeacher,
     profile,
     login,
+    loginWithGoogle,
     register,
     logout,
     fetchUser,
