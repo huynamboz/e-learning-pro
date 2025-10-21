@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { useAuth } from '#imports'
+import { useUserApi } from '~/composables/api/useUserApi'
+import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
 // Page meta
 definePageMeta({
   layout: 'default',
@@ -12,7 +15,11 @@ const router = useRouter()
 
 // Reactive data
 const { fetchProfile, profile } = useAuth()
+const { updateProfile } = useUserApi()
+const { t } = useI18n()
 const isFetchingProfile = ref(false)
+const isEditing = ref(false)
+const loading = ref(false)
 
 // Initialize activeTab from query params or default to 'PROFILE'
 const activeTab = ref((route.query.tab as string) || 'PROFILE')
@@ -38,12 +45,109 @@ function handleTabChange(tabKey: string) {
 
 function formatDate(dateString: string | undefined) {
   if (!dateString)
-    return 'N/A'
+    return t('profile.info.notAvailable')
   return new Date(dateString).toLocaleDateString('vi-VN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
+}
+
+// Get gender label
+function getGenderLabel(gender: string | undefined) {
+  if (!gender)
+    return t('profile.info.notAvailable')
+  const genderMap: Record<string, string> = {
+    male: t('profile.genders.male'),
+    female: t('profile.genders.female'),
+    other: t('profile.genders.other'),
+  }
+  return genderMap[gender] || t('profile.info.notAvailable')
+}
+
+// Get profession label
+function getProfessionLabel(profession: string | undefined) {
+  if (!profession)
+    return t('profile.info.notAvailable')
+  // You can add profession mapping here if needed
+  return t(`onboarding.step3.jobs.${profession}`)
+}
+
+// Edit form data
+const editForm = ref({
+  first_name: '',
+  last_name: '',
+  phone_number: '',
+  gender: '' as 'male' | 'female' | 'other' | '',
+  date_of_birth: '',
+  contact_address: '',
+  headline: '',
+  bio: '',
+})
+
+// Initialize edit form
+function initializeEditForm() {
+  if (profile.value) {
+    editForm.value = {
+      first_name: profile.value.first_name || '',
+      last_name: profile.value.last_name || '',
+      phone_number: profile.value.phone_number || '',
+      gender: profile.value.gender || '',
+      date_of_birth: profile.value.date_of_birth || '',
+      contact_address: profile.value.contact_address || '',
+      headline: profile.value.headline || '',
+      bio: profile.value.bio || '',
+    }
+  }
+}
+
+const jobOptions = computed(() => [
+  { value: 'student', label: t('onboarding.step3.jobs.student'), icon: 'solar:book-bold' },
+  { value: 'teacher', label: t('onboarding.step3.jobs.teacher'), icon: 'solar:graduation-bold' },
+  { value: 'engineer', label: t('onboarding.step3.jobs.engineer'), icon: 'solar:settings-bold' },
+  { value: 'doctor', label: t('onboarding.step3.jobs.doctor'), icon: 'solar:heart-bold' },
+  { value: 'lawyer', label: t('onboarding.step3.jobs.lawyer'), icon: 'solar:scale-bold' },
+  { value: 'business', label: t('onboarding.step3.jobs.business'), icon: 'solar:chart-bold' },
+  { value: 'designer', label: t('onboarding.step3.jobs.designer'), icon: 'solar:palette-bold' },
+  { value: 'developer', label: t('onboarding.step3.jobs.developer'), icon: 'solar:code-bold' },
+  { value: 'marketing', label: t('onboarding.step3.jobs.marketing'), icon: 'solar:megaphone-bold' },
+  { value: 'sales', label: t('onboarding.step3.jobs.sales'), icon: 'solar:shop-bold' },
+  { value: 'freelancer', label: t('onboarding.step3.jobs.freelancer'), icon: 'solar:user-plus-bold' },
+  { value: 'retired', label: t('onboarding.step3.jobs.retired'), icon: 'solar:home-bold' },
+  { value: 'unemployed', label: t('onboarding.step3.jobs.unemployed'), icon: 'solar:search-bold' },
+  { value: 'other', label: t('onboarding.step3.jobs.other'), icon: 'solar:more-circle-bold' },
+])
+
+// Handle edit
+function handleEdit() {
+  isEditing.value = true
+  initializeEditForm()
+}
+
+// Handle save
+async function handleSave() {
+  try {
+    loading.value = true
+    const updateData = {
+      ...editForm.value,
+      gender: editForm.value.gender || undefined,
+    }
+    await updateProfile(updateData)
+    await fetchProfile()
+    isEditing.value = false
+    message.success(t('profile.edit.success'))
+  } catch (error) {
+    console.error('Error updating profile:', error)
+    message.error(t('profile.edit.error'))
+  } finally {
+    loading.value = false
+  }
+}
+
+// Handle cancel
+function handleCancel() {
+  isEditing.value = false
+  initializeEditForm()
 }
 
 onMounted(() => {
@@ -64,7 +168,7 @@ onMounted(() => {
           </a-avatar>
           <div class="flex-1">
             <h1 class="text-3xl font-bold text-gray-900 mb-1">
-              {{ profile?.first_name }} {{ profile?.last_name }}
+              {{ profile?.last_name }} {{ profile?.first_name }} 
             </h1>
             <p class="text-gray-600 text-lg mb-3">
               {{ profile?.email }}
@@ -72,7 +176,7 @@ onMounted(() => {
             <div class="flex items-center space-x-6 text-sm text-gray-500">
               <div class="flex items-center space-x-2">
                 <Icon name="i-heroicons-calendar-days" class="w-4 h-4" />
-                <span>Tham gia từ {{ formatDate(profile?.created_at) }}</span>
+                <span>{{ t('profile.joinDate') }} {{ formatDate(profile?.created_at) }}</span>
               </div>
               <!-- <div class="flex items-center space-x-2">
                 <Icon name="i-heroicons-academic-cap" class="w-4 h-4" />
@@ -81,12 +185,26 @@ onMounted(() => {
             </div>
           </div>
           <div class="flex space-x-3">
-            <a-button type="primary">
+            <a-button v-if="!isEditing" class="!flex items-center gap-1" type="primary" @click="handleEdit">
               <template #icon>
                 <Icon name="i-heroicons-pencil" />
               </template>
-              Chỉnh sửa
+              {{ t('profile.editButton') }}
             </a-button>
+            <template v-else>
+              <a-button class="!flex items-center gap-1" type="primary" :loading="loading" @click="handleSave">
+                <template #icon>
+                  <Icon name="i-heroicons-check" />
+                </template>
+                {{ t('profile.edit.save') }}
+              </a-button>
+              <a-button class="!flex items-center gap-1" @click="handleCancel">
+                <template #icon>
+                  <Icon name="i-heroicons-x-mark" />
+                </template>
+                {{ t('profile.edit.cancel') }}
+              </a-button>
+            </template>
           </div>
         </div>
       </div>
@@ -105,15 +223,184 @@ onMounted(() => {
             <template #tab>
               <span class="flex items-center space-x-2">
                 <Icon name="i-heroicons-user" class="w-4 h-4" />
-                <span>Thông tin cá nhân</span>
+                <span>{{ t('profile.tabs.personalInfo') }}</span>
               </span>
             </template>
             <div class="p-6">
-              <ProfileForm
-                v-if="profile"
-                :data-profile="profile"
-                :is-fetching-profile="isFetchingProfile"
-              />
+              <!-- Profile Information Overview -->
+              <div v-if="profile" class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Icon name="i-heroicons-information-circle" class="w-5 h-5 text-blue-600" />
+                  {{ t('profile.title') }}
+                </h3>
+
+                <!-- Edit Form -->
+                <div v-if="isEditing" class="bg-gray-50 rounded-lg p-6">
+                  <h4 class="text-md font-semibold text-gray-900 mb-4">{{ t('profile.edit.title') }}</h4>
+                  
+                  <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Basic Information -->
+                    <div class="space-y-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('onboarding.step1.name.firstName') }}</label>
+                        <a-input
+                          v-model:value="editForm.first_name"
+                          :placeholder="t('onboarding.step1.name.firstNamePlaceholder')"
+                        />
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('onboarding.step1.name.lastName') }}</label>
+                        <a-input
+                          v-model:value="editForm.last_name"
+                          :placeholder="t('onboarding.step1.name.lastNamePlaceholder')"
+                        />
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.email') }}</label>
+                        <a-input
+                          :value="profile.email"
+                          disabled
+                          class="bg-gray-100"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.phone') }}</label>
+                        <a-input
+                          v-model:value="editForm.phone_number"
+                          :placeholder="t('profile.info.phone')"
+                        />
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.gender') }}</label>
+                        <a-select
+                          v-model:value="editForm.gender"
+                          :placeholder="t('profile.info.gender')"
+                          class="w-full"
+                        >
+                          <a-select-option value="male">{{ t('profile.genders.male') }}</a-select-option>
+                          <a-select-option value="female">{{ t('profile.genders.female') }}</a-select-option>
+                          <a-select-option value="other">{{ t('profile.genders.other') }}</a-select-option>
+                        </a-select>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.dateOfBirth') }}</label>
+                        <a-date-picker
+                        :value="dayjs(editForm.date_of_birth, 'YYYY-MM-DD')"
+                        size="large"
+                        class="w-full"
+                        format="YYYY-MM-DD"
+                        @change="(date: any) => editForm.date_of_birth = dayjs(date).format('YYYY-MM-DD')"
+                      >
+                        <template #prefix>
+                          <Icon name="solar:calendar-bold" size="16" class="text-gray-400" />
+                        </template>
+                      </a-date-picker>
+                      </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="space-y-4">
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.address') }}</label>
+                        <a-textarea
+                          v-model:value="editForm.contact_address"
+                          :placeholder="t('profile.info.address')"
+                          :rows="3"
+                        />
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.profession') }}</label>
+                        <a-select
+                          v-model:value="editForm.headline"
+                          :placeholder="t('profile.info.profession')"
+                          class="w-full"
+                        >
+                          <a-select-option v-for="option in jobOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                          </a-select-option>
+                        </a-select>
+                      </div>
+
+                      <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.bio') }}</label>
+                        <a-textarea
+                          v-model:value="editForm.bio"
+                          :placeholder="t('profile.info.bio')"
+                          :rows="3"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Display Mode -->
+                <div v-else class="grid md:grid-cols-2 gap-6">
+                  <!-- Basic Information -->
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.firstName') }}</span>
+                      <span class="text-sm text-gray-900">{{ profile.first_name || t('profile.info.notAvailable') }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.lastName') }}</span>
+                      <span class="text-sm text-gray-900">{{ profile.last_name || t('profile.info.notAvailable') }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.email') }}</span>
+                      <span class="text-sm text-gray-900">{{ profile.email || t('profile.info.notAvailable') }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.phone') }}</span>
+                      <span class="text-sm text-gray-900">{{ profile.phone_number || t('profile.info.notAvailable') }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.gender') }}</span>
+                      <span class="text-sm text-gray-900">{{ getGenderLabel(profile.gender) }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.dateOfBirth') }}</span>
+                      <span class="text-sm text-gray-900">
+                        {{ profile.date_of_birth ? new Date(profile.date_of_birth).toLocaleDateString('vi-VN') : t('profile.info.notAvailable') }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Additional Information -->
+                  <div class="space-y-4">
+                    <div class="flex items-start justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.address') }}</span>
+                      <span class="text-sm text-gray-900 text-right max-w-xs">
+                        {{ profile.contact_address || t('profile.info.notAvailable') }}
+                      </span>
+                    </div>
+
+                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.profession') }}</span>
+                      <span class="text-sm text-gray-900">{{ getProfessionLabel(profile.headline) || t('profile.info.notAvailable') }}</span>
+                    </div>
+
+                    <div v-if="profile.bio" class="flex items-start justify-between py-2 border-b border-gray-100">
+                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.bio') }}</span>
+                      <span class="text-sm text-gray-900 text-right max-w-xs">
+                        {{ profile.bio }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </a-tab-pane>
 
@@ -121,7 +408,7 @@ onMounted(() => {
             <template #tab>
               <span class="flex items-center space-x-2">
                 <Icon name="i-heroicons-academic-cap" class="w-4 h-4" />
-                <span>Khóa học của tôi</span>
+                <span>{{ t('profile.tabs.myCourses') }}</span>
               </span>
             </template>
             <div class="p-6">

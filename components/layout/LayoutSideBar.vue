@@ -180,7 +180,7 @@ onMounted(() => {
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[#0A1B39] truncate">
-              {{ profile?.first_name }} {{ profile?.last_name }}
+              {{ profile?.last_name }} {{ profile?.first_name }}
             </p>
             <p class="text-xs text-[#83899F] truncate">
               {{ profile?.email }}

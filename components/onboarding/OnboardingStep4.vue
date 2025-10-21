@@ -82,7 +82,7 @@ function getJobLabel(profession: string) {
           </div>
           <div>
             <h4 class="font-semibold text-gray-900">
-              {{ formData.first_name }} {{ formData.last_name }}
+              {{ formData.last_name }} {{ formData.first_name }}
             </h4>
             <p class="text-sm text-gray-600">
               {{ getGenderLabel(formData.gender) }}

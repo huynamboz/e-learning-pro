@@ -1040,6 +1040,36 @@
     "settings": "Settings"
   },
   "profile": {
+    "title": "Profile",
+    "editButton": "Edit",
+    "joinDate": "Joined since",
+    "coursesCount": "courses",
+    "tabs": {
+      "personalInfo": "Personal Information",
+      "myCourses": "My Courses"
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "profession": "Profession",
+      "gender": "Gender",
+      "dateOfBirth": "Date of Birth",
+      "bio": "Bio",
+      "notAvailable": "Not available"
+    },
+    "genders": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "edit": {
+      "title": "Edit Profile",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "success": "Profile updated successfully!",
+      "error": "Failed to update profile"
+    },
     "profile": "Profile",
     "myCourses": "My Courses",
     "settings": "Settings",

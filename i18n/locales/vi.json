@@ -905,28 +905,28 @@
           "complete": "Hoàn thành",
           "cancel": "Hủy"
         },
-         "actions": {
-           "viewDetails": "Xem chi tiết",
-           "confirmReceive": "Xác nhận nhận tiền",
-           "reject": "Từ chối"
-         },
-         "detailDialog": {
-           "title": "Chi tiết đơn hàng",
-           "invoice": "Mã hóa đơn",
-           "student": "Học viên",
-           "course": "Khóa học",
-           "classroom": "Lớp học",
-           "amount": "Số tiền",
-           "status": "Trạng thái",
-           "paymentMethod": "Phương thức thanh toán",
-           "paymentReference": "Mã tham chiếu thanh toán",
-           "notes": "Ghi chú",
-           "adminNote": "Ghi chú admin",
-           "canceledReason": "Lý do hủy",
-           "createdAt": "Ngày tạo",
-           "updatedAt": "Ngày cập nhật",
-           "close": "Đóng"
-         },
+        "actions": {
+          "viewDetails": "Xem chi tiết",
+          "confirmReceive": "Xác nhận nhận tiền",
+          "reject": "Từ chối"
+        },
+        "detailDialog": {
+          "title": "Chi tiết đơn hàng",
+          "invoice": "Mã hóa đơn",
+          "student": "Học viên",
+          "course": "Khóa học",
+          "classroom": "Lớp học",
+          "amount": "Số tiền",
+          "status": "Trạng thái",
+          "paymentMethod": "Phương thức thanh toán",
+          "paymentReference": "Mã tham chiếu thanh toán",
+          "notes": "Ghi chú",
+          "adminNote": "Ghi chú admin",
+          "canceledReason": "Lý do hủy",
+          "createdAt": "Ngày tạo",
+          "updatedAt": "Ngày cập nhật",
+          "close": "Đóng"
+        },
         "confirmDialog": {
           "confirmReceive": {
             "title": "Xác nhận nhận tiền",
@@ -1040,6 +1040,36 @@
     "settings": "Cài đặt"
   },
   "profile": {
+    "title": "Hồ sơ",
+    "editButton": "Chỉnh sửa",
+    "joinDate": "Tham gia từ",
+    "coursesCount": "khóa học",
+    "tabs": {
+      "personalInfo": "Thông tin cá nhân",
+      "myCourses": "Khóa học của tôi"
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "profession": "Nghề nghiệp",
+      "gender": "Giới tính",
+      "dateOfBirth": "Ngày sinh",
+      "bio": "Giới thiệu",
+      "notAvailable": "Chưa cập nhật"
+    },
+    "genders": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác"
+    },
+    "edit": {
+      "title": "Chỉnh sửa hồ sơ",
+      "save": "Lưu thay đổi",
+      "cancel": "Hủy",
+      "success": "Cập nhật hồ sơ thành công!",
+      "error": "Cập nhật hồ sơ thất bại"
+    },
     "profile": "Hồ sơ",
     "myCourses": "Khóa học của tôi",
     "settings": "Cài đặt",

@@ -74,7 +74,7 @@ async function handleItemClick(item: any) {
           </a-avatar>
             <div class="flex-1 min-w-0">
               <h3 class="text-sm font-semibold text-shade-9 truncate">
-                {{ profile?.first_name && profile?.last_name ? `${profile.first_name} ${profile.last_name}` : 'User' }}
+                {{ profile?.first_name && profile?.last_name ? `${profile.last_name} ${profile.first_name}` : 'User' }}
               </h3>
               <p class="text-xs text-shade-6 truncate">
                 {{ profile?.email || '' }}

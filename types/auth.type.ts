@@ -39,11 +39,11 @@ export interface User {
   date_of_birth?: string
   phone_number?: string
   address?: string
-  profession?: string
   bio?: string
 }
 
 export interface Profile {
+  headline?: string
   first_name: string
   last_name: string
   avatar?: string
@@ -53,7 +53,7 @@ export interface Profile {
   date_of_birth?: string
   phone_number?: string
   contact_address?: string
-  headline?: string
+  bio?: string
   created_at?: string
   updated_at?: string
   preferred_language?: string

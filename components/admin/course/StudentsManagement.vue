@@ -110,14 +110,14 @@ function formatDate(dateString: string | undefined) {
 
 
 function editUser(user: User) {
-  message.info(`Edit user: ${user.first_name} ${user.last_name}`)
+  message.info(`Edit user: ${user.last_name} ${user.first_name}`)
 }
 
 function toggleUserStatus(user: User) {
   const action = user.is_verified ? 'suspend' : 'activate'
   Modal.confirm({
     title: `Are you sure you want to ${action} this user?`,
-    content: `This will ${action} ${user.first_name} ${user.last_name}`,
+    content: `This will ${action} ${user.last_name} ${user.first_name}`,
     onOk() {
       user.is_verified = !user.is_verified
       message.success(`User ${action}d successfully`)
@@ -128,7 +128,7 @@ function toggleUserStatus(user: User) {
 function deleteUser(user: User) {
   Modal.confirm({
     title: 'Are you sure you want to delete this user?',
-    content: `This will permanently delete ${user.first_name} ${user.last_name}`,
+    content: `This will permanently delete ${user.last_name} ${user.first_name}`,
     okType: 'danger',
     onOk() {
       const index = users.value.findIndex(u => u.id === user.id)
@@ -170,7 +170,7 @@ function handleTableChange(pagination: any) {
               <a-avatar style="background-color:#87d068">
                 {{ record.first_name.charAt(0) }}
               </a-avatar>
-              <span>{{ record.first_name }} {{ record.last_name }}</span>
+              <span>{{ record.last_name }} {{ record.first_name }}</span>
             </a-space>
             </template>
             <template v-if="column.key === 'email'">
