@@ -16,6 +16,7 @@ const router = useRouter()
 // Reactive data
 const { fetchProfile, profile } = useAuth()
 const { updateProfile } = useUserApi()
+const { uploadWithPresignedUrl, uploadProgress, isUploading } = useFileUpload()
 const { t } = useI18n()
 const isFetchingProfile = ref(false)
 const isEditing = ref(false)
@@ -83,7 +84,11 @@ const editForm = ref({
   contact_address: '',
   headline: '',
   bio: '',
+  avatar: null as File | null,
 })
+
+// Avatar state
+const avatarPreview = ref('')
 
 // Initialize edit form
 function initializeEditForm() {
@@ -97,7 +102,9 @@ function initializeEditForm() {
       contact_address: profile.value.contact_address || '',
       headline: profile.value.headline || '',
       bio: profile.value.bio || '',
+      avatar: null,
     }
+    avatarPreview.value = profile.value.avatar || ''
   }
 }
 
@@ -128,10 +135,35 @@ function handleEdit() {
 async function handleSave() {
   try {
     loading.value = true
-    const updateData = {
-      ...editForm.value,
+    
+    // Prepare update data
+    const updateData: any = {
+      first_name: editForm.value.first_name,
+      last_name: editForm.value.last_name,
+      phone_number: editForm.value.phone_number,
       gender: editForm.value.gender || undefined,
+      date_of_birth: editForm.value.date_of_birth,
+      contact_address: editForm.value.contact_address,
+      headline: editForm.value.headline,
+      bio: editForm.value.bio,
     }
+
+    // Handle avatar upload if new file is selected
+    if (editForm.value.avatar) {
+      try {
+        const publicUrl = await uploadWithPresignedUrl(
+          editForm.value.avatar as File,
+          'Tải lên avatar thất bại',
+        )
+        console.log('publicUrl', publicUrl)
+        updateData.avatar = publicUrl
+      }
+      catch (error) {
+        console.error('Error uploading avatar:', error)
+        return
+      }
+    }
+
     await updateProfile(updateData)
     await fetchProfile()
     isEditing.value = false
@@ -148,6 +180,41 @@ async function handleSave() {
 function handleCancel() {
   isEditing.value = false
   initializeEditForm()
+}
+
+// Handle avatar upload
+function handleAvatarUpload(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      message.error(t('onboarding.step1.notifications.invalidFileType'))
+      return
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      message.error(t('onboarding.step1.notifications.fileSizeExceeded'))
+      return
+    }
+
+    editForm.value.avatar = file
+
+    // Create preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      avatarPreview.value = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+// Handle avatar remove
+function handleAvatarRemove() {
+  editForm.value.avatar = null
+  avatarPreview.value = ''
 }
 
 onMounted(() => {
@@ -237,6 +304,81 @@ onMounted(() => {
                 <!-- Edit Form -->
                 <div v-if="isEditing" class="bg-gray-50 rounded-lg p-6">
                   <h4 class="text-md font-semibold text-gray-900 mb-4">{{ t('profile.edit.title') }}</h4>
+                  
+                  <!-- Avatar Section -->
+                  <div class="mb-6">
+                    <h5 class="text-sm font-medium text-gray-700 mb-3">{{ t('profile.avatar.title') }}</h5>
+                    
+                    <!-- Upload Progress -->
+                    <div v-if="isUploading" class="mb-4">
+                      <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                        <span>{{ t('profile.avatar.uploading') }}</span>
+                        <span>{{ uploadProgress }}%</span>
+                      </div>
+                      <a-progress
+                        :percent="uploadProgress"
+                        :show-info="false"
+                        status="active"
+                        stroke-color="#3b82f6"
+                        class="!h-2"
+                      />
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                      <!-- Current Avatar -->
+                      <div class="relative">
+                        <a-avatar :size="80" :src="avatarPreview" class="border-2 border-gray-200">
+                          <span class="text-2xl font-semibold text-white">
+                            {{ (profile?.first_name || 'U')[0].toUpperCase() }}
+                          </span>
+                        </a-avatar>
+                        <!-- Loading overlay -->
+                        <div v-if="isUploading" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                          <Icon name="i-heroicons-arrow-path" size="20" class="text-white animate-spin" />
+                        </div>
+                        <!-- Remove button -->
+                        <div v-if="avatarPreview && !isUploading" class="absolute -top-1 -right-1">
+                          <a-button
+                            type="text"
+                            size="small"
+                            danger
+                            @click="handleAvatarRemove"
+                            class="!p-1 !min-w-0 !h-6 !w-6 rounded-full bg-red-500 hover:bg-red-600"
+                          >
+                            <Icon name="i-heroicons-x-mark" size="12" class="text-white" />
+                          </a-button>
+                        </div>
+                      </div>
+                      
+                      <!-- Upload Controls -->
+                      <div class="flex-1">
+                        <div class="space-y-2">
+                          <label 
+                            class="inline-flex items-center px-4 py-2 rounded-lg cursor-pointer transition-colors"
+                            :class="isUploading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 hover:bg-blue-100'"
+                          >
+                            <Icon 
+                              :name="isUploading ? 'i-heroicons-arrow-path' : 'i-heroicons-photo'" 
+                              size="16" 
+                              class="mr-2"
+                              :class="isUploading ? 'text-gray-400 animate-spin' : 'text-blue-600'"
+                            />
+                            {{ isUploading ? t('profile.avatar.uploading') : t('profile.avatar.upload') }}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              class="hidden"
+                              :disabled="isUploading"
+                              @change="handleAvatarUpload"
+                            >
+                          </label>
+                          <p class="text-xs text-gray-500">
+                            {{ t('profile.avatar.formats') }} • {{ t('profile.avatar.maxSize') }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div class="grid md:grid-cols-2 gap-6">
                     <!-- Basic Information -->

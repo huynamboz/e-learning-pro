@@ -1070,6 +1070,15 @@
       "success": "Cập nhật hồ sơ thành công!",
       "error": "Cập nhật hồ sơ thất bại"
     },
+    "avatar": {
+      "title": "Ảnh đại diện",
+      "upload": "Tải lên ảnh mới",
+      "remove": "Xóa ảnh",
+      "change": "Thay đổi ảnh",
+      "uploading": "Đang tải lên...",
+      "maxSize": "Tối đa 5MB",
+      "formats": "JPG, PNG, GIF"
+    },
     "profile": "Hồ sơ",
     "myCourses": "Khóa học của tôi",
     "settings": "Cài đặt",

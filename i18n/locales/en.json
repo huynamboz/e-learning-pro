@@ -1070,6 +1070,15 @@
       "success": "Profile updated successfully!",
       "error": "Failed to update profile"
     },
+    "avatar": {
+      "title": "Profile Picture",
+      "upload": "Upload new photo",
+      "remove": "Remove photo",
+      "change": "Change photo",
+      "uploading": "Uploading...",
+      "maxSize": "Max 5MB",
+      "formats": "JPG, PNG, GIF"
+    },
     "profile": "Profile",
     "myCourses": "My Courses",
     "settings": "Settings",
