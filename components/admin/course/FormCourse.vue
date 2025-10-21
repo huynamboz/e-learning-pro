@@ -14,7 +14,7 @@ const route = useRoute()
 const router = useRouter()
 const { uploadFile, uploadImage, delete: deleteCourse } = useCourseApi()
 
-const { fetchCategories, categories, fetchCourseDetail, currentCourse, clearCurrentCourse, createCourse, updateCourse, isCreatingCourse } = useCourse()
+const { fetchCategories, categories, fetchCourseDetail, currentCourse, clearCurrentCourse, createCourse, updateCourse } = useCourse()
 const { user } = useAuth()
 
 const formState = ref<CoursePayload>({
@@ -243,7 +243,7 @@ async function handleSave() {
         }
         else {
           // File hasn't changed, no need to upload
-          console.log(t('admin.formCourse.upload.fileUnchanged'))
+          console.error(t('admin.formCourse.upload.fileUnchanged'))
         }
       }
       else {
@@ -380,7 +380,6 @@ function handleFreeToggle(checked: boolean) {
 
 // Handle price change
 function handlePriceChange(value: number | null) {
-  console.log(value)
   if (value && value > 0) {
     // If price is greater than 0, turn off free toggle
     formState.value.is_free = false
@@ -416,6 +415,7 @@ async function confirmDeleteCourse() {
     await router.push('/admin/courses')
   }
   catch (error) {
+    console.error('Error deleting course:', error)
     notification.error({
       message: t('admin.formCourse.notifications.deleteFailed'),
       description: t('admin.formCourse.notifications.deleteFailedDescription'),

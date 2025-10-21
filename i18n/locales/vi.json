@@ -4,6 +4,182 @@
       "message": "Đang tải..."
     }
   },
+  "onboarding": {
+    "steps": {
+      "basicInfo": {
+        "title": "Thông tin cơ bản",
+        "description": "Hãy cung cấp tên và chọn avatar cho tài khoản của bạn"
+      },
+      "personalInfo": {
+        "title": "Thông tin cá nhân",
+        "description": "Chia sẻ một số thông tin cá nhân để chúng tôi hiểu rõ hơn về bạn"
+      },
+      "contactInfo": {
+        "title": "Thông tin liên hệ",
+        "description": "Cung cấp địa chỉ và thông tin nghề nghiệp của bạn"
+      },
+      "confirmation": {
+        "title": "Xác nhận thông tin",
+        "description": "Kiểm tra lại thông tin trước khi hoàn thành"
+      }
+    },
+    "step1": {
+      "avatar": {
+        "title": "Chọn avatar",
+        "uploadLabel": "Tải lên ảnh của bạn",
+        "uploadDescription": "JPG, PNG tối đa 5MB"
+      },
+      "name": {
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "firstNamePlaceholder": "Nhập tên của bạn",
+        "lastNamePlaceholder": "Nhập họ của bạn"
+      },
+      "notifications": {
+        "invalidFileType": "Vui lòng chọn file ảnh",
+        "fileSizeExceeded": "Kích thước file không được vượt quá 5MB"
+      }
+    },
+    "step2": {
+      "gender": {
+        "title": "Giới tính",
+        "male": "Nam",
+        "female": "Nữ",
+        "other": "Khác"
+      },
+      "dateOfBirth": {
+        "title": "Ngày tháng năm sinh",
+        "placeholder": "Chọn ngày sinh"
+      },
+      "phone": {
+        "title": "Số điện thoại",
+        "placeholder": "Nhập số điện thoại của bạn",
+        "description": "Số điện thoại sẽ được sử dụng để liên hệ và xác thực tài khoản",
+        "validation": {
+          "invalid": "Số điện thoại không hợp lệ"
+        }
+      },
+      "validation": {
+        "birthYearInvalid": "Năm sinh không hợp lệ"
+      }
+    },
+    "step3": {
+      "address": {
+        "title": "Địa chỉ liên hệ",
+        "placeholder": "Nhập địa chỉ đầy đủ của bạn",
+        "description": "Địa chỉ sẽ được sử dụng để gửi tài liệu học tập và thông báo quan trọng"
+      },
+      "profession": {
+        "title": "Công việc hiện tại",
+        "placeholder": "Chọn nghề nghiệp của bạn"
+      },
+      "bio": {
+        "title": "Thông tin bổ sung (Tùy chọn)",
+        "placeholder": "Giới thiệu ngắn về bản thân, mục tiêu học tập...",
+        "description": "Thông tin này sẽ giúp chúng tôi hiểu rõ hơn về bạn và cá nhân hóa trải nghiệm học tập"
+      },
+      "jobs": {
+        "student": "Học sinh/Sinh viên",
+        "teacher": "Giáo viên",
+        "engineer": "Kỹ sư",
+        "doctor": "Bác sĩ",
+        "lawyer": "Luật sư",
+        "business": "Kinh doanh",
+        "designer": "Thiết kế",
+        "developer": "Lập trình viên",
+        "marketing": "Marketing",
+        "sales": "Bán hàng",
+        "freelancer": "Freelancer",
+        "retired": "Đã nghỉ hưu",
+        "unemployed": "Đang tìm việc",
+        "other": "Khác"
+      }
+    },
+    "step4": {
+      "title": "Xác nhận thông tin",
+      "description": "Vui lòng kiểm tra lại thông tin trước khi hoàn thành",
+      "summary": {
+        "dateOfBirth": "Ngày sinh:",
+        "phoneNumber": "Số điện thoại:",
+        "profession": "Nghề nghiệp:",
+        "address": "Địa chỉ:",
+        "bio": "Giới thiệu:",
+        "notUpdated": "Chưa cập nhật"
+      },
+      "privacy": {
+        "title": "Thông tin bảo mật",
+        "description": "Thông tin cá nhân của bạn sẽ được bảo mật và chỉ sử dụng để cải thiện trải nghiệm học tập. Bạn có thể cập nhật thông tin này bất cứ lúc nào trong phần cài đặt."
+      }
+    },
+    "navigation": {
+      "previous": "Quay lại",
+      "next": "Tiếp theo",
+      "complete": "Hoàn thành",
+      "uploading": "Đang tải lên {progress}%"
+    },
+    "validation": {
+      "firstNameRequired": "Vui lòng nhập tên",
+      "lastNameRequired": "Vui lòng nhập họ",
+      "firstNameMinLength": "Tên phải có ít nhất 2 ký tự",
+      "lastNameMinLength": "Họ phải có ít nhất 2 ký tự",
+      "avatarRequired": "Vui lòng chọn avatar",
+      "genderRequired": "Vui lòng chọn giới tính",
+      "dateOfBirthRequired": "Vui lòng chọn ngày sinh",
+      "phoneRequired": "Vui lòng nhập số điện thoại",
+      "addressRequired": "Vui lòng nhập địa chỉ",
+      "professionRequired": "Vui lòng chọn công việc"
+    },
+    "footer": {
+      "step1": "Thông tin này sẽ giúp chúng tôi cá nhân hóa trải nghiệm học tập cho bạn",
+      "step2": "Thông tin cá nhân sẽ được bảo mật và chỉ sử dụng để cải thiện dịch vụ",
+      "step3": "Địa chỉ sẽ được sử dụng để gửi tài liệu học tập và thông báo quan trọng",
+      "step4": "Cảm ơn bạn đã hoàn thành quá trình thiết lập tài khoản!"
+    }
+  },
+  "password": {
+    "title": "Cài đặt mật khẩu",
+    "description": "Bảo mật tài khoản của bạn bằng cách cập nhật mật khẩu",
+    "form": {
+      "title": "Thay đổi mật khẩu",
+      "currentPassword": "Mật khẩu hiện tại",
+      "currentPasswordPlaceholder": "Nhập mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Nhập mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "confirmPasswordPlaceholder": "Nhập lại mật khẩu mới",
+      "updateButton": "Cập nhật mật khẩu",
+      "resetButton": "Đặt lại"
+    },
+    "strength": {
+      "label": "Độ mạnh mật khẩu:",
+      "levels": {
+        "veryWeak": "Rất yếu",
+        "weak": "Yếu",
+        "medium": "Trung bình",
+        "strong": "Mạnh",
+        "veryStrong": "Rất mạnh"
+      }
+    },
+    "accountInfo": {
+      "title": "Thông tin tài khoản",
+      "email": "Email",
+      "joinDate": "Ngày tham gia"
+    },
+    "validation": {
+      "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "newPasswordRequired": "Vui lòng nhập mật khẩu mới",
+      "newPasswordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+      "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu",
+      "passwordsNotMatch": "Mật khẩu xác nhận không khớp"
+    },
+    "notifications": {
+      "success": "Cập nhật mật khẩu thành công!",
+      "currentPasswordIncorrect": "Mật khẩu hiện tại không đúng",
+      "newPasswordInvalid": "Mật khẩu mới không hợp lệ",
+      "confirmPasswordMismatch": "Mật khẩu xác nhận không khớp",
+      "updateFailed": "Cập nhật mật khẩu thất bại"
+    }
+  },
   "homepage": {
     "hero": {
       "badge": "Học với sự hướng dẫn chuyên nghiệp",

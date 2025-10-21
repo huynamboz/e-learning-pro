@@ -58,7 +58,7 @@ async function handleItemClick(item: any) {
 <template>
   <Popover>
     <PopoverTrigger as-child>
-      <BaseAvatar :src="profile?.avatar || ''" :size="'40px'" />
+      <BaseAvatar :src="profile?.avatar || ''" size="40px" />
     </PopoverTrigger>
     <PopoverContent class="w-fit border-0 p-3 shadow-none bg-transparent">
       <div class="h-fit border-[1px] bg-shade-1 shadow-none w-[221px] p-0 rounded-[20px]" style="box-shadow: var(--popover-box-shadow);">

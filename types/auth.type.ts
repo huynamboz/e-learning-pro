@@ -34,23 +34,35 @@ export interface User {
   role?: 'user' | 'teacher' | 'admin'
   createdAt?: string
   updatedAt?: string
+  // Additional onboarding fields
+  gender?: 'male' | 'female' | 'other'
+  date_of_birth?: string
+  phone_number?: string
+  address?: string
+  profession?: string
+  bio?: string
 }
 
 export interface Profile {
-  avatar: string | null
-  bio: string
-  created_at: string
-  email: string
-  facebook_url: string | null
   first_name: string
-  headline: string
   last_name: string
-  linkedin_url: string | null
-  preferred_language: string
-  updated_at: string
-  website_url: string | null
-  x_handle: string | null
-  youtube_url: string | null
+  avatar?: string
+  email?: string
+  // Additional onboarding fields
+  gender?: 'male' | 'female' | 'other'
+  date_of_birth?: string
+  phone_number?: string
+  contact_address?: string
+  headline?: string
+  created_at?: string
+  updated_at?: string
+  preferred_language?: string
+  occupation?: string
+  website_url?: string
+  x_handle?: string
+  linkedin_url?: string
+  youtube_url?: string
+  facebook_url?: string
 }
 
 // User role types

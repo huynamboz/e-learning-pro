@@ -4,6 +4,182 @@
       "message": "Loading..."
     }
   },
+  "onboarding": {
+    "steps": {
+      "basicInfo": {
+        "title": "Basic Information",
+        "description": "Please provide your name and choose an avatar for your account"
+      },
+      "personalInfo": {
+        "title": "Personal Information",
+        "description": "Share some personal information so we can understand you better"
+      },
+      "contactInfo": {
+        "title": "Contact Information",
+        "description": "Provide your address and professional information"
+      },
+      "confirmation": {
+        "title": "Confirm Information",
+        "description": "Please review your information before completing"
+      }
+    },
+    "step1": {
+      "avatar": {
+        "title": "Choose Avatar",
+        "uploadLabel": "Upload your image",
+        "uploadDescription": "JPG, PNG max 5MB"
+      },
+      "name": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "firstNamePlaceholder": "Enter your first name",
+        "lastNamePlaceholder": "Enter your last name"
+      },
+      "notifications": {
+        "invalidFileType": "Please select an image file",
+        "fileSizeExceeded": "File size cannot exceed 5MB"
+      }
+    },
+    "step2": {
+      "gender": {
+        "title": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other"
+      },
+      "dateOfBirth": {
+        "title": "Date of Birth",
+        "placeholder": "Select your birth date"
+      },
+      "phone": {
+        "title": "Phone Number",
+        "placeholder": "Enter your phone number",
+        "description": "Phone number will be used for contact and account verification",
+        "validation": {
+          "invalid": "Invalid phone number"
+        }
+      },
+      "validation": {
+        "birthYearInvalid": "Invalid birth year"
+      }
+    },
+    "step3": {
+      "address": {
+        "title": "Contact Address",
+        "placeholder": "Enter your full address",
+        "description": "Address will be used to send learning materials and important notifications"
+      },
+      "profession": {
+        "title": "Current Job",
+        "placeholder": "Select your profession"
+      },
+      "bio": {
+        "title": "Additional Information (Optional)",
+        "placeholder": "Brief introduction about yourself, learning goals...",
+        "description": "This information will help us understand you better and personalize your learning experience"
+      },
+      "jobs": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "engineer": "Engineer",
+        "doctor": "Doctor",
+        "lawyer": "Lawyer",
+        "business": "Business",
+        "designer": "Designer",
+        "developer": "Developer",
+        "marketing": "Marketing",
+        "sales": "Sales",
+        "freelancer": "Freelancer",
+        "retired": "Retired",
+        "unemployed": "Looking for work",
+        "other": "Other"
+      }
+    },
+    "step4": {
+      "title": "Confirm Information",
+      "description": "Please review your information before completing",
+      "summary": {
+        "dateOfBirth": "Date of Birth:",
+        "phoneNumber": "Phone Number:",
+        "profession": "Profession:",
+        "address": "Address:",
+        "bio": "Introduction:",
+        "notUpdated": "Not updated"
+      },
+      "privacy": {
+        "title": "Privacy Information",
+        "description": "Your personal information will be kept secure and used only to improve your learning experience. You can update this information anytime in settings."
+      }
+    },
+    "navigation": {
+      "previous": "Back",
+      "next": "Next",
+      "complete": "Complete",
+      "uploading": "Uploading {progress}%"
+    },
+    "validation": {
+      "firstNameRequired": "Please enter your first name",
+      "lastNameRequired": "Please enter your last name",
+      "firstNameMinLength": "First name must be at least 2 characters",
+      "lastNameMinLength": "Last name must be at least 2 characters",
+      "avatarRequired": "Please select an avatar",
+      "genderRequired": "Please select your gender",
+      "dateOfBirthRequired": "Please select your birth date",
+      "phoneRequired": "Please enter your phone number",
+      "addressRequired": "Please enter your address",
+      "professionRequired": "Please select your profession"
+    },
+    "footer": {
+      "step1": "This information will help us personalize your learning experience",
+      "step2": "Personal information will be kept secure and used only to improve our service",
+      "step3": "Address will be used to send learning materials and important notifications",
+      "step4": "Thank you for completing the account setup process!"
+    }
+  },
+  "password": {
+    "title": "Password Settings",
+    "description": "Secure your account by updating your password",
+    "form": {
+      "title": "Change Password",
+      "currentPassword": "Current Password",
+      "currentPasswordPlaceholder": "Enter your current password",
+      "newPassword": "New Password",
+      "newPasswordPlaceholder": "Enter your new password",
+      "confirmPassword": "Confirm New Password",
+      "confirmPasswordPlaceholder": "Re-enter your new password",
+      "updateButton": "Update Password",
+      "resetButton": "Reset"
+    },
+    "strength": {
+      "label": "Password Strength:",
+      "levels": {
+        "veryWeak": "Very Weak",
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong",
+        "veryStrong": "Very Strong"
+      }
+    },
+    "accountInfo": {
+      "title": "Account Information",
+      "email": "Email",
+      "joinDate": "Join Date"
+    },
+    "validation": {
+      "currentPasswordRequired": "Please enter your current password",
+      "newPasswordRequired": "Please enter your new password",
+      "newPasswordMinLength": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your password",
+      "passwordsNotMatch": "Passwords do not match"
+    },
+    "notifications": {
+      "success": "Password updated successfully!",
+      "currentPasswordIncorrect": "Current password is incorrect",
+      "newPasswordInvalid": "New password is invalid",
+      "confirmPasswordMismatch": "Password confirmation does not match",
+      "updateFailed": "Failed to update password"
+    }
+  },
   "homepage": {
     "hero": {
       "badge": "Learn with Expert Guidance",

@@ -127,7 +127,8 @@ async function onFinish() {
       fetchProfile()
     }
   }
-  catch (error) {
+  catch (error: any) {
+    console.error('Error updating profile:', error)
     notification.error({
       message: t('profileForm.messages.updateFailed'),
     })

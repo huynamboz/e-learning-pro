@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { useAuth } from '#imports'
-import { message } from 'ant-design-vue'
 // Page meta
 definePageMeta({
   layout: 'default',
-  middleware: 'auth',
+  middleware: ['auth', 'onboarding'],
 })
 
 // Get route and router
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n()
 
 // Reactive data
-const { fetchProfile, user, profile } = useAuth()
+const { fetchProfile, profile } = useAuth()
 const isFetchingProfile = ref(false)
 
 // Initialize activeTab from query params or default to 'PROFILE'
@@ -38,10 +36,6 @@ function handleTabChange(tabKey: string) {
   })
 }
 
-function handleShareProfile() {
-  message.success(t('profilePage.shareProfileSuccess'))
-}
-
 function formatDate(dateString: string | undefined) {
   if (!dateString)
     return 'N/A'
@@ -63,7 +57,7 @@ onMounted(() => {
     <div class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-6xl mx-auto px-4 py-8">
         <div class="flex items-center gap-6">
-          <a-avatar :src="profile?.avatar" v-if="profile?.avatar" :size="80" class="bg-green-500 shadow-lg">
+          <a-avatar v-if="profile?.avatar" :src="profile?.avatar" :size="80" class="bg-green-500 shadow-lg">
             <span class="text-2xl font-semibold text-white">
               {{ (profile?.first_name || 'U')[0].toUpperCase() }}
             </span>

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
 import { message } from 'ant-design-vue'
-import { useAuth } from '~/composables/useAuth'
+import { reactive, ref } from 'vue'
 import { useUserApi } from '~/composables/api/useUserApi'
+import { useAuth } from '~/composables/useAuth'
 
 definePageMeta({
-  middleware: 'auth',
+  middleware: ['auth', 'onboarding'],
   layout: 'default',
 })
 
@@ -25,91 +25,110 @@ const formData = reactive({
 })
 
 // Form rules
-const rules = {
+const rules = computed(() => ({
   oldPassword: [
-    { required: true, message: 'Vui lòng nhập mật khẩu hiện tại', trigger: 'blur' },
+    { required: true, message: t('password.validation.currentPasswordRequired'), trigger: 'blur' },
   ],
   newPassword: [
-    { required: true, message: 'Vui lòng nhập mật khẩu mới', trigger: 'blur' },
-    { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự', trigger: 'blur' },
+    { required: true, message: t('password.validation.newPasswordRequired'), trigger: 'blur' },
+    { min: 6, message: t('password.validation.newPasswordMinLength'), trigger: 'blur' },
   ],
   confirmPassword: [
-    { required: true, message: 'Vui lòng xác nhận mật khẩu', trigger: 'blur' },
+    { required: true, message: t('password.validation.confirmPasswordRequired'), trigger: 'blur' },
     {
       validator: (rule: any, value: string) => {
         if (value !== formData.newPassword) {
-          return Promise.reject('Mật khẩu xác nhận không khớp')
+          return Promise.reject(t('password.validation.passwordsNotMatch'))
         }
         return Promise.resolve()
       },
       trigger: 'blur',
     },
   ],
-}
+}))
 
 // Password strength indicator
-const getPasswordStrength = (password: string) => {
+function getPasswordStrength(password: string) {
   let score = 0
-  if (password.length >= 6) score++
-  if (password.length >= 8) score++
-  if (password.length >= 12) score++
-  if (/[a-z]/.test(password)) score++
-  if (/[A-Z]/.test(password)) score++
-  if (/\d/.test(password)) score++
-  if (/[@$!%*?&]/.test(password)) score++
+  if (password.length >= 6)
+    score++
+  if (password.length >= 8)
+    score++
+  if (password.length >= 12)
+    score++
+  if (/[a-z]/.test(password))
+    score++
+  if (/[A-Z]/.test(password))
+    score++
+  if (/\d/.test(password))
+    score++
+  if (/[@$!%*?&]/.test(password))
+    score++
   return Math.min(score, 5) // Cap at 5 for display
 }
 
 const passwordStrength = computed(() => {
   const score = getPasswordStrength(formData.newPassword)
-  const strength = ['Rất yếu', 'Yếu', 'Trung bình', 'Mạnh', 'Rất mạnh'][score] || 'Rất yếu'
+  const strengthLevels = [
+    t('password.strength.levels.veryWeak'),
+    t('password.strength.levels.weak'),
+    t('password.strength.levels.medium'),
+    t('password.strength.levels.strong'),
+    t('password.strength.levels.veryStrong'),
+  ]
+  const strength = strengthLevels[score] || t('password.strength.levels.veryWeak')
   const color = ['#ff4d4f', '#ff7a45', '#ffa940', '#52c41a', '#389e0d'][score] || '#ff4d4f'
   return { score, strength, color }
 })
 
 // Handle form submission
-const handleSubmit = async () => {
+async function handleSubmit() {
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     // Call API change password
     await changePassword({
       old_password: formData.oldPassword,
       new_password: formData.newPassword,
       new_password2: formData.confirmPassword,
     })
-    
-    message.success('Cập nhật mật khẩu thành công!')
-    
+
+    message.success(t('password.notifications.success'))
+
     // Reset form
     formData.oldPassword = ''
     formData.newPassword = ''
     formData.confirmPassword = ''
     formRef.value.resetFields()
-    
-  } catch (error: any) {
+  }
+  catch (error: any) {
     console.error('Error updating password:', error)
-    
+
     // Handle specific error messages
     if (error?.response?.data?.details?.old_password) {
-      message.error('Mật khẩu hiện tại không đúng')
-    } else if (error?.response?.data?.details?.new_password) {
-      message.error('Mật khẩu mới không hợp lệ')
-    } else if (error?.response?.data?.details?.new_password2) {
-      message.error('Mật khẩu xác nhận không khớp')
-    } else if (error?.response?.data?.message) {
-      message.error(error.response.data.message)
-    } else {
-      message.error('Cập nhật mật khẩu thất bại')
+      message.error(t('password.notifications.currentPasswordIncorrect'))
     }
-  } finally {
+    else if (error?.response?.data?.details?.new_password) {
+      message.error(t('password.notifications.newPasswordInvalid'))
+    }
+    else if (error?.response?.data?.details?.new_password2) {
+      message.error(t('password.notifications.confirmPasswordMismatch'))
+    }
+    else if (error?.response?.data?.message) {
+      message.error(error.response.data.message)
+    }
+    else {
+      message.error(t('password.notifications.updateFailed'))
+    }
+  }
+  finally {
     loading.value = false
   }
 }
 
 // Handle form reset
-const handleReset = () => {
+function handleReset() {
   formData.oldPassword = ''
   formData.newPassword = ''
   formData.confirmPassword = ''
@@ -128,10 +147,10 @@ const handleReset = () => {
           </div>
           <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-shade-9">
-              Cài đặt mật khẩu
+              {{ t('password.title') }}
             </h1>
             <p class="text-shade-6">
-              Bảo mật tài khoản của bạn bằng cách cập nhật mật khẩu
+              {{ t('password.description') }}
             </p>
           </div>
         </div>
@@ -144,7 +163,7 @@ const handleReset = () => {
           <div class="bg-card border rounded-2xl p-6 sm:p-8 shadow-md">
             <h2 class="text-xl font-bold text-shade-9 mb-6 flex items-center gap-2">
               <Icon name="solar:shield-keyhole-bold" size="20" class="text-blue" />
-              Thay đổi mật khẩu
+              {{ t('password.form.title') }}
             </h2>
 
             <a-form
@@ -155,10 +174,10 @@ const handleReset = () => {
               @finish="handleSubmit"
             >
               <!-- Current Password -->
-              <a-form-item label="Mật khẩu hiện tại" name="oldPassword" class="mb-6">
+              <a-form-item :label="t('password.form.currentPassword')" name="oldPassword" class="mb-6">
                 <a-input-password
                   v-model:value="formData.oldPassword"
-                  placeholder="Nhập mật khẩu hiện tại"
+                  :placeholder="t('password.form.currentPasswordPlaceholder')"
                   size="large"
                   class="rounded-xl"
                 >
@@ -169,10 +188,10 @@ const handleReset = () => {
               </a-form-item>
 
               <!-- New Password -->
-              <a-form-item label="Mật khẩu mới" name="newPassword" class="mb-4">
+              <a-form-item :label="t('password.form.newPassword')" name="newPassword" class="mb-4">
                 <a-input-password
                   v-model:value="formData.newPassword"
-                  placeholder="Nhập mật khẩu mới"
+                  :placeholder="t('password.form.newPasswordPlaceholder')"
                   size="large"
                   class="rounded-xl"
                 >
@@ -180,12 +199,12 @@ const handleReset = () => {
                     <Icon name="solar:lock-keyhole-bold" size="16" class="text-shade-5" />
                   </template>
                 </a-input-password>
-                
+
                 <!-- Password Strength Indicator -->
                 <div v-if="formData.newPassword" class="mt-3">
                   <div class="flex items-center gap-2 mb-2">
-                    <span class="text-sm text-shade-6">Độ mạnh mật khẩu:</span>
-                    <span 
+                    <span class="text-sm text-shade-6">{{ t('password.strength.label') }}</span>
+                    <span
                       class="text-sm font-medium"
                       :style="{ color: passwordStrength.color }"
                     >
@@ -198,8 +217,8 @@ const handleReset = () => {
                       :key="i"
                       class="h-2 flex-1 rounded-full transition-all duration-300"
                       :class="i <= passwordStrength.score ? 'opacity-100' : 'opacity-20'"
-                      :style="{ 
-                        backgroundColor: i <= passwordStrength.score ? passwordStrength.color : '#e5e7eb' 
+                      :style="{
+                        backgroundColor: i <= passwordStrength.score ? passwordStrength.color : '#e5e7eb',
                       }"
                     />
                   </div>
@@ -207,10 +226,10 @@ const handleReset = () => {
               </a-form-item>
 
               <!-- Confirm Password -->
-              <a-form-item label="Xác nhận mật khẩu mới" name="confirmPassword" class="mb-8">
+              <a-form-item :label="t('password.form.confirmPassword')" name="confirmPassword" class="mb-8">
                 <a-input-password
                   v-model:value="formData.confirmPassword"
-                  placeholder="Nhập lại mật khẩu mới"
+                  :placeholder="t('password.form.confirmPasswordPlaceholder')"
                   size="large"
                   class="rounded-xl"
                 >
@@ -227,14 +246,14 @@ const handleReset = () => {
                   size="large"
                   :loading="loading"
                 >
-                  Cập nhật mật khẩu
+                  {{ t('password.form.updateButton') }}
                 </a-button>
-                
+
                 <a-button
                   size="large"
                   @click="handleReset"
                 >
-                  Đặt lại
+                  {{ t('password.form.resetButton') }}
                 </a-button>
               </div>
             </a-form>
@@ -248,7 +267,7 @@ const handleReset = () => {
             <div class="bg-card border rounded-2xl p-6 shadow-md">
               <h3 class="text-lg font-bold text-shade-9 mb-4 flex items-center gap-2">
                 <Icon name="solar:user-circle-bold" size="20" class="text-blue" />
-                Thông tin tài khoản
+                {{ t('password.accountInfo.title') }}
               </h3>
               <div class="space-y-3">
                 <div class="flex items-center gap-3">
@@ -256,21 +275,29 @@ const handleReset = () => {
                     <Icon name="solar:user-bold" size="16" class="text-blue-600" />
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-shade-9">{{ profile?.first_name || 'N/A' }}</p>
-                    <p class="text-xs text-shade-6">{{ profile?.last_name || 'N/A' }}</p>
+                    <p class="text-sm font-medium text-shade-9">
+                      {{ profile?.first_name || 'N/A' }}
+                    </p>
+                    <p class="text-xs text-shade-6">
+                      {{ profile?.last_name || 'N/A' }}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center gap-3">
                   <div class="size-10 flex items-center justify-center bg-green-100 rounded-lg">
                     <Icon name="solar:letter-unread-bold" size="16" class="text-green-600" />
                   </div>
                   <div class="flex-1 overflow-hidden">
-                    <p class="text-sm font-medium text-shade-9 line-clamp-1 truncate">{{ user?.email || 'N/A' }}</p>
-                    <p class="text-xs text-shade-6">Email</p>
+                    <p class="text-sm font-medium text-shade-9 line-clamp-1 truncate">
+                      {{ user?.email || 'N/A' }}
+                    </p>
+                    <p class="text-xs text-shade-6">
+                      {{ t('password.accountInfo.email') }}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div class="flex items-center gap-3">
                   <div class="size-10 flex items-center justify-center bg-orange-100 rounded-lg">
                     <Icon name="solar:calendar-bold" size="16" class="text-orange-600" />
@@ -279,7 +306,9 @@ const handleReset = () => {
                     <p class="text-sm font-medium text-shade-9">
                       {{ profile?.created_at ? new Date(profile.created_at).toLocaleDateString('vi-VN') : 'N/A' }}
                     </p>
-                    <p class="text-xs text-shade-6">Ngày tham gia</p>
+                    <p class="text-xs text-shade-6">
+                      {{ t('password.accountInfo.joinDate') }}
+                    </p>
                   </div>
                 </div>
               </div>

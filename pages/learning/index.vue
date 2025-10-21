@@ -5,7 +5,7 @@ import { useCourseApi } from '@/composables/api/useCourseApi'
 import EnrolledCourseCard from '~/components/course/EnrolledCourseCard.vue'
 
 definePageMeta({
-  middleware: 'auth',
+  middleware: ['auth', 'onboarding'],
   layout: 'default',
 })
 
