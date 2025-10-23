@@ -193,6 +193,8 @@ export interface Lesson {
   is_unlocked: boolean
   thumbnail: string | null
   is_completed: boolean
+  quiz_count: number
+  comment_count: number
 }
 
 // Course API Response Types

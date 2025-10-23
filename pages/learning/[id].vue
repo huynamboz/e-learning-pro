@@ -332,7 +332,7 @@ onBeforeUnmount(() => {
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="quiz" :tab="$t('course.quizTab')">
+              <a-tab-pane key="quiz" :tab="`${t('course.quizTab')} (${activeLesson?.quiz_count || 0})`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     {{ t('course.courseQuiz') }}
@@ -344,10 +344,10 @@ onBeforeUnmount(() => {
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="comments" :tab="$t('course.comments')">
+              <a-tab-pane key="comments" :tab="`${t('course.comments')} (${activeLesson?.comment_count || 0})`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    {{ t('course.comments') }}
+                    {{ t('course.comments') }} 
                   </h2>
                   <CommentList
                     v-if="activeLesson"

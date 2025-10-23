@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useLearnStore, type CourseLesson } from '~/stores/learn.store'
+import type { CourseLesson } from '~/stores/learn.store'
+import { useLearnStore } from '~/stores/learn.store'
 
 interface Props {
   lesson: CourseLesson
@@ -16,7 +17,8 @@ function selectLesson() {
 async function toggleCompletion(e: any) {
   try {
     await learnStore.toggleLessonCompletion(props.lesson.id, e.target.checked)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error toggling lesson completion:', error)
     // Revert checkbox state on error
     e.target.checked = !e.target.checked
@@ -32,7 +34,7 @@ const isLessonActive = computed(() => {
 
 <template>
   <div
-    class="flex items-center justify-between py-4 px-4 group lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
+    class="flex items-center justify-between py-4 px-4 group rounded-lg lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
     :class="{
       '!bg-green-600 !text-white': isLessonActive,
     }"
@@ -54,7 +56,7 @@ const isLessonActive = computed(() => {
         {{ lessonIndex + 1 }}. {{ lesson.title }}
       </span>
     </div>
-    <div class="flex items-center gap-1.5 group-hover:text-white" :class="{ 'text-white': lesson.isActive, 'text-gray-500': !lesson.isActive }">
+    <div class="flex items-center gap-1.5 group-hover:text-white" :class="{ '!text-white': isLessonActive, 'text-gray-500': !lesson.isActive }">
       <Icon name="tabler:video" size="16" />
       <span class="text-sm">{{ lesson.video_duration_formatted || '0min' }}</span>
     </div>
