@@ -62,6 +62,11 @@ export function useSidebar() {
     //   link: '/admin/classrooms',
     // },
     {
+      name: t('adminMenu.quizManagement'),
+      icon: 'i-heroicons-clipboard-document-list',
+      link: '/admin/quiz-management',
+    },
+    {
       name: t('adminMenu.students'),
       icon: 'i-heroicons-users',
       link: '/admin/users',

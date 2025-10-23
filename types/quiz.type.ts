@@ -26,6 +26,7 @@ export interface Quiz {
   timeType: 'limit' | 'no-limit'
   quantity: number | null
   unit: 'minute' | 'hour' | 'second' | null
+  retake_limit: number | null // Number of times user can retake the quiz (null = unlimited)
   questions: QuizQuestion[]
   number_of_questions: number
   created_at?: string
@@ -47,6 +48,7 @@ export interface QuizFormData {
   timeType: string
   quantity: number | null
   unit: string
+  retake_limit: number | null
 }
 
 export interface CreateQuizPayload {
@@ -58,6 +60,7 @@ export interface CreateQuizPayload {
   timeType: 'limit' | 'no-limit'
   quantity?: number
   unit?: 'minute' | 'hour' | 'second'
+  retake_limit?: number | null
   questions: QuizQuestion[]
 }
 

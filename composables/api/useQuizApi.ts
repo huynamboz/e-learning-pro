@@ -15,7 +15,7 @@ export interface QuizSampleAnswer {
 
 export interface QuizQuestion {
   id: string
-  question_type: 'multiple_choice' | 'text_input'
+  question_type: 'multiple_choice' | 'text_input' | 'essay'
   prompt: string
   explanation: string
   score: number
@@ -41,6 +41,7 @@ export interface QuizApiResponse {
   time_unit: 'minute' | 'hour' | 'second' | null
   time_limit_display: string
   is_published: boolean
+  retake_limit: number | null // Number of times user can retake the quiz (null = unlimited)
   questions: QuizQuestion[]
   total_questions: number
   created_by: number
@@ -83,16 +84,23 @@ export interface StudentAnswer {
   id: string
   question: string
   question_prompt: string
-  question_type: 'multiple_choice' | 'text_input'
+  question_type: 'multiple_choice' | 'text_input' | 'essay'
   selected_option: string | null
   selected_option_text: string | null
-  text_answer: string
-  is_correct: boolean
+  text_answer?: string
+  answer_text: string // Add answer_text field for essay questions
+  is_correct: boolean | null // Allow null for pending essay grading
   correct_answer?: {
     label?: string
     text: string
   }
   answered_at: string
+  // Essay-specific fields
+  essay_grading_status?: 'pending' | 'graded'
+  essay_score?: number
+  essay_feedback?: string
+  essay_corrected_answer?: string
+  status?: string
 }
 
 export interface StartQuizAttemptRequest {
@@ -108,7 +116,7 @@ export interface SubmitAnswersRequest {
   answers: {
     question_id: string
     selected_option_id?: string
-    text_answer?: string
+    answer_text?: string
   }[]
 }
 
@@ -123,6 +131,81 @@ export interface SubmitAnswersResponse {
     total_questions: number
     formatted: string
   }
+}
+
+// Essay Grading Types
+export interface EssayGrading {
+  id: string
+  student_answer_id: string
+  student_name: string
+  student_email: string
+  question_prompt: string
+  student_answer_text: string
+  quiz_title: string
+  attempt_id: string
+  max_score: number
+  grading_status: 'pending' | 'graded'
+  created_at: string
+}
+
+export interface EssayGradingListResponse extends ListApiResponse<EssayGrading> {}
+
+export interface GradeEssayRequest {
+  score: number
+  feedback: string
+  corrected_answer?: string
+}
+
+export interface GradeEssayResponse {
+  id: string
+  student_answer: string
+  student_name: string
+  grader: number
+  grader_name: string
+  score: number
+  max_score: number
+  feedback: string
+  grading_status: 'graded'
+  graded_at: string
+  created_at: string
+}
+
+// Recent Submissions Types
+export interface RecentSubmission {
+  id: string
+  student_name: string
+  quiz_title: string
+  status: 'completed' | 'in_progress' | 'expired'
+  score: string
+  total_score: number
+  max_score: number
+  has_pending_essays: boolean
+  started_at: string
+}
+
+export interface RecentSubmissionsResponse extends ListApiResponse<RecentSubmission> {}
+
+// Question Comments Types
+export interface QuestionComment {
+  id: string
+  question: string
+  answer: string
+  author: number
+  author_name: string
+  role: 'teacher' | 'student'
+  content: string
+  created_at: string
+}
+
+export interface QuestionCommentListResponse extends ListApiResponse<QuestionComment> {}
+
+export interface CreateCommentRequest {
+  answer: string
+  content: string
+}
+
+export interface UpdateCommentRequest {
+  content: string
 }
 
 export function useQuizApi() {
@@ -191,5 +274,62 @@ export function useQuizApi() {
     // Get attempts for a specific quiz
     getQuizAttempts: (quizId: string) =>
       apiClient.get<QuizAttempt[]>(`/quiz/quizzes/${quizId}/attempts/`),
+
+    // Essay Grading APIs
+    getRecentSubmissions: (params?: {
+      status?: string
+      classroom_id?: string
+      needs_grading?: boolean
+    }) => {
+      const queryParams = new URLSearchParams()
+      if (params?.status) queryParams.append('status', params.status)
+      if (params?.classroom_id) queryParams.append('classroom_id', params.classroom_id)
+      if (params?.needs_grading) queryParams.append('needs_grading', 'true')
+      
+      return apiClient.get<RecentSubmissionsResponse>(`/quiz/attempts/recent_submissions/?${queryParams.toString()}`)
+    },
+
+    getSubmissionsByClassroom: (classroomId: string, quizId?: string) => {
+      const queryParams = new URLSearchParams()
+      queryParams.append('classroom_id', classroomId)
+      if (quizId) queryParams.append('quiz_id', quizId)
+      
+      return apiClient.get<RecentSubmissionsResponse>(`/quiz/attempts/by_classroom/?${queryParams.toString()}`)
+    },
+
+    getEssayGradingsNeedingGrading: (classroomId?: string) => {
+      const queryParams = new URLSearchParams()
+      if (classroomId) queryParams.append('classroom_id', classroomId)
+      
+      return apiClient.get<EssayGradingListResponse>(`/quiz/essay-gradings/needs_grading/?${queryParams.toString()}`)
+    },
+
+    getPendingEssayGradings: () =>
+      apiClient.get<EssayGradingListResponse>('/quiz/essay-gradings/pending/'),
+
+    getEssayGradingDetail: (gradingId: string) =>
+      apiClient.get<EssayGrading>(`/quiz/essay-gradings/${gradingId}/`),
+
+    gradeEssay: (gradingId: string, data: GradeEssayRequest) =>
+      apiClient.post<GradeEssayResponse>(`/quiz/essay-gradings/${gradingId}/grade/`, data),
+
+    getMyGradings: () =>
+      apiClient.get<EssayGradingListResponse>('/quiz/essay-gradings/my_gradings/'),
+
+    // Question Comments APIs
+    getQuestionComments: (quizId: string, questionId: string) =>
+      apiClient.get<QuestionCommentListResponse>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/`),
+
+    createQuestionComment: (quizId: string, questionId: string, data: CreateCommentRequest) =>
+      apiClient.post<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/`, data),
+
+    getQuestionComment: (quizId: string, questionId: string, commentId: string) =>
+      apiClient.get<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
+
+    updateQuestionComment: (quizId: string, questionId: string, commentId: string, data: UpdateCommentRequest) =>
+      apiClient.put<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`, data),
+
+    deleteQuestionComment: (quizId: string, questionId: string, commentId: string) =>
+      apiClient.delete(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
   }
 }

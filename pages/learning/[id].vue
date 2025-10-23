@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import type { CourseStudent } from '~/types/course.type'
 import { VideoPlayer } from '@videojs-player/vue'
+import CommentList from '~/components/learning/CommentList.vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
 import LearningQuizList from '~/components/learning/QuizList.vue'
-import CommentList from '~/components/learning/CommentList.vue'
-import { useLearnStore } from '~/stores/learn.store'
 import { useCourseApi } from '~/composables/api/useCourseApi'
-import type { CourseStudent } from '~/types/course.type'
+import { useLearnStore } from '~/stores/learn.store'
 import 'video.js/dist/video-js.css'
 // Nuxt auto-imports `ref`, `computed`, lifecycle hooks
 
@@ -44,7 +44,7 @@ const activeTab = computed({
     learnStore.setActiveTab(value)
     // Update query params
     router.replace({
-      query: { ...route.query, tab: value }
+      query: { ...route.query, tab: value },
     })
   },
 })
@@ -84,7 +84,7 @@ const videoPlayerOptions = {
   },
 }
 
-const preventContextMenu = (event: MouseEvent) => {
+function preventContextMenu(event: MouseEvent) {
   if (!drmContainer.value) {
     return
   }
@@ -94,7 +94,7 @@ const preventContextMenu = (event: MouseEvent) => {
   }
 }
 
-const preventKeydown = (event: KeyboardEvent) => {
+function preventKeydown(event: KeyboardEvent) {
   const blockedByModifier = (event.ctrlKey || event.metaKey)
   if (blockedByModifier && ['s', 'S', 'p', 'P', 'u', 'U'].includes(event.key)) {
     event.preventDefault()
@@ -112,7 +112,7 @@ const preventKeydown = (event: KeyboardEvent) => {
   }
 }
 
-const applyDrmAttributes = (player: any) => {
+function applyDrmAttributes(player: any) {
   if (!player) {
     return
   }
@@ -135,41 +135,51 @@ const applyDrmAttributes = (player: any) => {
   })
 }
 
-const handlePlayerReady = (player: any) => {
+function handlePlayerReady(player: any) {
   playerInstance.value = player
   applyDrmAttributes(player)
 }
 
 // Load course classmates
-const loadCourseStudents = async () => {
+async function loadCourseStudents() {
   try {
     studentsLoading.value = true
     studentsError.value = null
     const response = await courseApi.getCourseClassmates(courseId)
     courseStudents.value = response.results
-  } catch (err: any) {
+  }
+  catch (err: any) {
     console.error('Error loading course classmates:', err)
     studentsError.value = err.message || 'Failed to load classmates'
-  } finally {
+  }
+  finally {
     studentsLoading.value = false
   }
 }
 
-
 onMounted(async () => {
   await Promise.all([
     learnStore.loadCourse(courseId),
-    loadCourseStudents()
+    loadCourseStudents(),
   ])
 
   drmContainer.value = document.querySelector('.drm-protected')
   document.addEventListener('contextmenu', preventContextMenu)
   document.addEventListener('keydown', preventKeydown)
-  
+
   // Sync tab state from query to store
   const queryTab = route.query.tab as string
   if (queryTab && queryTab !== learnStore.activeTab) {
     learnStore.setActiveTab(queryTab)
+  }
+
+  // Save courseId and lessonId to localStorage for navigation back from quiz results
+  const lessonId = route.query.lessonId as string
+  if (courseId) {
+    localStorage.setItem('learning_course_id', courseId)
+  }
+  if (lessonId) {
+    localStorage.setItem('learning_lesson_id', lessonId)
   }
 })
 
@@ -240,7 +250,7 @@ onBeforeUnmount(() => {
             <div v-else class="w-full h-full bg-gradient-to-br from-green-900 to-green-950 flex items-center justify-center">
               <Icon name="tabler:play-filled" class="text-white text-6xl" />
             </div> -->
-            <img v-if="!activeLesson" :src="course?.thumbnail || undefined" class="w-full h-full object-cover" />
+            <img v-if="!activeLesson" :src="course?.thumbnail || undefined" class="w-full h-full object-cover">
             <VideoPlayer
               v-if="activeLesson"
               :poster="activeLesson?.thumbnail || course?.thumbnail || undefined"
@@ -327,7 +337,7 @@ onBeforeUnmount(() => {
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     {{ t('course.courseQuiz') }}
                   </h2>
-                  <LearningQuizList 
+                  <LearningQuizList
                     :course-id="courseId"
                     :lesson-id="activeLesson?.id || undefined"
                   />
@@ -339,7 +349,7 @@ onBeforeUnmount(() => {
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     {{ t('course.comments') }}
                   </h2>
-                  <CommentList 
+                  <CommentList
                     v-if="activeLesson"
                     :course-id="courseId"
                     :chapter-id="learnStore.currentChapterId || ''"
@@ -348,7 +358,9 @@ onBeforeUnmount(() => {
                   />
                   <div v-else class="text-center py-8">
                     <Icon name="tabler:video" class="text-gray-400 text-4xl mx-auto mb-3" />
-                    <p class="text-gray-500">{{ t('course.selectLessonToViewComments') }}</p>
+                    <p class="text-gray-500">
+                      {{ t('course.selectLessonToViewComments') }}
+                    </p>
                   </div>
                 </div>
               </a-tab-pane>
@@ -367,8 +379,8 @@ onBeforeUnmount(() => {
             <!-- Chapter Sections with Lessons -->
             <div class="space-y-0">
               <CourseChapterItem
-                v-for="chapter in courseChapters" 
-                :key="chapter.id" 
+                v-for="chapter in courseChapters"
+                :key="chapter.id"
                 :chapter="chapter"
               />
             </div>
@@ -391,7 +403,9 @@ onBeforeUnmount(() => {
             <!-- Error State -->
             <div v-else-if="studentsError" class="text-center py-8">
               <Icon name="tabler:alert-circle" class="text-red-500 text-2xl mx-auto mb-2" />
-              <p class="text-sm text-red-600 mb-2">{{ studentsError }}</p>
+              <p class="text-sm text-red-600 mb-2">
+                {{ studentsError }}
+              </p>
               <a-button size="small" @click="loadCourseStudents">
                 {{ t('common.tryAgain') }}
               </a-button>
@@ -414,7 +428,7 @@ onBeforeUnmount(() => {
                     {{ student.username }}
                   </div>
                 </div>
-                <div class="text-xs text-gray-400" v-if="student.enrollment?.completion_percentage">
+                <div v-if="student.enrollment?.completion_percentage" class="text-xs text-gray-400">
                   {{ Math.round(student.enrollment.completion_percentage) }}%
                 </div>
               </div>
@@ -423,7 +437,9 @@ onBeforeUnmount(() => {
             <!-- Empty State -->
             <div v-else class="text-center py-8">
               <Icon name="tabler:users" class="text-gray-400 text-2xl mx-auto mb-2" />
-              <p class="text-sm text-gray-500">{{ t('course.noClassmatesYet') }}</p>
+              <p class="text-sm text-gray-500">
+                {{ t('course.noClassmatesYet') }}
+              </p>
             </div>
           </div>
         </div>

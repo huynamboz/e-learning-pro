@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { QuizAttempt } from '~/composables/api/useQuizApi'
-import { useQuizApi } from '~/composables/api/useQuizApi'
-
 interface Props {
   visible: boolean
   quizId: string
@@ -11,7 +8,7 @@ interface Props {
 
 interface Emits {
   (e: 'close'): void
-  (e: 'select-attempt', attemptId: string): void
+  (e: 'selectAttempt', attemptId: string): void
 }
 
 const props = defineProps<Props>()
@@ -26,28 +23,44 @@ const completedAttempts = computed(() => {
   return props.attempts || []
 })
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
-const formatTime = (seconds: number) => {
+function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
-const getScoreColor = (score: string | null) => {
-  if (!score) return 'text-gray-500'
-  const percentage = parseFloat(score)
-  if (percentage >= 80) return 'text-green-600'
-  if (percentage >= 60) return 'text-yellow-600'
-  return 'text-red-600'
+// Check if attempt has pending essays
+function hasPendingEssays(attempt: any) {
+  if (!attempt.answers)
+    return false
+  return attempt.answers.some((answer: any) =>
+    (answer.question_type as string) === 'essay' && !answer.essay_score,
+  )
+}
+
+// Get score color based on actual score
+function getScoreColorByPoints(totalScore: number, maxScore: number, isPending: boolean) {
+  if (isPending)
+    return 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+  if (maxScore === 0)
+    return 'bg-gradient-to-r from-gray-500 to-gray-600'
+
+  const percentage = (totalScore / maxScore) * 100
+  if (percentage >= 80)
+    return 'bg-gradient-to-r from-green-500 to-green-600'
+  if (percentage >= 60)
+    return 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+  return 'bg-gradient-to-r from-red-500 to-red-600'
 }
 
 // No need to load attempts since they're passed as props
@@ -59,15 +72,15 @@ const modalVisible = computed({
     if (!value) {
       emit('close')
     }
-  }
+  },
 })
 
 // Event handlers
-const handleSelectAttempt = (attemptId: string) => {
-  emit('select-attempt', attemptId)
+function handleSelectAttempt(attemptId: string) {
+  emit('selectAttempt', attemptId)
 }
 
-const handleClose = () => {
+function handleClose() {
   emit('close')
 }
 </script>
@@ -77,8 +90,8 @@ const handleClose = () => {
     v-model:open="modalVisible"
     :footer="null"
     width="70vw"
-    @cancel="handleClose"
     class="quiz-attempts-modal"
+    @cancel="handleClose"
   >
     <template #title>
       <div class="flex items-center gap-3">
@@ -86,8 +99,12 @@ const handleClose = () => {
           <Icon name="tabler:clipboard-list" class="text-green-600 text-xl" />
         </div>
         <div>
-          <div class="text-xl font-bold text-green-700">Quiz Attempts</div>
-          <div class="text-sm text-gray-600 font-normal">{{ quizTitle }}</div>
+          <div class="text-xl font-bold text-green-700">
+            Quiz Attempts
+          </div>
+          <div class="text-sm text-gray-600 font-normal">
+            {{ quizTitle }}
+          </div>
         </div>
       </div>
     </template>
@@ -96,7 +113,9 @@ const handleClose = () => {
     <div v-if="loading" class="flex items-center justify-center py-8">
       <div class="text-center">
         <a-spin size="large" />
-        <p class="text-sm text-gray-500 mt-4">Loading attempts...</p>
+        <p class="text-sm text-gray-500 mt-4">
+          Loading attempts...
+        </p>
       </div>
     </div>
 
@@ -117,7 +136,9 @@ const handleClose = () => {
       <template #image>
         <Icon name="tabler:clipboard-list" class="text-4xl text-gray-400" />
       </template>
-      <p class="text-sm text-gray-400">Complete the quiz to see your results here.</p>
+      <p class="text-sm text-gray-400">
+        Complete the quiz to see your results here.
+      </p>
     </a-empty>
 
     <!-- Attempts List -->
@@ -150,17 +171,14 @@ const handleClose = () => {
                 </div>
               </div>
             </div>
-            
+
             <!-- Score Badge -->
-            <div 
+            <div
               class="px-2 py-1 rounded-full text-white font-medium text-xs shadow-sm"
-              :class="{
-                'bg-gradient-to-r from-green-500 to-green-600': parseFloat(attempt.score || '0') >= 80,
-                'bg-gradient-to-r from-yellow-500 to-yellow-600': parseFloat(attempt.score || '0') >= 60 && parseFloat(attempt.score || '0') < 80,
-                'bg-gradient-to-r from-red-500 to-red-600': parseFloat(attempt.score || '0') < 60
-              }"
+              :class="getScoreColorByPoints(attempt.total_score, attempt.max_score, hasPendingEssays(attempt))"
             >
-              {{ attempt.score }}%
+              <span v-if="hasPendingEssays(attempt)">Đang chờ chấm</span>
+              <span v-else>{{ attempt.total_score }}/{{ attempt.max_score }}</span>
             </div>
           </div>
 
@@ -171,7 +189,9 @@ const handleClose = () => {
               <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Icon name="tabler:check" class="text-blue-600" />
               </div>
-              <div class="text-xs text-gray-500 mb-1">Correct</div>
+              <div class="text-xs text-gray-500 mb-1">
+                Correct
+              </div>
               <div class="font-bold text-gray-800">
                 {{ attempt.correct_answers }}/{{ attempt.total_questions }}
               </div>
@@ -182,7 +202,9 @@ const handleClose = () => {
               <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Icon name="tabler:clock" class="text-purple-600" />
               </div>
-              <div class="text-xs text-gray-500 mb-1">Time</div>
+              <div class="text-xs text-gray-500 mb-1">
+                Time
+              </div>
               <div class="font-bold text-gray-800">
                 {{ formatTime(attempt.time_spent_seconds) }}
               </div>
@@ -193,7 +215,9 @@ const handleClose = () => {
               <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Icon name="tabler:star" class="text-orange-600" />
               </div>
-              <div class="text-xs text-gray-500 mb-1">Score</div>
+              <div class="text-xs text-gray-500 mb-1">
+                Score
+              </div>
               <div class="font-bold text-gray-800">
                 {{ attempt.total_score }}/{{ attempt.max_score }}
               </div>

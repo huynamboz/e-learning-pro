@@ -7,6 +7,7 @@ import { useCourseApi } from '~/composables/api/useCourseApi'
 import { notification } from 'ant-design-vue'
 import MultipleChoiceQuestion from './MultipleChoiceQuestion.vue'
 import TextInputQuestion from './TextInputQuestion.vue'
+import EssayQuestion from './EssayQuestion.vue'
 
 interface Props {
   mode?: 'create' | 'edit'
@@ -42,6 +43,7 @@ const formData = reactive<QuizFormData>({
   timeType: 'limit', // Default to limit since no-limit is not allowed
   quantity: 30, // Default to 30 minutes
   unit: 'minute',
+  retake_limit: null, // Default to unlimited retakes
 })
 
 // API composables
@@ -143,7 +145,7 @@ const unitOptions = ref([
 
 interface Question {
   id: string
-  type: 'text-input' | 'multiple-choice'
+  type: 'text-input' | 'multiple-choice' | 'essay'
   data: any
 }
 
@@ -170,12 +172,13 @@ const questionsValidation = computed(() => {
       errors.push(`Question ${questionNumber}: Score must be greater than 0`)
     }
 
-    if (question.type === 'text-input') {
-      if (!question.data.answer || question.data.answer.trim() === '') {
-        errors.push(`Question ${questionNumber}: Answer is required`)
-      }
-    }
-    else if (question.type === 'multiple-choice') {
+    // Text-input and essay questions don't require answer validation
+    // if (question.type === 'text-input') {
+    //   if (!question.data.answer || question.data.answer.trim() === '') {
+    //     errors.push(`Question ${questionNumber}: Answer is required`)
+    //   }
+    // }
+    if (question.type === 'multiple-choice') {
       const hasEmptyOptions = question.data.options.some((option: any) =>
         !option.text || option.text.trim() === '',
       )
@@ -205,6 +208,20 @@ function addTextInputQuestion() {
       score: 1.0,
       files: [],
       answer: '',
+    },
+  }
+  questions.value.push(newQuestion)
+}
+
+function addEssayQuestion() {
+  const newQuestion: Question = {
+    id: `question-${Date.now()}`,
+    type: 'essay',
+    data: {
+      question: '',
+      explanation: '',
+      score: 1.0,
+      files: [],
     },
   }
   questions.value.push(newQuestion)
@@ -245,7 +262,7 @@ function updateQuestion(index: number, data: any) {
 const transformQuestionsToApi = (questions: Question[]) => {
   return questions.map((q, index) => {
     const baseQuestion = {
-      question_type: q.type === 'multiple-choice' ? 'multiple_choice' : 'text_input',
+      question_type: q.type === 'multiple-choice' ? 'multiple_choice' : q.type === 'text-input' ? 'text_input' : 'essay',
       prompt: q.data.question,
       explanation: q.data.explanation || '',
       order: index + 1,
@@ -261,13 +278,19 @@ const transformQuestionsToApi = (questions: Question[]) => {
           is_correct: option.label === q.data.correctAnswer,
         })) || [],
       }
-    } else {
+    } else if (q.type === 'text-input') {
       return {
         ...baseQuestion,
         options: [],
         sample_answer: {
           text: q.data.answer || '',
         },
+      }
+    } else {
+      // essay question
+      return {
+        ...baseQuestion,
+        options: [],
       }
     }
   })
@@ -278,11 +301,11 @@ const createApiPayload = (values: QuizFormData) => ({
   title: values.title,
   description: values.description,
   category: values.category,
-  chapter: values.chapter,
-  lesson: values.lesson, // Add lesson to API payload
+  lesson: values.lesson, // Use lesson instead of chapter
   time_type: values.timeType as 'limit' | 'no-limit',
   time_value: values.timeType === 'limit' ? values.quantity : null,
   time_unit: values.timeType === 'limit' ? values.unit : null,
+  retake_limit: values.retake_limit,
   is_published: false,
   questions: transformQuestionsToApi(questions.value),
 })
@@ -414,6 +437,7 @@ const loadQuizData = async () => {
       formData.quantity = quiz.time_value
       formData.unit = quiz.time_unit || 'minute'
       formData.lesson = quiz.lesson
+      formData.retake_limit = quiz.retake_limit
 
       // Map questions from API response to component format
       questions.value = mapApiQuestionsToComponent(quiz.questions)
@@ -457,7 +481,7 @@ const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
           correctAnswer: apiQuestion.options?.find((opt) => opt.is_correct)?.label || '',
         },
       }
-    } else {
+    } else if (apiQuestion.question_type === 'text_input') {
       // text_input question
       return {
         id: apiQuestion.id,
@@ -468,6 +492,18 @@ const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
           score: apiQuestion.score || 1.0,
           files: [],
           answer: apiQuestion.sample_answer?.text || '',
+        },
+      }
+    } else {
+      // essay question
+      return {
+        id: apiQuestion.id,
+        type: 'essay' as const,
+        data: {
+          question: apiQuestion.prompt,
+          explanation: apiQuestion.explanation || '',
+          score: apiQuestion.score || 1.0,
+          files: [],
         },
       }
     }
@@ -502,7 +538,7 @@ onMounted(async () => {
 // Calculate total score
 const totalScore = computed(() => {
   return questions.value.reduce((total, question) => {
-    return total + (question.data.score || 0)
+    return total + (Number(question.data.score) || 0)
   }, 0)
 })
 
@@ -602,6 +638,23 @@ defineExpose({
           </a-form-item>
         </div>
 
+        <!-- Retake Limit Row -->
+        <div class="mb-3">
+          <a-form-item label="Số lần làm lại" name="retake_limit" class="w-full max-w-md">
+            <a-input-number 
+              v-model:value="formData.retake_limit" 
+              placeholder="Không giới hạn" 
+              class="w-full h-10" 
+              style="width: 100%"
+              :min="1" 
+              :max="100"
+            />
+            <div class="text-xs text-gray-500 mt-1">
+              Để trống hoặc 0 = không giới hạn số lần làm lại
+            </div>
+          </a-form-item>
+        </div>
+
         <!-- Questions Section -->
         <div class="pt-6">
           <!-- Questions List -->
@@ -610,6 +663,8 @@ defineExpose({
               <TextInputQuestion v-if="question.type === 'text-input'" :initial-data="question.data"
                 @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
               <MultipleChoiceQuestion v-else-if="question.type === 'multiple-choice'" :initial-data="question.data"
+                @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
+              <EssayQuestion v-else-if="question.type === 'essay'" :initial-data="question.data"
                 @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
             </template>
 
@@ -620,11 +675,14 @@ defineExpose({
                 No questions added yet
               </p>
               <div class="flex justify-center gap-2">
-                <a-button type="primary" @click="addTextInputQuestion">
+                <!-- <a-button type="primary" @click="addTextInputQuestion">
                   Add Text Input Question
-                </a-button>
+                </a-button> -->
                 <a-button type="primary" @click="addMultipleChoiceQuestion">
                   Add Multiple Choice Question
+                </a-button>
+                <a-button type="primary" @click="addEssayQuestion">
+                  Add Essay Question
                 </a-button>
               </div>
             </div>
@@ -637,6 +695,9 @@ defineExpose({
               </a-button>
               <a-button type="default" @click="addMultipleChoiceQuestion">
                 Add Multiple Choice Question
+              </a-button>
+              <a-button type="default" @click="addEssayQuestion">
+                Add Essay Question
               </a-button>
             </div>
           </div>

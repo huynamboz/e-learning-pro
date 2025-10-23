@@ -61,7 +61,7 @@ export function useClassroomApi() {
   return {
     // Get all classrooms
     getClassrooms: () =>
-      apiClient.get<Classroom[]>('/classrooms/'),
+      apiClient.get<ListApiResponse<Classroom>>('/classrooms/'),
 
     // Get classrooms by course
     getClassroomsByCourse: (courseId: string) =>

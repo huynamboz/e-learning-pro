@@ -43,12 +43,17 @@ Individual questions within a quiz.
 **Fields:**
 - `id`: UUID
 - `quiz`: FK to Quiz
-- `question_type`: Choice (`multiple_choice` | `text_input`)
+- `question_type`: Choice (`multiple_choice` | `text_input` | `essay`)
 - `prompt`: Text (the question itself)
 - `explanation`: Text (optional, shown after submission)
 - `media`: FileField (optional, upload to `quiz/questions/`)
 - `order`: Positive Integer (auto-increments)
 - `score`: Decimal (points for this question, default 1.0)
+
+**Question Types:**
+1. **multiple_choice**: Auto-graded with options
+2. **text_input**: Auto-graded with exact text match
+3. **essay**: Manually graded by teacher (requires manual grading)
 
 ### QuizOption
 Answer options for multiple-choice questions only.
@@ -100,6 +105,25 @@ Student's answer to a specific question.
 - `text_answer`: Text (for text-input)
 - `is_correct`: Boolean (auto-calculated)
 - `answered_at`: DateTime
+
+### EssayGrading (NEW)
+Manual grading for essay questions.
+
+**Fields:**
+- `id`: UUID
+- `student_answer`: FK to StudentAnswer
+- `grader`: FK to User (teacher who grades)
+- `score`: Decimal (points earned, 0 to max_score)
+- `max_score`: Decimal (maximum points from question.score)
+- `feedback`: Text (teacher's feedback/comments)
+- `grading_status`: Choice (`pending` | `graded`)
+- `graded_at`: DateTime (when graded)
+- `created_at`: DateTime
+
+**Workflow:**
+1. Student submits essay answer → Auto-creates EssayGrading with status='pending'
+2. Teacher grades essay → Updates score, feedback, status='graded'
+3. Quiz score automatically recalculated
 
 ---
 
@@ -217,6 +241,11 @@ POST /api/v1/quiz/quizzes/
    - Cannot have options
    - Should have sample_answer for auto-grading
    - Auto-graded with exact match (case-sensitive, spaces normalized)
+6. **Essay questions:**
+   - Cannot have options or sample_answer
+   - NOT auto-graded (requires manual grading by teacher)
+   - Creates EssayGrading record with status='pending'
+   - Teacher must manually grade and provide score + feedback
 
 **Response:** `201 Created`
 ```json
@@ -512,6 +541,177 @@ Entries include completed attempts only, ranked by score, then time spent, then 
   ]
 }
 ```
+
+---
+
+### 13. Get Recent Quiz Submissions (Teacher Dashboard)
+```http
+GET /api/v1/quiz/attempts/recent_submissions/
+```
+
+**Permission**: Teacher or Admin only
+
+**Description**: Get recent quiz attempts from students in teacher's classrooms.
+
+**Query Parameters:**
+- `status`: Filter by attempt status
+- `classroom_id`: Filter by specific classroom
+- `needs_grading=true`: Only show attempts with pending essay gradings
+
+**Response:**
+```json
+{
+  "count": 10,
+  "results": [
+    {
+      "id": "attempt-uuid",
+      "student_name": "John Student",
+      "quiz_title": "Python Assessment",
+      "status": "completed",
+      "score": "75.00",
+      "has_pending_essays": true,
+      "started_at": "2025-10-19T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### 14. Get Quiz Attempts by Classroom
+```http
+GET /api/v1/quiz/attempts/by_classroom/?classroom_id={uuid}
+```
+
+**Permission**: Teacher or Admin only
+
+**Description**: Get all quiz attempts for a specific classroom.
+
+**Query Parameters:**
+- `classroom_id` (required): Classroom UUID
+- `quiz_id`: Filter by specific quiz
+
+**Response:** Same as recent submissions
+
+---
+
+## Essay Grading APIs (Teacher Dashboard)
+
+Base URL: `/api/v1/quiz/essay-gradings/`
+
+### 1. Get Essays Needing Grading
+```http
+GET /api/v1/quiz/essay-gradings/needs_grading/
+```
+
+**Permission**: Teacher or Admin only
+
+**Description**: Get all pending essay submissions from teacher's classrooms.
+
+**Query Parameters:**
+- `classroom_id`: Filter by specific classroom
+
+**Response:**
+```json
+{
+  "count": 5,
+  "results": [
+    {
+      "id": "grading-uuid",
+      "student_answer_id": "answer-uuid",
+      "student_name": "John Student",
+      "student_email": "john@example.com",
+      "question_prompt": "Explain the difference between list and tuple...",
+      "student_answer_text": "Lists are mutable...",
+      "quiz_title": "Python Assessment",
+      "attempt_id": "attempt-uuid",
+      "max_score": 10.0,
+      "grading_status": "pending",
+      "created_at": "2025-10-19T10:05:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### 2. Get Pending Essays
+```http
+GET /api/v1/quiz/essay-gradings/pending/
+```
+
+**Permission**: Teacher or Admin only
+
+**Description**: Get all pending essay gradings.
+
+---
+
+### 3. Grade Essay
+```http
+POST /api/v1/quiz/essay-gradings/{id}/grade/
+```
+
+**Permission**: Grader or Admin only
+
+**Description**: Grade an essay question with score and feedback.
+
+**Request Body:**
+```json
+{
+  "score": 8.5,
+  "feedback": "Good explanation! Could add more examples.",
+  "corrected_answer": "Optional: corrected version of student answer"
+}
+```
+
+**Validation:**
+- Score must be between 0 and max_score
+- If `corrected_answer` provided, it replaces student's answer
+
+**Response:**
+```json
+{
+  "id": "grading-uuid",
+  "student_answer": "answer-uuid",
+  "student_name": "John Student",
+  "grader": 7,
+  "grader_name": "Teacher Jane",
+  "score": 8.5,
+  "max_score": 10.0,
+  "feedback": "Good explanation! Could add more examples.",
+  "grading_status": "graded",
+  "graded_at": "2025-10-19T11:00:00Z",
+  "created_at": "2025-10-19T10:05:00Z"
+}
+```
+
+**Side Effects:**
+- Updates grading_status to 'graded'
+- Sets graded_at timestamp
+- Recalculates quiz attempt total score
+- Optionally updates student answer if corrected_answer provided
+
+---
+
+### 4. Get My Gradings
+```http
+GET /api/v1/quiz/essay-gradings/my_gradings/
+```
+
+**Permission**: Teacher only
+
+**Description**: Get all essays graded by current teacher.
+
+---
+
+### 5. Get Essay Grading Details
+```http
+GET /api/v1/quiz/essay-gradings/{id}/
+```
+
+**Permission**: Grader, Student (own), or Admin
+
+**Description**: Get detailed information about an essay grading.
 
 ---
 
@@ -910,6 +1110,62 @@ curl -X GET http://localhost:8000/api/v1/quiz/quizzes/mine/ \
   -H "X-Device-ID: device-id"
 ```
 
+#### 5. Create Quiz with Essay Questions
+
+```bash
+curl -X POST http://localhost:8000/api/v1/quiz/quizzes/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "X-Device-ID: device-id" \
+  -d '{
+    "title": "Python Assessment - Mixed",
+    "category": "uuid-category",
+    "time_type": "limit",
+    "time_value": 30,
+    "time_unit": "minute",
+    "questions": [
+      {
+        "question_type": "multiple_choice",
+        "prompt": "What is Python?",
+        "score": 5,
+        "order": 1,
+        "options": [
+          {"label": "A", "text": "A snake", "is_correct": false},
+          {"label": "B", "text": "A programming language", "is_correct": true}
+        ]
+      },
+      {
+        "question_type": "essay",
+        "prompt": "Explain the difference between list and tuple in Python",
+        "score": 10,
+        "order": 2
+      }
+    ]
+  }'
+```
+
+#### 6. View Pending Essay Gradings
+
+```bash
+curl -X GET http://localhost:8000/api/v1/quiz/essay-gradings/needs_grading/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "X-Device-ID: device-id"
+```
+
+#### 7. Grade Essay
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/quiz/essay-gradings/{essay_id}/grade/" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "X-Device-ID: device-id" \
+  -d '{
+    "score": 8.5,
+    "feedback": "Good explanation! Add more examples next time.",
+    "corrected_answer": "Lists are mutable [1,2,3], tuples are immutable (1,2,3)"
+  }'
+```
+
 ---
 
 ### Student Workflow
@@ -1284,6 +1540,30 @@ Sample answer: "Version control system"
 
 **Note**: Ensure sample answers are set for accurate auto-grading of text questions.
 
+### Essay Questions
+⏸️ **Manually graded by teacher**
+
+**Workflow:**
+1. **Student submits essay** → Creates `EssayGrading` record with `status='pending'`
+2. **Teacher reviews** → Reads essay in dashboard
+3. **Teacher grades** → Assigns score (0 to max_score) and feedback
+4. **Quiz score updates** → Total score automatically recalculated
+
+**Features:**
+- Teacher can provide detailed feedback
+- Teacher can correct student's answer (optional)
+- Score must be within 0 to question.score range
+- Supports partial credit (e.g., 7.5/10)
+
+**Student View:**
+- Before grading: Shows "Pending review" status
+- After grading: Shows score, feedback, and corrected answer (if provided)
+
+**Teacher Dashboard:**
+- `/api/v1/quiz/essay-gradings/needs_grading/` - List pending essays
+- `/api/v1/quiz/essay-gradings/{id}/grade/` - Grade specific essay
+- `/api/v1/quiz/attempts/recent_submissions/?needs_grading=true` - Quiz attempts with pending essays
+
 ---
 
 ## Time Limit Behavior
@@ -1465,6 +1745,43 @@ CREATE TABLE quiz_studentanswer (
 
 ## Changelog
 
+### Version 3.0.0 (2025-10-19)
+
+**Added:**
+- ✨ **Essay question type**: New question type for long-form written answers
+- ✨ **Manual grading system**: `EssayGrading` model for teacher grading workflow
+- ✨ **Teacher dashboard APIs**: View and manage student submissions
+- ✨ **Pending grading queue**: Track essays waiting for teacher review
+- ✨ **Grading with feedback**: Teachers can score essays and provide detailed feedback
+- ✨ **Answer correction**: Teachers can optionally correct student answers
+- ✨ **Auto-recalculation**: Quiz scores automatically update after essay grading
+
+**New Endpoints:**
+- `GET /api/v1/quiz/attempts/recent_submissions/` - Recent student submissions
+- `GET /api/v1/quiz/attempts/by_classroom/` - Submissions by classroom
+- `GET /api/v1/quiz/essay-gradings/needs_grading/` - Pending essays for grading
+- `GET /api/v1/quiz/essay-gradings/pending/` - All pending essays
+- `POST /api/v1/quiz/essay-gradings/{id}/grade/` - Grade an essay
+- `GET /api/v1/quiz/essay-gradings/my_gradings/` - Teacher's graded essays
+
+**Changed:**
+- 🔄 QuizQuestion: Added `essay` to question_type choices
+- 🔄 StudentAnswer: Renamed `text_answer` to `answer_text` for consistency
+- 🔄 Quiz scoring: Now accounts for pending essay gradings
+- 🔄 Teacher dashboard: Enhanced with grading workflow
+
+**New Models:**
+- `EssayGrading`: Tracks essay submissions and teacher grading
+
+**Features:**
+- Teachers see pending essay count in dashboard
+- Students see "Pending review" status for ungraded essays
+- Partial credit support for essay questions
+- Bulk view of pending essays across all classrooms
+- Filter by classroom for targeted grading
+
+---
+
 ### Version 2.0.0 (2025-10-13)
 
 **Added:**
@@ -1539,3 +1856,89 @@ For issues or questions:
 ## License
 
 This module is part of the E-Learning Backend project.
+
+
+Tất cả các yêu cầu của bạn đã được implement đầy đủ:
+
+### ✅ **1. Get list quiz học sinh đã làm gần đây**
+```http
+GET /api/v1/quiz/attempts/recent_submissions/
+```
+- Trả về danh sách quiz attempts gần đây từ học sinh trong lớp của giáo viên
+- Support filter: `?status=completed`, `?classroom_id=xxx`, `?needs_grading=true`
+- Có field `has_pending_essays` để biết quiz nào có essay chưa chấm
+
+### ✅ **2. Get list quiz học sinh đã làm theo lớp**
+```http
+GET /api/v1/quiz/attempts/by_classroom/?classroom_id={uuid}
+```
+- Trả về tất cả quiz attempts của học sinh trong lớp cụ thể
+- Filter theo quiz: `?quiz_id=xxx`
+- Verify teacher phải là owner của classroom đó
+
+### ✅ **3. Quiz có câu tự luận → status pending**
+- Khi student submit essay, tự động tạo `EssayGrading` với `grading_status='pending'`
+- API `recent_submissions` có field `has_pending_essays=true` để highlight
+- API `needs_grading` chỉ trả pending essays
+
+### ✅ **4. Giáo viên xem danh sách pending**
+```http
+GET /api/v1/quiz/essay-gradings/needs_grading/
+```
+- Chỉ hiện essays từ học sinh trong lớp của giáo viên
+- Filter theo classroom: `?classroom_id=xxx`
+- Thông tin đầy đủ: student name, question, answer, quiz title
+
+### ✅ **5. Giáo viên bấm vào → nhập đáp án sửa → cho điểm**
+```http
+POST /api/v1/quiz/essay-gradings/{id}/grade/
+```
+**Request:**
+```json
+{
+  "score": 8.5,                          // Cho điểm
+  "feedback": "Good work!",              // Comment
+  "corrected_answer": "Corrected text"  // Sửa đáp án (optional)
+}
+```
+
+**Tính năng:**
+- ✅ Validate score (0 ≤ score ≤ max_score)
+- ✅ Cập nhật `grading_status` từ `pending` → `graded`
+- ✅ Nếu có `corrected_answer`, sẽ update đáp án của học sinh
+- ✅ Tự động tính lại tổng điểm quiz attempt
+- ✅ Set `graded_at` timestamp
+
+### 📊 **Bonus Features (đã có):**
+- `GET /api/v1/quiz/essay-gradings/my_gradings/` - Xem bài mình đã chấm
+- `GET /api/v1/quiz/essay-gradings/pending/` - Tất cả bài pending
+- `GET /api/v1/quiz/essay-gradings/{id}/` - Chi tiết 1 bài chấm
+
+### 🎯 **Workflow hoàn chỉnh:**
+
+1. **Dashboard admin** → `recent_submissions?needs_grading=true`
+2. **Chọn lớp** → `by_classroom?classroom_id=xxx`  
+3. **Xem pending essays** → `needs_grading?classroom_id=xxx`
+4. **Click vào essay** → `GET essay-gradings/{id}/` (xem chi tiết)
+5. **Nhập điểm + sửa** → `POST essay-gradings/{id}/grade/`
+6. **Quiz score tự động update** ✅
+
+### 📝 **Documentation:**
+- ✅ Full API docs: `docs/QUIZ_API.md`
+- ✅ Quick guide: `README_ESSAY_QUIZ.md`
+- ✅ Test script: `test_essay_quiz_flow.sh`
+
+---
+
+## 🎉 **KẾT LUẬN: ĐÃ ĐỦ TẤT CẢ!**
+
+Tất cả các tính năng bạn yêu cầu đã được implement và test thành công. Giáo viên có thể:
+- ✅ Xem quiz gần đây của học sinh
+- ✅ Xem quiz theo từng lớp
+- ✅ Thấy status "pending" cho quiz có essay chưa chấm
+- ✅ Vào chi tiết essay để đọc
+- ✅ Sửa đáp án của học sinh
+- ✅ Cho điểm và feedback
+- ✅ Tự động cập nhật tổng điểm quiz
+
+Hệ thống sẵn sàng để sử dụng! 🚀

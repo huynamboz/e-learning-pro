@@ -287,6 +287,11 @@ onMounted(() => {
                   <span>{{ quiz.total_questions }} questions</span>
                   <span>•</span>
                   <span>{{ formatTimeDisplay(quiz) }}</span>
+                  <span>•</span>
+                  <span class="flex items-center gap-1">
+                    <Icon name="tabler:refresh" class="text-xs" />
+                    {{ quiz.retake_limit ? `${quiz.retake_limit} lần` : 'Không giới hạn' }}
+                  </span>
                   <span v-if="quiz.is_published" class="flex items-center gap-1 text-green-600">
                     <Icon name="tabler:eye" class="text-xs" />
                     Published

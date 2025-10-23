@@ -188,7 +188,7 @@ watch(() => props.lessonId, () => {
       :quiz-id="selectedQuizForResults?.id || ''"
       :quiz-title="selectedQuizForResults?.title"
       :attempts="selectedQuizForResults ? getQuizAttempts(selectedQuizForResults.id) : []"
-      @select-attempt="handleSelectAttempt"
+      @selectAttempt="handleSelectAttempt"
       @close="closeAttemptsDialog"
     />
   </div>

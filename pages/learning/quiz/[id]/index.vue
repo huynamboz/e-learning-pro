@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import type { QuizApiResponse, QuizAttempt, QuizQuestion, QuizOption } from '~/composables/api/useQuizApi'
-import { useQuizApi } from '~/composables/api/useQuizApi'
+import type { QuizApiResponse, QuizAttempt, QuizOption, QuizQuestion } from '~/composables/api/useQuizApi'
 import QuizCompletionDialog from '~/components/learning/quiz/QuizCompletionDialog.vue'
+import { useQuizApi } from '~/composables/api/useQuizApi'
 
 definePageMeta({
   layout: 'auth',
 })
+
+const router = useRouter()
 // Route params
 const route = useRoute()
 const quizId = route.params.id as string
@@ -32,12 +34,14 @@ const ANSWERS_KEY = `quiz_answers_${quizId}`
 
 // Computed
 const currentQuestion = computed(() => {
-  if (!quiz.value) return null
+  if (!quiz.value)
+    return null
   return quiz.value.questions[currentQuestionIndex.value]
 })
 
 const progress = computed(() => {
-  if (!quiz.value) return 0
+  if (!quiz.value)
+    return 0
   const answeredCount = Object.keys(answers.value).length
   return (answeredCount / quiz.value.total_questions) * 100
 })
@@ -47,7 +51,8 @@ const answeredCount = computed(() => {
 })
 
 const isLastQuestion = computed(() => {
-  if (!quiz.value) return false
+  if (!quiz.value)
+    return false
   return currentQuestionIndex.value === quiz.value.total_questions - 1
 })
 
@@ -56,52 +61,56 @@ const isFirstQuestion = computed(() => {
 })
 
 const canSubmit = computed(() => {
-  if (!quiz.value) return false
+  if (!quiz.value)
+    return false
   return quiz.value.questions.every(q => answers.value[q.id])
 })
 
 // Timer functions
-const startTimer = () => {
+function startTimer() {
   if (timeRemaining.value && timeRemaining.value > 0) {
     timerInterval.value = setInterval(() => {
       if (timeRemaining.value && timeRemaining.value > 0) {
         timeRemaining.value--
-      } else {
+      }
+      else {
         handleTimeExpired()
       }
     }, 1000)
   }
 }
 
-const stopTimer = () => {
+function stopTimer() {
   if (timerInterval.value) {
     clearInterval(timerInterval.value)
     timerInterval.value = null
   }
 }
 
-const formatTime = (seconds: number) => {
+function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = seconds % 60
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
 // Quiz functions
-const loadQuiz = async () => {
+async function loadQuiz() {
   try {
     loading.value = true
     error.value = null
     const response = await getQuiz(quizId)
     quiz.value = response
-  } catch (err: any) {
+  }
+  catch (err: any) {
     error.value = err.message || 'Failed to load quiz'
     console.error('Error loading quiz:', err)
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
 
-const startQuiz = async () => {
+async function startQuiz() {
   try {
     loading.value = true
     error.value = null
@@ -109,118 +118,125 @@ const startQuiz = async () => {
     attempt.value = response.attempt
     timeRemaining.value = response.attempt.time_remaining_seconds
     startTimer()
-  } catch (err: any) {
+  }
+  catch (err: any) {
     error.value = err.message || 'Failed to start quiz'
     console.error('Error starting quiz:', err)
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
 
-const handleTimeExpired = () => {
+function handleTimeExpired() {
   stopTimer()
   submitQuiz()
 }
 
-const selectAnswer = (questionId: string, optionId: string) => {
+function selectAnswer(questionId: string, optionId: string) {
   answers.value[questionId] = optionId
   saveToLocalStorage()
 }
 
-const setTextAnswer = (questionId: string, text: string) => {
+function setTextAnswer(questionId: string, text: string) {
   answers.value[questionId] = text
   saveToLocalStorage()
 }
 
 // LocalStorage functions
-const saveToLocalStorage = () => {
+function saveToLocalStorage() {
   if (process.client) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       currentQuestionIndex: currentQuestionIndex.value,
-      answers: answers.value
+      answers: answers.value,
     }))
     localStorage.setItem(ANSWERS_KEY, JSON.stringify(answers.value))
   }
 }
 
-const loadFromLocalStorage = () => {
+function loadFromLocalStorage() {
   if (process.client) {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       const savedAnswers = localStorage.getItem(ANSWERS_KEY)
-      
+
       if (saved) {
         const data = JSON.parse(saved)
         currentQuestionIndex.value = data.currentQuestionIndex || 0
       }
-      
+
       if (savedAnswers) {
         answers.value = JSON.parse(savedAnswers)
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error loading from localStorage:', error)
     }
   }
 }
 
-const clearLocalStorage = () => {
+function clearLocalStorage() {
   if (process.client) {
     localStorage.removeItem(STORAGE_KEY)
     localStorage.removeItem(ANSWERS_KEY)
   }
 }
 
-const nextQuestion = () => {
+function nextQuestion() {
   if (!isLastQuestion.value) {
     currentQuestionIndex.value++
     saveToLocalStorage()
   }
 }
 
-const previousQuestion = () => {
+function previousQuestion() {
   if (!isFirstQuestion.value) {
     currentQuestionIndex.value--
     saveToLocalStorage()
   }
 }
 
-const submitQuiz = async () => {
-  if (!attempt.value || !quiz.value) return
+async function submitQuiz() {
+  if (!attempt.value || !quiz.value)
+    return
 
   try {
     submitting.value = true
     error.value = null
 
     const submitData = {
-      answers: quiz.value.questions.map(question => {
+      answers: quiz.value.questions.map((question) => {
         const answer = answers.value[question.id]
         if (question.question_type === 'multiple_choice') {
           return {
             question_id: question.id,
-            selected_option_id: answer
-          }
-        } else {
-          return {
-            question_id: question.id,
-            text_answer: answer || ''
+            selected_option_id: answer,
           }
         }
-      })
+        else {
+          return {
+            question_id: question.id,
+            answer_text: answer || '',
+          }
+        }
+      }),
     }
 
     const response = await submitQuizAnswers(attempt.value.id, submitData)
     attempt.value = response.attempt
     stopTimer()
-    
+
     // Clear localStorage after successful submission
     clearLocalStorage()
-    
+
     // Show completion dialog
     showCompletionDialog.value = true
-  } catch (err: any) {
+  }
+  catch (err: any) {
     error.value = err.message || 'Failed to submit quiz'
     console.error('Error submitting quiz:', err)
-  } finally {
+  }
+  finally {
     submitting.value = false
   }
 }
@@ -240,23 +256,27 @@ onUnmounted(() => {
 })
 
 // Dialog event handlers
-const handleViewAnswers = () => {
+function handleViewAnswers() {
   showCompletionDialog.value = false
-  navigateTo(`/learning/quiz/${quizId}/results?attempt=${attempt.value?.id}`)
+  router.replace(`/learning/quiz/${quizId}/results?attempt=${attempt.value?.id}`)
 }
 
-const handleGoHome = () => {
+function handleGoHome() {
   showCompletionDialog.value = false
   // Navigate back to the specific course being viewed
   if (courseId) {
-    navigateTo(`/learning/${courseId}`)
-  } else {
-    navigateTo('/learning')
+    router.replace(`/learning/${courseId}`)
+  }
+  else {
+    router.replace('/learning')
   }
 }
 
-const handleCloseDialog = () => {
-  showCompletionDialog.value = false
+function handleCloseDialog() {
+  // showCompletionDialog.value = false
+  // navigateTo(`/learning/quiz/${quizId}/results?attempt=${attempt.value?.id}`)
+  // replace the current page with the results page
+  router.replace(`/learning/quiz/${quizId}/results?attempt=${attempt.value?.id}`)
 }
 
 // Prevent page refresh during quiz
@@ -285,21 +305,21 @@ if (process.client) {
               {{ quiz?.description }}
               <span class="ml-1">🍀</span>
             </p>
-            
+
             <!-- Progress Bar -->
             <div class="flex items-center gap-3">
               <div class="text-sm text-gray-600 font-medium">
                 {{ answeredCount }}/{{ quiz?.total_questions }} answered
               </div>
               <div class="flex-1 bg-green-100 rounded-full h-2">
-                <div 
+                <div
                   class="bg-green-600 h-2 rounded-full transition-all duration-300"
                   :style="{ width: `${progress}%` }"
-                ></div>
+                />
               </div>
             </div>
           </div>
-          
+
           <!-- Timer -->
           <div v-if="timeRemaining !== null" class="text-green-700 font-bold text-2xl">
             {{ formatTime(timeRemaining) }}
@@ -313,8 +333,10 @@ if (process.client) {
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div class="text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p class="text-gray-600">Loading quiz...</p>
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4" />
+          <p class="text-gray-600">
+            Loading quiz...
+          </p>
         </div>
       </div>
 
@@ -323,8 +345,12 @@ if (process.client) {
         <div class="flex items-center gap-3">
           <Icon name="tabler:alert-circle" class="text-red-500 text-xl" />
           <div>
-            <h3 class="text-red-800 font-medium">Error</h3>
-            <p class="text-red-700">{{ error }}</p>
+            <h3 class="text-red-800 font-medium">
+              Error
+            </h3>
+            <p class="text-red-700">
+              {{ error }}
+            </p>
           </div>
         </div>
       </div>
@@ -361,17 +387,17 @@ if (process.client) {
                   class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200"
                   :class="{
                     'bg-green-100 border-green-300': answers[currentQuestion.id] === option.id,
-                    'bg-white border-gray-200 hover:border-green-300 hover:bg-green-50': answers[currentQuestion.id] !== option.id
+                    'bg-white border-gray-200 hover:border-green-300 hover:bg-green-50': answers[currentQuestion.id] !== option.id,
                   }"
                   @click="selectAnswer(currentQuestion.id, option.id)"
                 >
-                  <div 
+                  <div
                     class="w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm"
                     :class="{
                       'bg-blue-200': option.label === 'A',
-                      'bg-orange-200': option.label === 'B', 
+                      'bg-orange-200': option.label === 'B',
                       'bg-red-200': option.label === 'C',
-                      'bg-yellow-200': option.label === 'D'
+                      'bg-yellow-200': option.label === 'D',
                     }"
                   >
                     {{ option.label }}
@@ -384,11 +410,11 @@ if (process.client) {
               <div v-else>
                 <textarea
                   :value="answers[currentQuestion.id] || ''"
-                  @input="setTextAnswer(currentQuestion.id, ($event.target as HTMLTextAreaElement).value)"
                   placeholder="Type your answer here..."
                   class="w-full p-4 border border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 resize-none"
                   rows="6"
-                ></textarea>
+                  @input="setTextAnswer(currentQuestion.id, ($event.target as HTMLTextAreaElement).value)"
+                />
               </div>
             </div>
           </div>
@@ -397,25 +423,25 @@ if (process.client) {
           <div class="flex justify-end gap-3 mt-8">
             <button
               v-if="!isFirstQuestion"
-              @click="previousQuestion"
               class="px-6 py-2 border border-green-500 text-green-700 rounded-full hover:bg-green-50 transition-colors"
+              @click="previousQuestion"
             >
               Previous
             </button>
-            
+
             <button
               v-if="!isLastQuestion"
-              @click="nextQuestion"
               class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
+              @click="nextQuestion"
             >
               Next
             </button>
-            
+
             <button
               v-if="isLastQuestion"
-              @click="submitQuiz"
               :disabled="!canSubmit || submitting"
               class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              @click="submitQuiz"
             >
               <span v-if="submitting">Submitting...</span>
               <span v-else>Submit Quiz</span>

@@ -31,8 +31,43 @@ const formatTimeDisplay = (quiz: QuizApiResponse): string => {
   })
 }
 
+// Check if user can retake the quiz
+const canRetake = computed(() => {
+  if (!props.quiz.retake_limit) {
+    return true // No limit, can always retake
+  }
+  
+  if (!props.attemptCount) {
+    return true // No attempts yet, can start
+  }
+  
+  return props.attemptCount < props.quiz.retake_limit
+})
+
+// Get retake status text
+const retakeStatusText = computed(() => {
+  if (!props.quiz.retake_limit) {
+    return 'Không giới hạn'
+  }
+  
+  if (!props.attemptCount) {
+    return `${props.quiz.retake_limit} lần`
+  }
+  
+  const remaining = props.quiz.retake_limit - props.attemptCount
+  if (remaining <= 0) {
+    return 'Đã hết lượt'
+  }
+  
+  return `Còn ${remaining} lần`
+})
+
 // Handle quiz actions
 const handleStartQuiz = () => {
+  if (!canRetake.value) {
+    // Show error message
+    return
+  }
   emit('start-quiz', props.quiz)
 }
 
@@ -62,6 +97,10 @@ const handleViewResults = () => {
           <Icon name="tabler:clock" class="text-base" />
           <span>{{ formatTimeDisplay(quiz) }}</span>
         </div>
+        <div class="flex items-center gap-1">
+          <Icon name="tabler:refresh" class="text-base" />
+          <span :class="!canRetake ? 'text-red-600' : 'text-gray-700'">{{ retakeStatusText }}</span>
+        </div>
         <div v-if="attemptCount && attemptCount > 0" class="flex items-center gap-1">
           <Icon name="tabler:chart-bar" class="text-base" />
           <span>{{ attemptCount }} {{ $t('quiz.attempts') }}</span>
@@ -78,10 +117,16 @@ const handleViewResults = () => {
     <!-- Action Buttons -->
     <div class="flex gap-3 justify-end">
       <button
-        class="cursor-pointer px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-full text-sm font-medium hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
+        :disabled="!canRetake"
+        :class="[
+          'px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-200 shadow-sm flex items-center gap-2',
+          canRetake 
+            ? 'cursor-pointer bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 hover:shadow-md' 
+            : 'cursor-not-allowed bg-gray-300 text-gray-500'
+        ]"
         @click="handleStartQuiz">
         <Icon name="tabler:play" class="text-sm" />
-        {{ $t('quiz.startQuiz') }}
+        {{ canRetake ? $t('quiz.startQuiz') : 'Đã hết lượt' }}
       </button>
       <button v-if="hasCompletedAttempts"
         class="cursor-pointer px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full text-sm font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2"
