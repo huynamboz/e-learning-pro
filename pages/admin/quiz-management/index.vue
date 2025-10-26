@@ -107,31 +107,7 @@ function formatDate(dateString: string) {
   })
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'completed':
-      return 'text-green-600 bg-green-100'
-    case 'in_progress':
-      return 'text-blue-600 bg-blue-100'
-    case 'expired':
-      return 'text-red-600 bg-red-100'
-    default:
-      return 'text-gray-600 bg-gray-100'
-  }
-}
-
-function getStatusText(status: string) {
-  switch (status) {
-    case 'completed':
-      return 'Hoàn thành'
-    case 'in_progress':
-      return 'Đang làm'
-    case 'expired':
-      return 'Hết hạn'
-    default:
-      return status
-  }
-}
+// Removed unused functions
 
 // Lifecycle
 onMounted(async () => {
@@ -145,61 +121,61 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-4 sm:p-6 max-md:px-0">
     <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900 mb-2">
+    <div class="mb-4 sm:mb-6">
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
         Quản lý Quiz
       </h1>
-      <p class="text-gray-600">
+      <p class="text-sm sm:text-base text-gray-600">
         Theo dõi và chấm điểm các bài làm của học sinh
       </p>
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white rounded-lg shadow-sm border p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <div class="flex items-center">
-          <div class="p-3 bg-blue-100 rounded-lg">
-            <Icon name="tabler:clipboard-list" class="text-blue-600 text-xl" />
+          <div class="p-2 sm:p-3 bg-blue-100 rounded-lg">
+            <Icon name="tabler:clipboard-list" class="text-blue-600 text-lg sm:text-xl" />
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">
+          <div class="ml-3 sm:ml-4">
+            <p class="text-xs sm:text-sm font-medium text-gray-600">
               Tổng bài làm
             </p>
-            <p class="text-2xl font-bold text-gray-900">
+            <p class="text-xl sm:text-2xl font-bold text-gray-900">
               {{ recentSubmissions.length }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border p-6">
+      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
         <div class="flex items-center">
-          <div class="p-3 bg-yellow-100 rounded-lg">
-            <Icon name="tabler:file-text" class="text-yellow-600 text-xl" />
+          <div class="p-2 sm:p-3 bg-yellow-100 rounded-lg">
+            <Icon name="tabler:file-text" class="text-yellow-600 text-lg sm:text-xl" />
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">
+          <div class="ml-3 sm:ml-4">
+            <p class="text-xs sm:text-sm font-medium text-gray-600">
               Bài cần chấm
             </p>
-            <p class="text-2xl font-bold text-gray-900">
+            <p class="text-xl sm:text-2xl font-bold text-gray-900">
               {{ pendingEssaysCount }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border p-6">
+      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
         <div class="flex items-center">
-          <div class="p-3 bg-green-100 rounded-lg">
-            <Icon name="tabler:check-circle" class="text-green-600 text-xl" />
+          <div class="p-2 sm:p-3 bg-green-100 rounded-lg">
+            <Icon name="tabler:check-circle" class="text-green-600 text-lg sm:text-xl" />
           </div>
-          <div class="ml-4">
-            <p class="text-sm font-medium text-gray-600">
+          <div class="ml-3 sm:ml-4">
+            <p class="text-xs sm:text-sm font-medium text-gray-600">
               Đã hoàn thành
             </p>
-            <p class="text-2xl font-bold text-gray-900">
+            <p class="text-xl sm:text-2xl font-bold text-gray-900">
               {{ recentSubmissions.filter(s => s.status === 'completed').length }}
             </p>
           </div>
@@ -208,13 +184,13 @@ onMounted(async () => {
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-4 sm:mb-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
         Bộ lọc
       </h3>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Lớp học</label>
+          <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Lớp học</label>
           <a-select
             v-model:value="selectedClassroom"
             placeholder="Chọn lớp học"
@@ -234,14 +210,14 @@ onMounted(async () => {
           </a-select>
         </div>
 
-        <div class="flex items-end">
-          <a-checkbox v-model:checked="showNeedsGrading" @change="handleNeedsGradingToggle">
+        <div class="flex items-center sm:items-end">
+          <a-checkbox v-model:checked="showNeedsGrading" class="text-xs sm:text-sm" @change="handleNeedsGradingToggle">
             Chỉ hiện bài cần chấm
           </a-checkbox>
         </div>
 
-        <div class="flex items-end">
-          <a-button type="primary" :loading="loading" @click="loadRecentSubmissions">
+        <div class="flex items-center sm:items-end sm:col-span-2 lg:col-span-1">
+          <a-button type="primary" :loading="loading" class="w-full sm:w-auto text-xs sm:text-sm" @click="loadRecentSubmissions">
             Làm mới
           </a-button>
         </div>
@@ -249,29 +225,36 @@ onMounted(async () => {
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+    <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-4 sm:mb-6">
+      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
         Thao tác nhanh
       </h3>
-      <div class="flex gap-4">
-        <NuxtLink :to="`/admin/quiz-management/essay-grading${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <NuxtLink
+          :to="`/admin/quiz-management/essay-grading${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`"
+          class="flex-1"
+        >
           <a-button
             type="primary"
             :disabled="pendingEssaysCount === 0"
+            class="w-full text-xs sm:text-sm"
           >
             <template #icon>
-              <Icon name="tabler:file-text" />
+              <Icon name="tabler:file-text" class="text-sm sm:text-base" />
             </template>
-            Chấm bài tự luận ({{ pendingEssaysCount }})
+            <span class="hidden sm:inline">Chấm bài tự luận ({{ pendingEssaysCount }})</span>
           </a-button>
         </NuxtLink>
 
-        <NuxtLink :to="`/admin/quiz-management/submissions${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`">
-          <a-button type="default">
+        <NuxtLink
+          :to="`/admin/quiz-management/submissions${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`"
+          class="flex-1"
+        >
+          <a-button type="default" class="w-full text-xs sm:text-sm">
             <template #icon>
-              <Icon name="tabler:clipboard-list" />
+              <Icon name="tabler:clipboard-list" class="text-sm sm:text-base" />
             </template>
-            Xem tất cả bài làm
+            <span class="hidden sm:inline">Xem tất cả bài làm</span>
           </a-button>
         </NuxtLink>
       </div>
@@ -279,13 +262,13 @@ onMounted(async () => {
 
     <!-- Recent Submissions -->
     <div class="bg-white rounded-lg shadow-sm border">
-      <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900">
+      <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900">
             Bài làm cần chấm
           </h3>
           <NuxtLink :to="`/admin/quiz-management/submissions${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`">
-            <a-button type="link">
+            <a-button type="link" class="text-xs sm:text-sm">
               Xem tất cả
             </a-button>
           </NuxtLink>
@@ -293,21 +276,21 @@ onMounted(async () => {
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="p-6">
-        <div class="flex items-center justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-          <span class="ml-2 text-gray-600">Đang tải...</span>
+      <div v-if="loading" class="p-4 sm:p-6">
+        <div class="flex items-center justify-center py-6 sm:py-8">
+          <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600" />
+          <span class="ml-2 text-sm sm:text-base text-gray-600">Đang tải...</span>
         </div>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="p-6">
-        <div class="text-center py-8">
-          <Icon name="tabler:alert-circle" class="text-red-500 text-4xl mx-auto mb-4" />
-          <p class="text-red-600">
+      <div v-else-if="error" class="p-4 sm:p-6">
+        <div class="text-center py-6 sm:py-8">
+          <Icon name="tabler:alert-circle" class="text-red-500 text-3xl sm:text-4xl mx-auto mb-4" />
+          <p class="text-sm sm:text-base text-red-600">
             {{ error }}
           </p>
-          <a-button type="primary" class="mt-4" @click="loadRecentSubmissions">
+          <a-button type="primary" class="mt-4 text-xs sm:text-sm" @click="loadRecentSubmissions">
             Thử lại
           </a-button>
         </div>
@@ -318,34 +301,34 @@ onMounted(async () => {
         <div
           v-for="submission in filteredSubmissions.slice(0, 10)"
           :key="submission.id"
-          class="p-6 hover:bg-gray-50 transition-colors"
+          class="p-4 sm:p-6 hover:bg-gray-50 transition-colors"
         >
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex-1">
-              <div class="flex items-center gap-3 mb-2">
-                <h4 class="text-lg font-medium text-gray-900">
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                <h4 class="text-base sm:text-lg font-medium text-gray-900">
                   {{ submission.quiz_title }}
                 </h4>
-                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 w-fit">
                   Cần chấm
                 </span>
               </div>
-              <p class="text-sm text-gray-600 mb-1">
+              <p class="text-xs sm:text-sm text-gray-600 mb-1">
                 Học sinh: <span class="font-medium">{{ submission.student_name }}</span>
               </p>
-              <p class="text-sm text-gray-500 mb-2">
+              <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">
                 Câu hỏi: {{ submission.question_prompt }}
               </p>
-              <p class="text-sm text-gray-500">
+              <p class="text-xs sm:text-sm text-gray-500">
                 Tạo: {{ formatDate(submission.created_at) }}
               </p>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-lg font-semibold text-gray-900">
+            <div class="flex items-center justify-between sm:justify-end gap-2">
+              <span class="text-sm sm:text-lg font-semibold text-gray-900">
                 0/{{ submission.max_score }}
               </span>
               <NuxtLink :to="`/admin/quiz-management/essay-grading-teacher/${submission.id}`">
-                <a-button type="primary" size="small">
+                <a-button type="primary" size="small" class="text-xs sm:text-sm">
                   Chấm bài
                 </a-button>
               </NuxtLink>
@@ -355,10 +338,10 @@ onMounted(async () => {
       </div>
 
       <!-- Empty State -->
-      <div v-else class="p-6">
-        <div class="text-center py-8">
-          <Icon name="tabler:file-text" class="text-gray-400 text-4xl mx-auto mb-4" />
-          <p class="text-gray-500">
+      <div v-else class="p-4 sm:p-6">
+        <div class="text-center py-6 sm:py-8">
+          <Icon name="tabler:file-text" class="text-gray-400 text-3xl sm:text-4xl mx-auto mb-4" />
+          <p class="text-sm sm:text-base text-gray-500">
             Không có bài làm nào cần chấm
           </p>
         </div>

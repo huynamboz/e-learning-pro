@@ -9,7 +9,6 @@ import { generateSlug } from '~/utils/slug'
 
 const { t } = useI18n()
 
-
 const route = useRoute()
 const courseId = computed(() => route.params.id as string)
 const chapterId = computed(() => route.params.chapterId as string)
@@ -47,7 +46,6 @@ const lastUploadedFile = ref<File | null>(null)
 // Delete dialog state
 const showDeleteDialog = ref(false)
 const isDeleting = ref(false)
-
 
 // Fetch lesson data
 async function fetchLesson() {
@@ -93,7 +91,8 @@ async function fetchLesson() {
         }] as any
       }
     }
-  } else {
+  }
+  else {
     // Reset form for new lesson
     formState.value = {
       chapter_id: chapterId.value,
@@ -117,7 +116,6 @@ async function fetchLesson() {
 onMounted(() => {
   fetchLesson()
 })
-
 
 // Watch route changes
 watch(() => lessonId.value, () => {
@@ -174,12 +172,13 @@ function removeImage() {
 
 // Check if file has changed
 function hasFileChanged(currentFile: File): boolean {
-  if (!lastUploadedFile.value || !currentFile) return true
+  if (!lastUploadedFile.value || !currentFile)
+    return true
 
   return (
-    currentFile.name !== lastUploadedFile.value.name ||
-    currentFile.size !== lastUploadedFile.value.size ||
-    currentFile.lastModified !== lastUploadedFile.value.lastModified
+    currentFile.name !== lastUploadedFile.value.name
+    || currentFile.size !== lastUploadedFile.value.size
+    || currentFile.lastModified !== lastUploadedFile.value.lastModified
   )
 }
 
@@ -203,7 +202,8 @@ function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
         // Store the uploaded file info
         lastUploadedFile.value = file
         resolve()
-      } else {
+      }
+      else {
         reject(new Error(`Upload failed with status: ${xhr.status}`))
       }
     })
@@ -238,7 +238,8 @@ function uploadImageWithProgress(file: File, uploadUrl: string): Promise<void> {
       if (xhr.status >= 200 && xhr.status < 300) {
         uploadProgress.value = 100
         resolve()
-      } else {
+      }
+      else {
         reject(new Error(`Upload failed with status: ${xhr.status}`))
       }
     })
@@ -300,9 +301,10 @@ async function uploadVideoAndSaveLesson() {
         isUploading.value = false
         uploadProgress.value = 0
       }
-    } else {
+    }
+    else {
       // File hasn't changed, no need to upload
-      console.log(t('admin.formLesson.upload.fileUnchanged'))
+      // File hasn't changed, no need to upload
     }
   }
 
@@ -318,7 +320,7 @@ async function uploadVideoAndSaveLesson() {
       const presign = await uploadImage({
         file_name: file.name,
         content_type: file.type,
-        folder: 'thumbnails'
+        folder: 'thumbnails',
       })
 
       const uploadUrl = presign?.upload_url
@@ -361,12 +363,12 @@ async function saveLesson() {
     )
     if (response.success) {
       notification.success({
-        message: t('admin.formLesson.notifications.updateLessonSuccess')
+        message: t('admin.formLesson.notifications.updateLessonSuccess'),
       })
     }
     else {
       notification.error({
-        message: t('admin.formLesson.notifications.updateLessonFailed')
+        message: t('admin.formLesson.notifications.updateLessonFailed'),
       })
     }
   }
@@ -375,23 +377,23 @@ async function saveLesson() {
     // If creating new lesson, update URL with new lesson ID
     if (response.success) {
       const newLessonId = response.data?.id
-      console.log('newLessonId', newLessonId)
+      // New lesson created successfully
       if (newLessonId) {
         notification.success({
-          message: t('admin.formLesson.notifications.createLessonSuccess')
+          message: t('admin.formLesson.notifications.createLessonSuccess'),
         })
         // Update URL with new lesson ID
         await router.replace({
           params: {
             ...route.params,
             lessonId: newLessonId,
-          }
+          },
         })
       }
     }
     else {
       notification.error({
-        message: t('admin.formLesson.notifications.createLessonFailed')
+        message: t('admin.formLesson.notifications.createLessonFailed'),
       })
     }
   }
@@ -408,7 +410,7 @@ async function saveLesson() {
 function previewLesson() {
   if (lessonId.value && lessonId.value !== 'create') {
     // Replace admin/courses with /learning/ in the current URL
-    
+
     // Navigate to learning page with lesson ID
     navigateTo(`/learning/${courseId.value}?lessonId=${lessonId.value}`)
   }
@@ -424,78 +426,81 @@ function closeDeleteDialog() {
 }
 
 async function confirmDeleteLesson() {
-  if (!lessonId.value || lessonId.value === 'create') return
+  if (!lessonId.value || lessonId.value === 'create')
+    return
 
   try {
     isDeleting.value = true
     await deleteLesson(courseId.value, chapterId.value, lessonId.value)
-    
+
     notification.success({
       message: t('admin.formLesson.notifications.deleteLessonSuccess'),
-      description: t('admin.formLesson.notifications.deleteLessonSuccessDescription')
+      description: t('admin.formLesson.notifications.deleteLessonSuccessDescription'),
     })
-    
+
     // Close dialog and navigate back to chapter
     showDeleteDialog.value = false
-    
+
     // Navigate back to lessons list page
     await router.push(`/admin/courses/${courseId.value}/chapters/${chapterId.value}/lessons`)
-    
+
     // Refresh chapters list
     await fetchChapters(courseId.value)
-  } catch (error) {
+  }
+  catch {
     notification.error({
       message: t('admin.formLesson.notifications.deleteLessonFailed'),
-      description: t('admin.formLesson.notifications.deleteLessonFailedDescription')
+      description: t('admin.formLesson.notifications.deleteLessonFailedDescription'),
     })
-  } finally {
+  }
+  finally {
     isDeleting.value = false
   }
 }
 </script>
 
 <template>
-  <div class="form-courses flex flex-col gap-20">
+  <div class="form-courses flex flex-col gap-10 sm:gap-20">
     <div class="flex flex-col gap-2">
       <!-- Header Section -->
-      <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-        <div class="flex items-center justify-between">
+      <div class="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <!-- Title Section -->
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3 sm:gap-4">
             <a-button
               type="text"
               size="large"
-              class="!h-12 !w-12 !flex items-center justify-center !p-0 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+              class="!h-10 !w-10 sm:!h-12 sm:!w-12 !flex items-center justify-center !p-0 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800"
               @click="router.back()"
             >
-              <Icon name="solar:alt-arrow-left-outline" size="24" />
+              <Icon name="solar:alt-arrow-left-outline" size="20" class="sm:text-2xl" />
             </a-button>
-            <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
-              <Icon name="solar:video-library-bold-duotone" size="24" class="text-blue-600" />
+            <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg">
+              <Icon name="solar:video-library-bold-duotone" size="20" class="text-blue-600 sm:text-2xl" />
             </div>
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 !m-0">
+              <h1 class="text-xl sm:text-2xl font-bold text-gray-900 !m-0">
                 {{ lessonId && lessonId !== 'create' ? t('admin.formLesson.title.edit') : t('admin.formLesson.title.create') }}
               </h1>
-              <p class="text-sm text-gray-500 mt-1">
+              <p class="text-xs sm:text-sm text-gray-500 mt-1">
                 {{ lessonId && lessonId !== 'create' ? t('admin.formLesson.description.edit') : t('admin.formLesson.description.create') }}
               </p>
             </div>
           </div>
 
           <!-- Action Section -->
-          <div class="flex items-center gap-4">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-4">
             <!-- Progress Section -->
-            <div v-if="isUploading" class="flex items-center gap-3 min-w-[200px]">
+            <div v-if="isUploading" class="flex items-center gap-3 w-full sm:min-w-[200px] sm:w-auto">
               <div class="flex-1">
-              <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
-                <span>{{ t('admin.formLesson.upload.uploading') }}</span>
-                <span>{{ uploadProgress }}%</span>
-              </div>
-                <a-progress 
-                  :percent="uploadProgress" 
-                  :show-info="false" 
-                  status="active" 
+                <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
+                  <span>{{ t('admin.formLesson.upload.uploading') }}</span>
+                  <span>{{ uploadProgress }}%</span>
+                </div>
+                <a-progress
+                  :percent="uploadProgress"
+                  :show-info="false"
+                  status="active"
                   stroke-color="#16a34a"
                   class="!h-2"
                 />
@@ -503,137 +508,203 @@ async function confirmDeleteLesson() {
             </div>
 
             <!-- Preview Button (only show when editing existing lesson) -->
-            <a-button 
+            <a-button
               v-if="lessonId && lessonId !== 'create'"
-              size="large"
-              class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
+              size="small"
+              class="!h-8 sm:!h-12 !flex items-center justify-center gap-1 sm:gap-2 !px-3 sm:!px-6 rounded-lg text-xs sm:text-sm !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
               @click="previewLesson"
             >
               <template #icon>
-                <Icon name="solar:eye-bold-duotone" size="20" />
+                <Icon name="solar:eye-bold-duotone" size="14" class="sm:text-xl" />
               </template>
-              {{ t('admin.formLesson.buttons.previewLesson') }}
+              <span class="hidden sm:inline">{{ t('admin.formLesson.buttons.previewLesson') }}</span>
             </a-button>
 
             <!-- Delete Button (only show when editing existing lesson) -->
-            <a-button 
+            <a-button
               v-if="lessonId && lessonId !== 'create'"
-              size="large"
+              size="small"
               danger
-              class="!h-12 !flex items-center justify-center gap-2 !px-6 rounded-lg text-sm !font-semibold"
+              class="!h-8 sm:!h-12 !flex items-center justify-center gap-1 sm:gap-2 !px-3 sm:!px-6 rounded-lg text-xs sm:text-sm !font-semibold"
               @click="showDeleteConfirm"
             >
               <template #icon>
-                <Icon name="solar:trash-bin-trash-bold-duotone" size="20" />
+                <Icon name="solar:trash-bin-trash-bold-duotone" size="14" class="sm:text-xl" />
               </template>
-              {{ t('admin.formLesson.buttons.deleteLesson') }}
+              <span class="hidden sm:inline">{{ t('admin.formLesson.buttons.deleteLesson') }}</span>
             </a-button>
 
             <!-- Save Button -->
-            <a-button 
+            <a-button
               type="primary"
-              size="large"
-              class="!h-12 !flex items-center justify-center gap-1 !px-8 rounded-lg text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
-              :loading="uploading || isCreatingLesson" 
-              :disabled="isUploading" 
+              size="small"
+              class="!h-8 sm:!h-12 !flex items-center justify-center gap-1 !px-4 sm:!px-8 rounded-lg text-xs sm:text-sm !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
+              :loading="uploading || isCreatingLesson"
+              :disabled="isUploading"
               @click="uploadVideoAndSaveLesson"
             >
               <template #icon>
-                <Icon 
-                  :name="isUploading ? 'solar:upload-bold-duotone' : (lessonId && lessonId !== 'create' ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')" 
-                  size="26" 
+                <Icon
+                  :name="isUploading ? 'solar:upload-bold-duotone' : (lessonId && lessonId !== 'create' ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')"
+                  size="14"
+                  class="sm:text-2xl"
                 />
               </template>
-              {{ isUploading ? `${t('admin.formLesson.buttons.uploading')} ${uploadProgress}%` : `${lessonId && lessonId !== 'create' ? t('admin.formLesson.buttons.updateLesson') : t('admin.formLesson.buttons.createLesson')}` }}
+              <span class="hidden sm:inline">{{ isUploading ? `${t('admin.formLesson.buttons.uploading')} ${uploadProgress}%` : `${lessonId && lessonId !== 'create' ? t('admin.formLesson.buttons.updateLesson') : t('admin.formLesson.buttons.createLesson')}` }}</span>
             </a-button>
           </div>
         </div>
       </div>
 
-      <a-form ref="formRef" :model="formState" name="lessonForm" autocomplete="off" layout="vertical"
-        class="flex items-start flex-col !pt-6 w-2/3">
-        <a-form-item :label="t('admin.formLesson.form.title')" name="title" class="w-full"
-          :rules="[{ required: true, message: t('admin.formLesson.form.titleRequired') }]">
-          <a-input v-model:value="formState.title" size="large" :placeholder="t('admin.formLesson.form.titlePlaceholder')" />
+      <a-form
+        ref="formRef"
+        :model="formState"
+        name="lessonForm"
+        autocomplete="off"
+        layout="vertical"
+        class="flex items-start flex-col !pt-4 sm:!pt-6 w-full lg:w-2/3"
+      >
+        <a-form-item
+          :label="t('admin.formLesson.form.title')"
+          name="title"
+          class="w-full"
+          :rules="[{ required: true, message: t('admin.formLesson.form.titleRequired') }]"
+        >
+          <a-input
+            v-model:value="formState.title"
+            size="large"
+            :placeholder="t('admin.formLesson.form.titlePlaceholder')"
+          />
         </a-form-item>
 
-        <a-form-item name="slug" :label="t('admin.formLesson.form.slug')" class="w-full">
-          <a-input v-model:value="formState.slug" :placeholder="t('admin.formLesson.form.slugPlaceholder')" size="large" />
+        <a-form-item
+          name="slug"
+          :label="t('admin.formLesson.form.slug')"
+          class="w-full"
+        >
+          <a-input
+            v-model:value="formState.slug"
+            :placeholder="t('admin.formLesson.form.slugPlaceholder')"
+            size="large"
+          />
         </a-form-item>
 
-        <a-form-item name="video_duration" :label="t('admin.formLesson.form.videoDuration')" class="w-full" :rules="[
-          { type: 'number', min: 0, message: t('admin.formLesson.form.videoDurationRequired') },
-        ]">
-          <a-input-number v-model:value="formState.video_duration" :placeholder="t('admin.formLesson.form.videoDurationPlaceholder')" class="!w-full"
-            size="large" :min="0" />
-          </a-form-item>
+        <a-form-item
+          name="video_duration"
+          :label="t('admin.formLesson.form.videoDuration')"
+          class="w-full"
+          :rules="[
+            { type: 'number', min: 0, message: t('admin.formLesson.form.videoDurationRequired') },
+          ]"
+        >
+          <a-input-number
+            v-model:value="formState.video_duration"
+            :placeholder="t('admin.formLesson.form.videoDurationPlaceholder')"
+            class="!w-full"
+            size="large"
+            :min="0"
+          />
+        </a-form-item>
 
-        <a-form-item name="description" :label="t('admin.formLesson.form.description')" class="w-full">
-          <a-textarea v-model:value="formState.description" :placeholder="t('admin.formLesson.form.descriptionPlaceholder')"
-            :auto-size="{ minRows: 5, maxRows: 5 }" />
+        <a-form-item
+          name="description"
+          :label="t('admin.formLesson.form.description')"
+          class="w-full"
+        >
+          <a-textarea
+            v-model:value="formState.description"
+            :placeholder="t('admin.formLesson.form.descriptionPlaceholder')"
+            :auto-size="{ minRows: 5, maxRows: 5 }"
+          />
         </a-form-item>
 
         <!-- Preview Switch -->
         <a-form-item name="is_preview" :label="t('admin.formLesson.form.isPreview')" class="w-full">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 sm:gap-3">
             <a-switch v-model:checked="formState.is_preview" size="default" />
             <div class="flex flex-col">
-              <span class="text-sm text-gray-700">{{ t('admin.formLesson.form.previewLabel') }}</span>
+              <span class="text-xs sm:text-sm text-gray-700">{{ t('admin.formLesson.form.previewLabel') }}</span>
               <span class="text-xs text-gray-500">{{ t('admin.formLesson.form.previewNote') }}</span>
             </div>
           </div>
         </a-form-item>
 
         <!-- Video Upload -->
-        <a-form-item name="video" :label="t('admin.formLesson.form.introVideo')" class="w-full">
-          <a-upload-dragger v-model:file-list="videoFileList" name="introVideo" :multiple="false"
-            :before-upload="beforeUpload" :max-count="1" :show-upload-list="false" accept="video/mp4,video/quicktime"
-            class="!min-h-[200px] !flex !items-center" @change="handleVideoChange">
-            <div v-if="videoFileList.length" class="relative w-full flex items-center justify-center px-4">
-              <video :src="videoPreviewUrl" controls class="w-full rounded-lg" />
+        <a-form-item
+          name="video"
+          :label="t('admin.formLesson.form.introVideo')"
+          class="w-full"
+        >
+          <a-upload-dragger
+            v-model:file-list="videoFileList"
+            name="introVideo"
+            :multiple="false"
+            :before-upload="beforeUpload"
+            :max-count="1"
+            :show-upload-list="false"
+            accept="video/mp4,video/quicktime"
+            class="!min-h-[150px] sm:!min-h-[200px] !flex !items-center"
+            @change="handleVideoChange"
+          >
+            <div v-if="videoFileList.length" class="relative w-full flex items-center justify-center px-2 sm:px-4">
+              <video :src="videoPreviewUrl" controls class="w-full rounded-lg max-h-[200px] sm:max-h-none" />
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
-                @click.stop.prevent="removeVideo">
+                @click.stop.prevent="removeVideo"
+              >
                 <CloseOutlined />
               </div>
             </div>
 
             <template v-else>
               <p class="ant-upload-drag-icon">
-                <i class="i-solar-play-bold-duotone text-3xl text-gray-800" />
+                <i class="i-solar-play-bold-duotone text-2xl sm:text-3xl text-gray-800" />
               </p>
-              <p class="ant-upload-text text-lg font-semibold text-gray-900">
+              <p class="ant-upload-text text-base sm:text-lg font-semibold text-gray-900">
                 {{ t('admin.formLesson.upload.videoDragText') }} <span class="text-blue-600">{{ t('admin.formLesson.upload.videoBrowse') }}</span>
               </p>
-              <p class="ant-upload-hint text-gray-500">
+              <p class="ant-upload-hint text-sm sm:text-base text-gray-500">
                 {{ t('admin.formLesson.upload.videoHint') }}
               </p>
             </template>
           </a-upload-dragger>
-          </a-form-item>
+        </a-form-item>
 
         <!-- Image Upload -->
-        <a-form-item name="image" :label="t('admin.formLesson.form.introImage')" class="w-full">
-          <a-upload-dragger v-model:file-list="imageFileList" name="introImage" :multiple="false"
-            :before-upload="beforeUpload" :max-count="1" :show-upload-list="false" accept="image/png,image/jpeg"
-            class="!min-h-[200px] !flex !items-center" @change="handleImageChange">
-            <div v-if="imageFileList.length" class="relative w-full flex items-center justify-center px-4">
-              <img :src="imagePreviewUrl" alt="preview" class="h-full rounded-lg object-contain">
+        <a-form-item
+          name="image"
+          :label="t('admin.formLesson.form.introImage')"
+          class="w-full"
+        >
+          <a-upload-dragger
+            v-model:file-list="imageFileList"
+            name="introImage"
+            :multiple="false"
+            :before-upload="beforeUpload"
+            :max-count="1"
+            :show-upload-list="false"
+            accept="image/png,image/jpeg"
+            class="!min-h-[150px] sm:!min-h-[200px] !flex !items-center"
+            @change="handleImageChange"
+          >
+            <div v-if="imageFileList.length" class="relative w-full flex items-center justify-center px-2 sm:px-4">
+              <img :src="imagePreviewUrl" alt="preview" class="h-full rounded-lg object-contain max-h-[200px] sm:max-h-none">
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
-                @click.stop.prevent="removeImage">
+                @click.stop.prevent="removeImage"
+              >
                 <CloseOutlined />
               </div>
-        </div>
+            </div>
 
             <template v-else>
               <p class="ant-upload-drag-icon">
-                <i class="i-solar-gallery-add-bold-duotone text-3xl text-gray-800" />
+                <i class="i-solar-gallery-add-bold-duotone text-2xl sm:text-3xl text-gray-800" />
               </p>
-              <p class="ant-upload-text text-lg font-semibold text-gray-900">
+              <p class="ant-upload-text text-base sm:text-lg font-semibold text-gray-900">
                 {{ t('admin.formLesson.upload.imageDragText') }} <span class="text-blue-600">{{ t('admin.formLesson.upload.imageBrowse') }}</span>
               </p>
-              <p class="ant-upload-hint text-gray-500">
+              <p class="ant-upload-hint text-sm sm:text-base text-gray-500">
                 {{ t('admin.formLesson.upload.imageHint') }}
               </p>
             </template>
@@ -647,28 +718,34 @@ async function confirmDeleteLesson() {
       v-model:open="showDeleteDialog"
       :title="t('admin.formLesson.deleteDialog.title')"
       :confirm-loading="isDeleting"
-      @ok="confirmDeleteLesson"
-      @cancel="closeDeleteDialog"
       :ok-text="t('admin.formLesson.buttons.delete')"
       :cancel-text="t('admin.formLesson.buttons.cancel')"
       ok-type="danger"
+      width="90vw"
+      :style="{ maxWidth: '480px' }"
+      @ok="confirmDeleteLesson"
+      @cancel="closeDeleteDialog"
     >
       <div class="py-4">
-        <div class="flex items-center gap-4 mb-4">
-          <div class="flex items-center justify-center w-12 h-12 bg-red-100 rounded-lg">
-            <Icon name="solar:danger-triangle-bold-duotone" size="24" class="text-red-600" />
+        <div class="flex items-start gap-3 sm:gap-4 mb-4">
+          <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-lg">
+            <Icon name="solar:danger-triangle-bold-duotone" size="20" class="text-red-600 sm:text-2xl" />
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ t('admin.formLesson.deleteDialog.confirmTitle') }}</h3>
-            <p class="text-sm text-gray-600">{{ t('admin.formLesson.deleteDialog.confirmMessage') }}</p>
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1">
+              {{ t('admin.formLesson.deleteDialog.confirmTitle') }}
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-600">
+              {{ t('admin.formLesson.deleteDialog.confirmMessage') }}
+            </p>
           </div>
         </div>
-        
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm text-gray-700 mb-2">
+
+        <div class="bg-gray-50 rounded-lg p-3 sm:p-4">
+          <p class="text-xs sm:text-sm text-gray-700 mb-2">
             <strong>{{ t('admin.formLesson.deleteDialog.lessonLabel') }}</strong> {{ formState.title || 'Untitled Lesson' }}
           </p>
-          <p class="text-sm text-gray-600">
+          <p class="text-xs sm:text-sm text-gray-600">
             {{ t('admin.formLesson.deleteDialog.confirmDescription') }}
           </p>
         </div>

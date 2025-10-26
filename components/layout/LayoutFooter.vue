@@ -20,19 +20,7 @@ interface SocialMedia {
   url: string
 }
 
-// i18n
-const { t } = useI18n()
-
 const footerSections: FooterSection[] = [
-  {
-    title: 'Khóa học',
-    links: [
-      { title: 'Tiếng Ý cho người mới bắt đầu', url: '/courses' },
-      { title: 'Tiếng Ý trung cấp', url: '/courses' },
-      { title: 'Hội thoại nâng cao', url: '/courses' },
-      { title: 'Xem tất cả khóa học', url: '/courses' },
-    ],
-  },
   {
     title: 'Hỗ trợ',
     links: [
@@ -54,8 +42,8 @@ const footerSections: FooterSection[] = [
 ]
 
 const contactInfo: ContactInfo[] = [
-  { label: 'Địa chỉ', value: 'Hà Nội, Việt Nam' },
-  { label: 'Điện thoại', value: '+(84) 123-456-789' },
+  { label: 'Địa chỉ', value: 'V Novembre 1, Ponderano, Biella, Italia' },
+  { label: 'Điện thoại', value: '+39 3926431708' },
   { label: 'Email', value: 'info@cotamitalian.com' },
 ]
 
@@ -85,12 +73,16 @@ const companyInfo = {
                 <Icon name="i-heroicons-academic-cap" class="w-7 h-7 text-green-600" />
               </div>
               <div>
-                <h3 class="text-xl font-bold text-white">{{ companyInfo.name }}</h3>
-                <p class="text-green-100 text-sm">Học tiếng Ý chuyên nghiệp</p>
+                <h3 class="text-xl font-bold text-white">
+                  {{ companyInfo.name }}
+                </h3>
+                <p class="text-green-100 text-sm">
+                  Học tiếng Ý chuyên nghiệp
+                </p>
               </div>
             </NuxtLink>
           </div>
-          
+
           <p class="text-green-100 leading-relaxed max-w-md">
             {{ companyInfo.description }}
           </p>

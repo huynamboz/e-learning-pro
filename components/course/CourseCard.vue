@@ -71,18 +71,7 @@ const originalPrice = computed(() => props.discount_price && parseFloat(props.di
           {{ category?.name || t('courseCard.unknownCategory') }}
         </p>
 
-        <div v-if="type !== 'admin'" class="flex items-center gap-2">
-          <div class="flex">
-            <Icon
-              v-for="star in 5" :key="star"
-              :name="star <= roundedRating ? 'solar:star-bold' : 'solar:star-line-duotone'"
-              :class="star <= roundedRating ? 'w-4 h-4 sm:w-5 sm:h-5 text-yellow-400' : 'w-4 h-4 sm:w-5 sm:h-5 text-gray-300'"
-            />
-          </div>
-          <span class="text-xs font-semibold text-gray-600">
-            {{ averageRating.toFixed(1) }} ({{ rating_count || 0 }} {{ t('courseCard.ratings') }})
-          </span>
-        </div>
+       
 
         <p class="text-xs sm:text-sm text-gray-600">
           {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ $t('homepage.courses.levels.' + level) || 'Unknown' }}

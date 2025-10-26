@@ -88,11 +88,6 @@ onMounted(() => {
           </span>
         </NuxtLink>
 
-        <NuxtLink to="/">
-          <Button size="middle" type="default" class="rounded-xl text-sm lg:text-base">
-            {{ $t('layoutAuthHeader.buttons.contactDirectly') }}
-          </Button>
-        </NuxtLink>
         <NuxtLink to="/auth/register">
           <Button size="middle" type="primary" class="rounded-xl text-sm lg:text-base bg-[#16A34A]">
             {{ $t('layoutAuthHeader.buttons.signUpForFree') }}
@@ -153,25 +148,15 @@ onMounted(() => {
             </NuxtLink>
           </nav>
 
-          <!-- Logged in user mobile navigation -->
+          <!-- Logged in user mobile navigation (match desktop) -->
           <nav v-else class="space-y-1">
             <NuxtLink
-              to="/learning" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              v-for="value in listOfLinks" :key="value.name" :to="value.href"
+              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              {{ $t('layoutAuthHeader.navigation.learning') }}
-            </NuxtLink>
-            <NuxtLink
-              to="/profile?tab=MY_COURSES" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
-              @click="isMobileMenuOpen = false"
-            >
-              {{ $t('layoutAuthHeader.navigation.myCourses') }}
-            </NuxtLink>
-            <NuxtLink
-              to="/profile" class="flex items-center py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
-              @click="isMobileMenuOpen = false"
-            >
-              {{ $t('layoutAuthHeader.navigation.profile') }}
+              <span>{{ value.name }}</span>
+              <Icon v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
           </nav>
 
@@ -189,11 +174,6 @@ onMounted(() => {
               </span>
             </NuxtLink>
 
-            <NuxtLink to="/" class="block" @click="isMobileMenuOpen = false">
-              <Button size="large" type="default" class="w-full rounded-xl text-base">
-                {{ $t('layoutAuthHeader.buttons.contactDirectly') }}
-              </Button>
-            </NuxtLink>
             <NuxtLink to="/auth/register" class="block" @click="isMobileMenuOpen = false">
               <Button size="large" type="primary" class="w-full rounded-xl text-base bg-[#16A34A]">
                 {{ $t('layoutAuthHeader.buttons.signUpForFree') }}

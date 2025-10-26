@@ -430,15 +430,15 @@ async function confirmDeleteCourse() {
 <template>
   <div class="form-courses flex flex-col gap-10">
     <!-- Header Section -->
-    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div class="flex items-center justify-between">
+    <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <!-- Title Section -->
         <div class="flex items-center gap-4">
-          <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg">
-            <Icon name="solar:book-2-bold-duotone" size="24" class="text-blue-600" />
+          <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg">
+            <Icon name="solar:book-2-bold-duotone" size="20" class="text-blue-600 sm:text-2xl" />
           </div>
           <div>
-            <h1 class="text-2xl font-bold text-gray-900 !m-0">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 !m-0">
               {{ courseId ? t('admin.formCourse.title.edit') : t('admin.formCourse.title.create') }}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
@@ -448,9 +448,9 @@ async function confirmDeleteCourse() {
         </div>
 
         <!-- Action Section -->
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-4">
           <!-- Progress Section -->
-          <div v-if="isUploading" class="flex items-center gap-3 min-w-[200px]">
+          <div v-if="isUploading" class="flex items-center gap-3 w-full sm:min-w-[200px] sm:w-auto">
             <div class="flex-1">
               <div class="flex items-center justify-between text-xs text-gray-600 mb-1">
                 <span>{{ t('admin.formCourse.upload.uploading') }}</span>
@@ -470,13 +470,13 @@ async function confirmDeleteCourse() {
           <a-button
             v-if="courseId"
             size="small"
-            class="!h-8 !flex items-center justify-center gap-2 !px-4 rounded-lg text-xs !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
+            class="!h-8 !flex items-center justify-center gap-2 !px-3 sm:!px-4 rounded-lg text-xs !font-semibold bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200 hover:border-gray-300 shadow-sm"
             @click="previewCourse"
           >
             <template #icon>
-              <Icon name="solar:eye-bold-duotone" size="16" />
+              <Icon name="solar:eye-bold-duotone" size="14" class="sm:text-base" />
             </template>
-            {{ t('admin.formCourse.buttons.previewCourse') }}
+            <span class="hidden sm:inline">{{ t('admin.formCourse.buttons.previewCourse') }}</span>
           </a-button>
 
           <!-- Delete Button (only show when editing existing course) -->
@@ -484,20 +484,20 @@ async function confirmDeleteCourse() {
             v-if="courseId"
             size="small"
             danger
-            class="!h-8 !flex items-center justify-center gap-2 !px-4 rounded-lg text-xs !font-semibold"
+            class="!h-8 !flex items-center justify-center gap-2 !px-3 sm:!px-4 rounded-lg text-xs !font-semibold"
             @click="showDeleteConfirm"
           >
             <template #icon>
-              <Icon name="solar:trash-bin-trash-bold-duotone" size="16" />
+              <Icon name="solar:trash-bin-trash-bold-duotone" size="14" class="sm:text-base" />
             </template>
-            {{ t('admin.formCourse.buttons.deleteCourse') }}
+            <span class="hidden sm:inline">{{ t('admin.formCourse.buttons.deleteCourse') }}</span>
           </a-button>
 
           <!-- Save Button -->
           <a-button
             type="primary"
             size="small"
-            class="!h-8 !flex items-center justify-center gap-1 !px-6 rounded-lg text-xs !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
+            class="!h-8 !flex items-center justify-center gap-1 !px-4 sm:!px-6 rounded-lg text-xs !font-semibold bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700 shadow-sm"
             :loading="loading"
             :disabled="isUploading"
             @click="handleSave"
@@ -505,17 +505,18 @@ async function confirmDeleteCourse() {
             <template #icon>
               <Icon
                 :name="isUploading ? 'solar:upload-bold-duotone' : (courseId ? 'solar:diskette-bold-duotone' : 'solar:add-circle-bold-duotone')"
-                size="16"
+                size="14"
+                class="sm:text-base"
               />
             </template>
-            {{ isUploading ? `${t('admin.formCourse.buttons.uploading')} ${uploadProgress}%` : `${courseId ? t('admin.formCourse.buttons.updateCourse') : t('admin.formCourse.buttons.createCourse')}` }}
+            <span class="hidden sm:inline">{{ isUploading ? `${t('admin.formCourse.buttons.uploading')} ${uploadProgress}%` : `${courseId ? t('admin.formCourse.buttons.updateCourse') : t('admin.formCourse.buttons.createCourse')}` }}</span>
           </a-button>
         </div>
       </div>
     </div>
 
     <div class="flex flex-col gap-3">
-      <h2 class="text-2xl font-bold text-gray-900">
+      <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
         {{ t('admin.formCourse.courseDetails') }}
       </h2>
       <a-form
@@ -524,7 +525,7 @@ async function confirmDeleteCourse() {
         name="basic"
         autocomplete="off"
         layout="vertical"
-        class="flex items-start flex-col !pb-20 w-2/3"
+        class="flex items-start flex-col !pb-20 w-full lg:w-2/3"
         @finish="handleSave"
       >
         <a-form-item
@@ -550,7 +551,7 @@ async function confirmDeleteCourse() {
         >
           <a-textarea v-model:value="formState.short_description" size="large" :placeholder="t('admin.formCourse.form.shortDescriptionPlaceholder')" :auto-size="{ minRows: 3, maxRows: 3 }" />
         </a-form-item>
-        <div class="flex items-center w-full gap-3">
+        <div class="flex flex-col sm:flex-row items-center w-full gap-3">
           <a-form-item
             :label="t('admin.formCourse.form.category')"
             name="category_id"
@@ -592,7 +593,7 @@ async function confirmDeleteCourse() {
           />
         </a-form-item>
 
-        <div class="flex items-center w-full gap-3">
+        <div class="flex flex-col sm:flex-row items-center w-full gap-3">
           <a-form-item
             :label="t('admin.formCourse.form.price')"
             name="price"
@@ -639,11 +640,11 @@ async function confirmDeleteCourse() {
             :max-count="1"
             :show-upload-list="false"
             accept="video/mp4"
-            class="!min-h-[200px] !flex !items-center"
+            class="!min-h-[150px] sm:!min-h-[200px] !flex !items-center"
             @change="handleVideoChange"
           >
-            <div v-if="videoFileList.length" class="relative w-full flex items-center justify-center px-4">
-              <video :src="videoPreviewUrl" controls class="w-full rounded-lg" />
+            <div v-if="videoFileList.length" class="relative w-full flex items-center justify-center px-2 sm:px-4">
+              <video :src="videoPreviewUrl" controls class="w-full rounded-lg max-h-[200px] sm:max-h-none" />
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
                 @click.stop.prevent="removeVideo"
@@ -653,12 +654,12 @@ async function confirmDeleteCourse() {
             </div>
             <template v-else>
               <p class="ant-upload-drag-icon">
-                <i class="i-solar-play-bold-duotone text-3xl text-gray-800" />
+                <i class="i-solar-play-bold-duotone text-2xl sm:text-3xl text-gray-800" />
               </p>
-              <p class="ant-upload-text text-lg font-semibold text-gray-900">
+              <p class="ant-upload-text text-base sm:text-lg font-semibold text-gray-900">
                 {{ t('admin.formCourse.upload.videoDragText') }} <span class="text-blue-600">{{ t('admin.formCourse.upload.videoBrowse') }}</span>
               </p>
-              <p class="ant-upload-hint text-gray-500">
+              <p class="ant-upload-hint text-sm sm:text-base text-gray-500">
                 {{ t('admin.formCourse.upload.videoHint') }}
               </p>
             </template>
@@ -675,11 +676,11 @@ async function confirmDeleteCourse() {
             :show-upload-list="false"
             list-type="picture"
             accept="image/png,image/jpeg"
-            class="!min-h-[200px] !flex !items-center"
+            class="!min-h-[150px] sm:!min-h-[200px] !flex !items-center"
             @change="handleImageChange"
           >
-            <div v-if="imageFileList.length" class="relative w-full flex items-center justify-center px-4">
-              <img :src="imagePreviewUrl" alt="preview" class="h-full rounded-lg object-contain">
+            <div v-if="imageFileList.length" class="relative w-full flex items-center justify-center px-2 sm:px-4">
+              <img :src="imagePreviewUrl" alt="preview" class="h-full rounded-lg object-contain max-h-[200px] sm:max-h-none">
               <div
                 class="!absolute !-top-2 !right-2 !bg-white/90 hover:!bg-white h-6 w-6 rounded-full flex items-center justify-center border border-grey-700"
                 @click.stop.prevent="removeImage"
@@ -689,12 +690,12 @@ async function confirmDeleteCourse() {
             </div>
             <template v-else>
               <p class="ant-upload-drag-icon">
-                <i class="i-solar-gallery-add-bold-duotone text-3xl text-gray-800" />
+                <i class="i-solar-gallery-add-bold-duotone text-2xl sm:text-3xl text-gray-800" />
               </p>
-              <p class="ant-upload-text text-lg font-semibold text-gray-900">
+              <p class="ant-upload-text text-base sm:text-lg font-semibold text-gray-900">
                 {{ t('admin.formCourse.upload.imageDragText') }} <span class="text-blue-600">{{ t('admin.formCourse.upload.imageBrowse') }}</span>
               </p>
-              <p class="ant-upload-hint text-gray-500">
+              <p class="ant-upload-hint text-sm sm:text-base text-gray-500">
                 {{ t('admin.formCourse.upload.imageHint') }}
               </p>
             </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CourseStudent } from '~/types/course.type'
 import { VideoPlayer } from '@videojs-player/vue'
+import { notification } from 'ant-design-vue'
 import CommentList from '~/components/learning/CommentList.vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
 import LearningQuizList from '~/components/learning/QuizList.vue'
@@ -56,6 +57,11 @@ const studentsError = ref<string | null>(null)
 
 // Comment data
 const commentCount = ref(0)
+
+// Video progress tracking
+const videoProgress = ref(0)
+const hasCompletedLesson = ref(false)
+const isCompletingLesson = ref(false)
 
 // Video player protection
 const playerInstance = ref<any>(null)
@@ -127,17 +133,75 @@ function applyDrmAttributes(player: any) {
     }
   }
 
-  player.addClass('vjs-no-picture-in-picture')
-  player.addClass('vjs-drm-protected')
-  player.off('contextmenu')
-  player.on('contextmenu', (e: Event) => {
-    e.preventDefault()
-  })
 }
 
 function handlePlayerReady(player: any) {
   playerInstance.value = player
   applyDrmAttributes(player)
+}
+
+function handleVideoProgress() {
+  if (!playerInstance.value || !activeLesson.value)
+    return
+
+  const currentTime = playerInstance.value.state.currentTime
+  const duration = playerInstance.value.state.duration
+
+  if (duration > 0) {
+    const progress = (currentTime / duration) * 100
+    videoProgress.value = progress
+
+    // Check if user has watched more than 80% and lesson is not completed
+    if (progress >= 80 && !activeLesson.value.is_completed && !hasCompletedLesson.value && !isCompletingLesson.value) {
+      completeLessonAutomatically()
+    }
+  }
+}
+
+function handleVideoEnded() {
+  if (!activeLesson.value || activeLesson.value.is_completed || hasCompletedLesson.value)
+    return
+
+  // If video ended and not completed, complete it automatically
+  if (!isCompletingLesson.value) {
+    completeLessonAutomatically()
+  }
+}
+
+async function completeLessonAutomatically() {
+  if (!activeLesson.value || isCompletingLesson.value)
+    return
+
+  try {
+    isCompletingLesson.value = true
+    hasCompletedLesson.value = true
+
+    // Call the store method to complete the lesson
+    await learnStore.completeLesson(activeLesson.value.id)
+
+    // Show success notification
+    notification.success({
+      message: t('learning.lessonCompleted'),
+      description: t('learning.lessonCompletedDesc', {
+        title: activeLesson.value.title,
+      }),
+      duration: 4,
+    })
+  }
+  catch (error: any) {
+    console.error('Error completing lesson:', error)
+    hasCompletedLesson.value = false
+
+    // Show error notification
+    notification.error({
+      message: t('learning.lessonCompletionFailed'),
+      description: error.message || t('learning.lessonCompletionFailedDesc'),
+      duration: 4,
+    })
+  }
+  finally {
+    isCompletingLesson.value = false
+  }
 }
 
 // Load course classmates
@@ -187,6 +251,12 @@ watch(activeLesson, () => {
   if (!playerInstance.value) {
     return
   }
+
+  // Reset progress tracking when lesson changes
+  videoProgress.value = 0
+  hasCompletedLesson.value = false
+  isCompletingLesson.value = false
+
   nextTick(() => {
     applyDrmAttributes(playerInstance.value)
   })
@@ -240,7 +310,7 @@ onBeforeUnmount(() => {
             {{ course?.title || t('course.defaultTitle') }}
           </h1>
           <!-- Video Player Area -->
-          <div ref="drmContainer" class="relative w-full rounded-2xl overflow-hidden mb-6 bg-gray-900 aspect-video drm-protected" @contextmenu.prevent>
+          <div ref="drmContainer" class="flex relative w-full rounded-2xl mb-6 bg-gray-900 aspect-video drm-protected" @contextmenu.prevent>
             <!-- <img
               v-if="course?.thumbnail"
               :src="course.thumbnail"
@@ -254,16 +324,24 @@ onBeforeUnmount(() => {
             <VideoPlayer
               v-if="activeLesson"
               :poster="activeLesson?.thumbnail || course?.thumbnail || undefined"
-              class="w-full h-full"
-              style="width: 100%; height: 100%;"
               :options="videoPlayerOptions"
+              :width="400"
+              :height="225"
+              class="rounded-2xl overflow-hidden"
               :src="activeLesson?.video_url"
               controls
               :loop="true"
               :volume="0.6"
               playsinline
-              @ready="handlePlayerReady"
+              @mounted="handlePlayerReady"
+              @timeupdate="handleVideoProgress"
+              @ended="handleVideoEnded"
             />
+
+            <!-- Video Progress Indicator -->
+            <div v-if="activeLesson && videoProgress > 0" class="absolute top-4 right-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm font-medium">
+              {{ Math.round(videoProgress) }}%
+            </div>
           </div>
           <a-divider />
           <!-- Tabs Section -->
@@ -347,7 +425,7 @@ onBeforeUnmount(() => {
               <a-tab-pane key="comments" :tab="`${t('course.comments')} (${activeLesson?.comment_count || 0})`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                    {{ t('course.comments') }} 
+                    {{ t('course.comments') }}
                   </h2>
                   <CommentList
                     v-if="activeLesson"

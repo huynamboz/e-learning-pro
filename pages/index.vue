@@ -138,7 +138,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
               </NuxtLink>
             </div>
 
-            <div class="flex items-center gap-8 pt-4 stats-section">
+            <div class="flex items-center flex-wrap gap-8 pt-4 stats-section">
               <div>
                 <div class="text-3xl font-bold">
                   {{ counterValues.activeStudents.toLocaleString() }}+
@@ -484,6 +484,105 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
       </div>
     </section>
 
+    <!-- Video Section -->
+    <section id="video" class="py-20 bg-white overflow-x-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div>
+              <span class="inline-flex items-center text-sm font-medium px-4 py-2 bg-green-100 text-green-800 rounded-full">
+                Hệ thống video bài giảng
+              </span>
+            </div>
+            <h2 class="text-4xl lg:text-5xl font-serif font-bold text-balance">
+              Hệ thống video bài giảng chuyên nghiệp
+            </h2>
+            <p class="text-lg text-muted-foreground leading-relaxed text-pretty">
+              Trải nghiệm học tập mượt mà với hệ thống video tối ưu cho giáo dục chất lượng ổn định, tốc độ tải nhanh, bảo mật nội dung và nhiều tiện ích hỗ trợ học hiệu quả.
+            </p>
+
+            <div class="rounded-3xl border border-green-100 bg-white/80 backdrop-blur p-6 shadow-sm space-y-4">
+              <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center size-10 rounded-2xl bg-green-100">
+                  <Icon name="i-heroicons-play" class="h-5 w-5 text-green-700" />
+                </div>
+                <div>
+                  <div class="text-sm font-semibold">
+                    Trải nghiệm xem tối ưu
+                  </div>
+                  <div class="text-xs text-muted-foreground">
+                    Giao diện trực quan
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mini player controls preview (composite, single card) -->
+              <div class="rounded-2xl border border-green-100 bg-white p-4">
+                <div class="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                  <span class="font-medium">00:42</span>
+                  <div class="h-px flex-1 bg-green-100" />
+                  <span>12:30</span>
+                </div>
+                <div class="h-2 rounded-full bg-green-100 overflow-hidden">
+                  <div class="h-full w-1/4 rounded-full bg-green-500" />
+                </div>
+                <div class="mt-3 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <button class="p-2 rounded-md hover:bg-green-50 cursor-pointer">
+                      <Icon name="i-heroicons-play" class="h-5 w-5 text-green-700" />
+                    </button>
+                    <button class="p-2 rounded-md hover:bg-green-50 cursor-pointer">
+                      <Icon name="i-heroicons-sparkles" class="h-5 w-5 text-green-700" />
+                    </button>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-100">1080p</span>
+                    <span class="px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-100">Adaptive</span>
+                    <span class="px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-100">Subtitles</span>
+                    <span class="px-2 py-1 rounded-full bg-green-50 text-green-700 border border-green-100">1.25x</span>
+                    <button class="p-2 rounded-md hover:bg-green-50 cursor-pointer">
+                      <Icon name="i-heroicons-cog-8-tooth" class="h-5 w-5 text-green-700" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4 pt-2">
+              <NuxtLink to="/auth/register">
+                <button
+                  class="bg-green-600 text-white px-8 py-4 rounded-full font-medium hover:bg-green-700 transition-all hover:scale-105 cursor-pointer"
+                >
+                  Đăng ký ngay
+                </button>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <div class="relative">
+            <div class="relative rounded-3xl overflow-hidden bg-green-50 aspect-video shadow-2xl">
+              <img src="/images/cotam2.jpg" alt="Video bài giảng" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="flex items-center gap-3 bg-white/90 backdrop-blur rounded-full px-5 py-3 shadow-lg">
+                  <Icon name="i-heroicons-play" class="h-6 w-6 text-green-600" />
+                  <!-- <span class="text-sm font-medium text-gray-800">Xem preview 30s</span> -->
+                </div>
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-background/95 backdrop-blur rounded-2xl p-3 shadow-xl">
+                  <div class="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>HD • Adaptive Streaming</span>
+                    <span>1.25x • 1080p</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Instructor Section -->
     <section id="instructor" class="py-20 overflow-x-hidden">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -730,7 +829,6 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
 .bg-background {
   background-color: hsl(var(--color-background));
 }
-
 
 /* Counter animation styles */
 .stats-section .text-3xl {

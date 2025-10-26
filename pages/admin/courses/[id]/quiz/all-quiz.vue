@@ -11,17 +11,17 @@ const { chapters, fetchChapters } = useCourse()
 const { t } = useI18n()
 
 // State management
-const currentView = ref<'list' | 'create' | 'edit'>('list') 
 const expandedChapters = ref<Set<string>>(new Set())
-const quizListRefs = ref<Record<string, any>>({})
 
 // Handle view switching
 function switchToCreate(lessonId?: string, chapterId?: string) {
   const params = new URLSearchParams()
-  if (lessonId) params.set('lessonId', lessonId)
-  if (chapterId) params.set('chapterId', chapterId)
-  
-  const url = `/admin/courses/${courseId.value}/quiz/create${params.toString() ? '?' + params.toString() : ''}`
+  if (lessonId)
+    params.set('lessonId', lessonId)
+  if (chapterId)
+    params.set('chapterId', chapterId)
+
+  const url = `/admin/courses/${courseId.value}/quiz/create${params.toString() ? `?${params.toString()}` : ''}`
   router.push(url)
 }
 
@@ -33,14 +33,15 @@ function switchToEdit(quizId: string) {
 function toggleChapter(chapterId: string) {
   if (expandedChapters.value.has(chapterId)) {
     expandedChapters.value.delete(chapterId)
-  } else {
+  }
+  else {
     expandedChapters.value.add(chapterId)
   }
 }
 
 // Expand all chapters
 function expandAll() {
-  chapters.value.forEach(chapter => {
+  chapters.value.forEach((chapter) => {
     expandedChapters.value.add(chapter.id)
   })
 }
@@ -54,87 +55,87 @@ function collapseAll() {
 useHead({
   title: () => `${t('quiz.management.title')} - E-Learning Platform`,
   meta: [
-    { name: 'description', content: () => t('quiz.management.description') }
-  ]
+    { name: 'description', content: () => t('quiz.management.description') },
+  ],
 })
 
 onMounted(async () => {
   if (courseId.value) {
-    console.log('courseId.value', courseId.value)
     await fetchChapters(courseId.value)
   }
 })
-
 </script>
 
 <template>
-  <div class="quiz-management p-6">
+  <div class="quiz-management p-3 sm:p-6">
     <!-- Header -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-6">
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-4 sm:mb-6 gap-4">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          <h1 class="text-xl sm:text-3xl font-bold text-gray-900 mb-2">
             {{ t('quiz.management.title') }}
           </h1>
-          <p class="text-gray-600">
+          <p class="text-sm sm:text-base text-gray-600">
             {{ t('quiz.management.description') }}
           </p>
         </div>
-        <div class="flex gap-3">
-          <a-button @click="collapseAll" class="flex items-center gap-2">
-            <Icon name="solar:minimise-square-2-bold" size="16" />
-            Thu gọn tất cả
-          </a-button>
-          <a-button @click="expandAll" class="flex items-center gap-2">
-            <Icon name="solar:maximise-square-2-bold" size="16" />
-            Mở rộng tất cả
-          </a-button>
-          <a-button 
-            type="primary" 
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <div class="flex gap-2 flex-wrap">
+            <a-button class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm" @click="collapseAll">
+              <Icon name="solar:minimise-square-2-bold" size="14" class="sm:text-base" />
+              <span class="hidden sm:inline">Thu gọn tất cả</span>
+            </a-button>
+            <a-button class="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm" @click="expandAll">
+              <Icon name="solar:maximise-square-2-bold" size="14" class="sm:text-base" />
+              <span class="hidden sm:inline">Mở rộng tất cả</span>
+            </a-button>
+          </div>
+          <a-button
+            type="primary"
+            class="!flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
             @click="switchToCreate()"
-            class="!flex items-center gap-2"
           >
-            <Icon name="solar:add-circle-bold" size="16" />
-            {{ t('quiz.management.createNewQuiz') }}
+            <Icon name="solar:add-circle-bold" size="14" class="sm:text-base" />
+            <span class="hidden sm:inline">{{ t('quiz.management.createNewQuiz') }}</span>
           </a-button>
         </div>
       </div>
     </div>
 
     <!-- Chapters and Lessons -->
-    <div class="space-y-6">
-      <div 
-        v-for="chapter in chapters" 
+    <div class="space-y-4 sm:space-y-6">
+      <div
+        v-for="chapter in chapters"
         :key="chapter.id"
-        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+        class="bg-white rounded-lg sm:rounded-xl border border-gray-200 shadow-sm overflow-hidden"
       >
         <!-- Chapter Header -->
-        <div 
-          class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-all"
+        <div
+          class="p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 cursor-pointer hover:from-blue-100 hover:to-indigo-100 transition-all"
           @click="toggleChapter(chapter.id)"
         >
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <Icon name="solar:book-2-bold" size="24" class="text-white" />
+            <div class="flex items-center gap-3 sm:gap-4">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                <Icon name="solar:book-2-bold" size="20" class="text-white sm:text-2xl" />
               </div>
               <div>
-                <h2 class="text-xl font-bold text-gray-900 mb-1">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-1">
                   {{ chapter.title }}
                 </h2>
-                <p class="text-sm text-gray-600">
+                <p class="text-xs sm:text-sm text-gray-600">
                   {{ chapter.lessons?.length || 0 }} bài học
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
-              <span class="text-sm text-gray-500">
+            <div class="flex items-center gap-2 sm:gap-3">
+              <span class="text-xs sm:text-sm text-gray-500 hidden sm:inline">
                 {{ expandedChapters.has(chapter.id) ? 'Thu gọn' : 'Mở rộng' }}
               </span>
-              <Icon 
-                :name="expandedChapters.has(chapter.id) ? 'solar:alt-arrow-up-bold' : 'solar:alt-arrow-down-bold'" 
-                size="20" 
-                class="text-gray-500"
+              <Icon
+                :name="expandedChapters.has(chapter.id) ? 'solar:alt-arrow-up-bold' : 'solar:alt-arrow-down-bold'"
+                size="16"
+                class="text-gray-500 sm:text-xl"
               />
             </div>
           </div>
@@ -142,42 +143,41 @@ onMounted(async () => {
 
         <!-- Lessons -->
         <div v-if="expandedChapters.has(chapter.id)" class="divide-y divide-gray-100">
-          <div 
-            v-for="lesson in chapter.lessons" 
+          <div
+            v-for="lesson in chapter.lessons"
             :key="lesson.id"
-            class="p-6 hover:bg-gray-50 transition-colors border-b border-gray-200"
+            class="p-4 sm:p-6 hover:bg-gray-50 transition-colors border-b border-gray-200"
           >
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Icon name="solar:play-circle-bold" size="20" class="text-green-600" />
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+              <div class="flex items-center gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Icon name="solar:play-circle-bold" size="16" class="text-green-600 sm:text-xl" />
                 </div>
                 <div>
-                  <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1">
                     {{ lesson.title }}
                   </h3>
-                  <p class="text-sm text-gray-600">
+                  <p class="text-xs sm:text-sm text-gray-600">
                     {{ lesson.video_duration }} phút
                   </p>
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <a-button 
-                  type="primary" 
+                <a-button
+                  type="primary"
                   size="small"
+                  class="!flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                   @click="switchToCreate(lesson.id, chapter.id)"
-                  class="!flex items-center gap-2"
                 >
-                  <Icon name="solar:add-circle-bold" size="14" />
-                  Thêm Quiz
+                  <Icon name="solar:add-circle-bold" size="12" class="sm:text-sm" />
+                  <span class="hidden sm:inline">Thêm Quiz</span>
                 </a-button>
               </div>
             </div>
 
             <!-- Quiz List for this lesson -->
-            <div class="ml-14">
+            <div class="ml-0 sm:ml-14">
               <QuizList
-                ref="(el) => { if (el) quizListRefs[lesson.id] = el }"
                 :course-id="courseId"
                 :lesson-id="lesson.id"
                 :show-header="false"
@@ -191,17 +191,17 @@ onMounted(async () => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!chapters || chapters.length === 0" class="text-center py-12">
-      <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <Icon name="solar:book-2-bold" size="32" class="text-gray-400" />
+    <div v-if="!chapters || chapters.length === 0" class="text-center py-8 sm:py-12">
+      <div class="w-16 h-16 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Icon name="solar:book-2-bold" size="24" class="text-gray-400 sm:text-3xl" />
       </div>
-      <h3 class="text-xl font-semibold text-gray-900 mb-2">
+      <h3 class="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
         Chưa có chương nào
       </h3>
-      <p class="text-gray-600 mb-6">
+      <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
         Tạo chương và bài học trước khi thêm quiz
       </p>
-      <a-button type="primary" @click="router.push(`/admin/courses/${courseId}`)">
+      <a-button type="primary" class="text-xs sm:text-sm" @click="router.push(`/admin/courses/${courseId}`)">
         Quay lại khóa học
       </a-button>
     </div>

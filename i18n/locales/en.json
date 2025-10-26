@@ -1115,7 +1115,7 @@
       "totalCourses": "Total Courses",
       "inProgress": "In Progress",
       "completed": "Completed",
-      "certificates": "Certificates"
+      "avgProgress": "Average Progress"
     },
     "continueLearning": {
       "title": "Continue Learning",
@@ -1128,6 +1128,10 @@
       "lessonsCompleted": "{completed} of {total} lessons completed",
       "continue": "Continue"
     },
+    "lessonCompleted": "Lesson Completed! 🎉",
+    "lessonCompletedDesc": "Congratulations! You have completed the lesson '{title}'",
+    "lessonCompletionFailed": "Failed to Complete Lesson",
+    "lessonCompletionFailedDesc": "An error occurred while marking the lesson as completed. Please try again.",
     "recommended": {
       "title": "Recommended for You",
       "subtitle": "Explore new courses tailored to your interests",
@@ -1443,15 +1447,6 @@
     },
     "mobile": {
       "toggleMenu": "Toggle mobile menu"
-    }
-  },
-  "common": {
-    "tryAgain": "Try Again",
-    "cancel": "Cancel",
-    "levels": {
-      "beginner": "Beginner",
-      "intermediate": "Intermediate",
-      "advanced": "Advanced"
     }
   },
   "quiz": {
@@ -1824,6 +1819,12 @@
     "madeWith": "Made with",
     "by": "by"
   },
+  "error": {
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+    "needHelp": "Need help?",
+    "popularLinks": "Popular Links"
+  },
   "errors": {
     "pageNotFound": {
       "title": "Page Not Found",
@@ -1856,6 +1857,18 @@
     }
   },
   "common": {
+    "tryAgain": "Try Again",
+    "goBack": "Go Back",
+    "goHome": "Go Home",
+    "contactSupport": "Contact Support",
+    "home": "Home",
+    "courses": "Courses",
+    "learning": "Learning",
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
     "loading": "Loading...",
     "saving": "Saving...",
     "deleting": "Deleting...",

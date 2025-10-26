@@ -416,7 +416,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="admin-users p-6 bg-gray-50 min-h-screen">
+  <div class="admin-users p-6 bg-gray-50 min-h-screen max-md:px-0">
     <!-- Page Header -->
     <div class="mb-8">
       <div class="flex items-center gap-4 mb-4">
@@ -587,7 +587,7 @@ onMounted(() => {
             <div class="flex items-center gap-3">
               <a-avatar 
                 :size="48"
-                class="!bg-gradient-to-br !from-blue-500 !to-purple-600 !text-white !font-bold"
+                class="!bg-gradient-to-br  !text-white !font-bold"
               >
                 {{ record.full_name.charAt(0) }}
               </a-avatar>

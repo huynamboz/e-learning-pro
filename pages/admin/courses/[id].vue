@@ -1,16 +1,9 @@
 <script lang="ts" setup>
-// import DetailLessonManage from '~/components/admin/course/chapter/DetailLessonManage.vue'
-// import AttendanceManagement from '~/components/admin/course/classroom/AttendanceManagement.vue'
-// import DetailAttendance from '~/components/admin/course/classroom/DetailAttendance.vue'
-// import DetailClassroom from '~/components/admin/course/classroom/DetailClassroom.vue'
-import { useCourseApi } from '~/composables/api/useCourseApi'
-
 definePageMeta({
   layout: 'admin',
   middleware: 'admin',
 })
 const route = useRoute()
-const router = useRouter()
 const { t } = useI18n()
 const {fetchCourseDetail, currentCourse} = useCourse()
 
@@ -37,6 +30,8 @@ const listOptions = computed(() => [
   },
 ])
 
+const courseId = computed(() => route.params.id as string)
+
 const activeTab = ref(listOptions.value.find(tab => route.path.includes(tab.path))?.path || '')
 
 function handleChangeTab(key: string) {
@@ -44,12 +39,6 @@ function handleChangeTab(key: string) {
   navigateTo(`/admin/courses/${courseId.value}/${key}`)
 }
 
-const courseId = computed(() => route.params.id as string)
-const chapterId = computed(() => route.query.chapterId as string)
-const lessonId = computed(() => route.query.lessonId as string)
-const classroomId = computed(() => route.query.classroomId)
-const attendanceId = computed(() => route.query.attendanceId)
-const attendanceManageId = computed(() => route.query.attendanceManageId)
 
 
 onMounted(async () => {

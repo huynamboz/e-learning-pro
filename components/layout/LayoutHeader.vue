@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const { isCollapsed } = useSidebar()
 
+const props = defineProps<{ showHamburger?: boolean }>()
+const emit = defineEmits<{
+  (e: 'hamburger-click'): void
+}>()
+
 // Language settings
 const languageCookie = useCookie('locale', {
   default: () => 'vi',
@@ -67,7 +72,16 @@ function handleScroll(): void {
     :class="isCollapsed ? 'lg:pl-[80px]' : 'lg:pl-[280px]'"
   >
     <div class="flex-1 w-full h-full flex items-center justify-between px-5">
-      <div />
+      <div>
+        <button
+          v-if="props.showHamburger"
+          class="p-2 rounded-md hover:bg-gray-100 transition-colors"
+          aria-label="Toggle sidebar"
+          @click="emit('hamburger-click')"
+        >
+          <Icon name="solar:hamburger-menu-outline" class="w-6 h-6 text-gray-700" />
+        </button>
+      </div>
       <div class="flex items-center gap-5">
         <!-- Language Switcher -->
         <a-dropdown

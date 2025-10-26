@@ -52,23 +52,37 @@ const { data: pendingCourses, pending: loadingPending } = await useLazyAsyncData
 const stats = computed(() => {
   const courses = enrolledCourses.value || []
   const total = courses.length
-  const inProgress = courses.filter((c: EnrolledCourse) =>
-    c.enrollment?.completion_percentage && c.enrollment.completion_percentage > 0 && c.enrollment.completion_percentage < 100,
-  ).length
-  const completed = courses.filter((c: EnrolledCourse) =>
-    c.enrollment?.completion_percentage && c.enrollment.completion_percentage === 100,
-  ).length
-  const certificates = courses.filter((c: EnrolledCourse) => c.enrollment?.progress_status === 'Completed').length
 
-  return { total, inProgress, completed, certificates }
+  // In progress: courses with completion percentage > 0 and < 100
+  const inProgress = courses.filter((c: EnrolledCourse) => {
+    const completion = c.enrollment?.completion_percentage || 0
+    return completion >= 0 && completion < 100
+  }).length
+
+  // Completed: courses with completion percentage = 100
+  const completed = courses.filter((c: EnrolledCourse) => {
+    const completion = c.enrollment?.completion_percentage || 0
+    return completion === 100
+  }).length
+
+  // Average progress: calculate average completion percentage
+  const avgProgress = courses.length > 0
+    ? Math.round(courses.reduce((sum, c: EnrolledCourse) => {
+        const completion = c.enrollment?.completion_percentage || 0
+        return sum + completion
+      }, 0) / courses.length)
+    : 0
+
+  return { total, inProgress, completed, avgProgress }
 })
 
 // Continue learning courses (in progress)
 const continueLearningCourses = computed(() => {
   return (enrolledCourses.value || [])
-    .filter((c: EnrolledCourse) =>
-      c.enrollment && c.enrollment.completion_percentage < 100,
-    )
+    .filter((c: EnrolledCourse) => {
+      const completion = c.enrollment?.completion_percentage || 0
+      return completion < 100
+    })
     .slice(0, 3)
 })
 
@@ -76,13 +90,16 @@ const continueLearningCourses = computed(() => {
 const recentActivity = computed(() => {
   return (enrolledCourses.value || [])
     .slice(0, 5)
-    .map((course: EnrolledCourse) => ({
-      id: course.id,
-      title: course.title,
-      action: course.enrollment?.completion_percentage === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
-      date: course.enrollment?.enrolled_at || course.created_at || course.updated_at,
-      thumbnail: course.thumbnail,
-    }))
+    .map((course: EnrolledCourse) => {
+      const completion = course.enrollment?.completion_percentage || 0
+      return {
+        id: course.id,
+        title: course.title,
+        action: completion === 100 ? t('learning.recentActivity.completed') : t('learning.recentActivity.continueLearning'),
+        date: course.enrollment?.enrolled_at || course.created_at || course.updated_at,
+        thumbnail: course.thumbnail,
+      }
+    })
 })
 
 // Format date
@@ -168,18 +185,18 @@ function navigateToCourse(enrollmentId: string) {
         </div>
       </div>
 
-      <!-- Certificates -->
+      <!-- Average Progress -->
       <div class="stat-card group bg-gradient-to-br from-purple/5 to-purple/10 border border-purple/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-purple/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
           <div class="p-3 bg-gradient-to-br from-purple to-purple/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-            <Icon name="solar:diploma-bold" size="30" class="text-white" />
+            <Icon name="solar:chart-bold" size="30" class="text-white" />
           </div>
         </div>
         <div class="text-3xl sm:text-4xl font-bold text-shade-9 mb-1">
-          {{ stats.certificates }}
+          {{ stats.avgProgress }}%
         </div>
         <div class="text-sm sm:text-base font-medium text-shade-7">
-          {{ $t('learning.stats.certificates') }}
+          {{ $t('learning.stats.avgProgress') }}
         </div>
       </div>
     </div>

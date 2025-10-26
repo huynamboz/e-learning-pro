@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { Rule } from 'ant-design-vue/es/form'
-import type { QuizFormData } from '~/types/quiz.type'
 import type { QuizQuestion } from '~/composables/api/useQuizApi'
-import { useQuizApi } from '~/composables/api/useQuizApi'
-import { useCourseApi } from '~/composables/api/useCourseApi'
+import type { QuizFormData } from '~/types/quiz.type'
 import { notification } from 'ant-design-vue'
+import { useCourseApi } from '~/composables/api/useCourseApi'
+import { useQuizApi } from '~/composables/api/useQuizApi'
+import EssayQuestion from './EssayQuestion.vue'
 import MultipleChoiceQuestion from './MultipleChoiceQuestion.vue'
 import TextInputQuestion from './TextInputQuestion.vue'
-import EssayQuestion from './EssayQuestion.vue'
 
 interface Props {
   mode?: 'create' | 'edit'
@@ -81,10 +81,10 @@ const rules = computed<Record<string, Rule[]>>(() => (
     ],
     quantity: [
       { required: true, message: 'Please input quantity!', trigger: 'blur' },
-      { 
-        pattern: /^\d+$/, 
-        message: 'Quantity must be a positive number!', 
-        trigger: 'blur' 
+      {
+        pattern: /^\d+$/,
+        message: 'Quantity must be a positive number!',
+        trigger: 'blur',
       },
     ],
     unit: [
@@ -98,7 +98,7 @@ const categoryOptions = computed(() =>
   categories.value.map(cat => ({
     label: cat.name,
     value: cat.id,
-  }))
+  })),
 )
 
 const chapterOptions = computed(() => {
@@ -121,12 +121,12 @@ const lessonOptions = computed(() => {
 })
 
 // Handle chapter change to reset lesson selection
-const handleChapterChange = (chapterId: string) => {
+function handleChapterChange(chapterId: string) {
   formData.chapter = chapterId
   // Reset lesson when chapter changes (only if lesson is not valid for new chapter)
   const validLessons = lessons.value.filter(lesson => lesson.chapter_id === chapterId)
   const isCurrentLessonValid = validLessons.some(lesson => lesson.id === formData.lesson)
-  
+
   if (!isCurrentLessonValid) {
     formData.lesson = ''
   }
@@ -259,7 +259,7 @@ function updateQuestion(index: number, data: any) {
 }
 
 // Transform questions to API format
-const transformQuestionsToApi = (questions: Question[]) => {
+function transformQuestionsToApi(questions: Question[]) {
   return questions.map((q, index) => {
     const baseQuestion = {
       question_type: q.type === 'multiple-choice' ? 'multiple_choice' : q.type === 'text-input' ? 'text_input' : 'essay',
@@ -278,7 +278,8 @@ const transformQuestionsToApi = (questions: Question[]) => {
           is_correct: option.label === q.data.correctAnswer,
         })) || [],
       }
-    } else if (q.type === 'text-input') {
+    }
+    else if (q.type === 'text-input') {
       return {
         ...baseQuestion,
         options: [],
@@ -286,7 +287,8 @@ const transformQuestionsToApi = (questions: Question[]) => {
           text: q.data.answer || '',
         },
       }
-    } else {
+    }
+    else {
       // essay question
       return {
         ...baseQuestion,
@@ -297,18 +299,20 @@ const transformQuestionsToApi = (questions: Question[]) => {
 }
 
 // Create API payload
-const createApiPayload = (values: QuizFormData) => ({
-  title: values.title,
-  description: values.description,
-  category: values.category,
-  lesson: values.lesson, // Use lesson instead of chapter
-  time_type: values.timeType as 'limit' | 'no-limit',
-  time_value: values.timeType === 'limit' ? values.quantity : null,
-  time_unit: values.timeType === 'limit' ? values.unit : null,
-  retake_limit: values.retake_limit,
-  is_published: false,
-  questions: transformQuestionsToApi(questions.value),
-})
+function createApiPayload(values: QuizFormData) {
+  return {
+    title: values.title,
+    description: values.description,
+    category: values.category,
+    lesson: values.lesson, // Use lesson instead of chapter
+    time_type: values.timeType as 'limit' | 'no-limit',
+    time_value: values.timeType === 'limit' ? values.quantity : null,
+    time_unit: values.timeType === 'limit' ? values.unit : null,
+    retake_limit: values.retake_limit,
+    is_published: false,
+    questions: transformQuestionsToApi(questions.value),
+  }
+}
 
 async function onFinish(values: QuizFormData) {
   if (!questionsValidation.value.isValid) {
@@ -330,7 +334,8 @@ async function onFinish(values: QuizFormData) {
         description: 'Quiz updated successfully!',
         duration: 3,
       })
-    } else {
+    }
+    else {
       emit('createQuiz', apiPayload)
       notification.success({
         message: 'Success',
@@ -338,7 +343,8 @@ async function onFinish(values: QuizFormData) {
         duration: 3,
       })
     }
-  } catch (error: any) {
+  }
+  catch (error: any) {
     notification.error({
       message: 'Error',
       description: error.message || 'Failed to save quiz',
@@ -358,20 +364,21 @@ function onFinishFailed(errorInfo: any) {
 }
 
 // Fetch API data
-const fetchApiData = async () => {
+async function fetchApiData() {
   try {
     loadingData.value = true
 
     // Fetch categories and course data in parallel
     const [categoriesResponse, courseResponse] = await Promise.allSettled([
       getCategories(),
-      props.courseId ? getDetailCourses(props.courseId) : Promise.resolve(null)
+      props.courseId ? getDetailCourses(props.courseId) : Promise.resolve(null),
     ])
 
     // Handle categories
     if (categoriesResponse.status === 'fulfilled') {
       categories.value = categoriesResponse.value.results
-    } else {
+    }
+    else {
       throw new Error('Failed to load categories')
     }
 
@@ -384,19 +391,20 @@ const fetchApiData = async () => {
         chapter.lessons?.map(lesson => ({
           ...lesson,
           chapter_id: chapter.id, // Add chapter ID for filtering
-          chapter_title: chapter.title // Add chapter title for reference
-        })) || []
+          chapter_title: chapter.title, // Add chapter title for reference
+        })) || [],
       )
-
 
       // Auto-select the course's category
       if (courseResponse.value.category && !formData.category) {
         formData.category = courseResponse.value.category.id
       }
-    } else if (props.courseId) {
+    }
+    else if (props.courseId) {
       throw new Error('Failed to load course data')
     }
-  } catch (err: any) {
+  }
+  catch (err: any) {
     const errorMessage = err.message || 'Failed to load data'
     notification.error({
       message: 'Error',
@@ -404,14 +412,16 @@ const fetchApiData = async () => {
       duration: 4.5,
     })
     console.error('Error fetching API data:', err)
-  } finally {
+  }
+  finally {
     loadingData.value = false
   }
 }
 
 // Load quiz data for editing
-const loadQuizData = async () => {
-  if (!props.quizId) return
+async function loadQuizData() {
+  if (!props.quizId)
+    return
 
   try {
     loadingQuiz.value = true
@@ -423,16 +433,16 @@ const loadQuizData = async () => {
       formData.title = quiz.title
       formData.description = quiz.description
       formData.category = quiz.category
-      
+
       // Find chapter by lesson ID
-      const chapter = chapters.value.find(ch => 
-        ch.lessons?.some((lesson: any) => lesson.id === quiz.lesson)
+      const chapter = chapters.value.find(ch =>
+        ch.lessons?.some((lesson: any) => lesson.id === quiz.lesson),
       )
-      
+
       if (chapter) {
         formData.chapter = chapter.id
       }
-      
+
       formData.timeType = quiz.time_type
       formData.quantity = quiz.time_value
       formData.unit = quiz.time_unit || 'minute'
@@ -442,7 +452,8 @@ const loadQuizData = async () => {
       // Map questions from API response to component format
       questions.value = mapApiQuestionsToComponent(quiz.questions)
     }
-  } catch (err: any) {
+  }
+  catch (err: any) {
     const errorMessage = err.message || 'Failed to load quiz data'
     notification.error({
       message: 'Error',
@@ -450,14 +461,16 @@ const loadQuizData = async () => {
       duration: 4.5,
     })
     console.error('Error loading quiz for edit:', err)
-  } finally {
+  }
+  finally {
     loadingQuiz.value = false
   }
 }
 
 // Helper function to map API questions to component format
-const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
-  if (!apiQuestions || apiQuestions.length === 0) return []
+function mapApiQuestionsToComponent(apiQuestions: QuizQuestion[]) {
+  if (!apiQuestions || apiQuestions.length === 0)
+    return []
 
   return apiQuestions.map((apiQuestion: QuizQuestion) => {
     if (apiQuestion.question_type === 'multiple_choice') {
@@ -469,19 +482,20 @@ const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
           explanation: apiQuestion.explanation || '',
           score: apiQuestion.score || 1.0,
           files: [],
-          options: apiQuestion.options?.map((option) => ({
+          options: apiQuestion.options?.map(option => ({
             text: option.text,
             label: option.label,
           })) || [
-              { text: '', label: 'A' },
-              { text: '', label: 'B' },
-              { text: '', label: 'C' },
-              { text: '', label: 'D' },
-            ],
-          correctAnswer: apiQuestion.options?.find((opt) => opt.is_correct)?.label || '',
+            { text: '', label: 'A' },
+            { text: '', label: 'B' },
+            { text: '', label: 'C' },
+            { text: '', label: 'D' },
+          ],
+          correctAnswer: apiQuestion.options?.find(opt => opt.is_correct)?.label || '',
         },
       }
-    } else if (apiQuestion.question_type === 'text_input') {
+    }
+    else if (apiQuestion.question_type === 'text_input') {
       // text_input question
       return {
         id: apiQuestion.id,
@@ -494,7 +508,8 @@ const mapApiQuestionsToComponent = (apiQuestions: QuizQuestion[]) => {
           answer: apiQuestion.sample_answer?.text || '',
         },
       }
-    } else {
+    }
+    else {
       // essay question
       return {
         id: apiQuestion.id,
@@ -561,92 +576,138 @@ defineExpose({
 </script>
 
 <template>
-  <div class="px-10 pb-3">
+  <div class="px-4 sm:px-6 lg:px-10 pb-3 max-md:px-0">
     <div class="w-full max-w-[750px] mx-auto">
       <!-- Header -->
-      <div class="flex justify-between">
-        <h3 class="text-2xl font-semibold text-green-700 mb-3">
+      <div class="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0">
+        <h3 class="text-xl sm:text-2xl font-semibold text-green-700 mb-3">
           {{ props.mode === 'edit' ? 'Edit Quiz' : 'Create Quiz' }}
         </h3>
-        <a-button type="default" danger @click="emit('back')">
-          Back to Quizzes List
+        <a-button type="default" danger class="text-xs sm:text-sm" @click="emit('back')">
+          <span class="hidden sm:inline">Back to Quizzes List</span>
         </a-button>
       </div>
 
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div v-if="isLoading" class="flex items-center justify-center py-8 sm:py-12">
         <div class="text-center">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700 mx-auto mb-4"></div>
-          <p class="text-sm text-gray-500">
+          <div class="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-green-700 mx-auto mb-4" />
+          <p class="text-xs sm:text-sm text-gray-500">
             {{ loadingData ? 'Loading categories and chapters...' : 'Loading quiz data...' }}
           </p>
         </div>
       </div>
 
-
       <!-- Form -->
-      <a-form v-if="!isLoading" :model="formData" :rules="rules" layout="vertical" class="space-y-3" @finish="onFinish"
-        @finish-failed="onFinishFailed">
+      <a-form
+        v-if="!isLoading"
+        :model="formData"
+        :rules="rules"
+        layout="vertical"
+        class="space-y-3"
+        @finish="onFinish"
+        @finish-failed="onFinishFailed"
+      >
         <!-- Title Quiz -->
         <a-form-item label="Title quiz" name="title" class="mb-3">
-          <a-input v-model:value="formData.title" placeholder="Basic Italian Quiz – Beginner Level"
-            class="h-12 rounded-lg border-gray-300" />
+          <a-input
+            v-model:value="formData.title"
+            placeholder="Basic Italian Quiz – Beginner Level"
+            class="h-10 sm:h-12 rounded-lg border-gray-300"
+          />
         </a-form-item>
 
         <!-- Description Quiz -->
         <a-form-item label="Description quiz" name="description" class="mb-3">
-          <a-textarea v-model:value="formData.description"
+          <a-textarea
+            v-model:value="formData.description"
             placeholder="This short quiz is designed to test your basic Italian knowledge. You will find both multiple-choice and short-answer questions covering greetings, numbers, and simple vocabulary. Good luck! 🍀"
-            :rows="4" class="rounded-lg border-gray-300" />
+            :rows="3"
+            class="rounded-lg border-gray-300"
+          />
         </a-form-item>
 
         <!-- Categories and Chapter Row -->
-        <div class="flex gap-3 mb-3">
+        <div class="flex flex-col sm:flex-row gap-3 mb-3">
           <a-form-item label="Categories" name="category" class="flex-1">
-            <a-select v-model:value="formData.category" placeholder="Select a category" class="h-12"
-              :options="categoryOptions" :loading="loadingData" :disabled="loadingData" />
+            <a-select
+              v-model:value="formData.category"
+              placeholder="Select a category"
+              class="h-10 sm:h-12"
+              :options="categoryOptions"
+              :loading="loadingData"
+              :disabled="loadingData"
+            />
           </a-form-item>
 
           <a-form-item label="Chapter" name="chapter" class="flex-1">
-            <a-select :value="formData.chapter" placeholder="Select a chapter" class="h-12"
-              :options="chapterOptions" :loading="loadingData" :disabled="loadingData" 
-              @change="handleChapterChange" />
+            <a-select
+              :value="formData.chapter"
+              placeholder="Select a chapter"
+              class="h-10 sm:h-12"
+              :options="chapterOptions"
+              :loading="loadingData"
+              :disabled="loadingData"
+              @change="handleChapterChange"
+            />
           </a-form-item>
         </div>
 
         <!-- Lesson Row -->
         <div class="mb-3">
           <a-form-item label="Lesson" name="lesson">
-            <a-select v-model:value="formData.lesson" placeholder="Select a lesson" class="h-12"
-              :options="lessonOptions" :loading="loadingData" :disabled="loadingData || !formData.chapter" />
+            <a-select
+              v-model:value="formData.lesson"
+              placeholder="Select a lesson"
+              class="h-10 sm:h-12"
+              :options="lessonOptions"
+              :loading="loadingData"
+              :disabled="loadingData || !formData.chapter"
+            />
           </a-form-item>
         </div>
 
         <!-- Type time, Quantity, and Unit Row -->
-        <div class="flex gap-3 mb-3">
+        <div class="flex flex-col sm:flex-row gap-3 mb-3">
           <a-form-item label="Type time" name="timeType" class="flex-1">
-            <a-select v-model:value="formData.timeType" placeholder="Limit" class="h-12" :options="timeTypeOptions" />
+            <a-select
+              v-model:value="formData.timeType"
+              placeholder="Limit"
+              class="h-10 sm:h-12"
+              :options="timeTypeOptions"
+            />
           </a-form-item>
 
           <a-form-item label="Quantity" name="quantity" class="flex-1">
-            <a-input-number v-model:value="formData.quantity" placeholder="30" class="w-full h-10" style="width: 100%"
-              :min="1" :max="999" />
+            <a-input-number
+              v-model:value="formData.quantity"
+              placeholder="30"
+              class="w-full h-10"
+              style="width: 100%"
+              :min="1"
+              :max="999"
+            />
           </a-form-item>
 
           <a-form-item label="Unit" name="unit" class="flex-1">
-            <a-select v-model:value="formData.unit" placeholder="minute" class="h-12" :options="unitOptions" />
+            <a-select
+              v-model:value="formData.unit"
+              placeholder="minute"
+              class="h-10 sm:h-12"
+              :options="unitOptions"
+            />
           </a-form-item>
         </div>
 
         <!-- Retake Limit Row -->
         <div class="mb-3">
           <a-form-item label="Số lần làm lại" name="retake_limit" class="w-full max-w-md">
-            <a-input-number 
-              v-model:value="formData.retake_limit" 
-              placeholder="Không giới hạn" 
-              class="w-full h-10" 
+            <a-input-number
+              v-model:value="formData.retake_limit"
+              placeholder="Không giới hạn"
+              class="w-full h-10"
               style="width: 100%"
-              :min="1" 
+              :min="1"
               :max="100"
             />
             <div class="text-xs text-gray-500 mt-1">
@@ -660,43 +721,57 @@ defineExpose({
           <!-- Questions List -->
           <div class="space-y-4">
             <template v-for="(question, index) in questions" :key="question.id">
-              <TextInputQuestion v-if="question.type === 'text-input'" :initial-data="question.data"
-                @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
-              <MultipleChoiceQuestion v-else-if="question.type === 'multiple-choice'" :initial-data="question.data"
-                @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
-              <EssayQuestion v-else-if="question.type === 'essay'" :initial-data="question.data"
-                @delete="removeQuestion(index)" @update="updateQuestion(index, $event)" />
+              <TextInputQuestion
+                v-if="question.type === 'text-input'"
+                :initial-data="question.data"
+                @delete="removeQuestion(index)"
+                @update="updateQuestion(index, $event)"
+              />
+              <MultipleChoiceQuestion
+                v-else-if="question.type === 'multiple-choice'"
+                :initial-data="question.data"
+                @delete="removeQuestion(index)"
+                @update="updateQuestion(index, $event)"
+              />
+              <EssayQuestion
+                v-else-if="question.type === 'essay'"
+                :initial-data="question.data"
+                @delete="removeQuestion(index)"
+                @update="updateQuestion(index, $event)"
+              />
             </template>
 
             <!-- Empty State -->
-            <div v-if="questions.length === 0"
-              class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <p class="text-gray-500 mb-4">
+            <div
+              v-if="questions.length === 0"
+              class="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center"
+            >
+              <p class="text-sm sm:text-base text-gray-500 mb-4">
                 No questions added yet
               </p>
-              <div class="flex justify-center gap-2">
+              <div class="flex flex-col sm:flex-row justify-center gap-2">
                 <!-- <a-button type="primary" @click="addTextInputQuestion">
                   Add Text Input Question
                 </a-button> -->
-                <a-button type="primary" @click="addMultipleChoiceQuestion">
+                <a-button type="primary" class="text-xs sm:text-sm" @click="addMultipleChoiceQuestion">
                   Add Multiple Choice Question
                 </a-button>
-                <a-button type="primary" @click="addEssayQuestion">
+                <a-button type="primary" class="text-xs sm:text-sm" @click="addEssayQuestion">
                   Add Essay Question
                 </a-button>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center justify-between mt-6 pb-4 border-b border-gray-200">
-            <div class="flex gap-2">
-              <a-button type="default" @click="addTextInputQuestion">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-6 pb-4 border-b border-gray-200 gap-3">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <!-- <a-button type="default" class="text-xs sm:text-sm" @click="addTextInputQuestion">
                 Add Text Input Question
-              </a-button>
-              <a-button type="default" @click="addMultipleChoiceQuestion">
+              </a-button> -->
+              <a-button type="default" class="text-xs sm:text-sm" @click="addMultipleChoiceQuestion">
                 Add Multiple Choice Question
               </a-button>
-              <a-button type="default" @click="addEssayQuestion">
+              <a-button type="default" class="text-xs sm:text-sm" @click="addEssayQuestion">
                 Add Essay Question
               </a-button>
             </div>
@@ -708,11 +783,11 @@ defineExpose({
           <a-alert type="error" show-icon class="mb-4">
             <template #message>
               <div>
-                <p class="font-medium mb-2">
+                <p class="text-sm sm:text-base font-medium mb-2">
                   Please fix the following issues:
                 </p>
                 <ul class="list-disc list-inside space-y-1">
-                  <li v-for="error in questionsValidation.errors" :key="error" class="text-sm">
+                  <li v-for="error in questionsValidation.errors" :key="error" class="text-xs sm:text-sm">
                     {{ error }}
                   </li>
                 </ul>
@@ -722,15 +797,20 @@ defineExpose({
         </div>
 
         <!-- Submit Button -->
-        <div class="flex justify-end pt-6">
-          <a-button type="primary" html-type="submit" size="large" :loading="isCreating || isUpdating"
-            :disabled="!questionsValidation.isValid">
+        <div class="flex justify-end pt-4 sm:pt-6">
+          <a-button
+            type="primary"
+            html-type="submit"
+            size="small"
+            class="sm:size-large"
+            :loading="isCreating || isUpdating"
+            :disabled="!questionsValidation.isValid"
+          >
             <template v-if="questions.length === 0">
-              {{ props.mode === 'edit' ? 'Update Quiz (No questions)' : 'Create Quiz (No questions)' }}
+              <span class="hidden sm:inline">{{ props.mode === 'edit' ? 'Update Quiz (No questions)' : 'Create Quiz (No questions)' }}</span>
             </template>
             <template v-else>
-              {{ props.mode === 'edit' ? 'Update Quiz' : 'Create Quiz' }} ({{ questions.length }} question{{
-                questions.length !== 1 ? 's' : '' }}, {{ totalScore }} points)
+              <span class="hidden sm:inline">{{ props.mode === 'edit' ? 'Update Quiz' : 'Create Quiz' }} ({{ questions.length }} question{{ questions.length !== 1 ? 's' : '' }}, {{ totalScore }} points)</span>
             </template>
           </a-button>
         </div>

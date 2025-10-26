@@ -305,17 +305,17 @@
       "description": "Tham gia cùng hàng nghìn người học hài lòng đã đạt được mục tiêu ngôn ngữ Ý của họ",
       "testimonial1": {
         "text": "Cô Tâm dạy rất hay và dễ hiểu! Từ chỗ không biết gì về tiếng Ý, giờ mình đã có thể tự tin gọi món ở nhà hàng Ý rồi. Chỉ sau 3 tháng thôi!",
-        "author": "Sarah Martinez",
+        "author": "Nguyễn Minh Anh",
         "course": "Khóa học người mới bắt đầu"
       },
       "testimonial2": {
         "text": "Khóa học trung cấp hay hơn mình tưởng nhiều! Cô Tâm không chỉ dạy ngữ pháp mà còn chia sẻ nhiều điều thú vị về văn hóa Ý. Học mà như được đi du lịch vậy!",
-        "author": "James Chen",
+        "author": "Trần Quốc Huy",
         "course": "Khóa học trung cấp"
       },
       "testimonial3": {
         "text": "Đầu tư học tiếng Ý với cô Tâm là quyết định đúng đắn nhất! Nhờ khóa học nâng cao mà mình đã xin được việc ở Milan. Cô Tâm thực sự là cô giáo tiếng Ý số 1!",
-        "author": "Emma Peterson",
+        "author": "Lê Thu Trang",
         "course": "Khóa học nâng cao"
       }
     },
@@ -1115,7 +1115,7 @@
       "totalCourses": "Tổng khóa học",
       "inProgress": "Đang học",
       "completed": "Đã hoàn thành",
-      "certificates": "Chứng chỉ"
+      "avgProgress": "Tiến độ trung bình"
     },
     "continueLearning": {
       "title": "Tiếp tục học",
@@ -1128,6 +1128,10 @@
       "lessonsCompleted": "{completed} trong {total} bài học đã hoàn thành",
       "continue": "Tiếp tục"
     },
+    "lessonCompleted": "Bài học đã hoàn thành! 🎉",
+    "lessonCompletedDesc": "Chúc mừng! Bạn đã hoàn thành bài học '{title}'",
+    "lessonCompletionFailed": "Không thể hoàn thành bài học",
+    "lessonCompletionFailedDesc": "Đã xảy ra lỗi khi đánh dấu bài học là hoàn thành. Vui lòng thử lại.",
     "recommended": {
       "title": "Được đề xuất cho bạn",
       "subtitle": "Khám phá các khóa học mới phù hợp với sở thích của bạn",
@@ -1443,15 +1447,6 @@
     },
     "mobile": {
       "toggleMenu": "Chuyển đổi menu di động"
-    }
-  },
-  "common": {
-    "tryAgain": "Thử lại",
-    "cancel": "Hủy",
-    "levels": {
-      "beginner": "Cơ bản",
-      "intermediate": "Trung cấp",
-      "advanced": "Nâng cao"
     }
   },
   "quiz": {
@@ -1824,6 +1819,12 @@
     "madeWith": "Được tạo với",
     "by": "bởi"
   },
+  "error": {
+    "pageNotFound": "Trang không tìm thấy",
+    "pageNotFoundDescription": "Trang bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không khả dụng.",
+    "needHelp": "Cần hỗ trợ?",
+    "popularLinks": "Liên kết phổ biến"
+  },
   "errors": {
     "pageNotFound": {
       "title": "Trang không tìm thấy",
@@ -1856,6 +1857,18 @@
     }
   },
   "common": {
+    "tryAgain": "Thử lại",
+    "goBack": "Quay lại",
+    "goHome": "Về trang chủ",
+    "contactSupport": "Liên hệ hỗ trợ",
+    "home": "Trang chủ",
+    "courses": "Khóa học",
+    "learning": "Học tập",
+    "levels": {
+      "beginner": "Cơ bản",
+      "intermediate": "Trung cấp",
+      "advanced": "Nâng cao"
+    },
     "loading": "Đang tải...",
     "saving": "Đang lưu...",
     "deleting": "Đang xóa...",

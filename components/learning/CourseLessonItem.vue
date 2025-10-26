@@ -14,16 +14,17 @@ function selectLesson() {
   learnStore.setActiveLesson(props.lesson)
 }
 
-async function toggleCompletion(e: any) {
-  try {
-    await learnStore.toggleLessonCompletion(props.lesson.id, e.target.checked)
-  }
-  catch (error) {
-    console.error('Error toggling lesson completion:', error)
-    // Revert checkbox state on error
-    e.target.checked = !e.target.checked
-  }
-}
+// Manual completion disabled - lessons are completed automatically when watching >80% of video
+// async function toggleCompletion(e: any) {
+//   try {
+//     await learnStore.toggleLessonCompletion(props.lesson.id, e.target.checked)
+//   }
+//   catch (error) {
+//     console.error('Error toggling lesson completion:', error)
+//     // Revert checkbox state on error
+//     e.target.checked = !e.target.checked
+//   }
+// }
 
 const activeLesson = computed(() => learnStore.activeLesson)
 
@@ -42,15 +43,22 @@ const isLessonActive = computed(() => {
   >
     <div class="flex items-center gap-3">
       <div class="flex items-center justify-center w-5 h-5">
-        <a-checkbox
-          :checked="lesson.is_completed"
-          :class="{
-            '!text-white': isLessonActive,
-            'text-blue-600': !lesson.isActive && lesson.is_completed,
-            'text-gray-400': !lesson.isActive && !lesson.is_completed,
-          }"
-          @change="toggleCompletion"
-        />
+        <!-- Manual completion disabled - lessons complete automatically when watching >80% -->
+        <a-tooltip
+          :title="lesson.is_completed ? 'Bài học đã hoàn thành' : 'Xem video >80% để hoàn thành bài học'"
+          placement="top"
+        >
+          <div
+            v-if="lesson.is_completed"
+            class="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center cursor-help"
+          >
+            <Icon name="tabler:check" size="12" class="text-white" />
+          </div>
+          <div
+            v-else
+            class="w-5 h-5 rounded-full border-2 border-gray-300 cursor-help"
+          />
+        </a-tooltip>
       </div>
       <span class="text-sm font-medium lesson-text group-hover:text-white" :class="{ '!text-white': isLessonActive, 'text-gray-900': !isLessonActive }">
         {{ lessonIndex + 1 }}. {{ lesson.title }}
@@ -64,30 +72,9 @@ const isLessonActive = computed(() => {
 </template>
 
 <style scoped>
-/* Custom checkbox styling for completed lessons */
-:deep(.ant-checkbox-wrapper-checked .ant-checkbox-checked .ant-checkbox-inner) {
-  background-color: #2563eb;
-  border-color: #2563eb;
-}
-
-/* Override checkbox colors for active lesson */
-.bg-green-600 :deep(.ant-checkbox-checked .ant-checkbox-inner) {
-  background-color: white;
-  border-color: white;
-}
-
-.bg-green-600 :deep(.ant-checkbox-checked .ant-checkbox-inner):after {
-  border-color: #16a34a;
-}
-
-/* Unchecked checkbox styling for active lesson */
-.bg-green-600 :deep(.ant-checkbox .ant-checkbox-inner) {
-  background-color: white;
-  border-color: #d1d5db;
-}
-
-.bg-green-600 :deep(.ant-checkbox .ant-checkbox-inner):hover {
-  border-color: #9ca3af;
+/* Custom completion indicator styling */
+.completion-indicator {
+  transition: all 0.2s ease;
 }
 
 /* Video icon styling for active lesson */

@@ -225,10 +225,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 p-6 px-0 pt-0">
+  <div class="min-h-screen bg-gray-50 p-6 px-0 pt-0 max-md:px-0">
     <!-- Page Header -->
     <div class="mb-6">
-      <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center justify-between mb-2 flex-wrap">
         <div>
           <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <div class="size-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
