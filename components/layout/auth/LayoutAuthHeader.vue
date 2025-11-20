@@ -4,12 +4,20 @@ import { useCartStore } from '~/stores/cart.store'
 
 const listOfLinks = computed(() => [
   { name: 'Giới thiệu', href: '#instructor' },
-  { name: 'Các khóa học', href: '/courses' },
   { name: 'Quiz', href: '/#quiz' },
-  { name: 'Video', href: '/#video', hideIcon: true },
+  { name: 'Video', href: '/#video' },
+  { name: 'Tài nguyên', href: '/#resources' },
 ])
 
 const isMobileMenuOpen = ref(false)
+const isCourseMenuOpen = ref(false)
+
+// Course menu structure - simplified to 3 level pages
+const courseMenuItems = [
+  { key: 'basic', label: 'Khoá cơ bản', href: '/basic-level' },
+  { key: 'intermediate', label: 'Trung cấp', href: '/middle-level' },
+  { key: 'advanced', label: 'Nâng cao', href: '/high-level' },
+]
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -65,13 +73,51 @@ onMounted(() => {
 
       <!-- Desktop Navigation - Different for logged in users -->
       <nav class="hidden lg:flex items-center space-x-8">
+        <!-- Course Dropdown Menu -->
+        <div
+          class="relative group"
+          @mouseenter="isCourseMenuOpen = true"
+          @mouseleave="isCourseMenuOpen = false"
+        >
+          <div class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors">
+            <span>Khoá học</span>
+            <Icon
+              name="solar:alt-arrow-down-line-duotone"
+              size="18"
+              class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
+              :class="{ 'rotate-180': isCourseMenuOpen }"
+            />
+          </div>
+          <!-- Dropdown Menu -->
+          <div
+            class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+          >
+            <div class="py-2">
+              <NuxtLink
+                v-for="item in courseMenuItems"
+                :key="item.key"
+                :to="item.href"
+                class="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-[#16A34A] transition-colors"
+              >
+                <span>{{ item.label }}</span>
+                <Icon
+                  name="solar:alt-arrow-right-line-duotone"
+                  size="16"
+                  class="text-gray-400"
+                />
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other Links -->
         <NuxtLink
           v-for="value in listOfLinks" :key="value.name" :to="value.href"
           class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
         >
           {{ value.name }}
           <Icon
-            v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone"
+            name="solar:alt-arrow-right-line-duotone"
             size="18"
             class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
           />
@@ -139,24 +185,75 @@ onMounted(() => {
         <div class="px-4 pt-2 pb-4 space-y-1">
           <!-- Mobile Navigation Links - Different for logged in users -->
           <nav v-if="!isLoggedIn" class="space-y-1">
+            <!-- Course Menu (Mobile) -->
+            <div class="space-y-1">
+              <button
+                class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                @click="isCourseMenuOpen = !isCourseMenuOpen"
+              >
+                <span>Khoá học</span>
+                <Icon
+                  name="solar:alt-arrow-down-line-duotone"
+                  size="18"
+                  class="text-gray-400 transition-transform"
+                  :class="{ 'rotate-180': isCourseMenuOpen }"
+                />
+              </button>
+              <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0 transform -translate-y-2"
+                enter-to-class="opacity-100 transform translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100 transform translate-y-0"
+                leave-to-class="opacity-0 transform -translate-y-2"
+              >
+                <div v-show="isCourseMenuOpen" class="pl-4 space-y-1">
+                  <NuxtLink
+                    v-for="item in courseMenuItems"
+                    :key="item.key"
+                    :to="item.href"
+                    class="flex items-center justify-between py-2 px-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                    @click="isMobileMenuOpen = false"
+                  >
+                    <span>{{ item.label }}</span>
+                    <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                  </NuxtLink>
+                </div>
+              </Transition>
+            </div>
+
+            <!-- Other Links -->
             <NuxtLink
               v-for="value in listOfLinks" :key="value.name" :to="value.href" class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
               <span>{{ value.name }}</span>
-              <Icon v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
+              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
           </nav>
 
           <!-- Logged in user mobile navigation (match desktop) -->
           <nav v-else class="space-y-1">
+            <!-- Course Menu Links (Mobile) -->
+            <NuxtLink
+              v-for="item in courseMenuItems"
+              :key="item.key"
+              :to="item.href"
+              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              <span>{{ item.label }}</span>
+              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
+            </NuxtLink>
+
+            <!-- Other Links -->
             <NuxtLink
               v-for="value in listOfLinks" :key="value.name" :to="value.href"
               class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
               <span>{{ value.name }}</span>
-              <Icon v-if="!value.hideIcon" name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
+              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
           </nav>
 

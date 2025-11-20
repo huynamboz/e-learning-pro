@@ -187,7 +187,7 @@ watch(
         </div>
 
         <!-- Upload File Section -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label class="block text-base whitespace-nowrap font-normal text-gray-800 mb-2">Upload file</label>
           <a-upload
             v-model:file-list="questionData.files"
@@ -212,7 +212,7 @@ watch(
               <img alt="example" style="width: 100%" :src="previewImage">
             </a-modal>
           </a-upload>
-        </div>
+        </div> -->
 
         <!-- Answer Input -->
         <a-form-item
