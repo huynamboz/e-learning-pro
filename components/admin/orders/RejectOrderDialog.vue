@@ -86,6 +86,8 @@ watch(() => props.visible, (newVisible) => {
           v-model:value="rejectReason"
           :placeholder="$t('admin.orders.table.confirmDialog.reject.reasonPlaceholder')"
           :rows="4"
+          :maxlength="500"
+          show-count
           class="w-full"
         />
       </div>

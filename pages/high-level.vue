@@ -127,25 +127,25 @@ const faqItems = [
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-white text-gray-900">
+  <div class="min-h-screen bg-gradient-to-b from-green-50 via-white to-white text-gray-900">
     <!-- Hero -->
-    <section class="bg-gradient-to-b from-emerald-600 to-teal-600 text-white pt-16 pb-20">
+    <section class="bg-gradient-to-b from-green-50/30 via-white to-white pt-16 pb-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <p class="text-sm uppercase tracking-[0.4em] text-white/60 mb-4">
+          <p class="text-sm uppercase tracking-[0.4em] text-green-600 mb-4 font-semibold">
             Level C1 · C2 · Mastery Program
           </p>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-balance">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-balance text-gray-900">
             Khoá học nâng cao cho người muốn làm chủ tiếng Ý
           </h1>
-          <p class="text-lg sm:text-xl text-white/80 mb-8 leading-relaxed">
+          <p class="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
             Hoàn thiện ngôn ngữ ở đẳng cấp bản xứ, phục vụ nghiên cứu, đàm phán cấp cao hoặc giảng dạy. Học cùng mentor quốc tế và hệ thống bài tập đột phá.
           </p>
           <div class="flex flex-wrap gap-3 mb-10">
             <span
               v-for="tag in highlights"
               :key="tag"
-              class="px-4 py-2 rounded-full border border-white/30 text-sm bg-white/10 backdrop-blur"
+              class="px-4 py-2 rounded-full border border-green-100 text-sm bg-green-50 text-green-700"
             >
               {{ tag }}
             </span>
@@ -153,37 +153,36 @@ const faqItems = [
           <div class="flex flex-col sm:flex-row gap-4">
             <NuxtLink
               to="#courses"
-              class="w-full sm:w-auto inline-flex justify-center px-8 py-4 bg-white text-gray-900 font-semibold rounded-full hover:bg-gray-100 transition-colors shadow-lg"
+              class="w-full sm:w-auto inline-flex justify-center px-8 py-4 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors shadow-lg"
             >
               Khám phá lộ trình C-level
             </NuxtLink>
             <NuxtLink
               to="/contact"
-              class="w-full sm:w-auto inline-flex justify-center px-8 py-4 border border-white/40 text-white font-semibold rounded-full hover:bg-white/10 transition-colors"
+              class="w-full sm:w-auto inline-flex justify-center px-8 py-4 border border-gray-300 text-gray-700 font-semibold rounded-full hover:bg-gray-50 hover:border-green-300 transition-colors"
             >
               Đặt lịch tư vấn riêng
             </NuxtLink>
           </div>
         </div>
         <div class="relative">
-          <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-3xl blur-3xl" />
-          <div class="relative bg-white/5 border border-white/20 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-2xl font-bold mb-6">
+          <div class="relative bg-white border border-green-100 rounded-3xl p-8 shadow-lg">
+            <h3 class="text-2xl font-bold mb-6 text-gray-900">
               Lộ trình cá nhân hoá 4 giai đoạn
             </h3>
             <div class="space-y-4">
               <div v-for="(item, index) in learningJourney" :key="item.title" class="flex gap-4 items-start">
                 <div class="flex flex-col items-center">
-                  <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-semibold">
+                  <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-semibold">
                     {{ index + 1 }}
                   </div>
-                  <div v-if="index !== learningJourney.length - 1" class="w-px h-12 bg-white/30 mt-2" />
+                  <div v-if="index !== learningJourney.length - 1" class="w-px h-12 bg-green-200 mt-2" />
                 </div>
                 <div>
-                  <p class="text-sm uppercase text-white/70 tracking-wide mb-1">
+                  <p class="text-sm uppercase text-green-600 tracking-wide mb-1 font-semibold">
                     {{ item.title }}
                   </p>
-                  <p class="text-sm text-white/80 leading-relaxed">
+                  <p class="text-sm text-gray-600 leading-relaxed">
                     {{ item.description }}
                   </p>
                 </div>

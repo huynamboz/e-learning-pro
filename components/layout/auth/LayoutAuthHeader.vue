@@ -10,17 +10,181 @@ const listOfLinks = computed(() => [
 ])
 
 const isMobileMenuOpen = ref(false)
-const isCourseMenuOpen = ref(false)
+const isDesktopCourseMenuOpen = ref(false)
+const isMobileCourseMenuOpen = ref(false)
+const hoverLevelKey = ref<string | null>(null)
+const hoverCourseKey = ref<string | null>(null)
+const openMobileLevelKey = ref<string | null>(null)
 
-// Course menu structure - simplified to 3 level pages
-const courseMenuItems = [
-  { key: 'basic', label: 'Khoá cơ bản', href: '/basic-level' },
-  { key: 'intermediate', label: 'Trung cấp', href: '/middle-level' },
-  { key: 'advanced', label: 'Nâng cao', href: '/high-level' },
+const courseMenu = [
+  {
+    key: 'basic',
+    label: 'Cơ bản',
+    href: '/basic-level',
+    summary: 'Xây nền tảng tiếng Ý với giáo trình chuẩn CEFR.',
+    courses: [
+      {
+        key: 'a1',
+        label: 'Khóa học A1',
+        href: '/basic-level#a1',
+        description: 'Bắt đầu giao tiếp hằng ngày và phát âm chuẩn.',
+        classes: [
+          { key: 'a1-class-1', label: 'Lớp 1 học viên', href: '/basic-level#a1-class-1' },
+          { key: 'a1-class-3', label: 'Lớp 3 học viên', href: '/basic-level#a1-class-3' },
+        ],
+      },
+      {
+        key: 'a2',
+        label: 'Khóa học A2',
+        href: '/basic-level#a2',
+        description: 'Tự tin xử lý các tình huống đời sống quen thuộc.',
+        classes: [
+          { key: 'a2-class-1', label: 'Lớp 1 học viên', href: '/basic-level#a2-class-1' },
+          { key: 'a2-class-3', label: 'Lớp 3 học viên', href: '/basic-level#a2-class-3' },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'intermediate',
+    label: 'Trung cấp',
+    href: '/middle-level',
+    summary: 'Hoàn thiện kỹ năng nghe - nói - viết học thuật.',
+    courses: [
+      {
+        key: 'b1',
+        label: 'Khóa học B1',
+        href: '/middle-level#b1',
+        description: 'Phát triển kỹ năng giao tiếp trong môi trường học thuật và công việc.',
+        classes: [
+          { key: 'b1-class-1', label: 'Lớp 1 học viên', href: '/middle-level#b1-class-1' },
+          { key: 'b1-class-3', label: 'Lớp 3 học viên', href: '/middle-level#b1-class-3' },
+        ],
+      },
+      {
+        key: 'b2',
+        label: 'Khóa học B2',
+        href: '/middle-level#b2',
+        description: 'Hoàn thiện khả năng tranh luận và xử lý tình huống phức tạp.',
+        classes: [
+          { key: 'b2-class-1', label: 'Lớp 1 học viên', href: '/middle-level#b2-class-1' },
+          { key: 'b2-class-3', label: 'Lớp 3 học viên', href: '/middle-level#b2-class-3' },
+        ],
+      },
+      {
+        key: 'b1-citizenship',
+        label: 'Luyện Thi B1 quốc tịch',
+        href: '/middle-level#b1-citizenship',
+        description: 'Chuẩn bị cho kỳ thi B1 quốc tịch với các bài tập chuyên biệt.',
+        classes: [
+          { key: 'b1-citizenship-1', label: 'Lớp 1 học viên', href: '/middle-level#b1-citizenship-1' },
+          { key: 'b1-citizenship-5', label: 'Lớp 5 học viên', href: '/middle-level#b1-citizenship-5' },
+        ],
+      },
+      {
+        key: 'b2-celi',
+        label: 'Luyện thi B2 CELI',
+        href: '/middle-level#b2-celi',
+        description: 'Luyện thi chứng chỉ B2 CELI với đề thi thực tế và feedback chi tiết.',
+        classes: [
+          { key: 'b2-celi-1', label: 'Lớp 1 học viên', href: '/middle-level#b2-celi-1' },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'advanced',
+    label: 'Nâng cao',
+    href: '/high-level',
+    summary: 'Chinh phục chứng chỉ C-level & dự án chuyên sâu.',
+    courses: [
+      {
+        key: 'c1',
+        label: 'Luyện thi C1',
+        href: '/high-level#c1',
+        description: 'Chuẩn bị cho kỳ thi C1 với các bài tập chuyên sâu và mock test.',
+        classes: [
+          { key: 'c1-class-1', label: 'Lớp 1 học viên', href: '/high-level#c1-class-1' },
+          { key: 'c1-class-3', label: 'Lớp 3 học viên', href: '/high-level#c1-class-3' },
+        ],
+      },
+      {
+        key: 'c2',
+        label: 'Luyện thi C2',
+        href: '/high-level#c2',
+        description: 'Đạt đến trình độ C2 với các bài tập nâng cao và phản biện chuyên sâu.',
+        classes: [
+          { key: 'c2-class-1', label: 'Lớp 1 học viên', href: '/high-level#c2-class-1' },
+          { key: 'c2-class-3', label: 'Lớp 3 học viên', href: '/high-level#c2-class-3' },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'driving-theory',
+    label: 'Lý thuyết lái xe',
+    href: '/driving-level',
+    summary: 'Học lý thuyết lái xe với giáo trình chuẩn.',
+    courses: [],
+  },
 ]
+
+const initialCourseState = courseMenu.reduce((acc, level) => {
+  acc[level.key] = null
+  return acc
+}, {} as Record<string, string | null>)
+
+const openMobileCourseKeys = ref<Record<string, string | null>>({ ...initialCourseState })
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+
+function toggleMobileCourseMenu() {
+  isMobileCourseMenuOpen.value = !isMobileCourseMenuOpen.value
+  if (!isMobileCourseMenuOpen.value) {
+    resetMobileMenuState()
+  }
+}
+
+function resetMobileMenuState() {
+  openMobileLevelKey.value = null
+  openMobileCourseKeys.value = { ...initialCourseState }
+}
+
+function toggleMobileLevel(levelKey: string) {
+  openMobileLevelKey.value = openMobileLevelKey.value === levelKey ? null : levelKey
+  openMobileCourseKeys.value = {
+    ...openMobileCourseKeys.value,
+    [levelKey]: null,
+  }
+}
+
+function toggleMobileCourse(levelKey: string, courseKey: string) {
+  const current = openMobileCourseKeys.value[levelKey]
+  openMobileCourseKeys.value = {
+    ...openMobileCourseKeys.value,
+    [levelKey]: current === courseKey ? null : courseKey,
+  }
+}
+
+function handleDesktopMenuEnter() {
+  isDesktopCourseMenuOpen.value = true
+}
+
+function handleDesktopMenuLeave() {
+  isDesktopCourseMenuOpen.value = false
+  hoverLevelKey.value = null
+  hoverCourseKey.value = null
+}
+
+function handleLevelHover(levelKey: string) {
+  hoverLevelKey.value = levelKey
+  hoverCourseKey.value = null
+}
+
+function handleCourseHover(courseKey: string) {
+  hoverCourseKey.value = courseKey
 }
 
 // Check if user is logged in
@@ -75,37 +239,84 @@ onMounted(() => {
       <nav class="hidden lg:flex items-center space-x-8">
         <!-- Course Dropdown Menu -->
         <div
-          class="relative group"
-          @mouseenter="isCourseMenuOpen = true"
-          @mouseleave="isCourseMenuOpen = false"
+          class="relative course-menu-container"
+          @mouseenter="handleDesktopMenuEnter"
+          @mouseleave="handleDesktopMenuLeave"
         >
-          <div class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors">
+          <button
+            class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
+            type="button"
+          >
             <span>Khoá học</span>
             <Icon
               name="solar:alt-arrow-down-line-duotone"
               size="18"
               class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
-              :class="{ 'rotate-180': isCourseMenuOpen }"
+              :class="{ 'rotate-180': isDesktopCourseMenuOpen }"
             />
-          </div>
+          </button>
           <!-- Dropdown Menu -->
           <div
-            class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+            v-show="isDesktopCourseMenuOpen"
+            class="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 min-w-[200px]"
           >
-            <div class="py-2">
-              <NuxtLink
-                v-for="item in courseMenuItems"
-                :key="item.key"
-                :to="item.href"
-                class="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-[#16A34A] transition-colors"
-              >
-                <span>{{ item.label }}</span>
-                <Icon
-                  name="solar:alt-arrow-right-line-duotone"
-                  size="16"
-                  class="text-gray-400"
-                />
-              </NuxtLink>
+            <div
+              v-for="level in courseMenu"
+              :key="level.key"
+              class="relative group/level"
+              @mouseenter="handleLevelHover(level.key)"
+            >
+              <template v-if="level.courses && level.courses.length">
+                <div class="relative course-level-item">
+                  <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
+                    <span>{{ level.label }}</span>
+                    <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                  </div>
+                </div>
+                <!-- Submenu: Courses -->
+                <div
+                  v-show="hoverLevelKey === level.key"
+                  class="absolute left-full top-0 course-submenu bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[200px] z-50"
+                  style="margin-left: 4px;"
+                >
+                  <div
+                    v-for="course in level.courses"
+                    :key="course.key"
+                    class="relative group/course course-item"
+                    @mouseenter="handleCourseHover(course.key)"
+                  >
+                    <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
+                      <span>{{ course.label }}</span>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                    </div>
+                    <!-- Submenu: Classes -->
+                    <div
+                      v-if="course.classes && course.classes.length && hoverCourseKey === course.key"
+                      class="absolute left-full top-0 course-submenu bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[180px] z-50"
+                      style="margin-left: 4px;"
+                    >
+                      <NuxtLink
+                        v-for="classItem in course.classes"
+                        :key="classItem.key"
+                        :to="classItem.href"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                        @click="isDesktopCourseMenuOpen = false"
+                      >
+                        {{ classItem.label }}
+                      </NuxtLink>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template v-else>
+                <NuxtLink
+                  :to="level.href"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                  @click="isDesktopCourseMenuOpen = false"
+                >
+                  {{ level.label }}
+                </NuxtLink>
+              </template>
             </div>
           </div>
         </div>
@@ -189,14 +400,14 @@ onMounted(() => {
             <div class="space-y-1">
               <button
                 class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
-                @click="isCourseMenuOpen = !isCourseMenuOpen"
+                @click="toggleMobileCourseMenu"
               >
                 <span>Khoá học</span>
                 <Icon
                   name="solar:alt-arrow-down-line-duotone"
                   size="18"
                   class="text-gray-400 transition-transform"
-                  :class="{ 'rotate-180': isCourseMenuOpen }"
+                  :class="{ 'rotate-180': isMobileCourseMenuOpen }"
                 />
               </button>
               <Transition
@@ -207,17 +418,122 @@ onMounted(() => {
                 leave-from-class="opacity-100 transform translate-y-0"
                 leave-to-class="opacity-0 transform -translate-y-2"
               >
-                <div v-show="isCourseMenuOpen" class="pl-4 space-y-1">
-                  <NuxtLink
-                    v-for="item in courseMenuItems"
-                    :key="item.key"
-                    :to="item.href"
-                    class="flex items-center justify-between py-2 px-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
-                    @click="isMobileMenuOpen = false"
+                <div v-show="isMobileCourseMenuOpen" class="pl-4 space-y-2">
+                  <div
+                    v-for="level in courseMenu"
+                    :key="level.key"
+                    class="rounded-lg border border-gray-100 bg-gray-50/80"
                   >
-                    <span>{{ item.label }}</span>
-                    <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
-                  </NuxtLink>
+                    <button
+                      v-if="level.courses && level.courses.length"
+                      class="w-full flex items-start justify-between py-3 px-2 text-left"
+                      @click="toggleMobileLevel(level.key)"
+                    >
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">
+                          {{ level.label }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon
+                        name="solar:alt-arrow-down-line-duotone"
+                        size="18"
+                        class="text-gray-400 transition-transform"
+                        :class="{ 'rotate-180': openMobileLevelKey === level.key }"
+                      />
+                    </button>
+                    <NuxtLink
+                      v-else
+                      :to="level.href"
+                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
+                      @click="isMobileMenuOpen = false"
+                    >
+                      <div>
+                        <p>{{ level.label }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                    </NuxtLink>
+
+                    <Transition
+                      enter-active-class="transition duration-200 ease-out"
+                      enter-from-class="opacity-0 transform -translate-y-2"
+                      enter-to-class="opacity-100 transform translate-y-0"
+                      leave-active-class="transition duration-150 ease-in"
+                      leave-from-class="opacity-100 transform translate-y-0"
+                      leave-to-class="opacity-0 transform -translate-y-2"
+                    >
+                      <div
+                        v-if="level.courses && level.courses.length"
+                        v-show="openMobileLevelKey === level.key"
+                        class="px-3 pb-3 space-y-2"
+                      >
+                        <div
+                          v-for="course in level.courses"
+                          :key="course.key"
+                          class="rounded-md bg-white border border-gray-100 p-3"
+                        >
+                          <div
+                            class="flex items-start justify-between cursor-pointer"
+                            @click="toggleMobileCourse(level.key, course.key)"
+                          >
+                            <div>
+                              <p class="text-sm font-semibold text-gray-900">
+                                {{ course.label }}
+                              </p>
+                              <p class="text-xs text-gray-500 mt-1">
+                                {{ course.description }}
+                              </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                              <NuxtLink
+                                :to="course.href"
+                                class="text-xs font-semibold text-[#16A34A]"
+                                @click.stop="isMobileMenuOpen = false"
+                              >
+                                Chi tiết
+                              </NuxtLink>
+                              <Icon
+                                name="solar:alt-arrow-down-linear"
+                                size="16"
+                                class="text-gray-400 transition-transform"
+                                :class="{ 'rotate-180': openMobileCourseKeys[level.key] === course.key }"
+                              />
+                            </div>
+                          </div>
+
+                          <Transition
+                            enter-active-class="transition duration-150 ease-out"
+                            enter-from-class="opacity-0 -translate-y-1"
+                            enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition duration-100 ease-in"
+                            leave-from-class="opacity-100 translate-y-0"
+                            leave-to-class="opacity-0 -translate-y-1"
+                          >
+                            <div
+                              v-show="openMobileCourseKeys[level.key] === course.key"
+                              class="mt-2 pl-3 space-y-1 border-l border-dashed border-green-200"
+                            >
+                              <NuxtLink
+                                v-for="classItem in course.classes"
+                                :key="classItem.key"
+                                :to="classItem.href"
+                                class="flex items-center justify-between text-xs font-medium text-gray-700 hover:text-[#16A34A]"
+                                @click="isMobileMenuOpen = false"
+                              >
+                                <span>{{ classItem.label }}</span>
+                                <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                              </NuxtLink>
+                            </div>
+                          </Transition>
+                        </div>
+                      </div>
+                    </Transition>
+                  </div>
                 </div>
               </Transition>
             </div>
@@ -235,16 +551,146 @@ onMounted(() => {
           <!-- Logged in user mobile navigation (match desktop) -->
           <nav v-else class="space-y-1">
             <!-- Course Menu Links (Mobile) -->
-            <NuxtLink
-              v-for="item in courseMenuItems"
-              :key="item.key"
-              :to="item.href"
-              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
-              @click="isMobileMenuOpen = false"
-            >
-              <span>{{ item.label }}</span>
-              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
-            </NuxtLink>
+            <div class="space-y-1">
+              <button
+                class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                @click="toggleMobileCourseMenu"
+              >
+                <span>Khoá học</span>
+                <Icon
+                  name="solar:alt-arrow-down-line-duotone"
+                  size="18"
+                  class="text-gray-400 transition-transform"
+                  :class="{ 'rotate-180': isMobileCourseMenuOpen }"
+                />
+              </button>
+              <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0 transform -translate-y-2"
+                enter-to-class="opacity-100 transform translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100 transform translate-y-0"
+                leave-to-class="opacity-0 transform -translate-y-2"
+              >
+                <div v-show="isMobileCourseMenuOpen" class="pl-4 space-y-2">
+                  <div
+                    v-for="level in courseMenu"
+                    :key="level.key"
+                    class="rounded-lg border border-gray-100 bg-gray-50/80"
+                  >
+                    <button
+                      v-if="level.courses && level.courses.length"
+                      class="w-full flex items-start justify-between py-3 px-2 text-left"
+                      @click="toggleMobileLevel(level.key)"
+                    >
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">
+                          {{ level.label }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon
+                        name="solar:alt-arrow-down-line-duotone"
+                        size="18"
+                        class="text-gray-400 transition-transform"
+                        :class="{ 'rotate-180': openMobileLevelKey === level.key }"
+                      />
+                    </button>
+                    <NuxtLink
+                      v-else
+                      :to="level.href"
+                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
+                      @click="isMobileMenuOpen = false"
+                    >
+                      <div>
+                        <p>{{ level.label }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                    </NuxtLink>
+
+                    <Transition
+                      enter-active-class="transition duration-200 ease-out"
+                      enter-from-class="opacity-0 transform -translate-y-2"
+                      enter-to-class="opacity-100 transform translate-y-0"
+                      leave-active-class="transition duration-150 ease-in"
+                      leave-from-class="opacity-100 transform translate-y-0"
+                      leave-to-class="opacity-0 transform -translate-y-2"
+                    >
+                      <div
+                        v-if="level.courses && level.courses.length"
+                        v-show="openMobileLevelKey === level.key"
+                        class="px-3 pb-3 space-y-2"
+                      >
+                        <div
+                          v-for="course in level.courses"
+                          :key="course.key"
+                          class="rounded-md bg-white border border-gray-100 p-3"
+                        >
+                          <div
+                            class="flex items-start justify-between cursor-pointer"
+                            @click="toggleMobileCourse(level.key, course.key)"
+                          >
+                            <div>
+                              <p class="text-sm font-semibold text-gray-900">
+                                {{ course.label }}
+                              </p>
+                              <p class="text-xs text-gray-500 mt-1">
+                                {{ course.description }}
+                              </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                              <NuxtLink
+                                :to="course.href"
+                                class="text-xs font-semibold text-[#16A34A]"
+                                @click.stop="isMobileMenuOpen = false"
+                              >
+                                Chi tiết
+                              </NuxtLink>
+                              <Icon
+                                name="solar:alt-arrow-down-linear"
+                                size="16"
+                                class="text-gray-400 transition-transform"
+                                :class="{ 'rotate-180': openMobileCourseKeys[level.key] === course.key }"
+                              />
+                            </div>
+                          </div>
+
+                          <Transition
+                            enter-active-class="transition duration-150 ease-out"
+                            enter-from-class="opacity-0 -translate-y-1"
+                            enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition duration-100 ease-in"
+                            leave-from-class="opacity-100 translate-y-0"
+                            leave-to-class="opacity-0 -translate-y-1"
+                          >
+                            <div
+                              v-show="openMobileCourseKeys[level.key] === course.key"
+                              class="mt-2 pl-3 space-y-1 border-l border-dashed border-green-200"
+                            >
+                              <NuxtLink
+                                v-for="classItem in course.classes"
+                                :key="classItem.key"
+                                :to="classItem.href"
+                                class="flex items-center justify-between text-xs font-medium text-gray-700 hover:text-[#16A34A]"
+                                @click="isMobileMenuOpen = false"
+                              >
+                                <span>{{ classItem.label }}</span>
+                                <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                              </NuxtLink>
+                            </div>
+                          </Transition>
+                        </div>
+                      </div>
+                    </Transition>
+                  </div>
+                </div>
+              </Transition>
+            </div>
 
             <!-- Other Links -->
             <NuxtLink
@@ -361,5 +807,29 @@ onMounted(() => {
 
 .mobile-menu-button:active {
   transform: scale(0.95);
+}
+
+/* Course menu hover bridge */
+.course-menu-container::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+  z-index: 49;
+}
+
+/* Course submenu hover bridge (tạo bridge giữa item và submenu) */
+.course-submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -4px;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  z-index: 49;
 }
 </style>
