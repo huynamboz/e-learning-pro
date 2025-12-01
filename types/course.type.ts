@@ -1,4 +1,4 @@
-import type { ListApiResponse } from "~/api/apiClient"
+import type { ListApiResponse } from '~/api/apiClient'
 
 export interface Course {
   id: string
@@ -107,16 +107,19 @@ export interface CoursePayload {
   description: string
   short_description: string
   category_id: string
-  teacher_id: number
+  teacher_id?: number // Optional - mặc định là current user
   video_preview?: string
-  level: string
+  course_type: 'course' | 'resource' // "course" hoặc "resource"
+  course_level?: 'basic' | 'intermediate' | 'advanced' | 'driving_theory' // Optional
+  course_sub_level?: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' // Optional, phải khớp với course_level (không áp dụng cho driving_theory)
+  level: string // Legacy field
   language: string
-  duration_hours: string
-  price: string
-  discount_price: string
-  is_free: boolean
+  duration_hours?: string
+  price: number // Changed from string to number
+  discount_price?: number | null // Changed from string to number | null, optional
+  is_free?: boolean
   is_published: boolean
-  is_featured: boolean
+  is_featured?: boolean
   thumbnail?: string
 }
 

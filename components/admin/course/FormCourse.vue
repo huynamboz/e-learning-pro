@@ -23,12 +23,15 @@ const formState = ref<CoursePayload>({
   short_description: '',
   description: '',
   category_id: '',
-  teacher_id: 0,
+  teacher_id: undefined,
+  course_type: 'course',
+  course_level: undefined,
+  course_sub_level: undefined,
   level: 'beginner',
   language: 'en',
   duration_hours: '',
-  price: '0',
-  discount_price: '0',
+  price: 0,
+  discount_price: null,
   is_free: false,
   is_published: true,
   is_featured: false,
@@ -66,6 +69,60 @@ const levelOptions = ref([
     value: 'advanced',
   },
 ])
+
+const courseTypeOptions = ref([
+  {
+    label: 'Khóa học',
+    value: 'course',
+  },
+  {
+    label: 'Tài nguyên',
+    value: 'resource',
+  },
+])
+
+const courseLevelOptions = ref([
+  {
+    label: 'Cơ bản',
+    value: 'basic',
+  },
+  {
+    label: 'Trung cấp',
+    value: 'intermediate',
+  },
+  {
+    label: 'Nâng cao',
+    value: 'advanced',
+  },
+  {
+    label: 'Lý thuyết lái xe',
+    value: 'driving_theory',
+  },
+])
+
+const courseSubLevelOptions = computed(() => {
+  const level = formState.value.course_level
+  if (level === 'basic') {
+    return [
+      { label: 'A1', value: 'A1' },
+      { label: 'A2', value: 'A2' },
+    ]
+  }
+  else if (level === 'intermediate') {
+    return [
+      { label: 'B1', value: 'B1' },
+      { label: 'B2', value: 'B2' },
+    ]
+  }
+  else if (level === 'advanced') {
+    return [
+      { label: 'C1', value: 'C1' },
+      { label: 'C2', value: 'C2' },
+    ]
+  }
+  // driving_theory không có sub-level
+  return []
+})
 
 function beforeUpload() {
   return false
@@ -206,16 +263,43 @@ async function handleSave() {
     notification.error({ message: t('admin.formCourse.notifications.loginRequired') })
     return
   }
-  formState.value.teacher_id = user.value?.id
+
   await formRef.value?.validateFields()
   loading.value = true
 
   // Prepare payload
-  const payload = { ...formState.value }
-  
-  // If course is free, set discount_price to null
+  const payload: CoursePayload = {
+    ...formState.value,
+    teacher_id: user.value?.id, // Set teacher_id from current user
+  }
+
+  // If course is free, set price and discount_price to 0
   if (payload.is_free) {
-    payload.discount_price = null as any
+    payload.price = 0
+    payload.discount_price = null
+  }
+
+  // Convert price to number if it's string
+  if (typeof payload.price === 'string') {
+    payload.price = Number.parseFloat(payload.price) || 0
+  }
+
+  // Convert discount_price to number or null
+  if (payload.discount_price !== null && payload.discount_price !== undefined) {
+    if (typeof payload.discount_price === 'string') {
+      payload.discount_price = Number.parseFloat(payload.discount_price) || null
+    }
+  }
+
+  // Remove undefined optional fields
+  if (!payload.course_level) {
+    delete payload.course_level
+  }
+  if (!payload.course_sub_level) {
+    delete payload.course_sub_level
+  }
+  if (!payload.duration_hours) {
+    delete payload.duration_hours
   }
 
   try {
@@ -303,7 +387,7 @@ onMounted(async () => {
     await fetchCourseDetail(courseId.value)
 
   if (currentCourse.value) {
-    const c = currentCourse.value
+    const c = currentCourse.value as any
     formState.value = {
       title: c.title || '',
       slug: c.slug || '',
@@ -311,11 +395,14 @@ onMounted(async () => {
       description: c.description || '',
       category_id: c.category?.id || '',
       teacher_id: c.teacher?.id,
+      course_type: c.course_type || 'course',
+      course_level: c.course_level || undefined,
+      course_sub_level: c.course_sub_level || undefined,
       duration_hours: c.duration_hours || '',
       level: c.level || 'beginner',
-      discount_price: c.discount_price || '0',
+      discount_price: c.discount_price ? (typeof c.discount_price === 'string' ? Number.parseFloat(c.discount_price) : c.discount_price) : null,
       is_free: c.is_free || false,
-      price: c.price || '0',
+      price: c.price ? (typeof c.price === 'string' ? Number.parseFloat(c.price) : c.price) : 0,
       video_preview: c.video_preview || '',
       thumbnail: c.thumbnail || '',
       is_featured: c.is_featured || false,
@@ -373,8 +460,8 @@ function previewCourse() {
 function handleFreeToggle(checked: boolean) {
   if (checked) {
     // If toggle is turned on, set price to 0
-    formState.value.price = '0'
-    formState.value.discount_price = '0'
+    formState.value.price = 0
+    formState.value.discount_price = null
   }
 }
 
@@ -383,10 +470,22 @@ function handlePriceChange(value: number | null) {
   if (value && value > 0) {
     // If price is greater than 0, turn off free toggle
     formState.value.is_free = false
-  } else if (value === 0) {
+  }
+  else if (value === 0 || value === null) {
     formState.value.is_free = true
   }
 }
+
+// Watch course_level to reset course_sub_level when level changes
+watch(() => formState.value.course_level, (newLevel, oldLevel) => {
+  if (newLevel !== oldLevel) {
+    formState.value.course_sub_level = undefined
+  }
+  // Nếu chọn driving_theory, đảm bảo không có sub-level
+  if (newLevel === 'driving_theory') {
+    formState.value.course_sub_level = undefined
+  }
+})
 
 // Delete course functions
 function showDeleteConfirm() {
@@ -566,19 +665,63 @@ async function confirmDeleteCourse() {
             />
           </a-form-item>
           <a-form-item
-            :label="t('admin.formCourse.form.level')"
-            name="level"
+            :label="t('admin.formCourse.form.courseType')"
+            name="course_type"
             class="w-full"
-            :rules="[{ required: true, message: t('admin.formCourse.form.levelRequired') }]"
+            :rules="[{ required: true, message: t('admin.formCourse.form.courseTypeRequired') }]"
           >
             <a-select
-              v-model:value="formState.level"
-              :placeholder="t('admin.formCourse.form.levelPlaceholder')"
-              :options="levelOptions"
+              v-model:value="formState.course_type"
+              :placeholder="t('admin.formCourse.form.courseTypePlaceholder')"
+              :options="courseTypeOptions"
               class="w-full"
             />
           </a-form-item>
         </div>
+
+        <div class="flex flex-col sm:flex-row items-center w-full gap-3">
+          <a-form-item
+            :label="t('admin.formCourse.form.courseLevel')"
+            name="course_level"
+            class="w-full"
+          >
+            <a-select
+              v-model:value="formState.course_level"
+              :placeholder="t('admin.formCourse.form.courseLevelPlaceholder')"
+              :options="courseLevelOptions"
+              class="w-full"
+              allow-clear
+            />
+          </a-form-item>
+          <a-form-item
+            :label="t('admin.formCourse.form.courseSubLevel')"
+            name="course_sub_level"
+            class="w-full"
+          >
+            <a-select
+              v-model:value="formState.course_sub_level"
+              :placeholder="t('admin.formCourse.form.courseSubLevelPlaceholder')"
+              :options="courseSubLevelOptions"
+              class="w-full"
+              :disabled="!formState.course_level || formState.course_level === 'driving_theory'"
+              allow-clear
+            />
+          </a-form-item>
+        </div>
+
+        <a-form-item
+          :label="t('admin.formCourse.form.level')"
+          name="level"
+          class="w-full"
+          :rules="[{ required: true, message: t('admin.formCourse.form.levelRequired') }]"
+        >
+          <a-select
+            v-model:value="formState.level"
+            :placeholder="t('admin.formCourse.form.levelPlaceholder')"
+            :options="levelOptions"
+            class="w-full"
+          />
+        </a-form-item>
         <!-- Free Course Toggle -->
         <a-form-item
           :label="t('admin.formCourse.form.isFree')"
@@ -600,12 +743,14 @@ async function confirmDeleteCourse() {
             class="w-full"
             :rules="[{ required: true, message: t('admin.formCourse.form.priceRequired') }]"
           >
-            <a-input-number 
-              v-model:value="formState.price" 
-              class="!w-full" 
-              size="large" 
+            <a-input-number
+              v-model:value="formState.price"
+              class="!w-full"
+              size="large"
               :placeholder="t('admin.formCourse.form.pricePlaceholder')"
               :disabled="formState.is_free"
+              :min="0"
+              :precision="0"
               @change="handlePriceChange"
             />
           </a-form-item>
@@ -614,12 +759,14 @@ async function confirmDeleteCourse() {
             name="discount_price"
             class="w-full"
           >
-            <a-input-number 
-              v-model:value="formState.discount_price" 
-              class="!w-full" 
-              size="large" 
+            <a-input-number
+              v-model:value="formState.discount_price"
+              class="!w-full"
+              size="large"
               :placeholder="t('admin.formCourse.form.discountPricePlaceholder')"
               :disabled="formState.is_free"
+              :min="0"
+              :precision="0"
             />
           </a-form-item>
         </div>
