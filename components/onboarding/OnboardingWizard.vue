@@ -471,14 +471,14 @@ async function handleSubmit() {
 }
 
 :deep(.ant-btn-primary) {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: #16A34A;
   border: none;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
 
 :deep(.ant-btn-primary:hover) {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+  background: #15803D;
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
   transform: translateY(-1px);
 }
 

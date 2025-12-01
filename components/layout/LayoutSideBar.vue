@@ -5,7 +5,7 @@ import { cn } from '~/lib/utils'
 import SidebarProgressCard from './SidebarProgressCard.vue'
 
 const { isCollapsed, toggleSidebar, menu } = useSidebar()
-const { user, profile } = useAuth()
+const { profile } = useAuth()
 const expandedItems = ref(new Set())
 const route = useRoute()
 

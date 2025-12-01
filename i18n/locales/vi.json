@@ -180,6 +180,47 @@
       "updateFailed": "Cập nhật mật khẩu thất bại"
     }
   },
+  "devices": {
+    "title": "Quản lý thiết bị",
+    "description": "Xem và quản lý các thiết bị đã đăng nhập vào tài khoản của bạn",
+    "empty": {
+      "title": "Chưa có thiết bị nào",
+      "description": "Các thiết bị bạn đăng nhập sẽ hiển thị ở đây"
+    },
+    "table": {
+      "deviceName": "Tên thiết bị",
+      "deviceType": "Loại thiết bị",
+      "ipAddress": "Địa chỉ IP",
+      "lastLogin": "Đăng nhập lần cuối",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "types": {
+      "laptop": "Máy tính",
+      "tablet": "Máy tính bảng",
+      "phone": "Điện thoại",
+      "web": "Web"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "inactive": "Đã vô hiệu hóa"
+    },
+    "actions": {
+      "revoke": "Vô hiệu hóa",
+      "delete": "Xóa vĩnh viễn",
+      "revokeConfirm": "Vô hiệu hóa thiết bị này?",
+      "revokeDescription": "Thiết bị sẽ bị vô hiệu hóa nhưng vẫn có thể đăng nhập lại sau.",
+      "deleteConfirm": "Xóa vĩnh viễn thiết bị này?",
+      "deleteDescription": "Thiết bị sẽ bị xóa vĩnh viễn. Bạn có thể đăng ký thiết bị mới cùng loại sau khi xóa."
+    },
+    "notifications": {
+      "loadFailed": "Tải danh sách thiết bị thất bại",
+      "revokeSuccess": "Đã vô hiệu hóa thiết bị thành công",
+      "revokeFailed": "Vô hiệu hóa thiết bị thất bại",
+      "deleteSuccess": "Đã xóa thiết bị thành công",
+      "deleteFailed": "Xóa thiết bị thất bại"
+    }
+  },
   "homepage": {
     "hero": {
       "badge": "Học với sự hướng dẫn chuyên nghiệp",
@@ -1029,7 +1070,8 @@
     "editProfile": "Chỉnh sửa hồ sơ",
     "language": "Ngôn ngữ",
     "notifications": "Thông báo",
-    "password": "Mật khẩu"
+    "password": "Mật khẩu",
+    "devices": "Thiết bị"
   },
   "adminMenu": {
     "overview": "Tổng quan",
@@ -1645,6 +1687,9 @@
         "googlePopupClosed": "Đăng nhập đã bị hủy",
         "googleAccessDenied": "Truy cập bị từ chối bởi Google",
         "googlePopupBlocked": "Popup bị chặn. Vui lòng cho phép popup cho trang web này."
+      },
+      "errors": {
+        "device_type_limit_exceeded": "Tài khoản đã có thiết bị {device_type} được đăng ký ({device_id}). Chỉ cho phép một thiết bị mỗi loại. Vui lòng sử dụng thiết bị đã đăng ký trước đó."
       }
     },
     "register": {

@@ -3,15 +3,53 @@ import type { LoginRequest } from '~/types/auth.type'
 import { notification } from 'ant-design-vue'
 import { GoogleSignInButton } from 'vue3-google-signin'
 
+const { t } = useI18n()
+const { login, loginWithGoogle } = useAuth()
+
 definePageMeta({
   layout: 'auth',
   middleware: 'guest',
 })
 
-const { login, loginWithGoogle } = useAuth()
-const { t } = useI18n()
 const config = useRuntimeConfig()
 const googleLoading = ref(false)
+
+/**
+ * Translate error message based on error code
+ */
+function translateErrorMessage(error: string | undefined, errorCode?: string, _errorData?: any): string {
+  if (!errorCode) {
+    return error || t('auth.login.notifications.failed')
+  }
+
+  // Handle device_type_limit_exceeded
+  if (errorCode === 'device_type_limit_exceeded') {
+    const errorMessage = error || ''
+    // Parse device type and device ID from message
+    const deviceTypeMatch = errorMessage.match(/has a (\w+) device/)
+    const deviceIdMatch = errorMessage.match(/\(([^)]+)\)/)
+
+    const deviceType = deviceTypeMatch ? deviceTypeMatch[1] : 'device'
+    const deviceId = deviceIdMatch ? deviceIdMatch[1] : ''
+
+    // Map device type to translation key
+    const deviceTypeMap: Record<string, string> = {
+      laptop: t('devices.types.laptop'),
+      tablet: t('devices.types.tablet'),
+      phone: t('devices.types.phone'),
+      web: t('devices.types.web'),
+    }
+
+    const translatedDeviceType = deviceTypeMap[deviceType] || deviceType
+
+    return t('auth.login.errors.device_type_limit_exceeded', {
+      device_type: translatedDeviceType,
+      device_id: deviceId,
+    })
+  }
+
+  return error || t('auth.login.notifications.failed')
+}
 
 // Handle Google login success
 async function handleGoogleSuccess(response: any) {
@@ -32,8 +70,9 @@ async function handleGoogleSuccess(response: any) {
       }
     }
     else {
+      const translatedError = translateErrorMessage(result.error, result.errorCode, result.errorData)
       notification.error({
-        message: result.error || t('auth.login.notifications.googleFailed') || 'Google login failed',
+        message: translatedError,
       })
     }
   }
@@ -77,10 +116,12 @@ async function onFinish() {
       notification.success({ message: t('auth.login.notifications.success') })
     }
     else {
-      notification.error({ message: result.error || t('auth.login.notifications.failed') })
+      const translatedError = translateErrorMessage(result.error, result.errorCode, result.errorData)
+      notification.error({ message: translatedError })
     }
   }
-  catch {
+  catch (error: any) {
+    console.error('Login error:', error)
     notification.error({ message: t('auth.login.notifications.error') })
   }
   finally {

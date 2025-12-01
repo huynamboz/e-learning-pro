@@ -180,6 +180,47 @@
       "updateFailed": "Failed to update password"
     }
   },
+  "devices": {
+    "title": "Device Management",
+    "description": "View and manage devices that have logged into your account",
+    "empty": {
+      "title": "No devices yet",
+      "description": "Devices you log in from will appear here"
+    },
+    "table": {
+      "deviceName": "Device Name",
+      "deviceType": "Device Type",
+      "ipAddress": "IP Address",
+      "lastLogin": "Last Login",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "types": {
+      "laptop": "Laptop",
+      "tablet": "Tablet",
+      "phone": "Phone",
+      "web": "Web"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "revoke": "Revoke",
+      "delete": "Delete Permanently",
+      "revokeConfirm": "Revoke this device?",
+      "revokeDescription": "The device will be deactivated but can still log in again later.",
+      "deleteConfirm": "Delete this device permanently?",
+      "deleteDescription": "The device will be permanently deleted. You can register a new device of the same type after deletion."
+    },
+    "notifications": {
+      "loadFailed": "Failed to load devices",
+      "revokeSuccess": "Device revoked successfully",
+      "revokeFailed": "Failed to revoke device",
+      "deleteSuccess": "Device deleted successfully",
+      "deleteFailed": "Failed to delete device"
+    }
+  },
   "homepage": {
     "hero": {
       "badge": "Learn with Expert Guidance",
@@ -1029,7 +1070,8 @@
     "editProfile": "Edit Profile",
     "language": "Language",
     "notifications": "Notifications",
-    "password": "Password"
+    "password": "Password",
+    "devices": "Devices"
   },
   "adminMenu": {
     "overview": "Overview",
@@ -1645,6 +1687,9 @@
         "googlePopupClosed": "Login was cancelled",
         "googleAccessDenied": "Access denied by Google",
         "googlePopupBlocked": "Popup was blocked. Please allow popups for this site."
+      },
+      "errors": {
+        "device_type_limit_exceeded": "Account already has a {device_type} device registered ({device_id}). Only one device per type is allowed. Please use the previously registered device."
       }
     },
     "register": {
