@@ -34,10 +34,10 @@ const formattedPrice = computed(() => {
   if (props.is_free)
     return t('courseCard.free')
   if (props.has_discount)
-    return `$${props.effective_price}`
-  return `$${props.effective_price}`
+    return `€${Number(props.effective_price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return `€${Number(props.effective_price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 })
-const originalPrice = computed(() => props.discount_price && parseFloat(props.discount_price) > 0 ? `$${props.price}` : null)
+const originalPrice = computed(() => props.discount_price && Number.parseFloat(props.discount_price) > 0 ? `€${Number(props.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : null)
 </script>
 
 <template>
@@ -71,10 +71,8 @@ const originalPrice = computed(() => props.discount_price && parseFloat(props.di
           {{ category?.name || t('courseCard.unknownCategory') }}
         </p>
 
-       
-
         <p class="text-xs sm:text-sm text-gray-600">
-          {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ $t('homepage.courses.levels.' + level) || 'Unknown' }}
+          {{ duration_hours || '0' }} {{ t('courseCard.totalHours') }}. {{ lessons_count || '0' }} {{ t('courseCard.lectures') }}. {{ $t(`homepage.courses.levels.${level}`) || 'Unknown' }}
         </p>
         <p class="text-xs text-gray-500">
           {{ (enrollment_count || 0).toLocaleString() }} {{ t('courseCard.studentsEnrolled') }}

@@ -9,12 +9,11 @@ export function formatCurrency(amount: number, locale?: string): string {
   const currentLocale = locale || useI18n().locale.value || 'vi'
   
   // Determine currency based on locale
-  const currency = currentLocale !== 'vi' ? 'USD' : 'VND'
+  const currency = currentLocale !== 'vi' ? 'EUR' : 'VND'
   
   // Format the amount
-  return `$${amount}`
-  if (currency === 'USD') {
-    return `${amount} USD`
+  if (currency === 'EUR') {
+    return `€${amount.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   } else {
     // For VND, we don't use Intl.NumberFormat as it doesn't handle VND well
     return `${amount.toLocaleString('vi-VN')} VNĐ`
@@ -31,18 +30,18 @@ export function formatCurrencyWithOptions(
   amount: number, 
   options: {
     locale?: string
-    currency?: 'USD' | 'VND'
+    currency?: 'EUR' | 'VND'
     showSymbol?: boolean
   } = {}
 ): string {
   const { locale, currency, showSymbol = true } = options
   const currentLocale = locale || useI18n().locale.value || 'vi'
-  const targetCurrency = currency || (currentLocale === 'en' ? 'USD' : 'VND')
+  const targetCurrency = currency || (currentLocale === 'en' ? 'EUR' : 'VND')
   
-  if (targetCurrency === 'USD') {
-    return new Intl.NumberFormat('en-US', {
+  if (targetCurrency === 'EUR') {
+    return new Intl.NumberFormat('it-IT', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'EUR',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount)

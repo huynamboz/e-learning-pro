@@ -52,10 +52,10 @@ const props = defineProps<Props>()
       <div class="text-2xl font-bold">
         <span v-if="props.courseData?.is_free" class="text-green-600">Free</span>
         <span v-else-if="props.courseData?.has_discount" class="flex flex-col items-end">
-          <span class="text-gray-500 line-through text-lg">${{ props.courseData?.price }}</span>
-          <span class="text-green-600">${{ props.courseData?.effective_price }}</span>
+          <span class="text-gray-500 line-through text-lg">€{{ Number(props.courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+          <span class="text-green-600">€{{ Number(props.courseData?.effective_price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
         </span>
-        <span v-else>${{ props.courseData?.effective_price }}</span>
+        <span v-else>€{{ Number(props.courseData?.effective_price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
       </div>
     </div>
   </div>

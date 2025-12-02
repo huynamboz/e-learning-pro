@@ -23,7 +23,7 @@ export function createApiService<T>(baseUrl: string) {
     patch: (id: string | number, data: Partial<T>) =>
       apiClient.patch<T>(`${baseUrl}${id}/`, data),
 
-    // Delete item
-    delete: (id: string | number) => apiClient.delete(`${baseUrl}${id}/`),
+    // Delete item (soft delete - returns 204 No Content)
+    delete: (id: string | number) => apiClient.delete<void>(`${baseUrl}${id}/`),
   }
 }

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { notification } from 'ant-design-vue'
 import { useCourseApi } from '@/composables/api/useCourseApi'
-import { reviewsData } from '@/resources/home'
 
 definePageMeta({
   layout: 'auth',
@@ -10,13 +9,13 @@ definePageMeta({
 const route = useRoute()
 const { t } = useI18n()
 const courseId = computed(() => route.params.id as string)
+const { getDetailCourses } = useCourseApi()
 
 // Use useLazyAsyncData for better data fetching
-const { data: currentCourse, pending: isLoading, error: fetchError, refresh: retryFetch } = await useLazyAsyncData(
+const { data: currentCourse, pending: isLoading, error: fetchError, refresh: retryFetch } = useLazyAsyncData(
   `course-${courseId.value}`,
   async () => {
     try {
-      const { getDetailCourses } = useCourseApi()
       const response = await getDetailCourses(courseId.value)
 
       if (!response) {
@@ -29,10 +28,11 @@ const { data: currentCourse, pending: isLoading, error: fetchError, refresh: ret
       return response
     }
     catch (error: any) {
-      throw createError({
-        statusCode: error.statusCode || 500,
-        statusMessage: error.statusMessage || 'Failed to load course details',
-      })
+      console.log(error)
+      // throw createError({
+      //   statusCode: error.statusCode || 500,
+      //   statusMessage: error.statusMessage || 'Failed to load course details',
+      // })
     }
   },
   {
@@ -121,11 +121,6 @@ watch(fetchError, (error) => {
           :course-data="currentCourse"
         />
       </div>
-    </div>
-
-    <!-- Related Content -->
-    <div v-if="currentCourse && !isLoading" class="mt-16">
-      <HomeCustomerReviewsSection :reviews-data="reviewsData" />
     </div>
   </div>
 </template>

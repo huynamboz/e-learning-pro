@@ -7,7 +7,7 @@ const listOfLinks = computed(() => [
   { name: 'Giới thiệu', href: '#instructor' },
   { name: 'Quiz', href: '/#quiz' },
   { name: 'Video', href: '/#video' },
-  { name: 'Tài nguyên', href: '/#resources' },
+  { name: 'Tài nguyên', href: '/courses' },
 ])
 
 const isMobileMenuOpen = ref(false)
@@ -100,7 +100,7 @@ const courseMenu = computed(() => {
           const classes = course.classrooms.map((classroom: any) => ({
             key: classroom.id,
             label: classroom.title,
-            href: `${config.href}#${course.course_sub_level?.toLowerCase() || course.slug}-${classroom.id}`,
+            href: `/courses/${course.id}/classrooms/${classroom.id}`,
           }))
 
           return {
@@ -249,8 +249,7 @@ watch(courseMenu, (newMenu) => {
           <!-- Brand name -->
           <div class="ml-3">
             <div class="text-lg font-bold">
-              <span class="text-green-600">PHAN THI</span>
-              <span class="text-red-600"> TAM</span>
+              <span class="text-red-600">PHAN THI TAM</span>
             </div>
             <div class="text-xs text-green-600 font-medium">
               {{ $t('layoutAuthHeader.brand.tagline') }}

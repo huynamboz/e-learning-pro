@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import type { Course } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
-import { useCartStore } from '~/stores/cart.store';
+import { useCartStore } from '~/stores/cart.store'
 
 interface Props {
   courseData: Course
+  preselectedClassroomId?: string // Optional: pre-select a classroom
 }
 
 const props = defineProps<Props>()
@@ -17,18 +18,41 @@ const isTeacher = computed(() => user.value?.is_teacher || false)
 
 const selectedCalendar = ref<string>('')
 
-function handleSelectCalendar(id: string) {
-  selectedCalendar.value = id
-}
-
-// Auto-select classroom if already in cart
+// Auto-select first classroom or preselected one
 onMounted(() => {
-  // Check if this course has any classroom in cart
-  const cartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
-  if (cartItem) {
-    selectedCalendar.value = cartItem.selectedClassroom.id
+  // Load cart first
+  cartStore.loadCart()
+
+  // First check if a classroom is preselected
+  if (props.preselectedClassroomId) {
+    selectedCalendar.value = props.preselectedClassroomId
+  }
+  // Otherwise check if this course has any classroom in cart
+  else {
+    const cartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
+    if (cartItem) {
+      selectedCalendar.value = cartItem.selectedClassroom.id
+    }
+    // If no cart item, select first classroom
+    else if (props.courseData.classrooms && props.courseData.classrooms.length > 0) {
+      selectedCalendar.value = props.courseData.classrooms[0].id
+    }
   }
 })
+
+// Watch for preselectedClassroomId changes
+watch(() => props.preselectedClassroomId, (newId) => {
+  if (newId) {
+    selectedCalendar.value = newId
+  }
+}, { immediate: true })
+
+// Watch for courseData.classrooms changes to auto-select first classroom
+watch(() => props.courseData.classrooms, (classrooms) => {
+  if (classrooms && classrooms.length > 0 && !selectedCalendar.value) {
+    selectedCalendar.value = classrooms[0].id
+  }
+}, { immediate: true })
 
 function handleAddToCard() {
   if (!selectedCalendar.value) {
@@ -48,18 +72,18 @@ function handleAddToCard() {
         message: t('checkoutCard.messages.alreadyInCart'),
         description: t('checkoutCard.messages.alreadyInCartDesc', {
           title: props.courseData.title,
-          classroom: existingCartItem.selectedClassroom.title
+          classroom: existingCartItem.selectedClassroom.title,
         }),
       })
       return
     }
-    
+
     // If different classroom, remove old one and add new one
     cartStore.removeFromCart(existingCartItem.id)
     notification.info({
       message: t('checkoutCard.messages.classroomChanged'),
       description: t('checkoutCard.messages.classroomChangedDesc', {
-        title: props.courseData.title
+        title: props.courseData.title,
       }),
     })
   }
@@ -71,7 +95,7 @@ function handleAddToCard() {
       message: t('checkoutCard.messages.addedToCart'),
       description: t('checkoutCard.messages.addedToCartDesc', {
         title: props.courseData.title,
-        classroom: selectedClassroom.title
+        classroom: selectedClassroom.title,
       }),
     })
   }
@@ -79,9 +103,11 @@ function handleAddToCard() {
 
 // Check if item is already in cart
 const isInCart = computed(() => {
-  if (!selectedCalendar.value) return false
+  if (!selectedCalendar.value)
+    return false
   const selectedClassroom = props.courseData.classrooms.find(c => c.id === selectedCalendar.value)
-  if (!selectedClassroom) return false
+  if (!selectedClassroom)
+    return false
   return cartStore.isInCart(props.courseData.id, selectedClassroom.id)
 })
 
@@ -112,7 +138,7 @@ function handleBuyNow() {
 
 function copyCourseLink() {
   const courseUrl = `${window.location.origin}/courses/${props.courseData.id}`
-  
+
   if (navigator.clipboard) {
     navigator.clipboard.writeText(courseUrl).then(() => {
       notification.success({
@@ -122,7 +148,8 @@ function copyCourseLink() {
     }).catch(() => {
       fallbackCopyTextToClipboard(courseUrl)
     })
-  } else {
+  }
+  else {
     fallbackCopyTextToClipboard(courseUrl)
   }
 }
@@ -136,20 +163,21 @@ function fallbackCopyTextToClipboard(text: string) {
   document.body.appendChild(textArea)
   textArea.focus()
   textArea.select()
-  
+
   try {
     document.execCommand('copy')
     notification.success({
       message: t('checkoutCard.messages.linkCopied'),
       description: t('checkoutCard.messages.linkCopiedDesc'),
     })
-  } catch (err) {
+  }
+  catch {
     notification.error({
       message: t('checkoutCard.messages.copyFailed'),
       description: t('checkoutCard.messages.copyFailedDesc'),
     })
   }
-  
+
   document.body.removeChild(textArea)
 }
 </script>
@@ -157,113 +185,83 @@ function fallbackCopyTextToClipboard(text: string) {
 <template>
   <div class="flex flex-col bg-white rounded-lg border border-[#E2E8F0]">
     <div class="p-5 flex flex-col gap-5">
-      <img v-if="props.courseData.thumbnail" :src="props.courseData?.thumbnail" class="h-[200px] rounded-lg object-cover" alt="image course">
-      <img v-else src="/assets/images/course/python.webp" class="h-[200px] rounded-lg object-cover" alt="image course">
+      <img :src="props.courseData?.thumbnail || '/images/course-thumbnail-default.webp'" class="h-[200px] rounded-lg object-cover" alt="image course">
       <div class="flex items-center gap-3">
         <span v-if="!courseData.has_discount || !courseData.discount_price || parseFloat(courseData.discount_price) === 0" class="text-black font-bold text-2xl">
-          ${{ props.courseData?.price }}
+          €{{ Number(props.courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
         </span>
         <template v-else>
           <span class="font-bold text-lg text-[#94A3B8] line-through">
-            ${{ courseData?.price }}
+            €{{ Number(courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="text-black font-bold text-2xl">
-            ${{ courseData?.discount_price }}
+            €{{ Number(courseData?.discount_price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="font-bold text-lg text-green">
             {{ Math.round(((parseFloat(courseData?.price || '0') - parseFloat(courseData?.discount_price || '0')) / parseFloat(courseData?.price || '1')) * 100) }}% Off
           </span>
         </template>
       </div>
-      <div class="">
-        <h3 class="font-semibold">
-          {{ $t('checkoutCard.classroom') }}
-        </h3>
-        <div class="flex items-start gap-2 flex-col">
-          <div
-            v-for="item in props.courseData.classrooms" :key="item.id"
-            class="flex text-[14px] font-semibold justify-between items-center gap-1 border-1 border-[#DDDDDD] hover:border-green-600 cursor-pointer rounded-lg p-2 w-full"
-            :class="{ 'border-green-600': selectedCalendar === item.id }"
-            @click="handleSelectCalendar(item.id)"
-          >
-            <div class="flex items-center gap-2">
-              <Icon v-if="selectedCalendar === item.id" name="i-material-symbols-check-circle-rounded" size="18" class="text-[#49ba61]" />
-              <div>
-                <div class="font-medium text-gray-900">
-                  {{ item.title }}
-                </div>
-                <div class="text-xs text-gray-500">
-                  {{ item.schedule_summary || 'No schedule' }}
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-1">
-              <span class="font-medium">{{ item.student_count }}</span>
-              <Icon name="i-heroicons-users" size="18" />
-            </div>
-          </div>
+      <!-- Thông báo khi không có lớp học -->
+      <div v-if="!props.courseData.classrooms || props.courseData.classrooms.length === 0" class="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div class="flex items-center gap-2">
+          <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
+          <span class="text-yellow-800 font-medium">{{ $t('checkoutCard.messages.noClassroom') }}</span>
         </div>
-        <!-- Thông báo khi không có lớp học -->
-        <div v-if="!props.courseData.classrooms || props.courseData.classrooms.length === 0" class="w-full !mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div class="flex items-center gap-2">
-            <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
-            <span class="text-yellow-800 font-medium">{{ $t('checkoutCard.messages.noClassroom') }}</span>
-          </div>
-        </div>
+      </div>
 
-        <!-- Show different buttons based on user role -->
-        <template v-if="isTeacher">
-          <!-- Teacher - show edit course button -->
+      <!-- Show different buttons based on user role -->
+      <template v-if="isTeacher">
+        <!-- Teacher - show edit course button -->
+        <a-button
+          type="primary"
+          class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+          @click="navigateTo(`/admin/courses/${props.courseData.id}/course-detail`)"
+        >
+          <Icon name="solar:settings-bold" size="20" class="mr-2" />
+          {{ $t('checkoutCard.buttons.editCourse') }}
+        </a-button>
+      </template>
+      <template v-else>
+        <!-- Student - show cart buttons -->
+        <template v-if="isInCart">
+          <!-- Already in cart - show checkout button -->
           <a-button
             type="primary"
-            class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
-            @click="navigateTo(`/admin/courses/${props.courseData.id}/course-detail`)"
+            class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
+            @click="handleBuyNow"
           >
-            <Icon name="solar:settings-bold" size="20" class="mr-2" />
-            {{ $t('checkoutCard.buttons.editCourse') }}
+            <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
+            {{ $t('checkoutCard.buttons.checkoutNow') }}
+          </a-button>
+          <a-button
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
+            @click="navigateTo('/checkout')"
+          >
+            <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
+            {{ $t('checkoutCard.buttons.viewCart') }}
           </a-button>
         </template>
         <template v-else>
-          <!-- Student - show cart buttons -->
-          <template v-if="isInCart">
-            <!-- Already in cart - show checkout button -->
-            <a-button
-              type="primary"
-              class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-              @click="handleBuyNow"
-            >
-              <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
-              {{ $t('checkoutCard.buttons.checkoutNow') }}
-            </a-button>
-            <a-button
-              class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
-              @click="navigateTo('/checkout')"
-            >
-              <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
-              {{ $t('checkoutCard.buttons.viewCart') }}
-            </a-button>
-          </template>
-          <template v-else>
-            <!-- Not in cart - show add to cart button -->
-            <a-button
-              type="primary"
-              :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-              class="w-full !flex items-center !h-12 !mt-8 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-              @click="handleAddToCard"
-            >
-              {{ $t('checkoutCard.addToCart') }}
-            </a-button>
+          <!-- Not in cart - show add to cart button -->
+          <a-button
+            type="primary"
+            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+            class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            @click="handleAddToCard"
+          >
+            {{ $t('checkoutCard.addToCart') }}
+          </a-button>
 
-            <a-button
-              :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
-              class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-              @click="handleBuyNow"
-            >
-              {{ $t('checkoutCard.buyNow') }}
-            </a-button>
-          </template>
+          <a-button
+            :disabled="!props.courseData.classrooms || props.courseData.classrooms.length === 0"
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+            @click="handleBuyNow"
+          >
+            {{ $t('checkoutCard.buyNow') }}
+          </a-button>
         </template>
-      </div>
+      </template>
     </div>
 
     <div class="line border-b border-[#E2E8F0]" />

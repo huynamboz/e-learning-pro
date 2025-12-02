@@ -17,7 +17,7 @@ useHead({
 const router = useRouter()
 const { getMyCourses } = useCourseApi()
 
-const { data: coursesData, pending: isFetchingCourses } = await useLazyAsyncData(
+const { data: coursesData, pending: isFetchingCourses } = useLazyAsyncData(
   'admin-courses', // Unique key for caching
   async () => {
     try {

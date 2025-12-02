@@ -20,20 +20,20 @@ const counterValues = ref({
 })
 
 // Helper functions
-function getLevelText(level: string): string {
-  const levelMap: Record<string, string> = {
-    beginner: t('homepage.courses.levels.beginner'),
-    intermediate: t('homepage.courses.levels.intermediate'),
-    advanced: t('homepage.courses.levels.advanced'),
-  }
-  return levelMap[level] || t('homepage.courses.levels.beginner')
-}
+// function getLevelText(level: string): string {
+//   const levelMap: Record<string, string> = {
+//     beginner: t('homepage.courses.levels.beginner'),
+//     intermediate: t('homepage.courses.levels.intermediate'),
+//     advanced: t('homepage.courses.levels.advanced'),
+//   }
+//   return levelMap[level] || t('homepage.courses.levels.beginner')
+// }
 
-function formatPrice(price: number): string {
-  if (!price)
-    return '$149'
-  return `$${price}`
-}
+// function formatPrice(price: number): string {
+//   if (!price)
+//     return '€149'
+//   return `€${price.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+// }
 
 // Counter animation function
 function animateCounter(target: number, key: keyof typeof counterValues.value, duration: number = 2000) {
@@ -198,7 +198,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
     </section>
 
     <!-- Courses Section -->
-    <section id="courses" class="py-20 bg-green-50">
+    <!-- <section id="courses" class="py-20 bg-green-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
           <h2 class="text-4xl lg:text-5xl font-serif font-bold mb-4 text-balance">
@@ -209,7 +209,6 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
           </p>
         </div>
 
-        <!-- Loading State -->
         <div v-if="_isFetchingCourses" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div
             v-for="i in 3"
@@ -226,7 +225,6 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
           </div>
         </div>
 
-        <!-- Error State -->
         <div v-else-if="_fetchError" class="text-center py-12">
           <div class="text-red-500 mb-4">
             <Icon name="i-heroicons-exclamation-triangle" class="h-12 w-12 mx-auto" />
@@ -245,7 +243,6 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
           </a-button>
         </div>
 
-        <!-- Courses Grid -->
         <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <NuxtLink
             v-for="(course) in _coursesData"
@@ -264,18 +261,6 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
               >
                 {{ getLevelText(course.level) }}
               </div>
-              <!-- <div
-                v-else-if="index === 1"
-                class="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium"
-              >
-                {{ t('homepage.courses.badges.popular') }}
-              </div>
-              <div
-                v-else-if="index === 2"
-                class="absolute top-4 right-4 bg-green-400 text-white px-3 py-1 rounded-full text-sm font-medium"
-              >
-                {{ t('homepage.courses.badges.new') }}
-              </div> -->
             </div>
             <div class="p-6 space-y-4 flex-1 flex flex-col">
               <div class="flex items-center gap-2 text-sm">
@@ -305,7 +290,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
           </NuxtLink>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Quiz Section -->
     <section id="quiz" class="relative py-20 overflow-x-hidden">

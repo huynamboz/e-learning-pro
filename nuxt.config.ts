@@ -122,5 +122,6 @@ export default defineNuxtConfig({
   routeRules: {
     '/learning/**': { ssr: false },
     '/auth/**': { ssr: false },
+    '/admin/**': { ssr: false },
   },
 })

@@ -260,6 +260,10 @@ export function useApiClient() {
   const apiUpload = <T = any>(url: string, formData: FormData, options?: FetchOptions): Promise<T> =>
     upload<T>(url, formData, options, getTokenFromCookie())
 
+  // Public API methods (no authentication required)
+  const apiGetPublic = <T = any>(url: string, options?: FetchOptions): Promise<T> =>
+    get<T>(url, options, null) // Pass null token for public endpoints
+
   const apiRefreshToken = async (): Promise<{ access: string } | null> => {
     const currentToken = getTokenFromCookie()
     if (!currentToken)
@@ -284,6 +288,7 @@ export function useApiClient() {
     patch: apiPatch,
     delete: apiDelete,
     upload: apiUpload,
+    getPublic: apiGetPublic, // Public endpoint without authentication
 
     // Token utilities
     refreshToken: apiRefreshToken,

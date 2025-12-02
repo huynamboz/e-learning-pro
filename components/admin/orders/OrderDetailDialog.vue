@@ -130,7 +130,7 @@ const handleClose = () => {
               {{ $t('admin.orders.detailDialog.amount') }}
             </label>
             <div class="p-3 bg-gray-50 rounded-lg">
-              <span class="text-2xl font-bold text-green-600">${{ parseFloat(order.price_amount).toFixed(2) }}</span>
+              <span class="text-2xl font-bold text-green-600">€{{ Number(order.price_amount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               <span class="text-sm text-gray-500 ml-2">{{ order.price_currency }}</span>
             </div>
           </div>

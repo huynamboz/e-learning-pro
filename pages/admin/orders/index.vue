@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { TableColumnsType, TableProps } from 'ant-design-vue'
+import type { Ref } from 'vue'
 import { message } from 'ant-design-vue'
-import { computed, ref, onMounted, watch, type Ref } from 'vue'
-import { useOrderApi } from '~/composables/api/useOrderApi'
-import { useApiClient } from '~/api/apiClient'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useApiClient } from '~/api/apiClient'
 import ConfirmReceiveDialog from '~/components/admin/orders/ConfirmReceiveDialog.vue'
-import RejectOrderDialog from '~/components/admin/orders/RejectOrderDialog.vue'
 import OrderDetailDialog from '~/components/admin/orders/OrderDetailDialog.vue'
+import RejectOrderDialog from '~/components/admin/orders/RejectOrderDialog.vue'
+import { useOrderApi } from '~/composables/api/useOrderApi'
 
 const { t } = useI18n()
 
@@ -90,39 +91,40 @@ async function loadOrders() {
   try {
     loading.value = true
     const apiClient = useApiClient()
-    
+
     // Calculate offset based on current page and page size
     const offset = (currentPage.value - 1) * pageSize.value
-    
+
     // Build query parameters
     const params: any = {
       limit: pageSize.value,
-      offset: offset
+      offset,
     }
-    
+
     // Add status filter if not 'all'
     if (selectedStatus.value && selectedStatus.value !== 'all') {
       params.status = selectedStatus.value
     }
-    
+
     // Add search text if provided
     if (searchText.value.trim()) {
       params.search = searchText.value.trim()
     }
-    
-    
+
     const response = await apiClient.get('/orders/', { query: params }) as any
-    
+
     if (response) {
       orders.value = response.results || []
       totalCount.value = response.count || 0
       hasNext.value = !!response.next
       hasPrevious.value = !!response.previous
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error loading orders:', error)
     message.error(t('admin.orders.error'))
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
@@ -154,7 +156,7 @@ const paginationConfig = computed(() => ({
   total: totalCount.value,
   showSizeChanger: true,
   showQuickJumper: true,
-  showTotal: (total: number, range: [number, number]) => 
+  showTotal: (total: number, range: [number, number]) =>
     `${range[0]}-${range[1]} of ${total} ${t('admin.orders.stats.totalOrders').toLowerCase()}`,
   onChange: (page: number, size: number) => {
     currentPage.value = page
@@ -163,7 +165,7 @@ const paginationConfig = computed(() => ({
   onShowSizeChange: (current: number, size: number) => {
     currentPage.value = 1
     pageSize.value = size
-  }
+  },
 }))
 
 // Statistics - Note: These are calculated from current page data only
@@ -172,7 +174,7 @@ const stats = computed(() => {
   const totalOrders = totalCount.value // Use total count from API
   const totalRevenue = orders.value
     .filter(order => order.status === 'complete')
-    .reduce((sum, order) => sum + parseFloat(order.price_amount), 0)
+    .reduce((sum, order) => sum + Number.parseFloat(order.price_amount), 0)
   const pendingOrders = orders.value.filter(order => order.status === 'pending').length
   const completedOrders = orders.value.filter(order => order.status === 'complete').length
 
@@ -212,7 +214,7 @@ const columns = computed((): TableColumnsType<Order> => [
     dataIndex: 'price_amount',
     key: 'price_amount',
     width: 120,
-    sorter: (a, b) => parseFloat(a.price_amount) - parseFloat(b.price_amount),
+    sorter: (a, b) => Number.parseFloat(a.price_amount) - Number.parseFloat(b.price_amount),
   },
   {
     title: t('admin.orders.table.columns.status'),
@@ -274,50 +276,56 @@ function handleConfirmReceive(order: Order) {
 
 // Dialog actions
 async function confirmReceive() {
-  if (!currentOrder.value) return
-  
+  if (!currentOrder.value)
+    return
+
   try {
     isSubmitting.value = true
     const { updateOrder } = useOrderApi()
-    
+
     await updateOrder(currentOrder.value.id, {
       status: 'complete',
-      admin_note: 'Payment confirmed by admin'
+      admin_note: 'Payment confirmed by admin',
     })
-    
+
     message.success(t('admin.orders.table.actions.confirmReceive'))
     await loadOrders()
     showConfirmDialog.value = false
     currentOrder.value = null
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error confirming receive:', error)
     message.error('Failed to confirm receive')
-  } finally {
+  }
+  finally {
     isSubmitting.value = false
   }
 }
 
 async function rejectOrder(reason: string) {
-  if (!currentOrder.value) return
-  
+  if (!currentOrder.value)
+    return
+
   try {
     isSubmitting.value = true
     const { updateOrder } = useOrderApi()
-    
+
     await updateOrder(currentOrder.value.id, {
       status: 'cancel',
       canceled_reason: reason,
-      admin_note: `Order rejected: ${reason}`
+      admin_note: `Order rejected: ${reason}`,
     })
-    
+
     message.success(t('admin.orders.table.actions.reject'))
     await loadOrders()
     showRejectDialog.value = false
     currentOrder.value = null
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error rejecting order:', error)
     message.error('Failed to reject order')
-  } finally {
+  }
+  finally {
     isSubmitting.value = false
   }
 }
@@ -368,7 +376,7 @@ async function handleRefresh() {
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <a-button @click="handleRefresh" class="rounded-lg gap-1 text-sm !font-semibold !flex !items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800">
+          <a-button class="rounded-lg gap-1 text-sm !font-semibold !flex !items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800" @click="handleRefresh">
             <template #icon>
               <Icon name="solar:refresh-bold" size="18" />
             </template>
@@ -403,7 +411,7 @@ async function handleRefresh() {
           </div>
         </div>
         <div class="text-3xl font-bold text-gray-900 mb-1">
-          ${{ stats.totalRevenue.toFixed(2) }}
+          €{{ Number(stats.totalRevenue).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
         </div>
         <div class="text-sm text-gray-600">
           {{ $t('admin.orders.stats.totalRevenue') }}
@@ -467,7 +475,6 @@ async function handleRefresh() {
             {{ option.label }}
           </a-select-option>
         </a-select>
-
       </div>
     </div>
 
@@ -494,7 +501,7 @@ async function handleRefresh() {
             <p class="text-gray-500 mb-4">
               {{ $t('admin.orders.table.emptyState.description') }}
             </p>
-            <a-button @click="clearFilters" class="rounded-lg">
+            <a-button class="rounded-lg" @click="clearFilters">
               {{ $t('admin.orders.table.emptyState.clearFilters') }}
             </a-button>
           </div>
@@ -549,7 +556,7 @@ async function handleRefresh() {
           <!-- Amount Column -->
           <template v-else-if="column.key === 'price_amount'">
             <div class="font-bold text-gray-900">
-              ${{ parseFloat(record.price_amount).toFixed(2) }}
+              €{{ Number(record.price_amount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
             </div>
           </template>
 
@@ -623,7 +630,7 @@ async function handleRefresh() {
     <ConfirmReceiveDialog
       :visible="showConfirmDialog"
       :order="currentOrder"
-            :loading="isSubmitting"
+      :loading="isSubmitting"
       @close="closeConfirmDialog"
       @confirm="confirmReceive"
     />
@@ -650,7 +657,7 @@ async function handleRefresh() {
 /* Custom table styles */
 :deep(.custom-table) {
   .ant-pagination {
-    display: flex; 
+    display: flex;
     align-items: center;
     padding: 0 20px;
   }

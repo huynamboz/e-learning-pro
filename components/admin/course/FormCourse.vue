@@ -27,7 +27,7 @@ const formState = ref<CoursePayload>({
   course_type: 'course',
   course_level: undefined,
   course_sub_level: undefined,
-  level: 'beginner',
+  level: 'beginner', // Will be auto-mapped from course_level
   language: 'en',
   duration_hours: '',
   price: 0,
@@ -54,21 +54,6 @@ const lastUploadedFile = ref<File | null>(null)
 // Delete dialog state
 const showDeleteDialog = ref(false)
 const isDeleting = ref(false)
-
-const levelOptions = ref([
-  {
-    label: 'Beginner',
-    value: 'beginner',
-  },
-  {
-    label: 'Intermediate',
-    value: 'intermediate',
-  },
-  {
-    label: 'Advanced',
-    value: 'advanced',
-  },
-])
 
 const courseTypeOptions = ref([
   {
@@ -291,6 +276,22 @@ async function handleSave() {
     }
   }
 
+  // Auto-map course_level to level (legacy field)
+  if (payload.course_level) {
+    // Map course_level to level: basic/intermediate/advanced -> beginner/intermediate/advanced
+    const levelMap: Record<string, string> = {
+      basic: 'beginner',
+      intermediate: 'intermediate',
+      advanced: 'advanced',
+      driving_theory: 'beginner', // Default to beginner for driving_theory
+    }
+    payload.level = levelMap[payload.course_level] || 'beginner'
+  }
+  else {
+    // Default to beginner if no course_level
+    payload.level = 'beginner'
+  }
+
   // Remove undefined optional fields
   if (!payload.course_level) {
     delete payload.course_level
@@ -399,7 +400,7 @@ onMounted(async () => {
       course_level: c.course_level || undefined,
       course_sub_level: c.course_sub_level || undefined,
       duration_hours: c.duration_hours || '',
-      level: c.level || 'beginner',
+      level: 'beginner', // Will be auto-mapped from course_level on save
       discount_price: c.discount_price ? (typeof c.discount_price === 'string' ? Number.parseFloat(c.discount_price) : c.discount_price) : null,
       is_free: c.is_free || false,
       price: c.price ? (typeof c.price === 'string' ? Number.parseFloat(c.price) : c.price) : 0,
@@ -471,8 +472,9 @@ function handlePriceChange(value: number | null) {
     // If price is greater than 0, turn off free toggle
     formState.value.is_free = false
   }
-  else if (value === 0 || value === null) {
+  else {
     formState.value.is_free = true
+    formState.value.price = 0
   }
 }
 
@@ -709,19 +711,6 @@ async function confirmDeleteCourse() {
           </a-form-item>
         </div>
 
-        <a-form-item
-          :label="t('admin.formCourse.form.level')"
-          name="level"
-          class="w-full"
-          :rules="[{ required: true, message: t('admin.formCourse.form.levelRequired') }]"
-        >
-          <a-select
-            v-model:value="formState.level"
-            :placeholder="t('admin.formCourse.form.levelPlaceholder')"
-            :options="levelOptions"
-            class="w-full"
-          />
-        </a-form-item>
         <!-- Free Course Toggle -->
         <a-form-item
           :label="t('admin.formCourse.form.isFree')"
@@ -741,7 +730,6 @@ async function confirmDeleteCourse() {
             :label="t('admin.formCourse.form.price')"
             name="price"
             class="w-full"
-            :rules="[{ required: true, message: t('admin.formCourse.form.priceRequired') }]"
           >
             <a-input-number
               v-model:value="formState.price"
@@ -751,7 +739,7 @@ async function confirmDeleteCourse() {
               :disabled="formState.is_free"
               :min="0"
               :precision="0"
-              @change="handlePriceChange"
+              @blur="handlePriceChange($event.target.value)"
             />
           </a-form-item>
           <a-form-item

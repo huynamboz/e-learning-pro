@@ -23,16 +23,6 @@ onMounted(() => {
   cartStore.loadCart()
 })
 
-// Format level for display
-function formatLevel(level: string): string {
-  const levelMap: Record<string, string> = {
-    beginner: t('homepage.courses.levels.beginner'),
-    intermediate: t('homepage.courses.levels.intermediate'),
-    advanced: t('homepage.courses.levels.advanced'),
-  }
-  return levelMap[level] || level
-}
-
 // Remove item from cart
 function removeFromCart(itemId: string) {
   cartStore.removeFromCart(itemId)
@@ -65,17 +55,17 @@ function proceedToCheckout() {
 // Confirm payment
 async function confirmPayment() {
   showPaymentDialog.value = false
-  
+
   try {
     // Create orders for each item in cart
     const { createOrder } = useOrderApi()
-    
+
     for (const item of cartStore.items) {
       const orderPayload = {
         course_id: item.course.id,
         classroom_id: item.selectedClassroom.id,
         price_amount: item.price.toString(),
-        price_currency: 'USD',
+        price_currency: 'EUR',
         payment_method: 'bank_transfer',
         payment_reference: `REF-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         notes: `Payment for course: ${item.course.title} - Classroom: ${item.selectedClassroom.title}`,
@@ -83,17 +73,17 @@ async function confirmPayment() {
           course_title: item.course.title,
           classroom_title: item.selectedClassroom.title,
           schedule: item.selectedClassroom.schedule_summary,
-        }
+        },
       }
-      
+
       await createOrder(orderPayload)
     }
-    
+
     // Clear cart and redirect to success page
     cartStore.clearCart()
     router.push('/checkout-complete')
-    
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error creating order:', error)
     notification.error({
       message: t('checkout.messages.paymentError'),
@@ -154,9 +144,9 @@ function cancelLogin() {
           <!-- Cart Summary -->
           <div class="mb-6">
             <p class="text-gray-600">
-              {{ $t('checkout.summary.coursesInCart', { 
-                count: cartStore.totalItems, 
-                plural: cartStore.totalItems !== 1 ? 's' : '' 
+              {{ $t('checkout.summary.coursesInCart', {
+                count: cartStore.totalItems,
+                plural: cartStore.totalItems !== 1 ? 's' : '',
               }) }}
             </p>
           </div>
@@ -187,55 +177,22 @@ function cancelLogin() {
                 <!-- Course Image -->
                 <div class="flex-shrink-0">
                   <img
-                    v-if="item.course.thumbnail"
-                    :src="item.course.thumbnail"
+                    :src="item.course.thumbnail || '/images/course-thumbnail-default.webp'"
                     :alt="item.course.title"
                     class="w-24 h-24 object-cover rounded-lg"
                   >
-                  <div v-else class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <Icon name="solar:play-circle-bold" size="32" class="text-gray-400" />
-                  </div>
                 </div>
 
                 <!-- Course Details -->
                 <div class="flex-1 min-w-0">
-                  <!-- Schedule Tag -->
-                  <div class="mb-2">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                      {{ item.selectedClassroom.schedule_summary }}
-                    </span>
-                  </div>
-
-                  <!-- Course Title -->
+                  <!-- Classroom Title -->
                   <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                    {{ item.course.title }}
+                    {{ item.selectedClassroom.title }}
                   </h3>
 
-                  <!-- Instructor -->
-                  <p class="text-sm text-gray-600 mb-2">
-                    By {{ item.course.teacher.full_name }}
-                  </p>
-
-                  <!-- Rating -->
-                  <div class="flex items-center mb-2">
-                    <div class="flex items-center">
-                      <Icon name="solar:star-bold" class="w-4 h-4 text-yellow-400" />
-                      <Icon name="solar:star-bold" class="w-4 h-4 text-yellow-400" />
-                      <Icon name="solar:star-bold" class="w-4 h-4 text-yellow-400" />
-                      <Icon name="solar:star-bold" class="w-4 h-4 text-yellow-400" />
-                      <Icon name="solar:star-half-bold" class="w-4 h-4 text-yellow-400" />
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-900">4.6</span>
-                    <!-- <span class="ml-1 text-sm text-gray-500">(250 rating)</span> -->
-                  </div>
-
-                  <!-- Course Info -->
-                  <p class="text-sm text-gray-600 mb-4">
-                    {{ $t('checkout.courseInfo.format', {
-                      hours: item.course.duration_hours,
-                      lessons: item.course.lessons_count,
-                      level: formatLevel(item.course.level)
-                    }) }}
+                  <!-- Course Title (smaller) -->
+                  <p class="text-sm text-gray-500 mb-4">
+                    {{ item.course.title }}
                   </p>
 
                   <!-- Action Links -->
@@ -252,7 +209,7 @@ function cancelLogin() {
                 <!-- Price -->
                 <div class="flex-shrink-0 text-right">
                   <p class="text-xl font-bold text-gray-900">
-                    ${{ item.price.toFixed(2) }}
+                    €{{ Number(item.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                   </p>
                 </div>
               </div>
@@ -271,23 +228,23 @@ function cancelLogin() {
             <div class="space-y-3 mb-6">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">{{ $t('checkout.orderSummary.price') }}</span>
-                <span class="font-medium">${{ cartStore.totalPrice.toFixed(2) }}</span>
+                <span class="font-medium">€{{ Number(cartStore.totalPrice).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
 
               <div v-if="cartStore.totalDiscount > 0" class="flex justify-between text-sm">
                 <span class="text-gray-600">{{ $t('checkout.orderSummary.discount') }}</span>
-                <span class="font-medium text-green-600">-${{ cartStore.totalDiscount.toFixed(2) }}</span>
+                <span class="font-medium text-green-600">-€{{ Number(cartStore.totalDiscount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
 
               <div class="flex justify-between text-sm">
                 <span class="text-gray-600">{{ $t('checkout.orderSummary.tax') }}</span>
-                <span class="font-medium">${{ cartStore.tax.toFixed(2) }}</span>
+                <span class="font-medium">€{{ Number(cartStore.tax).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
 
               <div class="border-t border-gray-200 pt-3">
                 <div class="flex justify-between">
                   <span class="text-base font-semibold text-gray-900">{{ $t('checkout.orderSummary.total') }}</span>
-                  <span class="text-xl font-bold text-gray-900">${{ cartStore.finalTotal.toFixed(2) }}</span>
+                  <span class="text-xl font-bold text-gray-900">€{{ Number(cartStore.finalTotal).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
                 </div>
               </div>
             </div>
@@ -326,31 +283,33 @@ function cancelLogin() {
 
         <!-- Description -->
         <p class="text-gray-600 mb-6 leading-relaxed">
-          {{ $t('checkout.paymentDialog.description', { amount: `$${cartStore.finalTotal.toFixed(2)}` }) }}
+          {{ $t('checkout.paymentDialog.description', { amount: `€${Number(cartStore.finalTotal).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` }) }}
           <br><br>
           {{ $t('checkout.paymentDialog.afterConfirm') }}
         </p>
 
         <!-- Order Summary -->
         <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-          <h4 class="font-medium text-gray-900 mb-3">{{ $t('checkout.paymentDialog.orderDetails') }}</h4>
+          <h4 class="font-medium text-gray-900 mb-3">
+            {{ $t('checkout.paymentDialog.orderDetails') }}
+          </h4>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
               <span class="text-gray-600">{{ $t('checkout.paymentDialog.totalAmount') }}</span>
-              <span class="font-medium">${{ cartStore.totalPrice.toFixed(2) }}</span>
+              <span class="font-medium">€{{ Number(cartStore.totalPrice).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div v-if="cartStore.totalDiscount > 0" class="flex justify-between">
               <span class="text-gray-600">{{ $t('checkout.paymentDialog.discount') }}</span>
-              <span class="font-medium text-green-600">-${{ cartStore.totalDiscount.toFixed(2) }}</span>
+              <span class="font-medium text-green-600">-€{{ Number(cartStore.totalDiscount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-gray-600">{{ $t('checkout.paymentDialog.tax') }}</span>
-              <span class="font-medium">${{ cartStore.tax.toFixed(2) }}</span>
+              <span class="font-medium">€{{ Number(cartStore.tax).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="border-t border-gray-200 pt-2">
               <div class="flex justify-between">
                 <span class="font-medium text-gray-900">{{ $t('checkout.paymentDialog.finalAmount') }}</span>
-                <span class="font-bold text-lg text-green-600">${{ cartStore.finalTotal.toFixed(2) }}</span>
+                <span class="font-bold text-lg text-green-600">€{{ Number(cartStore.finalTotal).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
             </div>
           </div>

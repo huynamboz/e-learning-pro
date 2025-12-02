@@ -908,7 +908,7 @@
         "confirmTitle": "Xóa khóa học",
         "confirmMessage": "Hành động này không thể hoàn tác.",
         "courseLabel": "Khóa học:",
-        "confirmDescription": "Bạn có chắc chắn muốn xóa khóa học này? Tất cả nội dung khóa học, bao gồm chương, bài học và tài liệu, sẽ bị xóa vĩnh viễn."
+        "confirmDescription": "Bạn có chắc chắn muốn xóa khóa học này? Khóa học sẽ được đánh dấu là đã xóa (soft delete) và không hiển thị trong danh sách công khai. Khóa học có thể được khôi phục sau."
       },
       "notifications": {
         "loginRequired": "Vui lòng đăng nhập để lưu khóa học",
@@ -917,7 +917,7 @@
         "createFailed": "Tạo khóa học thất bại",
         "updateFailed": "Cập nhật khóa học thất bại",
         "deleteSuccess": "Xóa khóa học thành công",
-        "deleteSuccessDescription": "Khóa học đã được xóa thành công.",
+        "deleteSuccessDescription": "Khóa học đã được đánh dấu là đã xóa (soft delete). Khóa học có thể được khôi phục sau.",
         "deleteFailed": "Xóa khóa học thất bại",
         "deleteFailedDescription": "Đã xảy ra lỗi khi xóa khóa học. Vui lòng thử lại.",
         "uploadImageFailed": "Tải lên hình ảnh thất bại"
@@ -1258,6 +1258,28 @@
     "messages": {
       "updateSuccess": "Cập nhật hồ sơ thành công!",
       "updateFailed": "Cập nhật hồ sơ thất bại"
+    }
+  },
+  "classroomDetail": {
+    "loading": "Đang tải thông tin lớp học...",
+    "maxStudents": "học viên tối đa",
+    "breadcrumb": {
+      "home": "Trang chủ"
+    },
+    "error": {
+      "title": "Không thể tải thông tin",
+      "description": "Đã xảy ra lỗi khi tải thông tin lớp học. Vui lòng thử lại.",
+      "tryAgain": "Thử lại",
+      "backToHome": "Về trang chủ"
+    },
+    "notFound": {
+      "title": "Không tìm thấy lớp học",
+      "description": "Lớp học bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+      "backToHome": "Về trang chủ"
+    },
+    "notifications": {
+      "loadFailed": "Tải thông tin lớp học thất bại",
+      "notFound": "Không tìm thấy lớp học"
     }
   },
   "courseDetail": {

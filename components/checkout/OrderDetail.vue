@@ -16,11 +16,11 @@ const emit = defineEmits<{
         <div class="p-4 rounded-lg border border-grey-400 gap-4 flex flex-col bg-[#F8FAFC]">
             <div class="flex items-center justify-between gap-3">
                 <span>Price</span>
-                <span class="text-base font-bold">${{ data?.price }}</span>
+                <span class="text-base font-bold">€{{ Number(data?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="flex items-center justify-between gap-3">
                 <span>Discount</span>
-                <span class="text-base font-bold">-${{ data?.discount }}</span>
+                <span class="text-base font-bold">-€{{ Number(data?.discount || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
             <div class="flex items-center justify-between gap-3">
                 <span>Tax</span>
@@ -29,7 +29,7 @@ const emit = defineEmits<{
             <div class="line w-full border-b border-grey-400 my-2"></div>
             <div class="flex items-center justify-between gap-3 text-xl font-bold">
                 <span>Total</span>
-                <span>${{ data?.price }}</span>
+                <span>€{{ Number(data?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
         </div>
         <a-button @click="emit('handleCheckout')" type="primary" class="w-full !h-12 flex items-center justify-center !text-base !font-medium bg-[#16A34A] hover:bg-[#15803d] border-[#16A34A] hover:border-[#15803d]">

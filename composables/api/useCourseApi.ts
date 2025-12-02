@@ -146,7 +146,7 @@ export function useCourseApi() {
 
     // Get featured courses
     getDetailCourses: (id: string) =>
-      apiClient.get<Course>(`/courses/${id}`),
+      apiClient.getPublic<Course>(`/courses/${id}/`), // Public endpoint - no auth required
 
     getChapters: (id: string) =>
       apiClient.get<Chapter[]>(`/courses/${id}/chapters/`),

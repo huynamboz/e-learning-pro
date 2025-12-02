@@ -60,7 +60,7 @@ const handleClose = () => {
           <div class="font-medium text-gray-900">{{ order.invoice_code }}</div>
           <div class="text-sm text-gray-600">{{ order.student.full_name }}</div>
           <div class="text-sm text-gray-600">{{ order.course.title }}</div>
-          <div class="text-sm font-medium text-green-600">${{ parseFloat(order.price_amount).toFixed(2) }}</div>
+          <div class="text-sm font-medium text-green-600">€{{ Number(order.price_amount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
         </div>
       </div>
 

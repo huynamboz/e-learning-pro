@@ -21,7 +21,7 @@ const currentPage = ref(1)
 const pageSize = ref(12)
 
 // Fetch courses
-const { data: coursesData, pending: loadingCourses, refresh } = await useLazyAsyncData(
+const { data: coursesData, pending: loadingCourses, refresh } = useLazyAsyncData(
   'all-courses',
   async () => {
     try {
@@ -38,6 +38,8 @@ const { data: coursesData, pending: loadingCourses, refresh } = await useLazyAsy
         filters.level = selectedLevel.value
       if (selectedPrice.value === 'free')
         filters.is_free = true
+    
+      filters.type = 'resource'
 
       const response = await getCourses(filters)
       return response
