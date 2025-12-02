@@ -36,7 +36,7 @@ function isExpanded(itemName: string) {
 
 <template>
   <div
-    class="fixed bg-[#151414] top-0 left-0 border rounded-e-2xl border-[#151414] z-50 h-full transition-all duration-300 ease-in-out h-100vh overflow-y-auto scrollbar-hide"
+    class="fixed bg-white top-0 left-0 border rounded-e-2xl border-gray-200 z-50 h-full transition-all duration-300 ease-in-out h-100vh overflow-y-auto scrollbar-hide shadow-lg"
     :class="isCollapsed ? 'w-[80px] px-4' : 'w-[280px] px-[18px]'"
   >
     <div class="py-6">
@@ -45,7 +45,7 @@ function isExpanded(itemName: string) {
         <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/admin">
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
-            <h4 class="font-extrabold text-white text-base whitespace-nowrap">
+            <h4 class="font-extrabold text-gray-900 text-base whitespace-nowrap">
               {{ $t('admin.sidebar.title') }}
             </h4>
             <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
@@ -55,7 +55,7 @@ function isExpanded(itemName: string) {
         </NuxtLink>
         <Icon
           :name="isCollapsed ? 'lucide:sidebar-open' : 'lucide:sidebar-close'"
-          class="text-2xl cursor-pointer text-white hover:text-[#15803D] transition-colors"
+          class="text-2xl cursor-pointer text-gray-700 hover:text-[#15803D] transition-colors"
           @click="toggleSidebar"
         />
       </div>
@@ -71,14 +71,14 @@ function isExpanded(itemName: string) {
               :class="cn(
                 'group p-1 flex items-center transition-all duration-200 rounded-xl border border-transparent cursor-pointer',
                 ((item.subItems && item.subItems.length > 0) || !isCollapsed) && 'cursor-pointer',
-                isExpanded(item.name) && !isCollapsed && '!border-[#E6E7EC]',
+                isExpanded(item.name) && !isCollapsed && '!border-gray-200',
                 isCollapsed && 'justify-center tooltip',
                 !isCollapsed && 'justify-between pr-3',
                 (item.link && item.link !== '#') && (
                   (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
                 )
                   ? '!bg-[#15803D] hover:!bg-[#15803D] !text-white'
-                  : 'hover:!bg-white/10',
+                  : 'hover:!bg-gray-100',
               )"
               @click="item.subItems && item.subItems.length > 0 && !isCollapsed ? toggleExpand(item.name) : null"
             >
@@ -86,14 +86,18 @@ function isExpanded(itemName: string) {
                 <div class="size-8 flex justify-center items-center">
                   <Icon
                     :name="item.icon"
-                    class="text-[20px] text-white"
-                    :class="item.link && item.link !== '#' && route.path === item.link ? 'text-white' : 'text-shade-6'"
+                    class="text-[20px]"
+                    :class="item.link && item.link !== '#' && (
+                      (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
+                    ) ? 'text-white' : 'text-gray-600'"
                   />
                 </div>
                 <p
                   v-if="!isCollapsed"
-                  class="font-semibold text-sm text-white"
-                  :class="item.link && item.link !== '#'"
+                  class="font-semibold text-sm"
+                  :class="item.link && item.link !== '#' && (
+                    (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
+                  ) ? 'text-white' : 'text-gray-700'"
                 >
                   {{ item.name }}
                 </p>
@@ -107,8 +111,12 @@ function isExpanded(itemName: string) {
                   'rotate-0': !isExpanded(item.name),
                   'opacity-100': item.subItems && item.subItems.length > 0,
                   'opacity-0 group-hover:opacity-100': !item.subItems || item.subItems.length === 0,
-                  'text-white': item.link && item.link !== '#' && route.path === item.link,
-                  'text-shade-9': !(item.link && item.link !== '#' && route.path === item.link),
+                  'text-white': item.link && item.link !== '#' && (
+                    (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
+                  ),
+                  'text-gray-600': !(item.link && item.link !== '#' && (
+                    (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
+                  )),
                 }"
               />
             </component>
@@ -130,14 +138,14 @@ function isExpanded(itemName: string) {
                     :key="subItem?.name"
                     :to="subItem?.link"
                     active-class="active-route"
-                    class="flex p-2 px-4 font-medium border border-transparent relative text-sm group hover:bg-shade-2 rounded-lg cursor-pointer transition-all duration-150"
+                    class="flex p-2 px-4 font-medium border border-transparent relative text-sm group hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-150"
                   >
                     <div
                       :class="[index !== 0 ? 'h-[51px]' : 'h-[22px] !border-none']"
-                      class="absolute z-10 -left-[16px] bottom-3 w-4 border-l-[1.5px] border-[#D8DBE4]"
+                      class="absolute z-10 -left-[16px] bottom-3 w-4 border-l-[1.5px] border-gray-300"
                     />
-                    <div class="absolute z-10 -left-[19px] bottom-3.5 w-2 h-2 rounded-full bg-[#D8DBE4]" />
-                    <p class="text-[#485066] group-hover:text-[#0A1B39]">
+                    <div class="absolute z-10 -left-[19px] bottom-3.5 w-2 h-2 rounded-full bg-gray-300" />
+                    <p class="text-gray-600 group-hover:text-gray-900">
                       {{ subItem?.name }}
                     </p>
                   </NuxtLink>

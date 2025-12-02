@@ -54,6 +54,79 @@ export function useCourseApi() {
     getMyCourses: () =>
       apiClient.get<CourseListResponse>('/courses/mine/'),
 
+    // Get courses hierarchical (grouped by level)
+    getCoursesHierarchical: () =>
+      apiClient.get<{
+        basic?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms: Array<{
+            id: string
+            title: string
+            enrollment_count: number
+            student_count: number
+            available_slots: number
+          }>
+        }>
+        intermediate?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms: Array<{
+            id: string
+            title: string
+            enrollment_count: number
+            student_count: number
+            available_slots: number
+          }>
+        }>
+        advanced?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms: Array<{
+            id: string
+            title: string
+            enrollment_count: number
+            student_count: number
+            available_slots: number
+          }>
+        }>
+        driving_theory?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string | null
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms: Array<{
+            id: string
+            title: string
+            enrollment_count: number
+            student_count: number
+            available_slots: number
+          }>
+        }>
+      }>('/courses/hierarchical/'),
+
     getCourseEnrolled: (params?: { include_pending?: boolean }) => {
       const queryParams = new URLSearchParams()
       if (params?.include_pending) {

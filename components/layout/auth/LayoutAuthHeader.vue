@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from 'ant-design-vue'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useCartStore } from '~/stores/cart.store'
 
 const listOfLinks = computed(() => [
@@ -16,125 +17,128 @@ const hoverLevelKey = ref<string | null>(null)
 const hoverCourseKey = ref<string | null>(null)
 const openMobileLevelKey = ref<string | null>(null)
 
-const courseMenu = [
-  {
-    key: 'basic',
+// API service
+const courseApi = useCourseApi()
+
+// Load hierarchical courses from API
+const hierarchicalData = ref<any>(null)
+const loadingCourses = ref(false)
+
+// Level configuration
+const levelConfig = {
+  basic: {
     label: 'Cơ bản',
     href: '/basic-level',
     summary: 'Xây nền tảng tiếng Ý với giáo trình chuẩn CEFR.',
-    courses: [
-      {
-        key: 'a1',
-        label: 'Khóa học A1',
-        href: '/basic-level#a1',
-        description: 'Bắt đầu giao tiếp hằng ngày và phát âm chuẩn.',
-        classes: [
-          { key: 'a1-class-1', label: 'Lớp 1 học viên', href: '/basic-level#a1-class-1' },
-          { key: 'a1-class-3', label: 'Lớp 3 học viên', href: '/basic-level#a1-class-3' },
-        ],
-      },
-      {
-        key: 'a2',
-        label: 'Khóa học A2',
-        href: '/basic-level#a2',
-        description: 'Tự tin xử lý các tình huống đời sống quen thuộc.',
-        classes: [
-          { key: 'a2-class-1', label: 'Lớp 1 học viên', href: '/basic-level#a2-class-1' },
-          { key: 'a2-class-3', label: 'Lớp 3 học viên', href: '/basic-level#a2-class-3' },
-        ],
-      },
-    ],
   },
-  {
-    key: 'intermediate',
+  intermediate: {
     label: 'Trung cấp',
     href: '/middle-level',
     summary: 'Hoàn thiện kỹ năng nghe - nói - viết học thuật.',
-    courses: [
-      {
-        key: 'b1',
-        label: 'Khóa học B1',
-        href: '/middle-level#b1',
-        description: 'Phát triển kỹ năng giao tiếp trong môi trường học thuật và công việc.',
-        classes: [
-          { key: 'b1-class-1', label: 'Lớp 1 học viên', href: '/middle-level#b1-class-1' },
-          { key: 'b1-class-3', label: 'Lớp 3 học viên', href: '/middle-level#b1-class-3' },
-        ],
-      },
-      {
-        key: 'b2',
-        label: 'Khóa học B2',
-        href: '/middle-level#b2',
-        description: 'Hoàn thiện khả năng tranh luận và xử lý tình huống phức tạp.',
-        classes: [
-          { key: 'b2-class-1', label: 'Lớp 1 học viên', href: '/middle-level#b2-class-1' },
-          { key: 'b2-class-3', label: 'Lớp 3 học viên', href: '/middle-level#b2-class-3' },
-        ],
-      },
-      {
-        key: 'b1-citizenship',
-        label: 'Luyện Thi B1 quốc tịch',
-        href: '/middle-level#b1-citizenship',
-        description: 'Chuẩn bị cho kỳ thi B1 quốc tịch với các bài tập chuyên biệt.',
-        classes: [
-          { key: 'b1-citizenship-1', label: 'Lớp 1 học viên', href: '/middle-level#b1-citizenship-1' },
-          { key: 'b1-citizenship-5', label: 'Lớp 5 học viên', href: '/middle-level#b1-citizenship-5' },
-        ],
-      },
-      {
-        key: 'b2-celi',
-        label: 'Luyện thi B2 CELI',
-        href: '/middle-level#b2-celi',
-        description: 'Luyện thi chứng chỉ B2 CELI với đề thi thực tế và feedback chi tiết.',
-        classes: [
-          { key: 'b2-celi-1', label: 'Lớp 1 học viên', href: '/middle-level#b2-celi-1' },
-        ],
-      },
-    ],
   },
-  {
-    key: 'advanced',
+  advanced: {
     label: 'Nâng cao',
     href: '/high-level',
     summary: 'Chinh phục chứng chỉ C-level & dự án chuyên sâu.',
-    courses: [
-      {
-        key: 'c1',
-        label: 'Luyện thi C1',
-        href: '/high-level#c1',
-        description: 'Chuẩn bị cho kỳ thi C1 với các bài tập chuyên sâu và mock test.',
-        classes: [
-          { key: 'c1-class-1', label: 'Lớp 1 học viên', href: '/high-level#c1-class-1' },
-          { key: 'c1-class-3', label: 'Lớp 3 học viên', href: '/high-level#c1-class-3' },
-        ],
-      },
-      {
-        key: 'c2',
-        label: 'Luyện thi C2',
-        href: '/high-level#c2',
-        description: 'Đạt đến trình độ C2 với các bài tập nâng cao và phản biện chuyên sâu.',
-        classes: [
-          { key: 'c2-class-1', label: 'Lớp 1 học viên', href: '/high-level#c2-class-1' },
-          { key: 'c2-class-3', label: 'Lớp 3 học viên', href: '/high-level#c2-class-3' },
-        ],
-      },
-    ],
   },
-  {
-    key: 'driving-theory',
+  driving_theory: {
     label: 'Lý thuyết lái xe',
     href: '/driving-level',
     summary: 'Học lý thuyết lái xe với giáo trình chuẩn.',
-    courses: [],
   },
-]
+}
 
-const initialCourseState = courseMenu.reduce((acc, level) => {
-  acc[level.key] = null
-  return acc
-}, {} as Record<string, string | null>)
+// Transform API data to menu structure
+const courseMenu = computed(() => {
+  if (!hierarchicalData.value) {
+    return []
+  }
 
-const openMobileCourseKeys = ref<Record<string, string | null>>({ ...initialCourseState })
+  const levels = ['basic', 'intermediate', 'advanced', 'driving_theory'] as const
+  const menu: any[] = []
+
+  levels.forEach((levelKey) => {
+    const config = levelConfig[levelKey]
+    const courses = hierarchicalData.value[levelKey] || []
+
+    if (courses.length > 0 || levelKey === 'driving_theory') {
+      // If only 1 course AND it's driving_theory, parent menu links directly to that course (no submenu)
+      if (courses.length === 1 && levelKey === 'driving_theory') {
+        const course = courses[0]
+        // Determine href based on level
+        let courseHref = config.href
+        if (course.course_sub_level) {
+          courseHref = `${config.href}#${course.course_sub_level.toLowerCase()}`
+        }
+        else {
+          // If no sub_level, link to course detail
+          courseHref = `/courses/${course.id}`
+        }
+
+        menu.push({
+          key: levelKey,
+          label: config.label, // Always use level label
+          href: courseHref, // Link directly to the single course
+          summary: course.short_description || config.summary,
+          courses: [], // Empty courses array means no submenu
+          isDirectLink: true, // Flag to indicate this is a direct link
+        })
+      }
+      else if (courses.length > 0) {
+        // Multiple courses - show submenu
+        const transformedCourses = courses.map((course: any) => {
+          // Determine href based on level
+          let courseHref = config.href
+          if (course.course_sub_level) {
+            courseHref = `${config.href}#${course.course_sub_level.toLowerCase()}`
+          }
+          else {
+            courseHref = `/courses/${course.id}`
+          }
+
+          // Transform classrooms to classes
+          const classes = course.classrooms.map((classroom: any) => ({
+            key: classroom.id,
+            label: classroom.title,
+            href: `${config.href}#${course.course_sub_level?.toLowerCase() || course.slug}-${classroom.id}`,
+          }))
+
+          return {
+            key: course.id,
+            label: course.title,
+            href: courseHref,
+            description: course.short_description,
+            classes,
+          }
+        })
+
+        menu.push({
+          key: levelKey,
+          label: config.label, // Always use level label
+          href: config.href,
+          summary: config.summary,
+          courses: transformedCourses,
+          isDirectLink: false,
+        })
+      }
+      else if (levelKey === 'driving_theory' && courses.length === 0) {
+        // Empty driving_theory - show as direct link to level page
+        menu.push({
+          key: levelKey,
+          label: config.label, // Always use level label
+          href: config.href,
+          summary: config.summary,
+          courses: [],
+          isDirectLink: true,
+        })
+      }
+    }
+  })
+
+  return menu
+})
+
+const openMobileCourseKeys = ref<Record<string, string | null>>({})
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -149,7 +153,7 @@ function toggleMobileCourseMenu() {
 
 function resetMobileMenuState() {
   openMobileLevelKey.value = null
-  openMobileCourseKeys.value = { ...initialCourseState }
+  openMobileCourseKeys.value = {}
 }
 
 function toggleMobileLevel(levelKey: string) {
@@ -193,10 +197,42 @@ const { isLoggedIn } = useAuth()
 // Cart store
 const cartStore = useCartStore()
 
-// Load cart on mount
+// Load hierarchical courses
+async function loadHierarchicalCourses() {
+  try {
+    loadingCourses.value = true
+    const data = await courseApi.getCoursesHierarchical()
+    hierarchicalData.value = data
+  }
+  catch (error) {
+    console.error('Error loading hierarchical courses:', error)
+    // Fallback to empty data
+    hierarchicalData.value = {
+      basic: [],
+      intermediate: [],
+      advanced: [],
+      driving_theory: [],
+    }
+  }
+  finally {
+    loadingCourses.value = false
+  }
+}
+
+// Load cart and courses on mount
 onMounted(() => {
   cartStore.loadCart()
+  loadHierarchicalCourses()
 })
+
+// Watch for changes in courseMenu to update initialCourseState
+watch(courseMenu, (newMenu) => {
+  const newState: Record<string, string | null> = {}
+  newMenu.forEach((level) => {
+    newState[level.key] = null
+  })
+  openMobileCourseKeys.value = newState
+}, { immediate: true })
 </script>
 
 <template>
@@ -264,9 +300,20 @@ onMounted(() => {
               v-for="level in courseMenu"
               :key="level.key"
               class="relative group/level"
-              @mouseenter="handleLevelHover(level.key)"
+              @mouseenter="level.courses && level.courses.length > 0 ? handleLevelHover(level.key) : null"
             >
-              <template v-if="level.courses && level.courses.length">
+              <!-- Direct link (no submenu) - for single course or empty level -->
+              <template v-if="!level.courses || level.courses.length === 0 || level.isDirectLink">
+                <NuxtLink
+                  :to="level.href"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                  @click="isDesktopCourseMenuOpen = false"
+                >
+                  {{ level.label }}
+                </NuxtLink>
+              </template>
+              <!-- Submenu: Courses -->
+              <template v-else>
                 <div class="relative course-level-item">
                   <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
                     <span>{{ level.label }}</span>
@@ -287,7 +334,7 @@ onMounted(() => {
                   >
                     <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
                       <span>{{ course.label }}</span>
-                      <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                      <Icon v-if="course.classes && course.classes.length" name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
                     </div>
                     <!-- Submenu: Classes -->
                     <div
@@ -307,15 +354,6 @@ onMounted(() => {
                     </div>
                   </div>
                 </div>
-              </template>
-              <template v-else>
-                <NuxtLink
-                  :to="level.href"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
-                  @click="isDesktopCourseMenuOpen = false"
-                >
-                  {{ level.label }}
-                </NuxtLink>
               </template>
             </div>
           </div>
@@ -424,8 +462,24 @@ onMounted(() => {
                     :key="level.key"
                     class="rounded-lg border border-gray-100 bg-gray-50/80"
                   >
+                    <!-- Direct link (no submenu) -->
+                    <NuxtLink
+                      v-if="!level.courses || level.courses.length === 0 || level.isDirectLink"
+                      :to="level.href"
+                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
+                      @click="isMobileMenuOpen = false"
+                    >
+                      <div>
+                        <p>{{ level.label }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                    </NuxtLink>
+                    <!-- Submenu with courses -->
                     <button
-                      v-if="level.courses && level.courses.length"
+                      v-else
                       class="w-full flex items-start justify-between py-3 px-2 text-left"
                       @click="toggleMobileLevel(level.key)"
                     >
@@ -444,20 +498,6 @@ onMounted(() => {
                         :class="{ 'rotate-180': openMobileLevelKey === level.key }"
                       />
                     </button>
-                    <NuxtLink
-                      v-else
-                      :to="level.href"
-                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
-                      @click="isMobileMenuOpen = false"
-                    >
-                      <div>
-                        <p>{{ level.label }}</p>
-                        <p class="text-xs text-gray-500 mt-1">
-                          {{ level.summary }}
-                        </p>
-                      </div>
-                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
-                    </NuxtLink>
 
                     <Transition
                       enter-active-class="transition duration-200 ease-out"
@@ -578,8 +618,24 @@ onMounted(() => {
                     :key="level.key"
                     class="rounded-lg border border-gray-100 bg-gray-50/80"
                   >
+                    <!-- Direct link (no submenu) -->
+                    <NuxtLink
+                      v-if="!level.courses || level.courses.length === 0 || level.isDirectLink"
+                      :to="level.href"
+                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
+                      @click="isMobileMenuOpen = false"
+                    >
+                      <div>
+                        <p>{{ level.label }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                    </NuxtLink>
+                    <!-- Submenu with courses -->
                     <button
-                      v-if="level.courses && level.courses.length"
+                      v-else
                       class="w-full flex items-start justify-between py-3 px-2 text-left"
                       @click="toggleMobileLevel(level.key)"
                     >
@@ -598,20 +654,6 @@ onMounted(() => {
                         :class="{ 'rotate-180': openMobileLevelKey === level.key }"
                       />
                     </button>
-                    <NuxtLink
-                      v-else
-                      :to="level.href"
-                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
-                      @click="isMobileMenuOpen = false"
-                    >
-                      <div>
-                        <p>{{ level.label }}</p>
-                        <p class="text-xs text-gray-500 mt-1">
-                          {{ level.summary }}
-                        </p>
-                      </div>
-                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
-                    </NuxtLink>
 
                     <Transition
                       enter-active-class="transition duration-200 ease-out"
