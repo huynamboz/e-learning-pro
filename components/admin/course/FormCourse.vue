@@ -354,9 +354,14 @@ async function handleSave() {
         // Upload image with progress tracking
         await uploadImageWithProgress(file, upload_url)
 
+        // Update both formState and payload with the uploaded thumbnail URL
         formState.value.thumbnail = public_url
+        payload.thumbnail = public_url
         isUploading.value = false
       }
+
+      // Update payload with latest video_preview if it was uploaded
+      payload.video_preview = formState.value.video_preview
 
       await updateCourse(courseId.value, payload)
       notification.success({ message: t('admin.formCourse.notifications.updateSuccess') })
