@@ -106,11 +106,36 @@ const formState = reactive<LoginRequest>({
 
 const loading = ref(false)
 
+/**
+ * Check if a string is a valid email format
+ */
+function isValidEmail(value: string): boolean {
+  // Simple email validation: contains @ and . with text before and after
+  const emailRegex = /^[\w.-]+@[\w.-]+\.[a-z]{2,}$/i
+  return emailRegex.test(value)
+}
+
 async function onFinish() {
   loading.value = true
 
   try {
-    const result = await login(formState)
+    // Create payload based on input type
+    const inputValue = formState.email.trim()
+    const isEmail = isValidEmail(inputValue)
+
+    const payload: any = {
+      password: formState.password,
+    }
+
+    // If input is email, use email field; otherwise use username field
+    if (isEmail) {
+      payload.email = inputValue
+    }
+    else {
+      payload.username = inputValue
+    }
+
+    const result = await login(payload)
 
     if (result.success) {
       notification.success({ message: t('auth.login.notifications.success') })

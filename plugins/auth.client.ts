@@ -1,34 +1,34 @@
 /**
  * Get location information from API
  */
-async function getLocationInfo(): Promise<{
-  countryCode: string
-  country: string
-  city: string
-  continent: string
-  ip: string
-} | null> {
-  try {
-    const data = await $fetch<{
-      countryCode?: string
-      country?: string
-      city?: string
-      continent?: string
-      ip?: string
-    }>('https://ip.devmock.dev/')
-    return {
-      countryCode: data.countryCode || 'unknown',
-      country: data.country || 'unknown',
-      city: data.city || 'unknown',
-      continent: data.continent || 'unknown',
-      ip: data.ip || 'unknown',
-    }
-  }
-  catch (error) {
-    console.error('Error fetching location:', error)
-    return null
-  }
-}
+// async function getLocationInfo(): Promise<{
+//   countryCode: string
+//   country: string
+//   city: string
+//   continent: string
+//   ip: string
+// } | null> {
+//   try {
+//     const data = await $fetch<{
+//       countryCode?: string
+//       country?: string
+//       city?: string
+//       continent?: string
+//       ip?: string
+//     }>('https://ip.devmock.dev/')
+//     return {
+//       countryCode: data.countryCode || 'unknown',
+//       country: data.country || 'unknown',
+//       city: data.city || 'unknown',
+//       continent: data.continent || 'unknown',
+//       ip: data.ip || 'unknown',
+//     }
+//   }
+//   catch (error) {
+//     console.error('Error fetching location:', error)
+//     return null
+//   }
+// }
 
 /**
  * Convert ArrayBuffer or Uint8Array to hex string
@@ -45,7 +45,7 @@ function bytesToHex(buffer: ArrayBuffer | Uint8Array): string {
  */
 async function generateDeviceId(): Promise<string> {
   // Get location information
-  const location = await getLocationInfo()
+  // const location = await getLocationInfo()
 
   // Create a device fingerprint based on available browser information
   const fingerprint = [
@@ -53,7 +53,7 @@ async function generateDeviceId(): Promise<string> {
     `${screen.width}x${screen.height}`,
     new Date().getTimezoneOffset().toString(),
     navigator.hardwareConcurrency?.toString() || 'unknown',
-    location ? `${location.countryCode}|${location.country}|${location.city}|${location.continent}|${location.ip}` : 'location-unknown',
+    // location ? `${location.countryCode}|${location.country}|${location.city}|${location.continent}|${location.ip}` : 'location-unknown',
   ].join('|')
 
   // Hash the fingerprint to create a consistent device ID
