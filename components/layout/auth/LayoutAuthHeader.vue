@@ -4,7 +4,6 @@ import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useCartStore } from '~/stores/cart.store'
 
 const listOfLinks = computed(() => [
-  { name: 'Giới thiệu', href: '#instructor' },
   { name: 'Quiz', href: '/#quiz' },
   { name: 'Video', href: '/#video' },
   { name: 'Tài nguyên', href: '/courses' },
@@ -272,6 +271,19 @@ watch(courseMenu, (newMenu) => {
 
       <!-- Desktop Navigation - Different for logged in users -->
       <nav class="hidden lg:flex items-center space-x-8">
+        <!-- Giới thiệu Link -->
+        <NuxtLink
+          to="#instructor"
+          class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
+        >
+          Giới thiệu
+          <Icon
+            name="solar:alt-arrow-right-line-duotone"
+            size="18"
+            class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
+          />
+        </NuxtLink>
+
         <!-- Course Dropdown Menu -->
         <div
           class="relative course-menu-container"
@@ -433,6 +445,16 @@ watch(courseMenu, (newMenu) => {
         <div class="px-4 pt-2 pb-4 space-y-1">
           <!-- Mobile Navigation Links - Different for logged in users -->
           <nav v-if="!isLoggedIn" class="space-y-1">
+            <!-- Giới thiệu Link -->
+            <NuxtLink
+              to="#instructor"
+              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              <span>Giới thiệu</span>
+              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
+            </NuxtLink>
+
             <!-- Course Menu (Mobile) -->
             <div class="space-y-1">
               <button
@@ -589,6 +611,16 @@ watch(courseMenu, (newMenu) => {
 
           <!-- Logged in user mobile navigation (match desktop) -->
           <nav v-else class="space-y-1">
+            <!-- Giới thiệu Link -->
+            <NuxtLink
+              to="#instructor"
+              class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+              @click="isMobileMenuOpen = false"
+            >
+              <span>Giới thiệu</span>
+              <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
+            </NuxtLink>
+
             <!-- Course Menu Links (Mobile) -->
             <div class="space-y-1">
               <button
