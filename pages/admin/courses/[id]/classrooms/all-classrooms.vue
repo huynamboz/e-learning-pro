@@ -39,6 +39,10 @@ const formState = ref({
   schedule: [
     { day: null, start: null, end: null },
   ],
+  // Pricing fields
+  price: null as number | null,
+  discount_price: null as number | null,
+  is_free: false,
 })
 
 function AddNewClassroom() {
@@ -112,6 +116,45 @@ function validateDateRange(rule: any, value: any, callback: any) {
   }
 }
 
+// Validate price
+function validatePrice(rule: any, value: any, callback: any) {
+  if (formState.value.is_free) {
+    // If free, price is not required
+    callback()
+    return
+  }
+  
+  if (!value || value <= 0) {
+    callback(new Error(t('admin.classroom.form.priceRequired')))
+    return
+  }
+  
+  callback()
+}
+
+// Validate discount price
+function validateDiscountPrice(rule: any, value: any, callback: any) {
+  if (!value) {
+    // Discount price is optional
+    callback()
+    return
+  }
+  
+  if (formState.value.is_free) {
+    // If free, discount price should not be set
+    callback(new Error(t('admin.classroom.form.discountPriceNotAllowedForFree')))
+    return
+  }
+  
+  const price = formState.value.price || 0
+  if (value >= price) {
+    callback(new Error(t('admin.classroom.form.discountPriceMustBeLessThanPrice')))
+    return
+  }
+  
+  callback()
+}
+
 // Create classroom
 async function handleOk() {
   try {
@@ -132,6 +175,12 @@ async function handleOk() {
           start_time: formatTimeForApi(schedule.start),
           end_time: formatTimeForApi(schedule.end),
         })),
+      // Pricing fields
+      is_free: formState.value.is_free,
+      price: formState.value.is_free ? null : (formState.value.price?.toString() || '0'),
+      discount_price: formState.value.is_free || !formState.value.discount_price 
+        ? null 
+        : formState.value.discount_price.toString(),
     }
 
     await createClassroom(classroomPayload)
@@ -167,6 +216,10 @@ function resetForm() {
     schedule: [
       { day: null, start: null, end: null },
     ],
+    // Reset pricing fields
+    price: null,
+    discount_price: null,
+    is_free: false,
   }
   formRef.value?.resetFields()
 }
@@ -375,6 +428,90 @@ onMounted(() => {
             </a-button>
           </div>
         </a-form-item>
+
+        <!-- Pricing Section -->
+        <div class="w-full border-t border-gray-200 pt-4 mt-4">
+          <h3 class="text-base font-semibold text-gray-900 mb-4">
+            {{ t('admin.classroom.form.pricingSection') }}
+          </h3>
+
+          <!-- Is Free Checkbox -->
+          <a-form-item
+            name="is_free"
+            class="w-full mb-4"
+          >
+            <a-checkbox v-model:checked="formState.is_free">
+              {{ t('admin.classroom.form.isFree') }}
+            </a-checkbox>
+            <div class="text-xs text-gray-500 mt-1">
+              {{ t('admin.classroom.form.isFreeDescription') }}
+            </div>
+          </a-form-item>
+
+          <!-- Price -->
+          <a-form-item
+            :label="$t('admin.classroom.form.price')"
+            name="price"
+            class="w-full"
+            :rules="[{ validator: validatePrice, trigger: 'change' }]"
+          >
+            <a-input-number
+              v-model:value="formState.price"
+              size="large"
+              :placeholder="$t('admin.classroom.form.pricePlaceholder')"
+              :min="0"
+              :step="0.01"
+              :precision="2"
+              :disabled="formState.is_free"
+              class="w-full"
+            >
+              <template #prefix>
+                <span class="text-gray-500">€</span>
+              </template>
+            </a-input-number>
+            <div class="text-xs text-gray-500 mt-1">
+              {{ t('admin.classroom.form.priceDescription') }}
+            </div>
+          </a-form-item>
+
+          <!-- Discount Price -->
+          <a-form-item
+            :label="$t('admin.classroom.form.discountPrice')"
+            name="discount_price"
+            class="w-full"
+            :rules="[{ validator: validateDiscountPrice, trigger: 'change' }]"
+          >
+            <a-input-number
+              v-model:value="formState.discount_price"
+              size="large"
+              :placeholder="$t('admin.classroom.form.discountPricePlaceholder')"
+              :min="0"
+              :step="0.01"
+              :precision="2"
+              :disabled="formState.is_free"
+              class="w-full"
+            >
+              <template #prefix>
+                <span class="text-gray-500">€</span>
+              </template>
+            </a-input-number>
+            <div class="text-xs text-gray-500 mt-1">
+              {{ t('admin.classroom.form.discountPriceDescription') }}
+            </div>
+          </a-form-item>
+
+          <!-- Effective Price Display (Read-only) -->
+          <div v-if="!formState.is_free && formState.price" class="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div class="text-sm text-gray-600 mb-1">
+              {{ t('admin.classroom.form.effectivePrice') }}:
+            </div>
+            <div class="text-lg font-semibold text-green-600">
+              €{{ (formState.discount_price && formState.discount_price < formState.price 
+                ? formState.discount_price 
+                : formState.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            </div>
+          </div>
+        </div>
       </a-form>
     </a-modal>
   </div>

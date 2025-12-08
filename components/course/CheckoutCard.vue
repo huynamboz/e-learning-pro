@@ -54,6 +54,45 @@ watch(() => props.courseData.classrooms, (classrooms) => {
   }
 }, { immediate: true })
 
+// Get selected classroom for pricing display
+const selectedClassroomForPricing = computed(() => {
+  if (!selectedCalendar.value || !props.courseData.classrooms)
+    return null
+  return props.courseData.classrooms.find(c => c.id === selectedCalendar.value)
+})
+
+// Computed properties for classroom pricing
+const classroomPrice = computed(() => {
+  if (!selectedClassroomForPricing.value)
+    return props.courseData.price || '0'
+  return selectedClassroomForPricing.value.price || '0'
+})
+
+const classroomDiscountPrice = computed(() => {
+  if (!selectedClassroomForPricing.value)
+    return props.courseData.discount_price
+  return selectedClassroomForPricing.value.discount_price
+})
+
+const classroomEffectivePrice = computed(() => {
+  if (!selectedClassroomForPricing.value)
+    return props.courseData.effective_price || 0
+  return selectedClassroomForPricing.value.effective_price || 0
+})
+
+const classroomIsFree = computed(() => {
+  if (!selectedClassroomForPricing.value)
+    return props.courseData.is_free || false
+  return selectedClassroomForPricing.value.is_free || false
+})
+
+const hasClassroomDiscount = computed(() => {
+  if (!selectedClassroomForPricing.value)
+    return props.courseData.has_discount || false
+  const discountPrice = parseFloat(selectedClassroomForPricing.value.discount_price || '0')
+  return discountPrice > 0 && discountPrice < parseFloat(selectedClassroomForPricing.value.price || '0')
+})
+
 function handleAddToCard() {
   if (!selectedCalendar.value) {
     notification.warning({
@@ -187,18 +226,24 @@ function fallbackCopyTextToClipboard(text: string) {
     <div class="p-5 flex flex-col gap-5">
       <img :src="props.courseData?.thumbnail || '/images/course-thumbnail-default.webp'" class="h-[200px] rounded-lg object-cover" alt="image course">
       <div class="flex items-center gap-3">
-        <span v-if="!courseData.has_discount || !courseData.discount_price || parseFloat(courseData.discount_price) === 0" class="text-black font-bold text-2xl">
-          €{{ Number(props.courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        <!-- Free classroom -->
+        <span v-if="classroomIsFree" class="text-green-600 font-bold text-2xl">
+          Free
         </span>
+        <!-- No discount or discount price is 0 -->
+        <span v-else-if="!hasClassroomDiscount || !classroomDiscountPrice || parseFloat(classroomDiscountPrice) === 0" class="text-black font-bold text-2xl">
+          €{{ Number(classroomEffectivePrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </span>
+        <!-- Has discount -->
         <template v-else>
           <span class="font-bold text-lg text-[#94A3B8] line-through">
-            €{{ Number(courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            €{{ Number(classroomPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="text-black font-bold text-2xl">
-            €{{ Number(courseData?.discount_price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            €{{ Number(classroomDiscountPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="font-bold text-lg text-green">
-            {{ Math.round(((parseFloat(courseData?.price || '0') - parseFloat(courseData?.discount_price || '0')) / parseFloat(courseData?.price || '1')) * 100) }}% Off
+            {{ Math.round(((parseFloat(classroomPrice || '0') - parseFloat(classroomDiscountPrice || '0')) / parseFloat(classroomPrice || '1')) * 100) }}% Off
           </span>
         </template>
       </div>

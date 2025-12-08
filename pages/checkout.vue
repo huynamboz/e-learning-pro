@@ -64,7 +64,7 @@ async function confirmPayment() {
       const orderPayload = {
         course_id: item.course.id,
         classroom_id: item.selectedClassroom.id,
-        price_amount: item.price.toString(),
+        // price_amount is optional - API will automatically use classroom.effective_price
         price_currency: 'EUR',
         payment_method: 'bank_transfer',
         payment_reference: `REF-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

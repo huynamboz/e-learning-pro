@@ -15,6 +15,12 @@ interface ClassroomData {
   title: string
   background_url: string
   student_count: number
+  // Pricing fields
+  price?: string
+  discount_price?: string | null
+  is_free?: boolean
+  effective_price?: number
+  is_one_on_one?: boolean
   schedules: Array<{
     id: string
     day_of_week: string
@@ -93,6 +99,45 @@ function formatDate(dateString: string): string {
         <div class="text-xs text-gray-500 font-medium">
           {{ t('admin.classroom.card.sessions') }}
         </div>
+      </div>
+    </div>
+
+    <!-- Pricing Section -->
+    <div v-if="classRoomData?.price || classRoomData?.is_free" class="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <Icon name="tabler:currency-euro" size="18" class="text-green-600" />
+          <span class="text-sm font-medium text-gray-700">{{ t('admin.classroom.card.pricing') }}</span>
+        </div>
+        <div class="text-right">
+          <!-- Free Classroom -->
+          <div v-if="classRoomData?.is_free" class="text-lg font-bold text-green-600">
+            {{ t('admin.classroom.card.free') }}
+          </div>
+          <!-- Has Discount -->
+          <template v-else-if="classRoomData?.discount_price && parseFloat(classRoomData.discount_price) > 0 && parseFloat(classRoomData.discount_price) < parseFloat(classRoomData.price || '0')">
+            <div class="flex flex-col items-end">
+              <span class="text-xs text-gray-500 line-through">
+                €{{ Number(classRoomData.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              </span>
+              <span class="text-lg font-bold text-green-600">
+                €{{ Number(classRoomData.discount_price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              </span>
+              <span class="text-xs font-medium text-green-600">
+                {{ Math.round(((parseFloat(classRoomData.price || '0') - parseFloat(classRoomData.discount_price)) / parseFloat(classRoomData.price || '1')) * 100) }}% {{ t('admin.classroom.card.off') }}
+              </span>
+            </div>
+          </template>
+          <!-- Regular Price -->
+          <div v-else class="text-lg font-bold text-green-600">
+            €{{ Number(classRoomData?.effective_price || classRoomData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </div>
+        </div>
+      </div>
+      <!-- 1-on-1 Badge -->
+      <div v-if="classRoomData?.is_one_on_one" class="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+        <Icon name="tabler:user" size="12" />
+        {{ t('admin.classroom.card.oneOnOne') }}
       </div>
     </div>
 

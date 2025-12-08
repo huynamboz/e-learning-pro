@@ -31,9 +31,13 @@ export const useCartStore = defineStore('cart', {
     
     totalDiscount: (state: CartState): number => {
       return state.items.reduce((total: number, item: CartItem) => {
-        const originalPrice = parseFloat(item.course.price)
-        const discountPrice = parseFloat(item.course.discount_price || '0')
-        return total + (originalPrice - discountPrice)
+        // Use classroom pricing instead of course pricing
+        const originalPrice = parseFloat(item.selectedClassroom.price || '0')
+        const discountPrice = parseFloat(item.selectedClassroom.discount_price || '0')
+        if (discountPrice > 0 && discountPrice < originalPrice) {
+          return total + (originalPrice - discountPrice)
+        }
+        return total
       }, 0)
     },
     
@@ -86,12 +90,12 @@ export const useCartStore = defineStore('cart', {
           addedAt: new Date().toISOString(),
         }
       } else {
-        // Add new item
+        // Add new item - use classroom effective_price instead of course
         const newItem: CartItem = {
           id: `${course.id}-${selectedClassroom.id}`,
           course,
           selectedClassroom,
-          price: course.effective_price,
+          price: selectedClassroom.effective_price || 0,
           addedAt: new Date().toISOString(),
         }
         this.items.push(newItem)

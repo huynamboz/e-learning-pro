@@ -46,6 +46,12 @@ export interface Classroom {
   title: string
   background_url: string
   student_count: number
+  // Pricing fields (independent from course)
+  price: string
+  discount_price: string | null
+  is_free: boolean
+  effective_price: number
+  is_one_on_one: boolean
   schedules: Array<{
     id: string
     day_of_week: string
@@ -73,6 +79,12 @@ export interface ClassroomDetail {
   title: string
   background_url: string
   student_count: number
+  // Pricing fields (independent from course)
+  price: string
+  discount_price: string | null
+  is_free: boolean
+  effective_price: number
+  is_one_on_one: boolean
   start_date: string
   end_date: string
   meeting_link: string | null

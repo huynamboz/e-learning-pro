@@ -29,6 +29,10 @@ const formState = ref({
   end_date: '',
   meeting_link: '',
   schedules_data: [] as ClassroomSchedule[],
+  // Pricing fields
+  price: null as number | null,
+  discount_price: null as number | null,
+  is_free: false,
 })
 
 // Form validation
@@ -48,6 +52,10 @@ watch(() => props.classroom, (newClassroom) => {
         start_time: schedule.start_time,
         end_time: schedule.end_time,
       })) || [],
+      // Pricing fields
+      price: newClassroom.price ? parseFloat(newClassroom.price) : null,
+      discount_price: newClassroom.discount_price ? parseFloat(newClassroom.discount_price) : null,
+      is_free: newClassroom.is_free || false,
     }
   }
 }, { immediate: true })
@@ -70,6 +78,12 @@ async function handleSave() {
       end_date: formState.value.end_date,
       meeting_link: formState.value.meeting_link,
       schedules_data: formState.value.schedules_data,
+      // Pricing fields
+      is_free: formState.value.is_free,
+      price: formState.value.is_free ? null : (formState.value.price?.toString() || '0'),
+      discount_price: formState.value.is_free || !formState.value.discount_price 
+        ? null 
+        : formState.value.discount_price.toString(),
     }
 
     emit('save', formData)
@@ -269,6 +283,83 @@ const dayOptions = [
                 />
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="border-t border-gray-200 pt-4 mt-4">
+        <h4 class="text-lg font-medium text-gray-900 mb-4">
+          {{ $t('admin.classroom.form.pricingSection') }}
+        </h4>
+
+        <!-- Is Free Checkbox -->
+        <div class="mb-4">
+          <a-checkbox v-model:checked="formState.is_free">
+            {{ $t('admin.classroom.form.isFree') }}
+          </a-checkbox>
+          <div class="text-xs text-gray-500 mt-1">
+            {{ $t('admin.classroom.form.isFreeDescription') }}
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            {{ $t('admin.classroom.form.price') }}
+          </label>
+          <a-input-number
+            v-model:value="formState.price"
+            size="large"
+            :placeholder="$t('admin.classroom.form.pricePlaceholder')"
+            :min="0"
+            :step="0.01"
+            :precision="2"
+            :disabled="formState.is_free"
+            class="w-full"
+          >
+            <template #prefix>
+              <span class="text-gray-500">€</span>
+            </template>
+          </a-input-number>
+          <div class="text-xs text-gray-500 mt-1">
+            {{ $t('admin.classroom.form.priceDescription') }}
+          </div>
+        </div>
+
+        <!-- Discount Price -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            {{ $t('admin.classroom.form.discountPrice') }}
+          </label>
+          <a-input-number
+            v-model:value="formState.discount_price"
+            size="large"
+            :placeholder="$t('admin.classroom.form.discountPricePlaceholder')"
+            :min="0"
+            :step="0.01"
+            :precision="2"
+            :disabled="formState.is_free"
+            class="w-full"
+          >
+            <template #prefix>
+              <span class="text-gray-500">€</span>
+            </template>
+          </a-input-number>
+          <div class="text-xs text-gray-500 mt-1">
+            {{ $t('admin.classroom.form.discountPriceDescription') }}
+          </div>
+        </div>
+
+        <!-- Effective Price Display (Read-only) -->
+        <div v-if="!formState.is_free && formState.price" class="mb-4 p-3 bg-gray-50 rounded-lg">
+          <div class="text-sm text-gray-600 mb-1">
+            {{ $t('admin.classroom.form.effectivePrice') }}:
+          </div>
+          <div class="text-lg font-semibold text-green-600">
+            €{{ (formState.discount_price && formState.discount_price < formState.price 
+              ? formState.discount_price 
+              : formState.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </div>
         </div>
       </div>

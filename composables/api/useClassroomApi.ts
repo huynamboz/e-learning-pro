@@ -8,6 +8,10 @@ export interface ClassroomPayload {
   student_count: number
   schedules_data: ClassroomSchedule[]
   meeting_link?: string
+  // Pricing fields (independent from course)
+  price?: string
+  discount_price?: string | null
+  is_free?: boolean
 }
 
 export interface ClassroomSession {

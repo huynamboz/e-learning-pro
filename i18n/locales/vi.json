@@ -616,7 +616,20 @@
         "endDate": "Ngày kết thúc",
         "endDatePlaceholder": "Chọn ngày kết thúc",
         "endDateRequired": "Vui lòng chọn ngày kết thúc!",
-        "startDateAfterEndDate": "Ngày bắt đầu không được sau ngày kết thúc!"
+        "startDateAfterEndDate": "Ngày bắt đầu không được sau ngày kết thúc!",
+        "pricingSection": "Định giá",
+        "isFree": "Lớp học miễn phí",
+        "isFreeDescription": "Nếu chọn, lớp học này sẽ được cung cấp miễn phí cho học viên",
+        "price": "Giá",
+        "pricePlaceholder": "Nhập giá lớp học",
+        "priceDescription": "Giá cơ bản của lớp học (1-on-1 thường có giá cao hơn lớp nhóm)",
+        "priceRequired": "Vui lòng nhập giá lớp học!",
+        "discountPrice": "Giá giảm",
+        "discountPricePlaceholder": "Nhập giá giảm (tùy chọn)",
+        "discountPriceDescription": "Giá giảm phải nhỏ hơn giá cơ bản",
+        "discountPriceMustBeLessThanPrice": "Giá giảm phải nhỏ hơn giá cơ bản!",
+        "discountPriceNotAllowedForFree": "Không thể đặt giá giảm cho lớp học miễn phí!",
+        "effectivePrice": "Giá hiệu quả"
       },
       "notifications": {
         "createSuccess": "Tạo lớp học thành công!",
@@ -630,7 +643,11 @@
         "schedule": "Lịch học",
         "viewDetails": "Xem chi tiết",
         "viewSchedule": "Xem lịch học",
-        "attendance": "Điểm danh"
+        "attendance": "Điểm danh",
+        "pricing": "Giá",
+        "free": "Miễn phí",
+        "off": "giảm",
+        "oneOnOne": "1-on-1"
       },
       "detail": {
         "course": "Khóa học",

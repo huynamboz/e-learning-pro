@@ -26,6 +26,38 @@ const selectedClassroom = computed(() => {
   return props.courseData.classrooms?.find(c => c.id === props.classroomId)
 })
 
+// Computed properties for classroom pricing
+const classroomPrice = computed(() => {
+  if (!selectedClassroom.value)
+    return props.courseData.price || '0'
+  return selectedClassroom.value.price || '0'
+})
+
+const classroomDiscountPrice = computed(() => {
+  if (!selectedClassroom.value)
+    return props.courseData.discount_price
+  return selectedClassroom.value.discount_price
+})
+
+const classroomEffectivePrice = computed(() => {
+  if (!selectedClassroom.value)
+    return props.courseData.effective_price || 0
+  return selectedClassroom.value.effective_price || 0
+})
+
+const classroomIsFree = computed(() => {
+  if (!selectedClassroom.value)
+    return props.courseData.is_free || false
+  return selectedClassroom.value.is_free || false
+})
+
+const hasClassroomDiscount = computed(() => {
+  if (!selectedClassroom.value)
+    return props.courseData.has_discount || false
+  const discountPrice = parseFloat(selectedClassroom.value.discount_price || '0')
+  return discountPrice > 0 && discountPrice < parseFloat(selectedClassroom.value.price || '0')
+})
+
 // Check if item is already in cart
 const isInCart = computed(() => {
   if (!selectedClassroom.value || typeof window === 'undefined')
@@ -155,18 +187,24 @@ function fallbackCopyTextToClipboard(text: string) {
       </h3>
 
       <div class="flex items-center gap-3">
-        <span v-if="!courseData.has_discount || !courseData.discount_price || parseFloat(courseData.discount_price) === 0" class="text-black font-bold text-2xl">
-          €{{ Number(props.courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        <!-- Free classroom -->
+        <span v-if="classroomIsFree" class="text-green-600 font-bold text-2xl">
+          Free
         </span>
+        <!-- No discount or discount price is 0 -->
+        <span v-else-if="!hasClassroomDiscount || !classroomDiscountPrice || parseFloat(classroomDiscountPrice) === 0" class="text-black font-bold text-2xl">
+          €{{ Number(classroomEffectivePrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </span>
+        <!-- Has discount -->
         <template v-else>
           <span class="font-bold text-lg text-[#94A3B8] line-through">
-            €{{ Number(courseData?.price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            €{{ Number(classroomPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="text-black font-bold text-2xl">
-            €{{ Number(courseData?.discount_price || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            €{{ Number(classroomDiscountPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
           <span class="font-bold text-lg text-green">
-            {{ Math.round(((parseFloat(courseData?.price || '0') - parseFloat(courseData?.discount_price || '0')) / parseFloat(courseData?.price || '1')) * 100) }}% Off
+            {{ Math.round(((parseFloat(classroomPrice || '0') - parseFloat(classroomDiscountPrice || '0')) / parseFloat(classroomPrice || '1')) * 100) }}% Off
           </span>
         </template>
       </div>
