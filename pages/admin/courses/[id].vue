@@ -5,30 +5,47 @@ definePageMeta({
 })
 const route = useRoute()
 const { t } = useI18n()
-const {fetchCourseDetail, currentCourse} = useCourse()
+const { fetchCourseDetail, currentCourse } = useCourse()
 
-const listOptions = computed(() => [
-  {
-    path: 'classrooms/all-classrooms',
-    name: t('admin.courses.tabs.classroom'),
-  },
-  {
-    path: 'quiz/all-quiz',
-    name: t('admin.courses.tabs.quiz'),
-  },
-  {
-    path: 'students',
-    name: t('admin.courses.tabs.students'),
-  },
-  {
-    path: 'chapters/all-chapters',
-    name: t('admin.courses.tabs.chapters'),
-  },
-  {
+const listOptions = computed(() => {
+  const baseTabs = [
+    {
+      path: 'classrooms/all-classrooms',
+      name: t('admin.courses.tabs.classroom'),
+    },
+    {
+      path: 'quiz/all-quiz',
+      name: t('admin.courses.tabs.quiz'),
+    },
+    {
+      path: 'students',
+      name: t('admin.courses.tabs.students'),
+    },
+    {
+      path: 'chapters/all-chapters',
+      name: t('admin.courses.tabs.chapters'),
+    },
+    {
+      path: 'resources',
+      name: t('admin.courses.tabs.resources'),
+    },
+  ]
+
+  // Add pricing tab only for resource courses
+  if (currentCourse.value?.course_type === 'resource') {
+    baseTabs.push({
+      path: 'price-plans',
+      name: t('admin.courses.tabs.pricing'),
+    })
+  }
+
+  baseTabs.push({
     path: 'course-detail',
     name: t('admin.courses.tabs.detail'),
-  },
-])
+  })
+
+  return baseTabs
+})
 
 const courseId = computed(() => route.params.id as string)
 
@@ -39,12 +56,9 @@ function handleChangeTab(key: string) {
   navigateTo(`/admin/courses/${courseId.value}/${key}`)
 }
 
-
-
 onMounted(async () => {
   await fetchCourseDetail(courseId.value)
 })
-
 </script>
 
 <template>
@@ -58,7 +72,7 @@ onMounted(async () => {
     <DetailLessonManage v-else-if="lessonId" :course-id="courseId" :chapter-id="chapterId" :lesson-id="lessonId" />
     <DetailClassroom v-else-if="classroomId" />
     <AttendanceManagement v-else-if="attendanceManageId" /> -->
-    <div class="" v-if="currentCourse">
+    <div v-if="currentCourse" class="">
       <a-tabs v-model:active-key="activeTab" @change="handleChangeTab">
         <a-tab-pane v-for="tab in listOptions" :key="tab.path" :tab="tab.name">
           <!-- <component :is="tab.component" :type="tab.key" :course-id="courseId" /> -->

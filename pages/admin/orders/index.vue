@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumnsType, TableProps } from 'ant-design-vue'
+import type { TableColumnsType } from 'ant-design-vue'
 import type { Ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -34,6 +34,7 @@ interface Order {
     slug: string
     effective_price: string
     teacher_name: string
+    course_type?: 'course' | 'resource'
   }
   classroom: {
     id: string
@@ -58,13 +59,6 @@ interface Order {
   metadata: Record<string, any>
   created_at: string
   updated_at: string
-}
-
-interface OrdersResponse {
-  count: number
-  next: string | null
-  previous: string | null
-  results: Order[]
 }
 
 // State management
@@ -208,6 +202,11 @@ const columns = computed((): TableColumnsType<Order> => [
     title: t('admin.orders.table.columns.classroom'),
     key: 'classroom',
     width: 200,
+  },
+  {
+    title: t('admin.orders.table.columns.plan'),
+    key: 'plan',
+    width: 150,
   },
   {
     title: t('admin.orders.table.columns.amount'),
@@ -529,7 +528,7 @@ async function handleRefresh() {
               </div>
               <div>
                 <div class="font-medium text-gray-900 line-clamp-1">
-                  {{ record.course.title }}
+                  {{ record.course?.title }}
                 </div>
                 <div class="text-sm text-gray-500">
                   by {{ record.course.teacher_name }}
@@ -540,9 +539,9 @@ async function handleRefresh() {
 
           <!-- Classroom Column -->
           <template v-else-if="column.key === 'classroom'">
-            <div>
+            <div v-if="record.classroom">
               <div class="font-medium text-gray-900 line-clamp-1">
-                {{ record.classroom.title }}
+                {{ record.classroom?.title }}
               </div>
               <div class="text-sm text-gray-500">
                 {{ record.classroom.schedule_summary }}
@@ -551,6 +550,17 @@ async function handleRefresh() {
                 {{ record.classroom.student_count }} students
               </div>
             </div>
+            <span v-else class="text-gray-400">---</span>
+          </template>
+
+          <!-- Plan Column -->
+          <template v-else-if="column.key === 'plan'">
+            <div v-if="record.metadata?.duration_months">
+              <div class="font-medium text-gray-900">
+                {{ record.metadata.duration_months }} {{ $t('admin.orders.table.plan.months') }}
+              </div>
+            </div>
+            <span v-else class="text-gray-400">---</span>
           </template>
 
           <!-- Amount Column -->

@@ -3,8 +3,9 @@ import { createApiService } from '~/composables/api/useApiService'
 
 export interface OrderPayload {
   course_id: string
-  classroom_id: string
-  price_amount?: string // Optional - API will automatically use classroom.effective_price if not provided
+  classroom_id?: string // Optional - required for course type, not for resource type
+  price_plan_id?: string // Optional - required for resource type, not for course type
+  price_amount?: string // Optional - API will automatically use classroom.effective_price or plan price if not provided
   price_currency: string
   payment_method: string
   payment_reference: string

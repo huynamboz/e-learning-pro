@@ -61,19 +61,42 @@ async function confirmPayment() {
     const { createOrder } = useOrderApi()
 
     for (const item of cartStore.items) {
-      const orderPayload = {
+      const orderPayload: any = {
         course_id: item.course.id,
-        classroom_id: item.selectedClassroom.id,
-        // price_amount is optional - API will automatically use classroom.effective_price
         price_currency: 'EUR',
         payment_method: 'bank_transfer',
         payment_reference: `REF-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        notes: `Payment for course: ${item.course.title} - Classroom: ${item.selectedClassroom.title}`,
+        notes: '',
         metadata: {
           course_title: item.course.title,
-          classroom_title: item.selectedClassroom.title,
-          schedule: item.selectedClassroom.schedule_summary,
         },
+      }
+
+      // Handle course type vs resource type
+      if (item.course.course_type === 'resource' && item.selectedPricePlan) {
+        // Resource course - use price_plan_id
+        orderPayload.price_plan_id = item.selectedPricePlan.id
+        orderPayload.price_currency = item.selectedPricePlan.price_currency
+        orderPayload.notes = `Payment for resource: ${item.course.title} - Plan: ${item.selectedPricePlan.duration_months} months`
+        orderPayload.metadata = {
+          course_title: item.course.title,
+          price_plan_id: item.selectedPricePlan.id,
+          duration_months: item.selectedPricePlan.duration_months,
+        }
+      }
+      else if (item.selectedClassroom) {
+        // Course type - use classroom_id
+        orderPayload.classroom_id = item.selectedClassroom.id
+        orderPayload.notes = `Payment for course: ${item.course.title} - Classroom: ${item.selectedClassroom.title}`
+        orderPayload.metadata = {
+          course_title: item.course.title,
+          classroom_title: item.selectedClassroom.title,
+          schedule: item.selectedClassroom.schedule_summary || '',
+        }
+      }
+      else {
+        console.error('Invalid cart item: missing classroom or price plan', item)
+        continue
       }
 
       await createOrder(orderPayload)
@@ -185,9 +208,17 @@ function cancelLogin() {
 
                 <!-- Course Details -->
                 <div class="flex-1 min-w-0">
-                  <!-- Classroom Title -->
+                  <!-- Title -->
                   <h3 class="text-lg font-semibold text-gray-900 mb-1">
-                    {{ item.selectedClassroom.title }}
+                    <template v-if="item.selectedClassroom">
+                      {{ item.selectedClassroom.title }}
+                    </template>
+                    <template v-else-if="item.selectedPricePlan">
+                      {{ item.course.title }} - {{ item.selectedPricePlan.duration_months }} {{ $t('checkoutCard.months') }}
+                    </template>
+                    <template v-else>
+                      {{ item.course.title }}
+                    </template>
                   </h3>
 
                   <!-- Course Title (smaller) -->
@@ -236,7 +267,8 @@ function cancelLogin() {
                 <span class="font-medium text-green-600">-€{{ Number(cartStore.totalDiscount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
 
-              <div class="flex justify-between text-sm">
+              <!-- Tax - Temporarily set to 0, hidden when 0 -->
+              <div v-if="cartStore.tax > 0" class="flex justify-between text-sm">
                 <span class="text-gray-600">{{ $t('checkout.orderSummary.tax') }}</span>
                 <span class="font-medium">€{{ Number(cartStore.tax).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
               </div>
@@ -251,7 +283,7 @@ function cancelLogin() {
 
             <!-- Proceed to Checkout Button -->
             <button
-              class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+              class="cursor-pointer w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
               :disabled="cartStore.totalItems === 0"
               @click="proceedToCheckout"
             >
@@ -302,7 +334,8 @@ function cancelLogin() {
               <span class="text-gray-600">{{ $t('checkout.paymentDialog.discount') }}</span>
               <span class="font-medium text-green-600">-€{{ Number(cartStore.totalDiscount).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
-            <div class="flex justify-between">
+            <!-- Tax - Temporarily set to 0, hidden when 0 -->
+            <div v-if="cartStore.tax > 0" class="flex justify-between">
               <span class="text-gray-600">{{ $t('checkout.paymentDialog.tax') }}</span>
               <span class="font-medium">€{{ Number(cartStore.tax).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
             </div>
@@ -318,13 +351,13 @@ function cancelLogin() {
         <!-- Action Buttons -->
         <div class="flex space-x-3 justify-center">
           <button
-            class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            class="cursor-pointer px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             @click="cancelPayment"
           >
             {{ $t('checkout.paymentDialog.cancel') }}
           </button>
           <button
-            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            class="cursor-pointer px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             @click="confirmPayment"
           >
             {{ $t('checkout.paymentDialog.confirmTransfer') }}

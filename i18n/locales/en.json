@@ -790,10 +790,85 @@
         "quiz": "Quiz",
         "students": "Students",
         "chapters": "Chapters",
+        "resources": "Resources",
+        "pricing": "Pricing",
         "detail": "Detail"
       },
       "breadcrumb": {
         "course": "Course"
+      }
+    },
+    "pricePlans": {
+      "title": "Price Plans Management",
+      "description": "Manage pricing plans by duration for this course",
+      "actions": {
+        "add": "Add Price Plan",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "table": {
+        "columns": {
+          "duration": "Duration",
+          "price": "Price",
+          "status": "Status",
+          "available": "Available",
+          "dateRange": "Date Range",
+          "actions": "Actions"
+        },
+        "months": "months",
+        "active": "Active",
+        "inactive": "Inactive",
+        "default": "Default",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "noDateRange": "No limit",
+        "fromDate": "From {date}",
+        "untilDate": "Until {date}"
+      },
+      "table": {
+        "totalPlans": "price plans"
+      },
+      "form": {
+        "duration": "Duration (months)",
+        "durationRequired": "Please enter duration",
+        "durationPlaceholder": "Enter number of months",
+        "priceAmount": "Price",
+        "priceAmountRequired": "Please enter price",
+        "priceAmountPlaceholder": "Enter price",
+        "priceCurrency": "Currency",
+        "priceCurrencyRequired": "Please select currency",
+        "priceCurrencyPlaceholder": "Select currency",
+        "startsAt": "Start Date",
+        "startsAtPlaceholder": "Select start date",
+        "endsAt": "End Date",
+        "endsAtPlaceholder": "Select end date",
+        "isActive": "Active",
+        "isAvailable": "Available",
+        "isDefault": "Default"
+      },
+      "modal": {
+        "createTitle": "Add Price Plan",
+        "editTitle": "Edit Price Plan",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "notifications": {
+        "loadFailed": "Failed to load price plans",
+        "createSuccess": "Price plan created successfully",
+        "updateSuccess": "Price plan updated successfully",
+        "deleteSuccess": "Price plan deleted successfully",
+        "deleteFailed": "Failed to delete price plan",
+        "saveFailed": "Failed to save price plan"
+      },
+      "deleteConfirm": {
+        "title": "Confirm Delete",
+        "content": "Are you sure you want to delete the price plan for {duration} months with price {price}?",
+        "okText": "Delete",
+        "cancelText": "Cancel"
+      },
+      "empty": {
+        "title": "No price plans yet",
+        "description": "Add your first price plan to start pricing this course"
       }
     },
     "students": {
@@ -850,6 +925,102 @@
         "enableStudentSuccess": "Student {name} has been enabled",
         "disableStudentError": "Failed to disable student",
         "enableStudentError": "Failed to enable student"
+      }
+    },
+    "resources": {
+      "title": "Resource Management",
+      "description": "Manage course materials, videos, files and other resources",
+      "addResource": "Add Resource",
+      "edit": "Edit",
+      "delete": "Delete",
+      "downloadable": "Downloadable",
+      "notDownloadable": "Not Downloadable",
+      "classrooms": "classrooms",
+      "allClassrooms": "All Classrooms",
+      "table": {
+        "totalResources": "resources",
+        "columns": {
+          "order": "Order",
+          "type": "Type",
+          "title": "Title",
+          "size": "Size",
+          "duration": "Duration",
+          "downloadable": "Downloadable",
+          "classrooms": "Classrooms",
+          "uploadedAt": "Uploaded At",
+          "actions": "Actions"
+        }
+      },
+      "empty": {
+        "title": "No resources yet",
+        "subtitle": "Start by adding the first resource for this course"
+      },
+      "deleteConfirm": {
+        "title": "Delete Resource",
+        "content": "Are you sure you want to delete resource \"{title}\"? This action cannot be undone.",
+        "okText": "Delete",
+        "cancelText": "Cancel"
+      },
+      "form": {
+        "addTitle": "Add New Resource",
+        "editTitle": "Edit Resource",
+        "assetType": "Resource Type",
+        "assetTypeRequired": "Please select resource type!",
+        "assetTypePlaceholder": "Select resource type",
+        "title": "Title",
+        "titleRequired": "Please enter title!",
+        "titlePlaceholder": "Enter resource title",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter resource description (optional)",
+        "file": "File",
+        "fileRequired": "Please select file!",
+        "fileUploading": "File is uploading, please wait...",
+        "selectFile": "Select File",
+        "selectFiles": "Select Files",
+        "fileUploaded": "File uploaded successfully",
+        "uploaded": "Uploaded",
+        "dragText": "Drag and drop files here or",
+        "dragHint": "Support multiple file uploads. Maximum 100MB per file.",
+        "upload": "Upload",
+        "save": "Save",
+        "cancel": "Cancel",
+        "uploadingProgress": "Uploading: {percent}%",
+        "invalidFileType": "Invalid File Type",
+        "invalidFileTypeDescription": "Please select a valid file format (pdf, doc, ppt, zip, image, audio)",
+        "videoNotAllowed": "Video files not allowed",
+        "videoNotAllowedDescription": "Resources do not support video files. Please select another file type.",
+        "fileTooLarge": "File Too Large",
+        "fileTooLargeDescription": "File must not exceed 100MB",
+        "uploadFailed": "File upload failed",
+        "getPresignedUrlFailed": "Failed to get upload URL",
+        "missingUploadUrls": "Missing upload URLs",
+        "uploadToS3Failed": "Failed to upload to S3",
+        "createAssetFailed": "Failed to create asset",
+        "duration": "Duration",
+        "durationPlaceholder": "Enter duration (seconds)",
+        "durationDescription": "Duration in seconds (for video/audio only)",
+        "seconds": "seconds",
+        "order": "Display Order",
+        "orderRequired": "Please enter order!",
+        "orderPlaceholder": "Enter display order",
+        "isDownloadable": "Allow Download",
+        "isDownloadableDescription": "Students can download this file",
+        "visibleClassrooms": "Visible Classrooms",
+        "visibleClassroomsPlaceholder": "Select classrooms that can view this resource",
+        "visibleClassroomsDescription": "Only selected classrooms can view this resource (leave empty to show for all)"
+      },
+      "notifications": {
+        "createSuccess": "Resource created successfully!",
+        "updateSuccess": "Resource updated successfully!",
+        "saveFailed": "Failed to save resource",
+        "deleteSuccess": "Resource deleted successfully!",
+        "deleteFailed": "Failed to delete resource",
+        "loadFailed": "Failed to load resources",
+        "loadClassroomsFailed": "Failed to load classrooms",
+        "uploadSuccess": "Successfully uploaded {count} resource(s)!",
+        "uploadPartialSuccess": "Uploaded {total} resource(s), {failed} failed. Failed files: {files}",
+        "uploadAllFailed": "All files failed to upload. Failed files: {files}",
+        "allFilesUploaded": "All files have been uploaded"
       }
     },
     "formCourse": {
@@ -961,10 +1132,15 @@
           "student": "Student",
           "course": "Course",
           "classroom": "Classroom",
+          "plan": "Plan",
           "amount": "Amount",
           "status": "Status",
           "date": "Date",
           "actions": "Actions"
+        },
+        "plan": {
+          "months": "months",
+          "pricePlan": "Price Plan"
         },
         "status": {
           "pending": "Pending",
@@ -1297,6 +1473,16 @@
     "notifications": {
       "loadFailed": "Failed to load classroom information",
       "notFound": "Classroom not found"
+    },
+    "resources": {
+      "title": "Resources",
+      "downloadable": "Downloadable",
+      "download": "Download",
+      "empty": "No resources available for this classroom",
+      "loadMore": "Load More",
+      "loadingMore": "Loading more...",
+      "loadMoreFailed": "Failed to load more resources",
+      "loadMoreFailedDescription": "An error occurred while loading more resources. Please try again."
     }
   },
   "courseDetail": {
@@ -1315,6 +1501,14 @@
     "notifications": {
       "loadFailed": "Failed to load course",
       "courseNotFound": "Course not found"
+    },
+    "resources": {
+      "title": "Resources",
+      "empty": "No resources available for this course",
+      "loadMore": "Load More",
+      "loadingMore": "Loading more...",
+      "loadMoreFailed": "Failed to load more resources",
+      "loadMoreFailedDescription": "An error occurred while loading more resources. Please try again."
     }
   },
   "descriptionCourse": {
@@ -1345,12 +1539,15 @@
     "studentsEnrolled": "students enrolled",
     "free": "Free"
   },
-  "checkoutCard": {
+    "checkoutCard": {
     "enrollNow": "Enroll Now",
     "buyNow": "Buy Now",
     "addToCart": "Add to Cart",
     "classroom": "Classroom",
     "free": "Free",
+    "selectPricePlan": "Select Price Plan",
+    "selectPricePlanPlaceholder": "Select duration and price",
+    "months": "months",
     "originalPrice": "Original Price",
     "discount": "Discount",
     "total": "Total",
@@ -1375,6 +1572,10 @@
       "classroomChanged": "Classroom changed",
       "classroomChangedDesc": "Classroom has been changed for course \"{title}\".",
       "noClassroom": "This course has no classrooms yet",
+      "noPricePlans": "This course has no price plans yet",
+      "selectPricePlan": "Please select a price plan",
+      "selectPricePlanDesc": "You need to select a price plan before adding to cart.",
+      "selectPricePlanBuy": "You need to select a price plan before purchasing.",
       "linkCopied": "Link copied",
       "linkCopiedDesc": "Course link has been copied to clipboard",
       "copyFailed": "Failed to copy",
@@ -1736,7 +1937,9 @@
         "googlePopupBlocked": "Popup was blocked. Please allow popups for this site."
       },
       "errors": {
-        "device_type_limit_exceeded": "Account already has a {device_type} device registered ({device_id}). Only one device per type is allowed. Please use the previously registered device."
+        "device_type_limit_exceeded": "Account already has a {device_type} device registered ({device_id}). Only one device per type is allowed. Please use the previously registered device.",
+        "invalidCredentials": "Email/username or password is incorrect. Please check again.",
+        "validation_error": "Invalid login credentials"
       }
     },
     "register": {

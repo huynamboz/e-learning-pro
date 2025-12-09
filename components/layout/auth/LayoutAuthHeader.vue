@@ -6,15 +6,18 @@ import { useCartStore } from '~/stores/cart.store'
 const listOfLinks = computed(() => [
   { name: 'Quiz', href: '/#quiz' },
   { name: 'Video', href: '/#video' },
-  { name: 'Tài nguyên', href: '/courses' },
 ])
 
 const isMobileMenuOpen = ref(false)
 const isDesktopCourseMenuOpen = ref(false)
 const isMobileCourseMenuOpen = ref(false)
+const isDesktopResourceMenuOpen = ref(false)
+const isMobileResourceMenuOpen = ref(false)
 const hoverLevelKey = ref<string | null>(null)
 const hoverCourseKey = ref<string | null>(null)
+const hoverResourceLevelKey = ref<string | null>(null)
 const openMobileLevelKey = ref<string | null>(null)
+const openMobileResourceLevelKey = ref<string | null>(null)
 
 // API service
 const courseApi = useCourseApi()
@@ -22,6 +25,10 @@ const courseApi = useCourseApi()
 // Load hierarchical courses from API
 const hierarchicalData = ref<any>(null)
 const loadingCourses = ref(false)
+
+// Load hierarchical resources from API
+const hierarchicalResourcesData = ref<any>(null)
+const loadingResources = ref(false)
 
 // Level configuration
 const levelConfig = {
@@ -137,7 +144,49 @@ const courseMenu = computed(() => {
   return menu
 })
 
+// Transform API data to resources menu structure
+const resourceMenu = computed(() => {
+  if (!hierarchicalResourcesData.value) {
+    return []
+  }
+
+  const levels = ['basic', 'intermediate', 'advanced', 'driving_theory'] as const
+  const menu: any[] = []
+
+  levels.forEach((levelKey) => {
+    const config = levelConfig[levelKey]
+    const resources = hierarchicalResourcesData.value[levelKey] || []
+
+    if (resources.length > 0) {
+      // Transform resources to menu items
+      // Resources don't have classrooms, so link directly to resource detail page
+      const transformedResources = resources.map((resource: any) => {
+        // Link directly to resource detail page (using course detail page structure)
+        const resourceHref = `/courses/${resource.id}`
+
+        return {
+          key: resource.id,
+          label: resource.title,
+          href: resourceHref,
+          description: resource.short_description,
+        }
+      })
+
+      menu.push({
+        key: levelKey,
+        label: config.label,
+        href: config.href,
+        summary: config.summary,
+        resources: transformedResources,
+      })
+    }
+  })
+
+  return menu
+})
+
 const openMobileCourseKeys = ref<Record<string, string | null>>({})
+const openMobileResourceKeys = ref<Record<string, string | null>>({})
 
 function toggleMobileMenu() {
   isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -148,6 +197,22 @@ function toggleMobileCourseMenu() {
   if (!isMobileCourseMenuOpen.value) {
     resetMobileMenuState()
   }
+}
+
+function toggleMobileResourceMenu() {
+  isMobileResourceMenuOpen.value = !isMobileResourceMenuOpen.value
+  if (!isMobileResourceMenuOpen.value) {
+    resetMobileResourceMenuState()
+  }
+}
+
+function resetMobileResourceMenuState() {
+  openMobileResourceLevelKey.value = null
+  openMobileResourceKeys.value = {}
+}
+
+function toggleMobileResourceLevel(levelKey: string) {
+  openMobileResourceLevelKey.value = openMobileResourceLevelKey.value === levelKey ? null : levelKey
 }
 
 function resetMobileMenuState() {
@@ -179,6 +244,19 @@ function handleDesktopMenuLeave() {
   isDesktopCourseMenuOpen.value = false
   hoverLevelKey.value = null
   hoverCourseKey.value = null
+}
+
+function handleDesktopResourceMenuEnter() {
+  isDesktopResourceMenuOpen.value = true
+}
+
+function handleDesktopResourceMenuLeave() {
+  isDesktopResourceMenuOpen.value = false
+  hoverResourceLevelKey.value = null
+}
+
+function handleResourceLevelHover(levelKey: string) {
+  hoverResourceLevelKey.value = levelKey
 }
 
 function handleLevelHover(levelKey: string) {
@@ -218,10 +296,33 @@ async function loadHierarchicalCourses() {
   }
 }
 
+// Load hierarchical resources
+async function loadHierarchicalResources() {
+  try {
+    loadingResources.value = true
+    const data = await courseApi.getResourcesHierarchical()
+    hierarchicalResourcesData.value = data
+  }
+  catch (error) {
+    console.error('Error loading hierarchical resources:', error)
+    // Fallback to empty data
+    hierarchicalResourcesData.value = {
+      basic: [],
+      intermediate: [],
+      advanced: [],
+      driving_theory: [],
+    }
+  }
+  finally {
+    loadingResources.value = false
+  }
+}
+
 // Load cart and courses on mount
 onMounted(() => {
   cartStore.loadCart()
   loadHierarchicalCourses()
+  loadHierarchicalResources()
 })
 
 // Watch for changes in courseMenu to update initialCourseState
@@ -231,6 +332,15 @@ watch(courseMenu, (newMenu) => {
     newState[level.key] = null
   })
   openMobileCourseKeys.value = newState
+}, { immediate: true })
+
+// Watch for changes in resourceMenu to update initialResourceState
+watch(resourceMenu, (newMenu) => {
+  const newState: Record<string, string | null> = {}
+  newMenu.forEach((level) => {
+    newState[level.key] = null
+  })
+  openMobileResourceKeys.value = newState
 }, { immediate: true })
 </script>
 
@@ -382,6 +492,74 @@ watch(courseMenu, (newMenu) => {
             class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
           />
         </NuxtLink>
+
+        <!-- Resources Dropdown Menu -->
+        <div
+          class="relative resource-menu-container"
+          @mouseenter="handleDesktopResourceMenuEnter"
+          @mouseleave="handleDesktopResourceMenuLeave"
+        >
+          <button
+            class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
+            type="button"
+          >
+            <span>Tài nguyên</span>
+            <Icon
+              name="solar:alt-arrow-down-line-duotone"
+              size="18"
+              class="text-gray-600 ml-1.5 group-hover:text-[#16A34A] transition-colors"
+              :class="{ 'rotate-180': isDesktopResourceMenuOpen }"
+            />
+          </button>
+          <!-- Dropdown Menu -->
+          <div
+            v-show="isDesktopResourceMenuOpen"
+            class="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 min-w-[200px]"
+          >
+            <div
+              v-for="level in resourceMenu"
+              :key="level.key"
+              class="relative group/level"
+              @mouseenter="level.resources && level.resources.length > 0 ? handleResourceLevelHover(level.key) : null"
+            >
+              <!-- Direct link (no submenu) -->
+              <template v-if="!level.resources || level.resources.length === 0">
+                <NuxtLink
+                  :to="level.href"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                  @click="isDesktopResourceMenuOpen = false"
+                >
+                  {{ level.label }}
+                </NuxtLink>
+              </template>
+              <!-- Submenu: Resources -->
+              <template v-else>
+                <div class="relative resource-level-item">
+                  <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
+                    <span>{{ level.label }}</span>
+                    <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                  </div>
+                </div>
+                <!-- Submenu: Resources -->
+                <div
+                  v-show="hoverResourceLevelKey === level.key"
+                  class="absolute left-full top-0 resource-submenu bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[200px] z-50"
+                  style="margin-left: 4px;"
+                >
+                  <NuxtLink
+                    v-for="resource in level.resources"
+                    :key="resource.key"
+                    :to="resource.href"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                    @click="isDesktopResourceMenuOpen = false"
+                  >
+                    {{ resource.label }}
+                  </NuxtLink>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
       </nav>
 
       <!-- Desktop Buttons - Different for logged in users -->
@@ -607,6 +785,101 @@ watch(courseMenu, (newMenu) => {
               <span>{{ value.name }}</span>
               <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
+
+            <!-- Resources Menu (Mobile) -->
+            <div class="space-y-1">
+              <button
+                class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
+                @click="toggleMobileResourceMenu"
+              >
+                <span>Tài nguyên</span>
+                <Icon
+                  name="solar:alt-arrow-down-line-duotone"
+                  size="18"
+                  class="text-gray-400 transition-transform"
+                  :class="{ 'rotate-180': isMobileResourceMenuOpen }"
+                />
+              </button>
+              <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="opacity-0 transform -translate-y-2"
+                enter-to-class="opacity-100 transform translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="opacity-100 transform translate-y-0"
+                leave-to-class="opacity-0 transform -translate-y-2"
+              >
+                <div v-show="isMobileResourceMenuOpen" class="pl-4 space-y-2">
+                  <div
+                    v-for="level in resourceMenu"
+                    :key="level.key"
+                    class="rounded-lg border border-gray-100 bg-gray-50/80"
+                  >
+                    <!-- Direct link (no submenu) -->
+                    <NuxtLink
+                      v-if="!level.resources || level.resources.length === 0"
+                      :to="level.href"
+                      class="flex items-center justify-between py-3 px-2 text-sm font-semibold text-gray-900 hover:text-[#16A34A]"
+                      @click="isMobileMenuOpen = false"
+                    >
+                      <div>
+                        <p>{{ level.label }}</p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon name="solar:alt-arrow-right-line-duotone" size="16" class="text-gray-400" />
+                    </NuxtLink>
+                    <!-- Submenu with resources -->
+                    <button
+                      v-else
+                      class="w-full flex items-start justify-between py-3 px-2 text-left"
+                      @click="toggleMobileResourceLevel(level.key)"
+                    >
+                      <div>
+                        <p class="text-sm font-semibold text-gray-900">
+                          {{ level.label }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ level.summary }}
+                        </p>
+                      </div>
+                      <Icon
+                        name="solar:alt-arrow-down-line-duotone"
+                        size="18"
+                        class="text-gray-400 transition-transform"
+                        :class="{ 'rotate-180': openMobileResourceLevelKey === level.key }"
+                      />
+                    </button>
+
+                    <Transition
+                      enter-active-class="transition duration-200 ease-out"
+                      enter-from-class="opacity-0 transform -translate-y-2"
+                      enter-to-class="opacity-100 transform translate-y-0"
+                      leave-active-class="transition duration-150 ease-in"
+                      leave-from-class="opacity-100 transform translate-y-0"
+                      leave-to-class="opacity-0 transform -translate-y-2"
+                    >
+                      <div
+                        v-if="level.resources && level.resources.length"
+                        v-show="openMobileResourceLevelKey === level.key"
+                        class="px-3 pb-3 space-y-2"
+                      >
+                        <NuxtLink
+                          v-for="resource in level.resources"
+                          :key="resource.key"
+                          :to="resource.href"
+                          class="flex items-center justify-between py-2 px-3 text-sm font-medium text-gray-700 hover:text-[#16A34A] hover:bg-white rounded-md border border-gray-100"
+                          @click="isMobileMenuOpen = false"
+                        >
+                          <span>{{ resource.label }}</span>
+                          <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                        </NuxtLink>
+                      </div>
+                    </Transition>
+                  </div>
+                </div>
+              </Transition>
+            </div>
           </nav>
 
           <!-- Logged in user mobile navigation (match desktop) -->
@@ -896,6 +1169,30 @@ watch(courseMenu, (newMenu) => {
 
 /* Course submenu hover bridge (tạo bridge giữa item và submenu) */
 .course-submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -4px;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  z-index: 49;
+}
+
+/* Resource menu hover bridge */
+.resource-menu-container::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: transparent;
+  z-index: 49;
+}
+
+/* Resource submenu hover bridge */
+.resource-submenu::before {
   content: '';
   position: absolute;
   top: 0;

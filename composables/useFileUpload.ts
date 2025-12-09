@@ -1,5 +1,5 @@
-import { ref } from 'vue'
 import { message } from 'ant-design-vue'
+import { ref } from 'vue'
 import { useApiClient } from '~/api/apiClient'
 
 export function useFileUpload() {
@@ -10,7 +10,11 @@ export function useFileUpload() {
   const apiClient = useApiClient()
 
   // Upload file with progress tracking
-  function uploadFileWithProgress(file: File, uploadUrl: string): Promise<void> {
+  function uploadFileWithProgress(
+    file: File,
+    uploadUrl: string,
+    onProgress?: (percent: number) => void,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
 
@@ -18,16 +22,28 @@ export function useFileUpload() {
       xhr.upload.addEventListener('progress', (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100)
-          uploadProgress.value = percentComplete
+          // Update global progress if no callback provided
+          if (onProgress) {
+            onProgress(percentComplete)
+          }
+          else {
+            uploadProgress.value = percentComplete
+          }
         }
       })
 
       // Handle successful upload
       xhr.addEventListener('load', () => {
         if (xhr.status >= 200 && xhr.status < 300) {
-          uploadProgress.value = 100
+          if (onProgress) {
+            onProgress(100)
+          }
+          else {
+            uploadProgress.value = 100
+          }
           resolve()
-        } else {
+        }
+        else {
           reject(new Error(`Upload failed with status: ${xhr.status}`))
         }
       })
@@ -48,15 +64,15 @@ export function useFileUpload() {
     const presignedResponse = await apiClient.post('/system/upload-image/', {
       file_name: file.name,
       content_type: file.type,
-      folder: 'covers'
+      folder: 'covers',
     })
     return presignedResponse
   }
 
   // Upload with presigned URL
   async function uploadWithPresignedUrl(
-    file: File, 
-    errorMessage: string = 'Tải lên file thất bại'
+    file: File,
+    errorMessage: string = 'Tải lên file thất bại',
   ): Promise<string> {
     try {
       uploading.value = true
@@ -66,27 +82,28 @@ export function useFileUpload() {
 
       // Get presigned URL
       const presignedResponse = await getPresignedUrl(file)
-      
+
       // Extract URLs from response
       const uploadUrl = presignedResponse?.upload_url || presignedResponse?.uploadUrl || presignedResponse?.url
       const publicUrl = presignedResponse?.public_url || presignedResponse?.publicUrl
-      
+
       if (!uploadUrl || !publicUrl) {
         throw new Error('Missing upload URLs')
       }
-      
+
       // Upload file with progress tracking
       await uploadFileWithProgress(file, uploadUrl)
-      
+
       return publicUrl
-      
-    } catch (err) {
+    }
+    catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Upload failed'
       error.value = errorMsg
       message.error(errorMessage)
       console.error('Upload failed:', err)
       throw err
-    } finally {
+    }
+    finally {
       uploading.value = false
       isUploading.value = false
       uploadProgress.value = 0
@@ -107,8 +124,9 @@ export function useFileUpload() {
     uploadProgress: readonly(uploadProgress),
     isUploading: readonly(isUploading),
     error: readonly(error),
-    
+
     // Methods
+    uploadFileWithProgress,
     uploadWithPresignedUrl,
     resetUploadState,
   }

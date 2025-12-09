@@ -98,14 +98,19 @@ function getDeviceId(): string {
 }
 
 // Create request headers
-function createHeaders(token: string | null, customHeaders: Record<string, string> = {}) {
-  return {
+function createHeaders(url: string, token: string | null, customHeaders: Record<string, string> = {}) {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'X-Device-ID': getDeviceId(),
-    'X-Device-Type': getDeviceType(),
+    // 'X-Device-ID': getDeviceId(),
+    // 'X-Device-Type': getDeviceType(),
     ...customHeaders,
     ...(token && { Authorization: `Bearer ${token}` }),
   }
+  if (url.includes('/auth/')) {
+    headers['X-Device-ID'] = getDeviceId()
+    headers['X-Device-Type'] = getDeviceType()
+  }
+  return headers
 }
 
 // Create base request function
@@ -114,7 +119,7 @@ async function createRequest<T>(
   options: SafeFetchOptions = {},
   token: string | null = null,
 ): Promise<T> {
-  const headers = createHeaders(token, options.headers as Record<string, string>)
+  const headers = createHeaders(url, token, options.headers as Record<string, string>)
 
   const result = await $fetch(url, {
     baseURL: getBaseURL(),

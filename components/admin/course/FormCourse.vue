@@ -90,6 +90,7 @@ const courseSubLevelOptions = computed(() => {
   if (level === 'basic') {
     return [
       { label: 'A1', value: 'A1' },
+      { label: 'A1+', value: 'A1+' },
       { label: 'A2', value: 'A2' },
     ]
   }

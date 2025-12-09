@@ -123,12 +123,12 @@ function validatePrice(rule: any, value: any, callback: any) {
     callback()
     return
   }
-  
+
   if (!value || value <= 0) {
     callback(new Error(t('admin.classroom.form.priceRequired')))
     return
   }
-  
+
   callback()
 }
 
@@ -139,19 +139,19 @@ function validateDiscountPrice(rule: any, value: any, callback: any) {
     callback()
     return
   }
-  
+
   if (formState.value.is_free) {
     // If free, discount price should not be set
     callback(new Error(t('admin.classroom.form.discountPriceNotAllowedForFree')))
     return
   }
-  
+
   const price = formState.value.price || 0
   if (value >= price) {
     callback(new Error(t('admin.classroom.form.discountPriceMustBeLessThanPrice')))
     return
   }
-  
+
   callback()
 }
 
@@ -178,8 +178,8 @@ async function handleOk() {
       // Pricing fields
       is_free: formState.value.is_free,
       price: formState.value.is_free ? null : (formState.value.price?.toString() || '0'),
-      discount_price: formState.value.is_free || !formState.value.discount_price 
-        ? null 
+      discount_price: formState.value.is_free || !formState.value.discount_price
+        ? null
         : formState.value.discount_price.toString(),
     }
 
@@ -506,8 +506,8 @@ onMounted(() => {
               {{ t('admin.classroom.form.effectivePrice') }}:
             </div>
             <div class="text-lg font-semibold text-green-600">
-              €{{ (formState.discount_price && formState.discount_price < formState.price 
-                ? formState.discount_price 
+              €{{ (formState.discount_price && formState.discount_price < formState.price
+                ? formState.discount_price
                 : formState.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
             </div>
           </div>

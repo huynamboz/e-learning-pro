@@ -13,8 +13,11 @@ import type {
   EnrolledCourse,
   Lesson,
   LessonPayload,
+  ResourcePricePlan,
+  ResourcePricePlanPayload,
 } from '~/types/course.type'
 
+import type { ListApiResponse } from '~/api/apiClient'
 import { useApiClient } from '~/api/apiClient'
 import { createApiService } from '~/composables/api/useApiService'
 
@@ -126,6 +129,55 @@ export function useCourseApi() {
           }>
         }>
       }>('/courses/hierarchical/'),
+
+    // Get resources hierarchical (grouped by level)
+    getResourcesHierarchical: () =>
+      apiClient.get<{
+        basic?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms?: Array<any> // Resources may have empty classrooms array
+        }>
+        intermediate?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms?: Array<any>
+        }>
+        advanced?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms?: Array<any>
+        }>
+        driving_theory?: Array<{
+          id: string
+          title: string
+          slug: string
+          course_sub_level: string | null
+          short_description: string
+          price: number | null
+          discount_price: number | null
+          thumbnail: string | null
+          classrooms?: Array<any>
+        }>
+      }>('/courses/hierarchical_resources/'),
 
     getCourseEnrolled: (params?: { include_pending?: boolean }) => {
       const queryParams = new URLSearchParams()
@@ -304,6 +356,19 @@ export function useCourseApi() {
           search: params?.search,
           ordering: params?.ordering,
         },
-      })
+      }),
+
+    // Resource Price Plans API
+    getPricePlans: (courseId: string) =>
+      apiClient.get<ListApiResponse<ResourcePricePlan>>(`/courses/${courseId}/price-plans/`),
+
+    createPricePlan: (courseId: string, payload: ResourcePricePlanPayload) =>
+      apiClient.post<ResourcePricePlan>(`/courses/${courseId}/price-plans/`, payload),
+
+    updatePricePlan: (courseId: string, planId: string, payload: Partial<ResourcePricePlanPayload>) =>
+      apiClient.patch<ResourcePricePlan>(`/courses/${courseId}/price-plans/${planId}/`, payload),
+
+    deletePricePlan: (courseId: string, planId: string) =>
+      apiClient.delete(`/courses/${courseId}/price-plans/${planId}/`),
   }
 }

@@ -1,4 +1,5 @@
 import type { ListApiResponse } from '~/api/apiClient'
+import type { CourseAsset } from '~/composables/api/useAssetApi'
 
 export interface Course {
   id: string
@@ -29,6 +30,9 @@ export interface Course {
   created_at: string
   updated_at: string
   classrooms: Classroom[]
+  assets: CourseAsset[]
+  assets_count: number
+  course_type: 'course' | 'resource'
 }
 
 export interface ClassroomSchedule {
@@ -458,4 +462,30 @@ export interface CalendarApiResponse {
   upcoming_today: any[]
   total_classrooms: number
   total_sessions: number
+}
+
+export interface ResourcePricePlan {
+  id: string
+  course: string
+  duration_months: number
+  price_amount: string
+  price_currency: string
+  is_active: boolean
+  is_default: boolean
+  is_available: boolean
+  starts_at: string | null
+  ends_at: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+}
+
+export interface ResourcePricePlanPayload {
+  duration_months: number
+  price_amount: string
+  price_currency: string
+  is_active?: boolean
+  is_default?: boolean
+  starts_at?: string | null
+  ends_at?: string | null
 }

@@ -790,10 +790,83 @@
         "quiz": "Bài kiểm tra",
         "students": "Học viên",
         "chapters": "Chương",
+        "resources": "Tài liệu",
+        "pricing": "Giá tiền",
         "detail": "Chi tiết"
       },
       "breadcrumb": {
         "course": "Khóa học"
+      }
+    },
+    "pricePlans": {
+      "title": "Quản lý gói giá",
+      "description": "Quản lý các gói giá theo thời hạn cho khóa học này",
+      "actions": {
+        "add": "Thêm gói giá",
+        "edit": "Sửa",
+        "delete": "Xóa"
+      },
+      "table": {
+        "columns": {
+          "duration": "Thời hạn",
+          "price": "Giá",
+          "status": "Trạng thái",
+          "available": "Khả dụng",
+          "dateRange": "Khoảng thời gian",
+          "actions": "Thao tác"
+        },
+        "totalPlans": "gói giá",
+        "months": "tháng",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "default": "Mặc định",
+        "available": "Có sẵn",
+        "unavailable": "Không có sẵn",
+        "noDateRange": "Không giới hạn",
+        "fromDate": "Từ {date}",
+        "untilDate": "Đến {date}"
+      },
+      "form": {
+        "duration": "Thời hạn (tháng)",
+        "durationRequired": "Vui lòng nhập thời hạn",
+        "durationPlaceholder": "Nhập số tháng",
+        "priceAmount": "Giá",
+        "priceAmountRequired": "Vui lòng nhập giá",
+        "priceAmountPlaceholder": "Nhập giá",
+        "priceCurrency": "Loại tiền tệ",
+        "priceCurrencyRequired": "Vui lòng chọn loại tiền tệ",
+        "priceCurrencyPlaceholder": "Chọn loại tiền tệ",
+        "startsAt": "Ngày bắt đầu",
+        "startsAtPlaceholder": "Chọn ngày bắt đầu",
+        "endsAt": "Ngày kết thúc",
+        "endsAtPlaceholder": "Chọn ngày kết thúc",
+        "isActive": "Kích hoạt",
+        "isAvailable": "Khả dụng",
+        "isDefault": "Mặc định"
+      },
+      "modal": {
+        "createTitle": "Thêm gói giá",
+        "editTitle": "Chỉnh sửa gói giá",
+        "save": "Lưu",
+        "cancel": "Hủy"
+      },
+      "notifications": {
+        "loadFailed": "Tải danh sách gói giá thất bại",
+        "createSuccess": "Tạo gói giá thành công",
+        "updateSuccess": "Cập nhật gói giá thành công",
+        "deleteSuccess": "Xóa gói giá thành công",
+        "deleteFailed": "Xóa gói giá thất bại",
+        "saveFailed": "Lưu gói giá thất bại"
+      },
+      "deleteConfirm": {
+        "title": "Xác nhận xóa",
+        "content": "Bạn có chắc chắn muốn xóa gói giá {duration} tháng với giá {price}?",
+        "okText": "Xóa",
+        "cancelText": "Hủy"
+      },
+      "empty": {
+        "title": "Chưa có gói giá nào",
+        "description": "Thêm gói giá đầu tiên cho khóa học này"
       }
     },
     "students": {
@@ -850,6 +923,102 @@
         "enableStudentSuccess": "Học viên {name} đã được kích hoạt",
         "disableStudentError": "Không thể vô hiệu hóa học viên",
         "enableStudentError": "Không thể kích hoạt học viên"
+      }
+    },
+    "resources": {
+      "title": "Quản lý tài liệu",
+      "description": "Quản lý các tài liệu, video, file và tài nguyên khác của khóa học",
+      "addResource": "Thêm tài liệu",
+      "edit": "Chỉnh sửa",
+      "delete": "Xóa",
+      "downloadable": "Có thể tải xuống",
+      "notDownloadable": "Không thể tải xuống",
+      "classrooms": "lớp học",
+      "allClassrooms": "Tất cả lớp học",
+      "table": {
+        "totalResources": "tài liệu",
+        "columns": {
+          "order": "Thứ tự",
+          "type": "Loại",
+          "title": "Tiêu đề",
+          "size": "Kích thước",
+          "duration": "Thời lượng",
+          "downloadable": "Tải xuống",
+          "classrooms": "Lớp học",
+          "uploadedAt": "Ngày tải lên",
+          "actions": "Thao tác"
+        }
+      },
+      "empty": {
+        "title": "Chưa có tài liệu nào",
+        "subtitle": "Bắt đầu bằng cách thêm tài liệu đầu tiên cho khóa học này"
+      },
+      "deleteConfirm": {
+        "title": "Xóa tài liệu",
+        "content": "Bạn có chắc chắn muốn xóa tài liệu \"{title}\"? Hành động này không thể hoàn tác.",
+        "okText": "Xóa",
+        "cancelText": "Hủy"
+      },
+      "form": {
+        "addTitle": "Thêm tài liệu mới",
+        "editTitle": "Chỉnh sửa tài liệu",
+        "assetType": "Loại tài liệu",
+        "assetTypeRequired": "Vui lòng chọn loại tài liệu!",
+        "assetTypePlaceholder": "Chọn loại tài liệu",
+        "title": "Tiêu đề",
+        "titleRequired": "Vui lòng nhập tiêu đề!",
+        "titlePlaceholder": "Nhập tiêu đề tài liệu",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Nhập mô tả tài liệu (tùy chọn)",
+        "file": "File",
+        "fileRequired": "Vui lòng chọn file!",
+        "fileUploading": "Đang tải lên file, vui lòng đợi...",
+        "selectFile": "Chọn file",
+        "selectFiles": "Chọn nhiều file",
+        "fileUploaded": "File đã được tải lên thành công",
+        "uploaded": "Đã tải lên",
+        "dragText": "Kéo thả file vào đây hoặc",
+        "dragHint": "Hỗ trợ upload nhiều file cùng lúc. Kích thước tối đa 100MB mỗi file.",
+        "upload": "Tải lên",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "uploadingProgress": "Đang tải lên: {percent}%",
+        "invalidFileType": "Loại file không hợp lệ",
+        "invalidFileTypeDescription": "Vui lòng chọn file có định dạng hợp lệ (pdf, doc, ppt, zip, image, audio)",
+        "videoNotAllowed": "File video không được phép",
+        "videoNotAllowedDescription": "Tài liệu không hỗ trợ file video. Vui lòng chọn loại file khác.",
+        "fileTooLarge": "File quá lớn",
+        "fileTooLargeDescription": "File không được vượt quá 100MB",
+        "uploadFailed": "Tải lên file thất bại",
+        "getPresignedUrlFailed": "Lỗi khi lấy URL upload",
+        "missingUploadUrls": "Thiếu URL upload",
+        "uploadToS3Failed": "Lỗi khi upload lên S3",
+        "createAssetFailed": "Lỗi khi tạo tài liệu",
+        "duration": "Thời lượng",
+        "durationPlaceholder": "Nhập thời lượng (giây)",
+        "durationDescription": "Thời lượng tính bằng giây (chỉ dành cho video/audio)",
+        "seconds": "giây",
+        "order": "Thứ tự hiển thị",
+        "orderRequired": "Vui lòng nhập thứ tự!",
+        "orderPlaceholder": "Nhập thứ tự hiển thị",
+        "isDownloadable": "Cho phép tải xuống",
+        "isDownloadableDescription": "Học viên có thể tải xuống file này",
+        "visibleClassrooms": "Lớp học hiển thị",
+        "visibleClassroomsPlaceholder": "Chọn các lớp học có thể xem tài liệu này",
+        "visibleClassroomsDescription": "Chỉ các lớp học được chọn mới có thể xem tài liệu này (để trống để hiển thị cho tất cả)"
+      },
+      "notifications": {
+        "createSuccess": "Tạo tài liệu thành công!",
+        "updateSuccess": "Cập nhật tài liệu thành công!",
+        "saveFailed": "Lưu tài liệu thất bại",
+        "deleteSuccess": "Xóa tài liệu thành công!",
+        "deleteFailed": "Xóa tài liệu thất bại",
+        "loadFailed": "Tải danh sách tài liệu thất bại",
+        "loadClassroomsFailed": "Tải danh sách lớp học thất bại",
+        "uploadSuccess": "Đã tải lên {count} tài liệu thành công!",
+        "uploadPartialSuccess": "Đã tải lên {total} tài liệu, {failed} tài liệu thất bại. File lỗi: {files}",
+        "uploadAllFailed": "Tất cả file tải lên thất bại. File lỗi: {files}",
+        "allFilesUploaded": "Tất cả file đã được tải lên"
       }
     },
     "formCourse": {
@@ -961,10 +1130,15 @@
           "student": "Học viên",
           "course": "Khóa học",
           "classroom": "Lớp học",
+          "plan": "Gói",
           "amount": "Số tiền",
           "status": "Trạng thái",
           "date": "Ngày",
           "actions": "Thao tác"
+        },
+        "plan": {
+          "months": "tháng",
+          "pricePlan": "Gói giá"
         },
         "status": {
           "pending": "Chờ xử lý",
@@ -1297,6 +1471,16 @@
     "notifications": {
       "loadFailed": "Tải thông tin lớp học thất bại",
       "notFound": "Không tìm thấy lớp học"
+    },
+    "resources": {
+      "title": "Tài liệu",
+      "downloadable": "Có thể tải xuống",
+      "download": "Tải xuống",
+      "empty": "Chưa có tài liệu nào cho lớp học này",
+      "loadMore": "Tải thêm",
+      "loadingMore": "Đang tải thêm...",
+      "loadMoreFailed": "Không thể tải thêm tài liệu",
+      "loadMoreFailedDescription": "Đã xảy ra lỗi khi tải thêm tài liệu. Vui lòng thử lại."
     }
   },
   "courseDetail": {
@@ -1315,6 +1499,14 @@
     "notifications": {
       "loadFailed": "Không thể tải khóa học",
       "courseNotFound": "Không tìm thấy khóa học"
+    },
+    "resources": {
+      "title": "Tài liệu",
+      "empty": "Chưa có tài liệu nào cho khóa học này",
+      "loadMore": "Tải thêm",
+      "loadingMore": "Đang tải thêm...",
+      "loadMoreFailed": "Không thể tải thêm tài liệu",
+      "loadMoreFailedDescription": "Đã xảy ra lỗi khi tải thêm tài liệu. Vui lòng thử lại."
     }
   },
   "descriptionCourse": {
@@ -1345,12 +1537,15 @@
     "studentsEnrolled": "học viên đã đăng ký",
     "free": "Miễn phí"
   },
-  "checkoutCard": {
+    "checkoutCard": {
     "enrollNow": "Đăng ký ngay",
     "buyNow": "Mua ngay",
     "addToCart": "Thêm vào giỏ hàng",
     "classroom": "Lớp học",
     "free": "Miễn phí",
+    "selectPricePlan": "Chọn gói giá",
+    "selectPricePlanPlaceholder": "Chọn thời hạn và giá",
+    "months": "tháng",
     "originalPrice": "Giá gốc",
     "discount": "Giảm giá",
     "total": "Tổng cộng",
@@ -1375,6 +1570,10 @@
       "classroomChanged": "Đã thay đổi lớp học",
       "classroomChangedDesc": "Đã thay đổi lớp học cho khóa học \"{title}\".",
       "noClassroom": "Khóa học này chưa có lớp học",
+      "noPricePlans": "Khóa học này chưa có gói giá",
+      "selectPricePlan": "Vui lòng chọn gói giá",
+      "selectPricePlanDesc": "Bạn cần chọn một gói giá trước khi thêm vào giỏ hàng.",
+      "selectPricePlanBuy": "Bạn cần chọn một gói giá trước khi mua.",
       "linkCopied": "Đã sao chép liên kết",
       "linkCopiedDesc": "Liên kết khóa học đã được sao chép vào clipboard",
       "copyFailed": "Không thể sao chép",
@@ -1736,7 +1935,9 @@
         "googlePopupBlocked": "Popup bị chặn. Vui lòng cho phép popup cho trang web này."
       },
       "errors": {
-        "device_type_limit_exceeded": "Tài khoản đã có thiết bị {device_type} được đăng ký ({device_id}). Chỉ cho phép một thiết bị mỗi loại. Vui lòng sử dụng thiết bị đã đăng ký trước đó."
+        "device_type_limit_exceeded": "Tài khoản đã có thiết bị {device_type} được đăng ký ({device_id}). Chỉ cho phép một thiết bị mỗi loại. Vui lòng sử dụng thiết bị đã đăng ký trước đó.",
+        "invalidCredentials": "Email/username hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.",
+        "validation_error": "Thông tin đăng nhập không hợp lệ"
       }
     },
     "register": {

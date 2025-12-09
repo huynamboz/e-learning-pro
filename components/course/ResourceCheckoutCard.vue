@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import type { Course } from '~/types/course.type'
+import type { Course, ResourcePricePlan } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
 import { useCartStore } from '~/stores/cart.store'
 
 interface Props {
   courseData: Course
-  classroomId: string // Required classroom ID for this checkout
+  pricePlans: ResourcePricePlan[]
+  loading?: boolean
 }
 
 const props = defineProps<Props>()
@@ -13,67 +14,50 @@ const cartStore = useCartStore()
 const { t } = useI18n()
 const { user } = useAuth()
 
-// Load cart on mount
-onMounted(() => {
-  cartStore.loadCart()
-})
-
 // Check if user is teacher
 const isTeacher = computed(() => user.value?.is_teacher || false)
 
-// Find the selected classroom
-const selectedClassroom = computed(() => {
-  return props.courseData.classrooms?.find(c => c.id === props.classroomId)
+// Selected price plan
+const selectedPlanId = ref<string>('')
+
+// Auto-select first available plan
+watch(() => props.pricePlans, (plans) => {
+  if (plans && plans.length > 0 && !selectedPlanId.value) {
+    // Prefer default plan, otherwise first available plan
+    const defaultPlan = plans.find(p => p.is_default && p.is_available)
+    const firstAvailable = plans.find(p => p.is_available)
+    selectedPlanId.value = defaultPlan?.id || firstAvailable?.id || ''
+  }
+}, { immediate: true })
+
+// Get selected plan
+const selectedPlan = computed(() => {
+  return props.pricePlans.find(p => p.id === selectedPlanId.value)
 })
 
-// Computed properties for classroom pricing
-const classroomPrice = computed(() => {
-  if (!selectedClassroom.value)
-    return props.courseData.price || '0'
-  return selectedClassroom.value.price || '0'
-})
-
-const classroomDiscountPrice = computed(() => {
-  if (!selectedClassroom.value)
-    return props.courseData.discount_price
-  return selectedClassroom.value.discount_price
-})
-
-const classroomEffectivePrice = computed(() => {
-  if (!selectedClassroom.value)
-    return props.courseData.effective_price || 0
-  return selectedClassroom.value.effective_price || 0
-})
-
-const classroomIsFree = computed(() => {
-  if (!selectedClassroom.value)
-    return props.courseData.is_free || false
-  return selectedClassroom.value.is_free || false
-})
-
-const hasClassroomDiscount = computed(() => {
-  if (!selectedClassroom.value)
-    return props.courseData.has_discount || false
-  const discountPrice = parseFloat(selectedClassroom.value.discount_price || '0')
-  return discountPrice > 0 && discountPrice < parseFloat(selectedClassroom.value.price || '0')
-})
+// Format price
+function formatPrice(amount: string, currency: string): string {
+  const numAmount = Number.parseFloat(amount)
+  if (currency === 'VND') {
+    return `${new Intl.NumberFormat('vi-VN').format(numAmount)} ₫`
+  }
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(numAmount)
+}
 
 // Check if item is already in cart
 const isInCart = computed(() => {
-  if (!selectedClassroom.value || typeof window === 'undefined')
-    return false
-  // Load cart on client side
-  if (cartStore.items.length === 0) {
-    cartStore.loadCart()
+  // For resource courses, check if course with selected price plan is in cart
+  if (selectedPlanId.value) {
+    return cartStore.isInCart(props.courseData.id, undefined, selectedPlanId.value)
   }
-  return cartStore.isInCart(props.courseData.id, selectedClassroom.value.id)
+  return cartStore.items.some(item => item.course.id === props.courseData.id)
 })
 
-function handleAddToCard() {
-  if (!selectedClassroom.value) {
+function handleAddToCart() {
+  if (!selectedPlanId.value || !selectedPlan.value) {
     notification.warning({
-      message: t('checkoutCard.messages.selectClassroom'),
-      description: t('checkoutCard.messages.selectClassroomDesc'),
+      message: t('checkoutCard.messages.selectPricePlan'),
+      description: t('checkoutCard.messages.selectPricePlanDesc'),
     })
     return
   }
@@ -81,57 +65,42 @@ function handleAddToCard() {
   // Check if this course is already in cart
   const existingCartItem = cartStore.items.find(item => item.course.id === props.courseData.id)
   if (existingCartItem) {
-    // If same classroom, show already in cart message
-    if (existingCartItem.selectedClassroom.id === selectedClassroom.value.id) {
-      notification.info({
-        message: t('checkoutCard.messages.alreadyInCart'),
-        description: t('checkoutCard.messages.alreadyInCartDesc', {
-          title: props.courseData.title,
-          classroom: existingCartItem.selectedClassroom.title,
-        }),
-      })
-      return
-    }
-
-    // If different classroom, remove old one and add new one
-    cartStore.removeFromCart(existingCartItem.id)
     notification.info({
-      message: t('checkoutCard.messages.classroomChanged'),
-      description: t('checkoutCard.messages.classroomChangedDesc', {
+      message: t('checkoutCard.messages.alreadyInCart'),
+      description: t('checkoutCard.messages.alreadyInCartDesc', {
         title: props.courseData.title,
       }),
     })
+    return
   }
 
-  // Add to cart
-  cartStore.addToCart(props.courseData, selectedClassroom.value)
+  // Add resource to cart with price plan
+  cartStore.addResourceToCart(props.courseData, selectedPlan.value)
 
   notification.success({
     message: t('checkoutCard.messages.addedToCart'),
     description: t('checkoutCard.messages.addedToCartDesc', {
       title: props.courseData.title,
-      classroom: selectedClassroom.value.title,
     }),
   })
 }
 
 function handleBuyNow() {
-  if (!selectedClassroom.value) {
+  if (!selectedPlanId.value || !selectedPlan.value) {
     notification.warning({
-      message: t('checkoutCard.messages.selectClassroom'),
-      description: t('checkoutCard.messages.selectClassroomDesc'),
+      message: t('checkoutCard.messages.selectPricePlan'),
+      description: t('checkoutCard.messages.selectPricePlanBuy'),
     })
     return
   }
 
-  // Add to cart first
-  handleAddToCard()
-  // Then navigate to checkout
+  // Add to cart and navigate to checkout
+  handleAddToCart()
   navigateTo('/checkout')
 }
 
 function copyCourseLink() {
-  const courseUrl = `${window.location.origin}/courses/${props.courseData.id}/classrooms/${props.classroomId}`
+  const courseUrl = `${window.location.origin}/courses/${props.courseData.id}`
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(courseUrl).then(() => {
@@ -151,9 +120,9 @@ function copyCourseLink() {
 function fallbackCopyTextToClipboard(text: string) {
   const textArea = document.createElement('textarea')
   textArea.value = text
+  textArea.style.top = '0'
+  textArea.style.left = '0'
   textArea.style.position = 'fixed'
-  textArea.style.left = '-999999px'
-  textArea.style.top = '-999999px'
   document.body.appendChild(textArea)
   textArea.focus()
   textArea.select()
@@ -174,6 +143,11 @@ function fallbackCopyTextToClipboard(text: string) {
 
   document.body.removeChild(textArea)
 }
+
+// Load cart on mount
+onMounted(() => {
+  cartStore.loadCart()
+})
 </script>
 
 <template>
@@ -181,108 +155,114 @@ function fallbackCopyTextToClipboard(text: string) {
     <div class="p-5 flex flex-col gap-5">
       <img :src="props.courseData?.thumbnail || '/images/course-thumbnail-default.webp'" class="h-[200px] rounded-lg object-cover" alt="image course">
 
-      <!-- Classroom Title -->
-      <h3 v-if="selectedClassroom" class="border-b  pb-5 text-xl font-bold text-gray-900">
-        {{ selectedClassroom.title }}
-      </h3>
+      <!-- Price Plans Selection -->
+      <div v-if="loading" class="flex justify-center items-center py-8">
+        <a-spin size="large" />
+      </div>
 
-      <div class="flex items-center gap-3">
-        <!-- Free classroom -->
-        <span v-if="classroomIsFree" class="text-green-600 font-bold text-2xl">
-          Free
-        </span>
-        <!-- No discount or discount price is 0 -->
-        <span v-else-if="!hasClassroomDiscount || !classroomDiscountPrice || parseFloat(classroomDiscountPrice) === 0" class="text-black font-bold text-2xl">
-          €{{ Number(classroomEffectivePrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-        </span>
-        <!-- Has discount -->
-        <template v-else>
-          <span class="font-bold text-lg text-[#94A3B8] line-through">
-            €{{ Number(classroomPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-          </span>
+      <div v-else-if="pricePlans.length > 0" class="flex flex-col gap-3">
+        <label class="text-sm font-semibold text-gray-700">
+          {{ t('checkoutCard.selectPricePlan') }}
+        </label>
+        <a-select
+          v-model:value="selectedPlanId"
+          :placeholder="t('checkoutCard.selectPricePlanPlaceholder')"
+          class="w-full"
+          size="large"
+        >
+          <a-select-option
+            v-for="plan in pricePlans.filter(p => p.is_available)"
+            :key="plan.id"
+            :value="plan.id"
+          >
+            <!-- <div class="flex items-center justify-between">
+              <span>{{ plan.duration_months }} {{ t('checkoutCard.months') }}</span>
+              <span class="font-semibold text-[#16A34A] ml-4">
+                {{ formatPrice(plan.price_amount, plan.price_currency) }}
+              </span>
+            </div> -->
+            {{ plan.duration_months }} {{ t('checkoutCard.months') }} - {{ formatPrice(plan.price_amount, plan.price_currency) }}
+          </a-select-option>
+        </a-select>
+
+        <!-- Selected Plan Price Display -->
+        <div v-if="selectedPlan" class="flex items-center gap-3 pt-2">
           <span class="text-black font-bold text-2xl">
-            €{{ Number(classroomDiscountPrice || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+            {{ formatPrice(selectedPlan.price_amount, selectedPlan.price_currency) }}
           </span>
-          <span class="font-bold text-lg text-green">
-            {{ Math.round(((parseFloat(classroomPrice || '0') - parseFloat(classroomDiscountPrice || '0')) / parseFloat(classroomPrice || '1')) * 100) }}% Off
-          </span>
-        </template>
+        </div>
+      </div>
+
+      <div v-else class="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div class="flex items-center gap-2">
+          <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
+          <span class="text-yellow-800 font-medium">{{ t('checkoutCard.messages.noPricePlans') }}</span>
+        </div>
       </div>
 
       <!-- Show different buttons based on user role -->
-      <ClientOnly>
-        <template v-if="isTeacher">
-          <!-- Teacher - show edit course button -->
+      <template v-if="isTeacher">
+        <!-- Teacher - show edit course button -->
+        <a-button
+          type="primary"
+          class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
+          @click="navigateTo(`/admin/courses/${props.courseData.id}/course-detail`)"
+        >
+          <Icon name="solar:settings-bold" size="20" class="mr-2" />
+          {{ t('checkoutCard.buttons.editCourse') }}
+        </a-button>
+      </template>
+      <template v-else>
+        <!-- Student - show cart buttons -->
+        <template v-if="isInCart">
+          <!-- Already in cart - show checkout button -->
           <a-button
             type="primary"
-            class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:border-blue-700"
-            @click="navigateTo(`/admin/courses/${props.courseData.id}/course-detail`)"
+            class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
+            @click="handleBuyNow"
           >
-            <Icon name="solar:settings-bold" size="20" class="mr-2" />
-            {{ $t('checkoutCard.buttons.editCourse') }}
+            <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
+            {{ t('checkoutCard.buttons.checkoutNow') }}
+          </a-button>
+          <a-button
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
+            @click="navigateTo('/checkout')"
+          >
+            <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
+            {{ t('checkoutCard.buttons.viewCart') }}
           </a-button>
         </template>
         <template v-else>
-          <!-- Student - show cart buttons -->
-          <template v-if="isInCart">
-            <!-- Already in cart - show checkout button -->
-            <a-button
-              type="primary"
-              class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800"
-              @click="handleBuyNow"
-            >
-              <Icon name="solar:check-circle-bold" size="20" class="mr-2" />
-              {{ $t('checkoutCard.buttons.checkoutNow') }}
-            </a-button>
-            <a-button
-              class="w-full !flex items-center !h-10 rounded-lg text-sm !font-semibold flex items-center justify-center bg-gray-100 border-gray-100 text-gray-600 hover:bg-gray-200 hover:border-gray-200"
-              @click="navigateTo('/checkout')"
-            >
-              <Icon name="solar:bag-heart-bold" size="20" class="mr-2" />
-              {{ $t('checkoutCard.buttons.viewCart') }}
-            </a-button>
-          </template>
-          <template v-else>
-            <a-button
-              type="primary"
-              :disabled="!selectedClassroom"
-              class="w-full !flex items-center !h-10 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
-              @click="handleAddToCard"
-            >
-              {{ $t('checkoutCard.addToCart') }}
-            </a-button>
-
-            <a-button
-              :disabled="!selectedClassroom"
-              class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
-              @click="handleBuyNow"
-            >
-              {{ $t('checkoutCard.buyNow') }}
-            </a-button>
-          </template>
-        </template>
-        <template #fallback>
-          <!-- Fallback for SSR -->
+          <!-- Not in cart - show add to cart button -->
           <a-button
             type="primary"
-            :disabled="!selectedClassroom"
-            class="w-full !flex items-center !h-10 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            :disabled="!selectedPlanId || pricePlans.length === 0"
+            class="w-full !flex items-center !h-12 rounded-lg text-sm !font-semibold flex items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            @click="handleAddToCart"
           >
-            {{ $t('checkoutCard.addToCart') }}
+            {{ t('checkoutCard.addToCart') }}
+          </a-button>
+
+          <a-button
+            :disabled="!selectedPlanId || pricePlans.length === 0"
+            class="w-full !flex items-center !h-12 !mt-4 rounded-lg text-sm !font-semibold flex items-center justify-center bg-red-100 border-red-100 text-red-600 hover:bg-red-200 hover:border-red-200 hover:text-red-700 disabled:bg-gray-100 disabled:border-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+            @click="handleBuyNow"
+          >
+            {{ t('checkoutCard.buyNow') }}
           </a-button>
         </template>
-      </ClientOnly>
+      </template>
     </div>
 
     <div class="line border-b border-[#E2E8F0]" />
     <div class="flex flex-col items-center justify-center gap-3 px-10 py-5">
-      <span class="text-sm text-gray-600">{{ $t('checkoutCard.share') }}</span>
+      <span class="text-sm text-gray-600">{{ t('checkoutCard.share') }}</span>
       <a-button
         class="!flex !items-center !justify-center !gap-2 !h-10 !px-4 !rounded-lg !text-sm !font-medium !bg-gray-50 !border-gray-200 !text-gray-700 hover:!bg-gray-100 hover:!border-gray-300"
         @click="copyCourseLink"
       >
         <Icon name="solar:link-bold" size="16" />
-        {{ $t('checkoutCard.copyLink') }}
+        {{ t('checkoutCard.copyLink') }}
       </a-button>
     </div>
   </div>

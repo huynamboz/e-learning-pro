@@ -13,18 +13,38 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const googleLoading = ref(false)
+const formRef = ref()
+const formState = reactive<LoginRequest>({
+  email: '',
+  password: '',
+})
+const passwordError = ref<string>('')
 
 /**
- * Translate error message based on error code
+ * Translate error message based on error code and details
  */
-function translateErrorMessage(error: string | undefined, errorCode?: string, _errorData?: any): string {
+function translateErrorMessage(errorCode?: string, errorData?: any): string {
   if (!errorCode) {
-    return error || t('auth.login.notifications.failed')
+    return t('auth.login.errors.invalidCredentials')
+  }
+
+  // Handle validation_error with non_field_errors
+  if (errorCode === 'validation_error' && errorData?.details?.non_field_errors) {
+    const nonFieldErrors = errorData.details.non_field_errors
+    if (Array.isArray(nonFieldErrors) && nonFieldErrors.length > 0) {
+      const firstError = nonFieldErrors[0]
+      // Check if error message contains "Invalid credentials" or similar
+      if (firstError.toLowerCase().includes('invalid') || firstError.toLowerCase().includes('credentials')) {
+        return t('auth.login.errors.invalidCredentials')
+      }
+      // Return translated error if available, otherwise return original
+      return t(`auth.login.errors.${firstError.toLowerCase().replace(/\s+/g, '_')}`, firstError) || firstError
+    }
   }
 
   // Handle device_type_limit_exceeded
   if (errorCode === 'device_type_limit_exceeded') {
-    const errorMessage = error || ''
+    const errorMessage = errorData?.message || ''
     // Parse device type and device ID from message
     const deviceTypeMatch = errorMessage.match(/has a (\w+) device/)
     const deviceIdMatch = errorMessage.match(/\(([^)]+)\)/)
@@ -48,7 +68,14 @@ function translateErrorMessage(error: string | undefined, errorCode?: string, _e
     })
   }
 
-  return error || t('auth.login.notifications.failed')
+  // Try to translate by error code
+  const translationKey = `auth.login.errors.${errorCode}`
+  const translated = t(translationKey)
+  if (translated !== translationKey) {
+    return translated
+  }
+
+  return t('auth.login.errors.invalidCredentials')
 }
 
 // Handle Google login success
@@ -70,10 +97,8 @@ async function handleGoogleSuccess(response: any) {
       }
     }
     else {
-      const translatedError = translateErrorMessage(result.error, result.errorCode, result.errorData)
-      notification.error({
-        message: translatedError,
-      })
+      // Translate error message
+      passwordError.value = translateErrorMessage(result.errorCode, result.errorData)
     }
   }
   googleLoading.value = false
@@ -99,11 +124,6 @@ function handleGoogleError(error: any) {
   notification.error({ message: errorMessage })
 }
 
-const formState = reactive<LoginRequest>({
-  email: '',
-  password: '',
-})
-
 const loading = ref(false)
 
 /**
@@ -117,6 +137,7 @@ function isValidEmail(value: string): boolean {
 
 async function onFinish() {
   loading.value = true
+  passwordError.value = '' // Clear previous error
 
   try {
     // Create payload based on input type
@@ -141,13 +162,23 @@ async function onFinish() {
       notification.success({ message: t('auth.login.notifications.success') })
     }
     else {
-      const translatedError = translateErrorMessage(result.error, result.errorCode, result.errorData)
-      notification.error({ message: translatedError })
+      // Translate error message
+      passwordError.value = translateErrorMessage(result.errorCode, result.errorData)
     }
   }
   catch (error: any) {
     console.error('Login error:', error)
-    notification.error({ message: t('auth.login.notifications.error') })
+
+    // Try to parse error response
+    if (error?.data) {
+      const errorCode = error.data.code || error.data.error_code
+      const errorData = error.data
+      passwordError.value = translateErrorMessage(errorCode, errorData)
+    }
+    else {
+      // Fallback to generic error
+      passwordError.value = t('auth.login.errors.invalidCredentials')
+    }
   }
   finally {
     loading.value = false
@@ -161,6 +192,7 @@ async function onFinish() {
     <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-12">
       <div class="w-full max-w-md">
         <a-form
+          ref="formRef"
           :model="formState"
           name="basic"
           autocomplete="off"
@@ -214,11 +246,15 @@ async function onFinish() {
                 :placeholder="t('auth.login.form.passwordPlaceholder')"
                 size="large"
                 class="!h-12 !rounded-xl"
+                @input="passwordError = ''"
               >
                 <template #prefix>
                   <Icon name="solar:lock-password-bold" size="20" class="text-gray-400" />
                 </template>
               </a-input-password>
+              <p v-if="passwordError" class="text-red-500 text-sm mt-1">
+                {{ passwordError }}
+              </p>
             </a-form-item>
           </div>
 
