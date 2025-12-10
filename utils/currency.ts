@@ -6,10 +6,11 @@
  */
 export function formatCurrency(amount: number, locale?: string): string {
   // Get current locale from i18n if not provided
-  const currentLocale = locale || useI18n().locale.value || 'it'
+  // const currentLocale = locale || useI18n().locale.value || 'it'
   
   // Determine currency based on locale
-  const currency = currentLocale === 'vi' ? 'VND' : 'EUR'
+  console.warn('locale', locale)
+  const currency = 'EUR'
   
   // Format the amount
   if (currency === 'EUR') {

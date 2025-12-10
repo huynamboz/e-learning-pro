@@ -41,8 +41,8 @@ const isLessonActive = computed(() => {
     }"
     @click="selectLesson"
   >
-    <div v-if="course?.course_type === 'course'" class="flex items-center gap-3">
-      <div class="flex items-center justify-center w-5 h-5">
+    <div class="flex items-center gap-3">
+      <div v-if="course?.course_type === 'course'" class="flex items-center justify-center w-5 h-5">
         <!-- Manual completion disabled - lessons complete automatically when watching >80% -->
         <a-tooltip
           :title="lesson.is_completed ? 'Bài học đã hoàn thành' : 'Xem video >80% để hoàn thành bài học'"
