@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: elearning-app-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.nuxt
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - API_BASE_URL=${API_BASE_URL:-https://elearning.genfash.online/api/v1}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+    env_file:
+      - .env
+    command: pnpm dev
+    restart: unless-stopped
+    networks:
+      - elearning-network
+
+networks:
+  elearning-network:
+    driver: bridge
+

@@ -1,0 +1,73 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.nuxt
+.output
+dist
+.nitro
+
+# Development files
+.env.local
+.env.*.local
+*.log
+logs
+*.pid
+*.seed
+*.pid.lock
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+docs
+specs
+
+# Testing
+coverage
+.nyc_output
+test
+tests
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+
+# Misc
+.cache
+.temp
+.tmp
+*.tmp
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# PM2
+ecosystem*.config.*
+.pm2
+
+# Other
+examples
+comment.md
+logingg.md
+progress.md
+quiz.md
+
