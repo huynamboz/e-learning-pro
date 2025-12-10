@@ -12,6 +12,7 @@ import OnboardingStep4 from './OnboardingStep4.vue'
 const { profile, fetchProfile, fetchUser } = useAuth()
 const { updateProfile } = useUserApi()
 const { uploadProgress, isUploading, uploadWithPresignedUrl } = useFileUpload()
+const cartStore = useCartStore()
 const router = useRouter()
 const { t } = useI18n()
 
@@ -275,10 +276,18 @@ async function handleSubmit() {
     await fetchProfile()
     await fetchUser()
 
+    // Load cart to check if there are items
+    await cartStore.loadCart()
+
     notification.success({ message: 'Cập nhật thông tin thành công!' })
 
-    // Redirect to learning page
-    router.push('/learning')
+    // Redirect to checkout if cart has items, otherwise to learning page
+    if (cartStore.totalItems > 0) {
+      router.push('/checkout')
+    }
+    else {
+      router.push('/learning')
+    }
   }
   catch (error: any) {
     console.error('Error updating profile:', error)
