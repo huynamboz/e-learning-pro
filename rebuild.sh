@@ -28,11 +28,11 @@ echo -e "${GREEN}✅ Code pulled successfully${NC}"
 
 # Step 2: Stop existing container if running
 echo -e "${BLUE}🛑 Stopping existing container (if running)...${NC}"
-docker-compose down || true
+docker compose down || true
 
 # Step 3: Build Docker image
 echo -e "${BLUE}🔨 Building Docker image...${NC}"
-docker-compose build --no-cache
+docker compose build --no-cache
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Docker build failed${NC}"
@@ -43,7 +43,7 @@ echo -e "${GREEN}✅ Docker image built successfully${NC}"
 
 # Step 4: Start container
 echo -e "${BLUE}🚀 Starting container...${NC}"
-docker-compose up -d
+docker compose up -d
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Failed to start container${NC}"
@@ -54,10 +54,10 @@ echo -e "${GREEN}✅ Container started successfully${NC}"
 
 # Step 5: Show container status
 echo -e "${BLUE}📊 Container status:${NC}"
-docker-compose ps
+docker compose ps
 
 # Step 6: Show logs
 echo -e "${YELLOW}📋 Showing recent logs (press Ctrl+C to exit):${NC}"
 sleep 2
-docker-compose logs --tail=50 -f
+docker compose logs --tail=50 -f
 
