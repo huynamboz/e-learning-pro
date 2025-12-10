@@ -19,13 +19,13 @@ export function useDevToolsDetection() {
 
   function checkDevTools() {
     // Method 1: Check window size difference
-    const threshold = 160
-    const widthThreshold = window.outerWidth - window.innerWidth > threshold
-    const heightThreshold = window.outerHeight - window.innerHeight > threshold
+    // const threshold = 160
+    // const widthThreshold = window.outerWidth - window.innerWidth > threshold
+    // const heightThreshold = window.outerHeight - window.innerHeight > threshold
 
-    if (widthThreshold || heightThreshold) {
-      return true
-    }
+    // if (widthThreshold || heightThreshold) {
+    //   return true
+    // }
 
     // Method 2: Debugger detection
     const devtools = /./
