@@ -1983,6 +1983,8 @@
         "title": "Bentornato!",
         "subtitle": "Accedi per continuare il tuo percorso di apprendimento",
         "email": "Indirizzo Email",
+        "emailOrUsername": "Email o Username",
+        "emailOrUsernamePlaceholder": "Email o username",
         "emailRequired": "Inserisci la tua email!",
         "emailInvalid": "Inserisci un'email valida!",
         "password": "Password",

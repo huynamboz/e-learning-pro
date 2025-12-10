@@ -1,10 +1,10 @@
 import en from './locales/en.json'
-import vi from './locales/vi.json'
 import it from './locales/it.json'
+import vi from './locales/vi.json'
 
 export default defineI18nConfig(() => {
     const currentLocale = useCookie('locale', {
-        default: () => 'it',
+        default: () => 'vi',
     })
     console.log(currentLocale.value)
     return {

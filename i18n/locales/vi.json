@@ -1983,6 +1983,8 @@
         "title": "Chào mừng trở lại!",
         "subtitle": "Đăng nhập để tiếp tục hành trình học tập của bạn",
         "email": "Địa chỉ email",
+        "emailOrUsername": "Email hoặc username",
+        "emailOrUsernamePlaceholder": "Email hoặc username",
         "emailRequired": "Vui lòng nhập email!",
         "emailInvalid": "Vui lòng nhập email hợp lệ!",
         "password": "Mật khẩu",

@@ -216,7 +216,7 @@ async function onFinish() {
           <!-- Form Fields -->
           <div class="space-y-5">
             <a-form-item
-              label="Email hoặc username"
+              :label="t('auth.login.form.emailOrUsername')"
               name="email"
               :rules="[
                 { required: true, message: t('auth.login.form.emailRequired') },
@@ -226,7 +226,7 @@ async function onFinish() {
               <a-input
                 v-model:value="formState.email"
                 size="large"
-                placeholder="Email hoặc username"
+                :placeholder="t('auth.login.form.emailOrUsernamePlaceholder')"
                 class="!h-12 !rounded-xl"
               >
                 <template #prefix>

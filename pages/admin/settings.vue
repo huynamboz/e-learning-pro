@@ -24,7 +24,7 @@ const settingsTabs = computed(() => [
 
 // Language settings with cookie persistence
 const languageCookie = useCookie('locale', {
-  default: () => 'it',
+  default: () => 'vi',
   maxAge: 60 * 60 * 24 * 365, // 1 year
 })
 
@@ -49,8 +49,8 @@ const settings = ref({
 
 // Available languages
 const availableLanguages = [
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
 ]
 

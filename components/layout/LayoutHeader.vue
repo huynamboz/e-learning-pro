@@ -3,18 +3,18 @@ const { isCollapsed } = useSidebar()
 
 const props = defineProps<{ showHamburger?: boolean }>()
 const emit = defineEmits<{
-  (e: 'hamburger-click'): void
+  (e: 'hamburgerClick'): void
 }>()
 
 // Language settings
 const languageCookie = useCookie('locale', {
-  default: () => 'it',
+  default: () => 'vi',
   maxAge: 60 * 60 * 24 * 365, // 1 year
 })
 
 const availableLanguages = [
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'vi', name: 'Tiếng Việt', flag: '🇻🇳' },
+  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
 ]
 
@@ -78,7 +78,7 @@ function handleScroll(): void {
           v-if="props.showHamburger"
           class="p-2 rounded-md hover:bg-gray-100 transition-colors"
           aria-label="Toggle sidebar"
-          @click="emit('hamburger-click')"
+          @click="emit('hamburgerClick')"
         >
           <Icon name="solar:hamburger-menu-outline" class="w-6 h-6 text-gray-700" />
         </button>

@@ -1985,6 +1985,8 @@
         "title": "Welcome Back!",
         "subtitle": "Sign in to continue your learning journey",
         "email": "Email Address",
+        "emailOrUsername": "Email or Username",
+        "emailOrUsernamePlaceholder": "Email or username",
         "emailRequired": "Please input your email!",
         "emailInvalid": "Please enter a valid email!",
         "password": "Password",

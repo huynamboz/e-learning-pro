@@ -6,7 +6,7 @@ export default defineNuxtConfig({
       title: 'ItalianoLive - Học Tiếng Ý Trực Tuyến',
       titleTemplate: '%s | ItalianoLive',
       htmlAttrs: {
-        lang: 'it',
+        lang: 'vi',
       },
       meta: [
         { charset: 'utf-8' },
