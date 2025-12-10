@@ -14,6 +14,10 @@ RUN pnpm install --frozen-lockfile
 # Stage 2: Build
 FROM node:20-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+# Install build dependencies
+RUN apk add --no-cache libc6-compat python3 make g++
+
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -23,6 +27,13 @@ COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
 
 # Copy source code
 COPY . .
+
+# Set build environment variables
+ENV NODE_ENV=production
+ENV NITRO_PRESET=node-server
+
+# Run nuxt prepare (postinstall hook)
+RUN pnpm postinstall || true
 
 # Build the application
 RUN pnpm build
