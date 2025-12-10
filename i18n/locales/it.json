@@ -1310,6 +1310,7 @@
     "settings": "Impostazioni"
   },
   "profile": {
+    "learning": "Apprendimento",
     "title": "Profilo",
     "editButton": "Modifica",
     "joinDate": "Iscritto dal",
@@ -1382,6 +1383,7 @@
     }
   },
   "learning": {
+    "learning": "Apprendimento",
     "welcome": "Bentornato, {name}! 👋",
     "welcomeDesc": "Continua il tuo percorso di apprendimento e raggiungi i tuoi obiettivi",
     "stats": {

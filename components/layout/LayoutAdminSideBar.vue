@@ -42,13 +42,13 @@ function isExpanded(itemName: string) {
     <div class="py-6">
       <!-- Site logo and dark mode toggle -->
       <div class="flex items-center justify-center gap-3 mb-5 h-10">
-        <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/admin">
+        <NuxtLink v-if="!isCollapsed" class="flex gap-2 overflow-hidden" to="/admin">
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
-            <h4 class="font-extrabold text-gray-900 text-base whitespace-nowrap">
+            <h4 class="font-extrabold text-gray-900 text-base whitespace-nowrap truncate">
               {{ $t('admin.sidebar.title') }}
             </h4>
-            <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
+            <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap truncate">
               Học tiếng ý cùng <span class="text-[#EF4444]">Phan Tâm</span>
             </p>
           </div>

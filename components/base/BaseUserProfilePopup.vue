@@ -18,9 +18,10 @@ const profileOptions = computed(() => {
     {
       title: t('profile.profile'),
       options: [
+        // trang học
+        { icon: 'solar-book-linear', name: t('profile.learning'), link: '/learning' },
         { icon: 'solar-user-linear', name: t('profile.profile'), link: '/profile?tab=PROFILE' },
-        { icon: 'solar-book-linear', name: t('profile.myCourses'), link: '/my-course' },
-        // { icon: 'solar-settings-linear', name: t('profile.settings'), link: '/settings' },
+        { icon: 'solar-book-bookmark-linear', name: t('profile.myCourses'), link: '/my-course' },
       ],
     },
   ]

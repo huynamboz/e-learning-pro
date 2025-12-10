@@ -1310,6 +1310,7 @@
     "settings": "Cài đặt"
   },
   "profile": {
+    "learning": "Học tập",
     "title": "Hồ sơ",
     "editButton": "Chỉnh sửa",
     "joinDate": "Tham gia từ",
@@ -1382,6 +1383,7 @@
     }
   },
   "learning": {
+    "learning": "Học tập",
     "welcome": "Chào mừng trở lại, {name}! 👋",
     "welcomeDesc": "Tiếp tục hành trình học tập và đạt được mục tiêu của bạn",
     "stats": {
