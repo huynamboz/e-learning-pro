@@ -42,7 +42,7 @@ const bottomBarItems = computed<BottomBarItem[]>(() => {
     {
       name: t('menu.myCourses'),
       icon: 'solar:book-bookmark-bold',
-      link: '/profile?tab=MY_COURSES',
+      link: '/my-course',
       type: 'link',
     },
     {
@@ -80,6 +80,9 @@ const bottomBarItems = computed<BottomBarItem[]>(() => {
 function isActive(link: string) {
   if (link === '/learning') {
     return route.path === '/learning'
+  }
+  if (link === '/my-course') {
+    return route.path === '/my-course'
   }
   if (link.includes('?tab=')) {
     const [path, query] = link.split('?')

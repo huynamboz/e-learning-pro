@@ -9,7 +9,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const learnStore = useLearnStore()
-
+const course = computed(() => learnStore.course)
 function selectLesson() {
   learnStore.setActiveLesson(props.lesson)
 }
@@ -41,7 +41,7 @@ const isLessonActive = computed(() => {
     }"
     @click="selectLesson"
   >
-    <div class="flex items-center gap-3">
+    <div v-if="course?.course_type === 'course'" class="flex items-center gap-3">
       <div class="flex items-center justify-center w-5 h-5">
         <!-- Manual completion disabled - lessons complete automatically when watching >80% -->
         <a-tooltip

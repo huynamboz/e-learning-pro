@@ -14,7 +14,7 @@ const { getCourseEnrolled } = useCourseApi()
 const { t } = useI18n()
 
 // Fetch enrolled courses
-const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncData(
+const { data: enrolledCourses, pending: loadingEnrolled } = useLazyAsyncData(
   'enrolled-courses',
   async () => {
     try {
@@ -30,7 +30,7 @@ const { data: enrolledCourses, pending: loadingEnrolled } = await useLazyAsyncDa
 )
 
 // Fetch pending courses (courses awaiting approval)
-const { data: pendingCourses, pending: loadingPending } = await useLazyAsyncData(
+const { data: pendingCourses, pending: loadingPending } = useLazyAsyncData(
   'pending-courses',
   async () => {
     try {
@@ -127,10 +127,10 @@ function navigateToCourse(enrollmentId: string) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-shade-1 via-shade-1 to-shade-2 p-4 sm:p-6 lg:p-8">
+  <div class="min-h-screen bg-shade-1 p-4 sm:p-6 lg:p-8">
     <!-- Welcome Header -->
     <div class="mb-8 sm:mb-10">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue via-purple to-blue bg-clip-text text-transparent mb-3">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-shade-9 mb-3">
         {{ $t('learning.welcome', { name: user?.first_name || user?.username || 'Student' }) }}
       </h1>
       <p class="text-base sm:text-lg text-shade-6">
@@ -141,9 +141,9 @@ function navigateToCourse(enrollmentId: string) {
     <!-- Statistics Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-8 sm:mb-10">
       <!-- Total Courses -->
-      <div class="stat-card group bg-gradient-to-br from-blue/5 to-blue/10 border border-blue/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-blue/40 transition-all duration-300">
+      <div class="stat-card group bg-blue/10 border border-blue/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-blue/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
-          <div class="p-3 bg-gradient-to-br from-blue to-blue/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+          <div class="size-[60px] flex justify-center items-center p-3 bg-blue rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:book-bold" size="30" class="text-white" />
           </div>
         </div>
@@ -156,9 +156,9 @@ function navigateToCourse(enrollmentId: string) {
       </div>
 
       <!-- In Progress -->
-      <div class="stat-card group bg-gradient-to-br from-orange/5 to-orange/10 border border-orange/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-orange/40 transition-all duration-300">
+      <div class="stat-card group bg-orange/10 border border-orange/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-orange/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
-          <div class="p-3 bg-gradient-to-br from-orange to-orange/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+          <div class="size-[60px] flex justify-center items-center p-3 bg-orange rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:play-circle-bold" size="30" class="text-white" />
           </div>
         </div>
@@ -171,9 +171,9 @@ function navigateToCourse(enrollmentId: string) {
       </div>
 
       <!-- Completed -->
-      <div class="stat-card group bg-gradient-to-br from-green/5 to-green/10 border border-green/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-green/40 transition-all duration-300">
+      <div class="stat-card group bg-green/10 border border-green/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-green/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
-          <div class="p-3 bg-gradient-to-br from-green to-green/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+          <div class="size-[60px] flex justify-center items-center p-3 bg-green rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:check-circle-bold" size="30" class="text-white" />
           </div>
         </div>
@@ -186,9 +186,9 @@ function navigateToCourse(enrollmentId: string) {
       </div>
 
       <!-- Average Progress -->
-      <div class="stat-card group bg-gradient-to-br from-purple/5 to-purple/10 border border-purple/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-purple/40 transition-all duration-300">
+      <div class="stat-card group bg-purple/10 border border-purple/20 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl hover:scale-105 hover:border-purple/40 transition-all duration-300">
         <div class="flex items-start justify-between mb-4">
-          <div class="p-3 bg-gradient-to-br from-purple to-purple/80 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+          <div class="size-[60px] flex justify-center items-center p-3 bg-purple rounded-xl shadow-lg group-hover:scale-110 transition-transform">
             <Icon name="solar:chart-bold" size="30" class="text-white" />
           </div>
         </div>
@@ -217,7 +217,7 @@ function navigateToCourse(enrollmentId: string) {
               </p>
             </div>
             <NuxtLink
-              to="/profile?tab=MY_COURSES"
+              to="/my-course"
               class="text-sm font-medium text-blue hover:text-blue/80 hover:gap-2 transition-all flex items-center gap-1"
             >
               {{ $t('learning.continueLearning.viewAll') }}
@@ -263,7 +263,7 @@ function navigateToCourse(enrollmentId: string) {
               class="group bg-card border rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-2xl hover:border-blue/30 transition-all duration-300 cursor-pointer overflow-hidden relative"
               @click="navigateToCourse(enrollment.id)"
             >
-              <div class="absolute inset-0 bg-gradient-to-r from-blue/0 via-blue/0 to-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div class="absolute inset-0 bg-blue/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div class="flex flex-col sm:flex-row gap-5 relative z-10">
                 <!-- Thumbnail -->
                 <div class="w-full sm:w-32 h-32 flex-shrink-0 relative overflow-hidden rounded-xl">
@@ -272,7 +272,7 @@ function navigateToCourse(enrollmentId: string) {
                     :alt="enrollment?.title"
                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   >
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
 
                 <!-- Course Info -->
@@ -295,11 +295,9 @@ function navigateToCourse(enrollmentId: string) {
                     </div>
                     <div class="w-full bg-shade-3 rounded-full h-2.5 overflow-hidden">
                       <div
-                        class="bg-gradient-to-r from-green to-green/80 h-2.5 rounded-full transition-all duration-500 relative"
+                        class="bg-green h-2.5 rounded-full transition-all duration-500"
                         :style="{ width: `${enrollment.enrollment?.completion_percentage || 0}%` }"
-                      >
-                        <div class="absolute inset-0 bg-white/30 animate-pulse" />
-                      </div>
+                      />
                     </div>
                     <!-- <div class="text-xs text-shade-6 flex items-center gap-1">
                       <Icon name="solar:checklist-bold" size="14" />
@@ -445,15 +443,15 @@ function navigateToCourse(enrollmentId: string) {
           <!-- Quick Actions Section -->
           <div class="bg-card border rounded-2xl p-5 sm:p-6 shadow-md">
             <h3 class="text-lg sm:text-xl font-bold text-shade-9 mb-5 flex items-center gap-2">
-              <div class="size-10 flex items-center justify-center bg-gradient-to-br from-blue to-purple rounded-lg">
+              <div class="size-10 flex items-center justify-center bg-blue rounded-lg">
                 <Icon name="solar:widget-bold" size="16" class="text-white" />
               </div>
               {{ $t('learning.quickActions.title') }}
             </h3>
             <div class="space-y-1">
               <NuxtLink to="/courses" class="block group">
-                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-blue/30 bg-gradient-to-r from-transparent to-transparent hover:from-blue/5 hover:to-blue/10 transition-all duration-300 cursor-pointer">
-                  <div class="p-2.5 bg-gradient-to-br from-blue to-blue/80 rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
+                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-blue/30 hover:bg-blue/5 transition-all duration-300 cursor-pointer">
+                  <div class="p-2.5 size-[50px] flex justify-center items-center bg-blue rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
                     <Icon name="solar:magnifer-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
@@ -468,9 +466,9 @@ function navigateToCourse(enrollmentId: string) {
                 </div>
               </NuxtLink>
 
-              <NuxtLink to="/profile?tab=MY_COURSES" class="block group">
-                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-purple/30 bg-gradient-to-r from-transparent to-transparent hover:from-purple/5 hover:to-purple/10 transition-all duration-300 cursor-pointer">
-                  <div class="p-2.5 bg-gradient-to-br from-purple to-purple/80 rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
+              <NuxtLink to="/my-course" class="block group">
+                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-purple/30 hover:bg-purple/5 transition-all duration-300 cursor-pointer">
+                  <div class="p-2.5 size-[50px] flex justify-center items-center bg-purple rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
                     <Icon name="solar:book-bookmark-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
@@ -486,8 +484,8 @@ function navigateToCourse(enrollmentId: string) {
               </NuxtLink>
 
               <NuxtLink to="/profile" class="block group">
-                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-green/30 bg-gradient-to-r from-transparent to-transparent hover:from-green/5 hover:to-green/10 transition-all duration-300 cursor-pointer">
-                  <div class="p-2.5 bg-gradient-to-br from-green to-green/80 rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
+                <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-green/30 hover:bg-green/5 transition-all duration-300 cursor-pointer">
+                  <div class="p-2.5 size-[50px] flex justify-center items-center bg-green rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
                     <Icon name="solar:user-circle-bold" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
@@ -521,12 +519,12 @@ function navigateToCourse(enrollmentId: string) {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--blue), var(--purple));
+  background: var(--blue);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--blue-dark), var(--purple-dark));
+  background: var(--blue-dark);
 }
 
 /* Line clamp utilities */

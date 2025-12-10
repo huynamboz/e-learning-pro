@@ -167,7 +167,7 @@ function handleVideoProgress() {
     videoProgress.value = progress
 
     // Check if user has watched more than 80% and lesson is not completed
-    if (progress >= 80 && !activeLesson.value.is_completed && !hasCompletedLesson.value && !isCompletingLesson.value) {
+    if (course.value?.course_type === 'course' && progress >= 80 && !activeLesson.value.is_completed && !hasCompletedLesson.value && !isCompletingLesson.value) {
       completeLessonAutomatically()
     }
   }
@@ -382,10 +382,25 @@ function handleMaterialClick(material: any) {
   }
 }
 
+// Drawer state for mobile lesson list
+const drawerVisible = ref(false)
+
+function openDrawer() {
+  drawerVisible.value = true
+}
+
+function closeDrawer() {
+  drawerVisible.value = false
+}
+
 // Watch for activeLesson changes to load materials
 watch(activeLesson, (newLesson) => {
   if (newLesson) {
     loadLessonMaterials()
+    // Close drawer on mobile when lesson is selected
+    if (drawerVisible.value) {
+      closeDrawer()
+    }
   }
   else {
     lessonMaterials.value = []
@@ -477,9 +492,24 @@ onBeforeUnmount(() => {
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <!-- Main Content Area -->
         <div class="lg:col-span-2">
-          <h1 class="text-2xl font-semibold text-gray-900 mb-6">
-            {{ course?.title || t('course.defaultTitle') }}
-          </h1>
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-semibold text-gray-900">
+              {{ course?.title || t('course.defaultTitle') }}
+            </h1>
+            <!-- Mobile List Button -->
+            <div class="lg:hidden">
+              <a-button
+                class="flex items-center gap-2"
+                type="default"
+                @click="openDrawer"
+              >
+                <template #icon>
+                  <Icon name="solar:list-bold" size="18" />
+                </template>
+                <span>{{ t('course.courseContent') }}</span>
+              </a-button>
+            </div>
+          </div>
           <!-- Video Player Area -->
           <div ref="drmContainer" class="flex relative w-full rounded-2xl mb-6 bg-gray-900 aspect-video drm-protected" @contextmenu.prevent>
             <!-- <img
@@ -802,6 +832,27 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+
+    <!-- Mobile Drawer for Lesson List -->
+    <a-drawer
+      v-model:open="drawerVisible"
+      :title="t('course.courseContent')"
+      placement="right"
+      :width="320"
+      class="lg:hidden p-0"
+      @close="closeDrawer"
+    >
+      <div class="h-full overflow-y-auto">
+        <!-- Chapter Sections with Lessons -->
+        <div class="space-y-0">
+          <CourseChapterItem
+            v-for="chapter in courseChapters"
+            :key="chapter.id"
+            :chapter="chapter"
+          />
+        </div>
+      </div>
+    </a-drawer>
   </div>
 </template>
 

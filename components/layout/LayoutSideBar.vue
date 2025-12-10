@@ -31,6 +31,31 @@ const isInLearningPage = computed(() => {
   return route.path.split('/learning/')[1] !== undefined
 })
 
+// Smart route matching function
+function isActiveRoute(menuLink: string | undefined): boolean {
+  if (!menuLink || menuLink === '#') {
+    return false
+  }
+
+  const currentPath = route.path
+
+  // Exact match routes (should match exactly, not as prefix)
+  const exactMatchRoutes = ['/admin', '/my-course', '/learning', '/calendars', '/profile']
+
+  if (exactMatchRoutes.includes(menuLink)) {
+    // For exact match routes, check if path matches exactly
+    // But allow sub-routes for /admin (e.g., /admin/courses should match /admin)
+    if (menuLink === '/admin') {
+      return currentPath === '/admin' || currentPath.startsWith('/admin/')
+    }
+    // For other exact match routes, check exact match or if it's a base path
+    return currentPath === menuLink || currentPath.startsWith(`${menuLink}/`)
+  }
+
+  // For other routes, use startsWith matching
+  return currentPath.startsWith(menuLink)
+}
+
 onMounted(() => {
   currentMenu.value.forEach((item) => {
     if (item.subItems && item.subItems.some(subItem => subItem.link === route.path)) {
@@ -93,9 +118,7 @@ onMounted(() => {
                 isExpanded(item.name) && !isCollapsed && '!border-[#E6E7EC]',
                 isCollapsed && 'justify-center tooltip',
                 !isCollapsed && 'justify-between pr-3',
-                (item.link && item.link !== '#') && (
-                  (item.link === '/admin' ? route.path === '/admin' : route.path.startsWith(item.link))
-                )
+                isActiveRoute(item.link)
                   ? '!bg-[#15803D] hover:!bg-[#15803D] !text-white'
                   : 'hover:!bg-shade-3',
               )"
@@ -106,13 +129,13 @@ onMounted(() => {
                   <Icon
                     :name="item.icon"
                     class="text-[20px]"
-                    :class="item.link && item.link !== '#' && route.path.includes(item.link) ? 'text-white' : 'text-shade-6'"
+                    :class="isActiveRoute(item.link) ? 'text-white' : 'text-shade-6'"
                   />
                 </div>
                 <p
                   v-if="!isCollapsed"
                   class="font-semibold text-sm"
-                  :class="item.link && item.link !== '#' && route.path.includes(item.link) ? 'text-white' : 'text-[#0A1B39]'"
+                  :class="isActiveRoute(item.link) ? 'text-white' : 'text-[#0A1B39]'"
                 >
                   {{ item.name }}
                 </p>
@@ -126,8 +149,8 @@ onMounted(() => {
                   'rotate-0': !isExpanded(item.name),
                   'opacity-100': item.subItems && item.subItems.length > 0,
                   'opacity-0 group-hover:opacity-100': !item.subItems || item.subItems.length === 0,
-                  'text-white': item.link && item.link !== '#' && route.path === item.link,
-                  'text-shade-9': !(item.link && item.link !== '#' && route.path === item.link),
+                  'text-white': isActiveRoute(item.link),
+                  'text-shade-9': !isActiveRoute(item.link),
                 }"
               />
             </component>
@@ -175,8 +198,8 @@ onMounted(() => {
               :src="profile?.avatar"
               class="border-4 border-white shadow-sm"
             >
-            {{ profile?.first_name?.charAt(0) }}
-          </a-avatar>
+              {{ profile?.first_name?.charAt(0) }}
+            </a-avatar>
           </div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-[#0A1B39] truncate">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useLearnStore, type CourseChapterStore } from '~/stores/learn.store'
+import type { CourseChapterStore } from '~/stores/learn.store'
+import { useLearnStore } from '~/stores/learn.store'
 import CourseLessonItem from './CourseLessonItem.vue'
 
 interface Props {
@@ -8,7 +9,6 @@ interface Props {
 
 const props = defineProps<Props>()
 const learnStore = useLearnStore()
-
 function toggleChapter() {
   learnStore.toggleChapter(props.chapter.id)
 }

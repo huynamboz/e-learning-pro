@@ -1361,6 +1361,10 @@
       "schedule": "Lịch học",
       "progress": "Tiến độ",
       "classroom": "Lớp học",
+      "course": "khóa học",
+      "courses": "khóa học",
+      "continueLearning": "Tiếp tục học",
+      "moreSchedules": "lịch học khác",
       "teacher": {
         "title": "Bạn là giáo viên",
         "message": "Vui lòng xem danh sách khóa học ở bảng điều khiển quản trị để quản lý các khóa học của bạn.",

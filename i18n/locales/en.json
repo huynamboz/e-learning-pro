@@ -1359,10 +1359,14 @@
     "logout": "Logout",
     "courses": {
       "title": "My Courses",
+      "course": "course",
+      "courses": "courses",
       "loading": "Loading enrolled courses...",
       "schedule": "Schedule",
       "progress": "Progress",
       "classroom": "Classroom",
+      "continueLearning": "Continue Learning",
+      "moreSchedules": "more schedules",
       "teacher": {
         "title": "You are a teacher",
         "message": "Please view the course list in the admin dashboard to manage your courses.",

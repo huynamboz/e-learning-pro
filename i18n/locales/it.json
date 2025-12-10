@@ -1361,6 +1361,10 @@
       "schedule": "Programma",
       "progress": "Progresso",
       "classroom": "Aula",
+      "course": "corso",
+      "courses": "corsi",
+      "continueLearning": "Continua ad Apprendere",
+      "moreSchedules": "altri programmi",
       "teacher": {
         "title": "Sei un insegnante",
         "message": "Visualizza l'elenco dei corsi nella dashboard admin per gestire i tuoi corsi.",

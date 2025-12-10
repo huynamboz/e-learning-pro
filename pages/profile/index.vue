@@ -605,17 +605,6 @@ onMounted(() => {
             </div>
           </a-tab-pane>
 
-          <a-tab-pane key="MY_COURSES">
-            <template #tab>
-              <span class="flex items-center space-x-2">
-                <Icon name="i-heroicons-academic-cap" class="w-4 h-4" />
-                <span>{{ t('profile.tabs.myCourses') }}</span>
-              </span>
-            </template>
-            <div class="p-4 sm:p-6">
-              <ProfileListCourses />
-            </div>
-          </a-tab-pane>
         </a-tabs>
       </a-card>
     </div>

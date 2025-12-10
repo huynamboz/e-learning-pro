@@ -19,7 +19,7 @@ const profileOptions = computed(() => {
       title: t('profile.profile'),
       options: [
         { icon: 'solar-user-linear', name: t('profile.profile'), link: '/profile?tab=PROFILE' },
-        { icon: 'solar-book-linear', name: t('profile.myCourses'), link: '/profile?tab=MY_COURSES' },
+        { icon: 'solar-book-linear', name: t('profile.myCourses'), link: '/my-course' },
         // { icon: 'solar-settings-linear', name: t('profile.settings'), link: '/settings' },
       ],
     },
