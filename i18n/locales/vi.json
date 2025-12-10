@@ -1771,7 +1771,30 @@
       "pricing": "Giá cả",
       "learning": "Học tập",
       "myCourses": "Khóa học của tôi",
-      "profile": "Hồ sơ"
+      "profile": "Hồ sơ",
+      "resources": "Tài nguyên",
+      "cart": "Giỏ hàng",
+      "quiz": "Quiz",
+      "video": "Video",
+      "details": "Chi tiết"
+    },
+    "levels": {
+      "basic": {
+        "label": "Cơ bản",
+        "summary": "Xây nền tảng tiếng Ý với giáo trình chuẩn CEFR."
+      },
+      "intermediate": {
+        "label": "Trung cấp",
+        "summary": "Hoàn thiện kỹ năng nghe - nói - viết học thuật."
+      },
+      "advanced": {
+        "label": "Nâng cao",
+        "summary": "Chinh phục chứng chỉ C-level & dự án chuyên sâu."
+      },
+      "driving_theory": {
+        "label": "Lý thuyết lái xe",
+        "summary": "Học lý thuyết lái xe với giáo trình chuẩn."
+      }
     },
     "buttons": {
       "contactDirectly": "Liên hệ trực tiếp",
@@ -2085,9 +2108,7 @@
         "resetSuccess": "Đặt lại mật khẩu thành công! Vui lòng đăng nhập.",
         "resetFailed": "Đặt lại mật khẩu thất bại",
         "error": "Có lỗi xảy ra, vui lòng thử lại"
-      }
-    },
-    "forgotPassword": {
+      },
       "title": "Quên mật khẩu",
       "subtitle": "Nhập email của bạn để nhận liên kết đặt lại mật khẩu.",
       "email": "Email",

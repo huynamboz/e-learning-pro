@@ -3,9 +3,11 @@ import { Button } from 'ant-design-vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useCartStore } from '~/stores/cart.store'
 
+const { t } = useI18n()
+
 const listOfLinks = computed(() => [
-  { name: 'Quiz', href: '/#quiz' },
-  { name: 'Video', href: '/#video' },
+  { name: t('layoutAuthHeader.navigation.quiz'), href: '/#quiz' },
+  { name: t('layoutAuthHeader.navigation.video'), href: '/#video' },
 ])
 
 const isMobileMenuOpen = ref(false)
@@ -31,28 +33,28 @@ const hierarchicalResourcesData = ref<any>(null)
 const loadingResources = ref(false)
 
 // Level configuration
-const levelConfig = {
+const levelConfig = computed(() => ({
   basic: {
-    label: 'Cơ bản',
+    label: t('layoutAuthHeader.levels.basic.label'),
     href: '/basic-level',
-    summary: 'Xây nền tảng tiếng Ý với giáo trình chuẩn CEFR.',
+    summary: t('layoutAuthHeader.levels.basic.summary'),
   },
   intermediate: {
-    label: 'Trung cấp',
+    label: t('layoutAuthHeader.levels.intermediate.label'),
     href: '/middle-level',
-    summary: 'Hoàn thiện kỹ năng nghe - nói - viết học thuật.',
+    summary: t('layoutAuthHeader.levels.intermediate.summary'),
   },
   advanced: {
-    label: 'Nâng cao',
+    label: t('layoutAuthHeader.levels.advanced.label'),
     href: '/high-level',
-    summary: 'Chinh phục chứng chỉ C-level & dự án chuyên sâu.',
+    summary: t('layoutAuthHeader.levels.advanced.summary'),
   },
   driving_theory: {
-    label: 'Lý thuyết lái xe',
+    label: t('layoutAuthHeader.levels.driving_theory.label'),
     href: '/driving-level',
-    summary: 'Học lý thuyết lái xe với giáo trình chuẩn.',
+    summary: t('layoutAuthHeader.levels.driving_theory.summary'),
   },
-}
+}))
 
 // Transform API data to menu structure
 const courseMenu = computed(() => {
@@ -64,7 +66,7 @@ const courseMenu = computed(() => {
   const menu: any[] = []
 
   levels.forEach((levelKey) => {
-    const config = levelConfig[levelKey]
+    const config = levelConfig.value[levelKey]
     const courses = hierarchicalData.value[levelKey] || []
 
     if (courses.length > 0 || levelKey === 'driving_theory') {
@@ -154,7 +156,7 @@ const resourceMenu = computed(() => {
   const menu: any[] = []
 
   levels.forEach((levelKey) => {
-    const config = levelConfig[levelKey]
+    const config = levelConfig.value[levelKey]
     const resources = hierarchicalResourcesData.value[levelKey] || []
 
     if (resources.length > 0) {
@@ -386,7 +388,7 @@ watch(resourceMenu, (newMenu) => {
           to="#instructor"
           class="flex items-center group !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
         >
-          Giới thiệu
+          {{ $t('layoutAuthHeader.navigation.about') }}
           <Icon
             name="solar:alt-arrow-right-line-duotone"
             size="18"
@@ -404,7 +406,7 @@ watch(resourceMenu, (newMenu) => {
             class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
             type="button"
           >
-            <span>Khoá học</span>
+            <span>{{ $t('layoutAuthHeader.navigation.courses') }}</span>
             <Icon
               name="solar:alt-arrow-down-line-duotone"
               size="18"
@@ -427,7 +429,7 @@ watch(resourceMenu, (newMenu) => {
               <template v-if="!level.courses || level.courses.length === 0 || level.isDirectLink">
                 <NuxtLink
                   :to="level.href"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                  class="block px-4 py-2 text-sm !text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
                   @click="isDesktopCourseMenuOpen = false"
                 >
                   {{ level.label }}
@@ -467,7 +469,7 @@ watch(resourceMenu, (newMenu) => {
                         v-for="classItem in course.classes"
                         :key="classItem.key"
                         :to="classItem.href"
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                        class="block px-4 py-2 text-sm !text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
                         @click="isDesktopCourseMenuOpen = false"
                       >
                         {{ classItem.label }}
@@ -503,7 +505,7 @@ watch(resourceMenu, (newMenu) => {
             class="flex items-center group cursor-pointer !text-[#181D26] dark:text-gray-300 hover:text-[#16A34A] transition-colors"
             type="button"
           >
-            <span>Tài nguyên</span>
+            <span>{{ $t('layoutAuthHeader.navigation.resources') }}</span>
             <Icon
               name="solar:alt-arrow-down-line-duotone"
               size="18"
@@ -526,7 +528,7 @@ watch(resourceMenu, (newMenu) => {
               <template v-if="!level.resources || level.resources.length === 0">
                 <NuxtLink
                   :to="level.href"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                  class="block px-4 py-2 text-sm !text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
                   @click="isDesktopResourceMenuOpen = false"
                 >
                   {{ level.label }}
@@ -550,7 +552,7 @@ watch(resourceMenu, (newMenu) => {
                     v-for="resource in level.resources"
                     :key="resource.key"
                     :to="resource.href"
-                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
+                    class="block px-4 py-2 text-sm !text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
                     @click="isDesktopResourceMenuOpen = false"
                   >
                     {{ resource.label }}
@@ -629,7 +631,7 @@ watch(resourceMenu, (newMenu) => {
               class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              <span>Giới thiệu</span>
+              <span>{{ $t('layoutAuthHeader.navigation.about') }}</span>
               <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
 
@@ -639,7 +641,7 @@ watch(resourceMenu, (newMenu) => {
                 class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
                 @click="toggleMobileCourseMenu"
               >
-                <span>Khoá học</span>
+                <span>{{ $t('layoutAuthHeader.navigation.courses') }}</span>
                 <Icon
                   name="solar:alt-arrow-down-line-duotone"
                   size="18"
@@ -734,7 +736,7 @@ watch(resourceMenu, (newMenu) => {
                                 class="text-xs font-semibold text-[#16A34A]"
                                 @click.stop="isMobileMenuOpen = false"
                               >
-                                Chi tiết
+                                {{ $t('layoutAuthHeader.navigation.details') }}
                               </NuxtLink>
                               <Icon
                                 name="solar:alt-arrow-down-linear"
@@ -792,7 +794,7 @@ watch(resourceMenu, (newMenu) => {
                 class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
                 @click="toggleMobileResourceMenu"
               >
-                <span>Tài nguyên</span>
+                <span>{{ $t('layoutAuthHeader.navigation.resources') }}</span>
                 <Icon
                   name="solar:alt-arrow-down-line-duotone"
                   size="18"
@@ -890,7 +892,7 @@ watch(resourceMenu, (newMenu) => {
               class="flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
               @click="isMobileMenuOpen = false"
             >
-              <span>Giới thiệu</span>
+              <span>{{ $t('layoutAuthHeader.navigation.about') }}</span>
               <Icon name="solar:alt-arrow-right-line-duotone" size="18" class="text-gray-400" />
             </NuxtLink>
 
@@ -900,7 +902,7 @@ watch(resourceMenu, (newMenu) => {
                 class="w-full flex items-center justify-between py-3 px-2 text-base font-medium text-gray-900 dark:text-gray-100 hover:text-[#16A34A] hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md transition-colors"
                 @click="toggleMobileCourseMenu"
               >
-                <span>Khoá học</span>
+                <span>{{ $t('layoutAuthHeader.navigation.courses') }}</span>
                 <Icon
                   name="solar:alt-arrow-down-line-duotone"
                   size="18"
@@ -995,7 +997,7 @@ watch(resourceMenu, (newMenu) => {
                                 class="text-xs font-semibold text-[#16A34A]"
                                 @click.stop="isMobileMenuOpen = false"
                               >
-                                Chi tiết
+                                {{ $t('layoutAuthHeader.navigation.details') }}
                               </NuxtLink>
                               <Icon
                                 name="solar:alt-arrow-down-linear"
@@ -1057,7 +1059,7 @@ watch(resourceMenu, (newMenu) => {
               @click="isMobileMenuOpen = false"
             >
               <Icon name="solar:bag-heart-bold" size="30" class=" mr-2" />
-              Giỏ hàng
+              {{ $t('layoutAuthHeader.navigation.cart') }}
               <span v-if="cartStore.totalItems > 0" class="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {{ cartStore.totalItems }}
               </span>
@@ -1082,7 +1084,7 @@ watch(resourceMenu, (newMenu) => {
               @click="isMobileMenuOpen = false"
             >
               <Icon name="solar:bag-heart-bold" size="30" class=" mr-2" />
-              Giỏ hàng
+              {{ $t('layoutAuthHeader.navigation.cart') }}
               <span v-if="cartStore.totalItems > 0" class="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {{ cartStore.totalItems }}
               </span>

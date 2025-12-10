@@ -222,28 +222,69 @@ onMounted(() => {
 })
 </script>
 
+<style scoped>
+/* Responsive tabs for mobile */
+@media (max-width: 640px) {
+  :deep(.ant-tabs) {
+    overflow-x: auto;
+  }
+  
+  :deep(.ant-tabs-nav) {
+    margin-bottom: 0;
+  }
+  
+  :deep(.ant-tabs-tab) {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  :deep(.ant-tabs-content-holder) {
+    padding-top: 16px;
+  }
+}
+
+/* Ensure proper spacing on mobile */
+@media (max-width: 640px) {
+  :deep(.ant-card-body) {
+    padding: 12px;
+  }
+}
+
+/* Better text wrapping on mobile */
+@media (max-width: 640px) {
+  .profile-info-item {
+    word-break: break-word;
+  }
+}
+</style>
+
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 pb-20 lg:pb-8">
     <!-- Enhanced Header -->
     <div class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-6xl mx-auto px-4 py-8">
-        <div class="flex items-center gap-6">
-          <a-avatar v-if="profile?.avatar" :src="profile?.avatar" :size="80" class="bg-green-500 shadow-lg">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+          <a-avatar 
+            v-if="profile?.avatar" 
+            :src="profile?.avatar" 
+            :size="80" 
+            class="bg-green-500 shadow-lg flex-shrink-0"
+          >
             <span class="text-2xl font-semibold text-white">
               {{ (profile?.first_name || 'U')[0].toUpperCase() }}
             </span>
           </a-avatar>
-          <div class="flex-1">
-            <h1 class="text-3xl font-bold text-gray-900 mb-1">
+          <div class="flex-1 min-w-0 w-full sm:w-auto">
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 truncate">
               {{ profile?.last_name }} {{ profile?.first_name }} 
             </h1>
-            <p class="text-gray-600 text-lg mb-3">
+            <p class="text-sm sm:text-base lg:text-lg text-gray-600 mb-2 sm:mb-3 truncate">
               {{ profile?.email }}
             </p>
-            <div class="flex items-center space-x-6 text-sm text-gray-500">
+            <div class="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
               <div class="flex items-center space-x-2">
-                <Icon name="i-heroicons-calendar-days" class="w-4 h-4" />
-                <span>{{ t('profile.joinDate') }} {{ formatDate(profile?.created_at) }}</span>
+                <Icon name="i-heroicons-calendar-days" class="w-4 h-4 flex-shrink-0" />
+                <span class="whitespace-nowrap">{{ t('profile.joinDate') }} {{ formatDate(profile?.created_at) }}</span>
               </div>
               <!-- <div class="flex items-center space-x-2">
                 <Icon name="i-heroicons-academic-cap" class="w-4 h-4" />
@@ -251,25 +292,41 @@ onMounted(() => {
               </div> -->
             </div>
           </div>
-          <div class="flex space-x-3">
-            <a-button v-if="!isEditing" class="!flex items-center gap-1" type="primary" @click="handleEdit">
+          <div class="flex flex-col sm:flex-row gap-2 sm:space-x-3 w-full sm:w-auto">
+            <a-button 
+              v-if="!isEditing" 
+              class="!flex items-center justify-center gap-1 w-full sm:w-auto" 
+              type="primary" 
+              @click="handleEdit"
+            >
               <template #icon>
                 <Icon name="i-heroicons-pencil" />
               </template>
-              {{ t('profile.editButton') }}
+              <span class="hidden sm:inline">{{ t('profile.editButton') }}</span>
+              <span class="sm:hidden">{{ t('profile.editButton') }}</span>
             </a-button>
             <template v-else>
-              <a-button class="!flex items-center gap-1" type="primary" :loading="loading" @click="handleSave">
+              <a-button 
+                class="!flex items-center justify-center gap-1 w-full sm:w-auto" 
+                type="primary" 
+                :loading="loading" 
+                @click="handleSave"
+              >
                 <template #icon>
                   <Icon name="i-heroicons-check" />
                 </template>
-                {{ t('profile.edit.save') }}
+                <span class="hidden sm:inline">{{ t('profile.edit.save') }}</span>
+                <span class="sm:hidden">{{ t('profile.edit.save') }}</span>
               </a-button>
-              <a-button class="!flex items-center gap-1" @click="handleCancel">
+              <a-button 
+                class="!flex items-center justify-center gap-1 w-full sm:w-auto" 
+                @click="handleCancel"
+              >
                 <template #icon>
                   <Icon name="i-heroicons-x-mark" />
                 </template>
-                {{ t('profile.edit.cancel') }}
+                <span class="hidden sm:inline">{{ t('profile.edit.cancel') }}</span>
+                <span class="sm:hidden">{{ t('profile.edit.cancel') }}</span>
               </a-button>
             </template>
           </div>
@@ -278,12 +335,14 @@ onMounted(() => {
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
       <!-- Enhanced Tabs -->
       <a-card :bordered="false" class="shadow-sm">
         <a-tabs
           v-model:active-key="activeTab"
           size="large"
+          :tab-position="'top'"
+          class="profile-tabs"
           @change="handleTabChange"
         >
           <a-tab-pane key="PROFILE">
@@ -293,25 +352,25 @@ onMounted(() => {
                 <span>{{ t('profile.tabs.personalInfo') }}</span>
               </span>
             </template>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
               <!-- Profile Information Overview -->
-              <div v-if="profile" class="mb-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Icon name="i-heroicons-information-circle" class="w-5 h-5 text-blue-600" />
-                  {{ t('profile.title') }}
+              <div v-if="profile" class="mb-6 sm:mb-8">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Icon name="i-heroicons-information-circle" class="w-4 h-5 text-blue-600 flex-shrink-0" />
+                  <span>{{ t('profile.title') }}</span>
                 </h3>
 
                 <!-- Edit Form -->
-                <div v-if="isEditing" class="bg-gray-50 rounded-lg p-6">
+                <div v-if="isEditing" class="bg-gray-50 rounded-lg p-4 sm:p-6">
                   <h4 class="text-md font-semibold text-gray-900 mb-4">{{ t('profile.edit.title') }}</h4>
                   
                   <!-- Avatar Section -->
-                  <div class="mb-6">
+                  <div class="mb-4 sm:mb-6">
                     <h5 class="text-sm font-medium text-gray-700 mb-3">{{ t('profile.avatar.title') }}</h5>
                     
                     <!-- Upload Progress -->
                     <div v-if="isUploading" class="mb-4">
-                      <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                      <div class="flex items-center justify-between text-xs sm:text-sm text-gray-600 mb-2">
                         <span>{{ t('profile.avatar.uploading') }}</span>
                         <span>{{ uploadProgress }}%</span>
                       </div>
@@ -324,7 +383,7 @@ onMounted(() => {
                       />
                     </div>
                     
-                    <div class="flex items-center space-x-4">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4">
                       <!-- Current Avatar -->
                       <div class="relative">
                         <a-avatar :size="80" :src="avatarPreview" class="border-2 border-gray-200">
@@ -351,19 +410,19 @@ onMounted(() => {
                       </div>
                       
                       <!-- Upload Controls -->
-                      <div class="flex-1">
+                      <div class="flex-1 w-full sm:w-auto">
                         <div class="space-y-2">
                           <label 
-                            class="inline-flex items-center px-4 py-2 rounded-lg cursor-pointer transition-colors"
+                            class="inline-flex items-center justify-center sm:justify-start px-4 py-2 rounded-lg cursor-pointer transition-colors w-full sm:w-auto"
                             :class="isUploading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 hover:bg-blue-100'"
                           >
                             <Icon 
                               :name="isUploading ? 'i-heroicons-arrow-path' : 'i-heroicons-photo'" 
                               size="16" 
-                              class="mr-2"
+                              class="mr-2 flex-shrink-0"
                               :class="isUploading ? 'text-gray-400 animate-spin' : 'text-blue-600'"
                             />
-                            {{ isUploading ? t('profile.avatar.uploading') : t('profile.avatar.upload') }}
+                            <span class="text-sm">{{ isUploading ? t('profile.avatar.uploading') : t('profile.avatar.upload') }}</span>
                             <input
                               type="file"
                               accept="image/*"
@@ -372,7 +431,7 @@ onMounted(() => {
                               @change="handleAvatarUpload"
                             >
                           </label>
-                          <p class="text-xs text-gray-500">
+                          <p class="text-xs text-gray-500 text-center sm:text-left">
                             {{ t('profile.avatar.formats') }} • {{ t('profile.avatar.maxSize') }}
                           </p>
                         </div>
@@ -380,9 +439,9 @@ onMounted(() => {
                     </div>
                   </div>
                   
-                  <div class="grid md:grid-cols-2 gap-6">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Basic Information -->
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                       <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('onboarding.step1.name.firstName') }}</label>
                         <a-input
@@ -447,7 +506,7 @@ onMounted(() => {
                     </div>
 
                     <!-- Additional Information -->
-                    <div class="space-y-4">
+                    <div class="space-y-3 sm:space-y-4">
                       <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ t('profile.info.address') }}</label>
                         <a-textarea
@@ -483,59 +542,59 @@ onMounted(() => {
                 </div>
 
                 <!-- Display Mode -->
-                <div v-else class="grid md:grid-cols-2 gap-6">
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <!-- Basic Information -->
-                  <div class="space-y-4">
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.firstName') }}</span>
-                      <span class="text-sm text-gray-900">{{ profile.first_name || t('profile.info.notAvailable') }}</span>
+                  <div class="space-y-3 sm:space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.firstName') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 break-words">{{ profile.first_name || t('profile.info.notAvailable') }}</span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.lastName') }}</span>
-                      <span class="text-sm text-gray-900">{{ profile.last_name || t('profile.info.notAvailable') }}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('onboarding.step1.name.lastName') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 break-words">{{ profile.last_name || t('profile.info.notAvailable') }}</span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.email') }}</span>
-                      <span class="text-sm text-gray-900">{{ profile.email || t('profile.info.notAvailable') }}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.email') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 break-all">{{ profile.email || t('profile.info.notAvailable') }}</span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.phone') }}</span>
-                      <span class="text-sm text-gray-900">{{ profile.phone_number || t('profile.info.notAvailable') }}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.phone') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 break-words">{{ profile.phone_number || t('profile.info.notAvailable') }}</span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.gender') }}</span>
-                      <span class="text-sm text-gray-900">{{ getGenderLabel(profile.gender) }}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.gender') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900">{{ getGenderLabel(profile.gender) }}</span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.dateOfBirth') }}</span>
-                      <span class="text-sm text-gray-900">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.dateOfBirth') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900">
                         {{ profile.date_of_birth ? new Date(profile.date_of_birth).toLocaleDateString('vi-VN') : t('profile.info.notAvailable') }}
                       </span>
                     </div>
                   </div>
 
                   <!-- Additional Information -->
-                  <div class="space-y-4">
-                    <div class="flex items-start justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.address') }}</span>
-                      <span class="text-sm text-gray-900 text-right max-w-xs">
+                  <div class="space-y-3 sm:space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.address') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 sm:text-right break-words max-w-full sm:max-w-xs">
                         {{ profile.contact_address || t('profile.info.notAvailable') }}
                       </span>
                     </div>
 
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.profession') }}</span>
-                      <span class="text-sm text-gray-900">{{ getProfessionLabel(profile.headline) || t('profile.info.notAvailable') }}</span>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.profession') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 break-words">{{ getProfessionLabel(profile.headline) || t('profile.info.notAvailable') }}</span>
                     </div>
 
-                    <div v-if="profile.bio" class="flex items-start justify-between py-2 border-b border-gray-100">
-                      <span class="text-sm font-medium text-gray-600">{{ t('profile.info.bio') }}</span>
-                      <span class="text-sm text-gray-900 text-right max-w-xs">
+                    <div v-if="profile.bio" class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-0 py-2 border-b border-gray-100">
+                      <span class="text-xs sm:text-sm font-medium text-gray-600">{{ t('profile.info.bio') }}</span>
+                      <span class="text-xs sm:text-sm text-gray-900 sm:text-right break-words max-w-full sm:max-w-xs">
                         {{ profile.bio }}
                       </span>
                     </div>
@@ -553,7 +612,7 @@ onMounted(() => {
                 <span>{{ t('profile.tabs.myCourses') }}</span>
               </span>
             </template>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
               <ProfileListCourses />
             </div>
           </a-tab-pane>

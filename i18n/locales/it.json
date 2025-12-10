@@ -1,0 +1,2393 @@
+{
+  "global": {
+    "loading": {
+      "message": "Caricamento..."
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "basicInfo": {
+        "title": "Informazioni di Base",
+        "description": "Fornisci il tuo nome e scegli un avatar per il tuo account"
+      },
+      "personalInfo": {
+        "title": "Informazioni Personali",
+        "description": "Condividi alcune informazioni personali così possiamo capirti meglio"
+      },
+      "contactInfo": {
+        "title": "Informazioni di Contatto",
+        "description": "Fornisci il tuo indirizzo e informazioni professionali"
+      },
+      "confirmation": {
+        "title": "Conferma Informazioni",
+        "description": "Rivedi le tue informazioni prima di completare"
+      }
+    },
+    "step1": {
+      "avatar": {
+        "title": "Scegli Avatar",
+        "uploadLabel": "Carica la tua immagine",
+        "uploadDescription": "JPG, PNG max 5MB"
+      },
+      "name": {
+        "firstName": "Nome",
+        "lastName": "Cognome",
+        "firstNamePlaceholder": "Inserisci il tuo nome",
+        "lastNamePlaceholder": "Inserisci il tuo cognome"
+      },
+      "notifications": {
+        "invalidFileType": "Seleziona un file immagine",
+        "fileSizeExceeded": "La dimensione del file non può superare 5MB"
+      }
+    },
+    "step2": {
+      "gender": {
+        "title": "Genere",
+        "male": "Maschio",
+        "female": "Femmina",
+        "other": "Altro"
+      },
+      "dateOfBirth": {
+        "title": "Data di Nascita",
+        "placeholder": "Seleziona la tua data di nascita"
+      },
+      "phone": {
+        "title": "Numero di Telefono",
+        "placeholder": "Inserisci il tuo numero di telefono",
+        "description": "Il numero di telefono sarà utilizzato per il contatto e la verifica dell'account",
+        "validation": {
+          "invalid": "Numero di telefono non valido"
+        }
+      },
+      "validation": {
+        "birthYearInvalid": "Anno di nascita non valido"
+      }
+    },
+    "step3": {
+      "address": {
+        "title": "Indirizzo di Contatto",
+        "placeholder": "Inserisci il tuo indirizzo completo",
+        "description": "L'indirizzo sarà utilizzato per inviare materiali didattici e notifiche importanti"
+      },
+      "profession": {
+        "title": "Lavoro Attuale",
+        "placeholder": "Seleziona la tua professione"
+      },
+      "bio": {
+        "title": "Informazioni Aggiuntive (Opzionale)",
+        "placeholder": "Breve introduzione su di te, obiettivi di apprendimento...",
+        "description": "Queste informazioni ci aiuteranno a capirti meglio e personalizzare la tua esperienza di apprendimento"
+      },
+      "jobs": {
+        "student": "Studente",
+        "teacher": "Insegnante",
+        "engineer": "Ingegnere",
+        "doctor": "Medico",
+        "lawyer": "Avvocato",
+        "business": "Imprenditore",
+        "designer": "Designer",
+        "developer": "Sviluppatore",
+        "marketing": "Marketing",
+        "sales": "Vendite",
+        "freelancer": "Libero Professionista",
+        "retired": "Pensionato",
+        "unemployed": "In cerca di lavoro",
+        "other": "Altro"
+      }
+    },
+    "step4": {
+      "title": "Conferma Informazioni",
+      "description": "Rivedi le tue informazioni prima di completare",
+      "summary": {
+        "dateOfBirth": "Data di Nascita:",
+        "phoneNumber": "Numero di Telefono:",
+        "profession": "Professione:",
+        "address": "Indirizzo:",
+        "bio": "Introduzione:",
+        "notUpdated": "Non aggiornato"
+      },
+      "privacy": {
+        "title": "Informazioni sulla Privacy",
+        "description": "Le tue informazioni personali saranno mantenute sicure e utilizzate solo per migliorare la tua esperienza di apprendimento. Puoi aggiornare queste informazioni in qualsiasi momento nelle impostazioni."
+      }
+    },
+    "navigation": {
+      "previous": "Indietro",
+      "next": "Avanti",
+      "complete": "Completa",
+      "uploading": "Caricamento {progress}%"
+    },
+    "validation": {
+      "firstNameRequired": "Inserisci il tuo nome",
+      "lastNameRequired": "Inserisci il tuo cognome",
+      "firstNameMinLength": "Il nome deve essere di almeno 2 caratteri",
+      "lastNameMinLength": "Il cognome deve essere di almeno 2 caratteri",
+      "avatarRequired": "Seleziona un avatar",
+      "genderRequired": "Seleziona il tuo genere",
+      "dateOfBirthRequired": "Seleziona la tua data di nascita",
+      "phoneRequired": "Inserisci il tuo numero di telefono",
+      "addressRequired": "Inserisci il tuo indirizzo",
+      "professionRequired": "Seleziona la tua professione"
+    },
+    "footer": {
+      "step1": "Queste informazioni ci aiuteranno a personalizzare la tua esperienza di apprendimento",
+      "step2": "Le informazioni personali saranno mantenute sicure e utilizzate solo per migliorare il nostro servizio",
+      "step3": "L'indirizzo sarà utilizzato per inviare materiali didattici e notifiche importanti",
+      "step4": "Grazie per aver completato il processo di configurazione dell'account!"
+    }
+  },
+  "password": {
+    "title": "Impostazioni Password",
+    "description": "Proteggi il tuo account aggiornando la tua password",
+    "form": {
+      "title": "Cambia Password",
+      "currentPassword": "Password Attuale",
+      "currentPasswordPlaceholder": "Inserisci la tua password attuale",
+      "newPassword": "Nuova Password",
+      "newPasswordPlaceholder": "Inserisci la tua nuova password",
+      "confirmPassword": "Conferma Nuova Password",
+      "confirmPasswordPlaceholder": "Reinserisci la tua nuova password",
+      "updateButton": "Aggiorna Password",
+      "resetButton": "Reimposta"
+    },
+    "strength": {
+      "label": "Forza della Password:",
+      "levels": {
+        "veryWeak": "Molto Debole",
+        "weak": "Debole",
+        "medium": "Media",
+        "strong": "Forte",
+        "veryStrong": "Molto Forte"
+      }
+    },
+    "accountInfo": {
+      "title": "Informazioni Account",
+      "email": "Email",
+      "joinDate": "Data di Iscrizione"
+    },
+    "validation": {
+      "currentPasswordRequired": "Inserisci la tua password attuale",
+      "newPasswordRequired": "Inserisci la tua nuova password",
+      "newPasswordMinLength": "La password deve essere di almeno 6 caratteri",
+      "confirmPasswordRequired": "Conferma la tua password",
+      "passwordsNotMatch": "Le password non corrispondono"
+    },
+    "notifications": {
+      "success": "Password aggiornata con successo!",
+      "currentPasswordIncorrect": "La password attuale non è corretta",
+      "newPasswordInvalid": "La nuova password non è valida",
+      "confirmPasswordMismatch": "La conferma della password non corrisponde",
+      "updateFailed": "Impossibile aggiornare la password"
+    }
+  },
+  "devices": {
+    "title": "Gestione Dispositivi",
+    "description": "Visualizza e gestisci i dispositivi che hanno effettuato l'accesso al tuo account",
+    "empty": {
+      "title": "Nessun dispositivo ancora",
+      "description": "I dispositivi da cui accedi appariranno qui"
+    },
+    "table": {
+      "deviceName": "Nome Dispositivo",
+      "deviceType": "Tipo di Dispositivo",
+      "ipAddress": "Indirizzo IP",
+      "lastLogin": "Ultimo Accesso",
+      "status": "Stato",
+      "actions": "Azioni"
+    },
+    "types": {
+      "laptop": "Laptop",
+      "tablet": "Tablet",
+      "phone": "Telefono",
+      "web": "Web"
+    },
+    "status": {
+      "active": "Attivo",
+      "inactive": "Inattivo"
+    },
+    "actions": {
+      "revoke": "Revoca",
+      "delete": "Elimina Definitivamente",
+      "revokeConfirm": "Revocare questo dispositivo?",
+      "revokeDescription": "Il dispositivo sarà disattivato ma potrà ancora accedere di nuovo in seguito.",
+      "deleteConfirm": "Eliminare definitivamente questo dispositivo?",
+      "deleteDescription": "Il dispositivo sarà eliminato definitivamente. Puoi registrare un nuovo dispositivo dello stesso tipo dopo l'eliminazione."
+    },
+    "notifications": {
+      "loadFailed": "Impossibile caricare i dispositivi",
+      "revokeSuccess": "Dispositivo revocato con successo",
+      "revokeFailed": "Impossibile revocare il dispositivo",
+      "deleteSuccess": "Dispositivo eliminato con successo",
+      "deleteFailed": "Impossibile eliminare il dispositivo"
+    }
+  },
+  "homepage": {
+    "hero": {
+      "badge": "Impara con la Guida di Esperti",
+      "title": "Impara l'Italiano in Modo Efficace e Sicuro",
+      "description": "Unisciti a migliaia di studenti che imparano l'italiano autentico con Phan Tam, un istruttore esperto dedicato a rendere il tuo percorso linguistico coinvolgente ed efficace.",
+      "exploreCourses": "Esplora i Corsi",
+      "signUpNow": "Iscriviti Ora",
+      "stats": {
+        "activeStudents": "Studenti Attivi",
+        "averageRating": "Valutazione Media",
+        "completionRate": "Tasso di Completamento"
+      }
+    },
+    "courses": {
+      "title": "Corsi in Evidenza",
+      "description": "Corsi accuratamente progettati per portarti da principiante a parlante fluente",
+      "badges": {
+        "bestseller": "Bestseller",
+        "popular": "Popolare",
+        "new": "Nuovo"
+      },
+      "levels": {
+        "beginner": "Principiante",
+        "intermediate": "Intermedio",
+        "advanced": "Avanzato"
+      },
+      "course1": {
+        "title": "Italiano per Principianti",
+        "description": "Inizia il tuo percorso italiano con vocabolario essenziale, fondamenti grammaticali e abilità conversazionali per situazioni quotidiane.",
+        "duration": "12 settimane"
+      },
+      "course2": {
+        "title": "Padronanza dell'Italiano Intermedio",
+        "description": "Eleva il tuo italiano con grammatica complessa, espressioni idiomatiche e approfondimenti culturali per una comunicazione sicura.",
+        "duration": "16 settimane"
+      },
+      "course3": {
+        "title": "Conversazione Avanzata",
+        "description": "Perfeziona la tua fluidità con argomenti avanzati, italiano professionale e comunicazione sfumata per affari e viaggi.",
+        "duration": "20 settimane"
+      }
+    },
+    "quiz": {
+      "badge": "Quiz Interattivi",
+      "title": "Padroneggia l'Italiano con Quiz Intelligenti",
+      "description": "Rafforza ogni lezione con valutazioni adattive, feedback immediato e sfide gamificate progettate per mantenerti motivato.",
+      "metrics": {
+        "questions": {
+          "value": "1.200+",
+          "label": "Domande di Pratica"
+        },
+        "passRate": {
+          "value": "94%",
+          "label": "Tasso di Superamento Medio"
+        },
+        "time": {
+          "value": "10 min",
+          "label": "Sessione Media"
+        }
+      },
+      "highlights": {
+        "adaptive": {
+          "title": "Percorsi adattivi per l'apprendimento",
+          "description": "La difficoltà delle domande si adatta automaticamente in base ai tuoi progressi per mantenerti sfidato senza sentirti sopraffatto."
+        },
+        "feedback": {
+          "title": "Feedback immediato",
+          "description": "Ogni risposta include contesto, spiegazioni ed esempi così capisci immediatamente il perché."
+        },
+        "certification": {
+          "title": "Certificato pronto",
+          "description": "Completa le tappe del quiz per sbloccare badge e certificati che celebrano ogni passo del tuo percorso."
+        }
+      },
+      "cta": "Prova un'Esperienza Quiz",
+      "summary": {
+        "title": "Prestazione in Tempo Reale",
+        "value": "92% Precisione",
+        "caption": "Continua così! Sei sulla buona strada per padroneggiare il vocabolario di livello intermedio."
+      },
+      "preview": {
+        "title": "Quiz di Vocabolario Italiano",
+        "subtitle": "Domanda 3 - 12 rimanenti",
+        "badge": "Modalità Adattiva",
+        "topic": "Focus sul Vocabolario",
+        "question": "Qual è la traduzione corretta di \"Buongiorno\"?",
+        "options": {
+          "a": "Buona sera",
+          "b": "Buongiorno",
+          "c": "A presto"
+        },
+        "correct": "Risposta corretta"
+      },
+      "progress": {
+        "label": "Progresso",
+        "value": "80% completato"
+      }
+    },
+    "instructor": {
+      "badge": "Incontra il Tuo Istruttore",
+      "title": "Impara da Phan Tam",
+      "description": "Con oltre un decennio di esperienza nell'insegnamento dell'italiano a studenti internazionali, Phan Tam porta una combinazione unica di competenza linguistica e passione culturale in ogni lezione.",
+      "experience": "10+ Anni",
+      "experienceText": "Insegnamento della Lingua Italiana",
+      "features": {
+        "certified": {
+          "title": "Esperto Certificato",
+          "description": "Laurea magistrale in Linguistica Italiana presso l'Università di Bologna"
+        },
+        "cultural": {
+          "title": "Immersione Culturale",
+          "description": "Vissuto in Italia per 8 anni, insegnando e studiando la cultura italiana"
+        },
+        "method": {
+          "title": "Metodo Provato",
+          "description": "Sviluppato un approccio didattico unico con il 98% di soddisfazione degli studenti"
+        }
+      },
+      "button": "Prenota una Consulenza Gratuita"
+    },
+    "testimonials": {
+      "title": "Cosa Dicono gli Studenti",
+      "description": "Unisciti a migliaia di studenti soddisfatti che hanno raggiunto i loro obiettivi linguistici italiani",
+      "testimonial1": {
+        "text": "Lo stile di insegnamento di Phan Tam è incredibile! Sono passato da zero italiano a ordinare con sicurezza nei ristoranti di Roma in 3 mesi.",
+        "author": "Sarah Martinez",
+        "course": "Corso Principiante"
+      },
+      "testimonial2": {
+        "text": "Il corso intermedio ha superato le mie aspettative. Gli approfondimenti culturali e gli esercizi pratici hanno reso l'apprendimento coinvolgente ed efficace.",
+        "author": "James Chen",
+        "course": "Corso Intermedio"
+      },
+      "testimonial3": {
+        "text": "Miglior investimento nella mia carriera! Il corso avanzato mi ha aiutato a trovare un lavoro a Milano. Phan Tam è semplicemente il miglior insegnante di italiano.",
+        "author": "Emma Peterson",
+        "course": "Corso Avanzato"
+      }
+    },
+    "cta": {
+      "title": "Pronto ad Iniziare il Tuo Percorso Italiano?",
+      "description": "Unisciti alla nostra community di studenti appassionati e scopri la bellezza della lingua italiana",
+      "browseCourses": "Sfoglia Tutti i Corsi",
+      "signUpNow": "Iscriviti Ora"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Panoramica della Dashboard",
+      "welcome": "Bentornato! Ecco una panoramica delle tue prestazioni di oggi.",
+      "stats": {
+        "totalUsers": "Totale Studenti",
+        "activeCourses": "Corsi Attivi",
+        "monthlyRevenue": "Entrate Mensili",
+        "completionRate": "Tasso di Completamento"
+      },
+      "quickActions": {
+        "title": "Azioni Rapide",
+        "createCourse": "Crea Corso",
+        "manageStudents": "Gestisci Studenti",
+        "viewOrders": "Visualizza Ordini",
+        "settings": "Impostazioni"
+      },
+      "latestUsers": {
+        "title": "Ultimi Studenti",
+        "viewAll": "Vedi Tutti",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "noUsers": "Ancora nessuno studente"
+      },
+      "topCourses": {
+        "title": "Corsi Migliori",
+        "viewAll": "Vedi Tutti",
+        "noCourses": "Nessun corso disponibile"
+      }
+    },
+    "users": {
+    "title": "Gestione Studenti",
+    "subtitle": "Gestisci gli account degli studenti e monitora i loro progressi",
+    "stats": {
+      "totalStudents": "Totale Studenti",
+      "activeStudents": "Studenti Attivi",
+      "completedStudents": "Studenti Completati"
+    },
+    "search": {
+      "placeholder": "Cerca studenti per nome, email o username..."
+    },
+    "actions": {
+      "refresh": "Aggiorna",
+      "editUser": "Modifica studente",
+      "suspend": "Sospendi",
+      "activate": "Attiva",
+      "deleteUser": "Elimina studente"
+    },
+    "error": {
+      "title": "Errore nel caricamento degli studenti",
+      "tryAgain": "Riprova"
+    },
+    "table": {
+      "title": "Tutti gli studenti",
+      "student": "Studente",
+      "enrolledCourses": "Corsi iscritti",
+      "status": "Stato",
+      "joined": "Data iscrizione",
+      "actions": "Azioni",
+      "showing": "Mostrando {current} di {total} studenti",
+      "totalStudents": "Totale studenti: {total}"
+    },
+    "courses": {
+      "count": "{count} corso",
+      "active": "Attivo",
+      "completed": "Completato",
+      "avgProgress": "Progresso medio"
+    },
+    "status": {
+      "active": "Attivo",
+      "inactive": "Inattivo",
+      "hasCompleted": "Completato",
+      "inProgress": "In corso"
+    },
+    "joined": {
+      "studentId": "ID Studente"
+    },
+    "empty": {
+      "title": "Nessun studente trovato",
+      "subtitle": "Prova a modificare i criteri di ricerca",
+      "clearSearch": "Cancella ricerca"
+    },
+    "messages": {
+      "refreshSuccess": "Aggiornamento degli studenti riuscito",
+      "editUser": "Modifica studente: {name}",
+      "confirmSuspend": {
+        "title": "Sei sicuro di sospendere questo studente?",
+        "content": "Questo sospenderà {name}"
+      },
+      "confirmActivate": {
+        "title": "Sei sicuro di attivare questo studente?",
+        "content": "Questo attiverà {name}"
+      },
+      "confirmDelete": {
+        "title": "Sei sicuro di eliminare questo studente?",
+        "content": "Questo eliminerà definitivamente {name}"
+      },
+      "suspendSuccess": "Studente sospeso con successo",
+      "activateSuccess": "Studente attivato con successo",
+      "deleteSuccess": "Studente eliminato con successo"
+    }
+    },
+    "chapterManagement": {
+      "title": "Capitoli",
+      "addChapter": "Aggiungi capitolo",
+      "createChapter": "Crea capitolo",
+      "createFirstChapter": "Crea il primo capitolo",
+      "emptyStates": {
+        "noChapters": "Nessun capitolo ancora",
+        "noChaptersDescription": "Crea il primo capitolo per iniziare a organizzare i contenuti del corso.",
+        "selectChapter": "Seleziona un capitolo",
+        "selectChapterDescription": "Scegli un capitolo dalla barra laterale per visualizzare e gestire le lezioni.",
+        "noChaptersAvailable": "Nessun capitolo disponibile",
+        "noChaptersAvailableDescription": "Crea il primo capitolo per iniziare a organizzare i contenuti del corso.",
+        "noLessons": "Nessuna lezione ancora",
+        "noLessonsDescription": "Questo capitolo non contiene lezioni. Crea la prima lezione per iniziare a insegnare.",
+        "createFirstLesson": "Crea la prima lezione"
+      },
+      "form": {
+        "title": "Aggiungi capitolo",
+        "editTitle": "Modifica capitolo",
+        "chapterTitle": "Titolo del capitolo",
+        "chapterTitlePlaceholder": "Inserisci il titolo del capitolo",
+        "chapterTitleRequired": "Inserisci il titolo del capitolo!",
+        "chapterDescription": "Descrizione del capitolo",
+        "chapterDescriptionPlaceholder": "Inserisci la descrizione del capitolo"
+      },
+      "lessons": {
+        "addLesson": "Aggiungi lezione",
+        "edit": "Modifica",
+        "time": "Tempo",
+        "minutes": "minuti",
+        "updateOrderSuccess": "Ordine delle lezioni aggiornato con successo!",
+        "updateOrderFailed": "Aggiornamento dell'ordine delle lezioni fallito"
+      },
+      "notifications": {
+        "createChapterSuccess": "Capitolo creato con successo",
+        "createChapterFailed": "Creazione del capitolo fallita",
+        "updateChapterSuccess": "Capitolo aggiornato con successo!",
+        "updateChapterFailed": "Aggiornamento del capitolo fallito",
+        "deleteChapterSuccess": "Capitolo eliminato con successo!",
+        "deleteChapterFailed": "Eliminazione del capitolo fallita",
+        "updateOrderSuccess": "Ordine dei capitoli aggiornato con successo!",
+        "updateOrderFailed": "Aggiornamento dell'ordine dei capitoli fallito"
+      },
+      "deleteConfirm": {
+        "title": "Elimina capitolo",
+        "message": "Sei sicuro di voler eliminare questo capitolo?",
+        "warning": "Questa azione non può essere annullata. Tutti i contenuti, incluse lezioni e materiali, saranno eliminati definitivamente.",
+        "lessons": "Lezioni",
+        "cancel": "Annulla",
+        "confirm": "Elimina capitolo"
+      }
+    },
+    "formLesson": {
+      "title": {
+        "create": "Crea nuova lezione",
+        "edit": "Modifica lezione"
+      },
+      "description": {
+        "create": "Aggiungi una nuova lezione a questo capitolo",
+        "edit": "Aggiorna informazioni e contenuti della lezione"
+      },
+      "form": {
+        "title": "Titolo",
+        "titlePlaceholder": "Inserisci il titolo della lezione",
+        "titleRequired": "Inserisci il titolo della lezione!",
+        "slug": "Slug",
+        "slugPlaceholder": "Generato automaticamente dal titolo",
+        "videoDuration": "Durata video (minuti)",
+        "videoDurationPlaceholder": "Inserisci la durata del video",
+        "videoDurationRequired": "La durata del video deve essere ≥ 0!",
+        "description": "Descrizione",
+        "descriptionPlaceholder": "Inserisci una descrizione",
+        "isPreview": "Impostazioni anteprima",
+        "previewLabel": "Consenti anteprima",
+        "previewNote": "Abilitando questa opzione, gli utenti potranno visualizzare il video come anteprima.",
+        "introVideo": "Carica video introduttivo",
+        "introImage": "Carica immagine introduttiva"
+      },
+      "upload": {
+        "videoDragText": "Trascina i file qui, oppure",
+        "videoBrowse": "Sfoglia",
+        "videoHint": "Carica video nei formati MOV o MP4.",
+        "imageDragText": "Trascina i file qui, oppure",
+        "imageBrowse": "Sfoglia",
+        "imageHint": "Carica immagini nei formati JPEG o PNG.",
+        "uploading": "Caricamento video in corso...",
+        "fileUnchanged": "Il file non è cambiato, caricamento saltato"
+      },
+      "buttons": {
+        "previewLesson": "Anteprima lezione",
+        "deleteLesson": "Elimina lezione",
+        "createLesson": "Crea lezione",
+        "updateLesson": "Aggiorna lezione",
+        "uploading": "Caricamento...",
+        "cancel": "Annulla",
+        "delete": "Elimina"
+      },
+      "deleteDialog": {
+        "title": "Elimina lezione",
+        "confirmTitle": "Elimina lezione",
+        "confirmMessage": "Questa azione non può essere annullata.",
+        "lessonLabel": "Lezione:",
+        "confirmDescription": "Sei sicuro di voler eliminare questa lezione? Tutti i contenuti, inclusi video e materiali, saranno eliminati definitivamente."
+      },
+      "materials": {
+        "title": "Materiali della lezione",
+        "upload": "Carica materiale",
+        "uploadDescription": "Trascina i file o clicca per selezionare",
+        "addMaterial": "Aggiungi materiale",
+        "editMaterial": "Modifica materiale",
+        "deleteMaterial": "Elimina materiale",
+        "materialTitle": "Titolo",
+        "materialTitlePlaceholder": "Inserisci il titolo del materiale",
+        "materialTitleRequired": "Inserisci il titolo del materiale!",
+        "materialDescription": "Descrizione",
+        "materialDescriptionPlaceholder": "Inserisci la descrizione (opzionale)",
+        "fileType": "Tipo file",
+        "fileSize": "Dimensione",
+        "uploadedAt": "Caricato il",
+        "empty": "Nessun materiale disponibile",
+        "emptyDescription": "Carica materiali che gli studenti potranno scaricare e utilizzare",
+        "notifications": {
+          "uploadSuccess": "Materiale caricato con successo",
+          "uploadFailed": "Caricamento materiale fallito",
+          "saveSuccess": "Materiale salvato con successo",
+          "saveFailed": "Salvataggio materiale fallito",
+          "deleteSuccess": "Materiale eliminato con successo",
+          "deleteFailed": "Eliminazione materiale fallita",
+          "editSuccess": "Materiale aggiornato con successo",
+          "editFailed": "Aggiornamento materiale fallito"
+        }
+      },
+      "notifications": {
+        "uploadVideoFailed": "Caricamento video fallito",
+        "uploadImageFailed": "Caricamento immagine fallito",
+        "createLessonSuccess": "Lezione creata con successo",
+        "updateLessonSuccess": "Lezione aggiornata con successo",
+        "createLessonFailed": "Creazione lezione fallita",
+        "updateLessonFailed": "Aggiornamento lezione fallito",
+        "deleteLessonSuccess": "Lezione eliminata con successo",
+        "deleteLessonSuccessDescription": "La lezione è stata eliminata correttamente.",
+        "deleteLessonFailed": "Eliminazione lezione fallita",
+        "deleteLessonFailedDescription": "Si è verificato un errore durante l'eliminazione della lezione. Riprova."
+      }
+    },
+    "classroom": {
+      "title": "Classe",
+      "addNewClassroom": "Aggiungi nuova classe",
+      "createFirstClassroom": "Crea la prima classe",
+      "emptyStates": {
+        "noClassrooms": "Nessuna classe ancora",
+        "noClassroomsDescription": "Crea la prima classe per iniziare a organizzare le sessioni e gestire le iscrizioni degli studenti."
+      },
+      "form": {
+        "title": "Crea classe",
+        "classroomTitle": "Nome della classe",
+        "classroomTitlePlaceholder": "Inserisci il nome della classe",
+        "classroomTitleRequired": "Inserisci il nome della classe!",
+        "studentCount": "Numero di studenti",
+        "studentCountPlaceholder": "Inserisci il numero di studenti",
+        "studentCountRequired": "Inserisci il numero di studenti!",
+        "studentCountMin": "Il numero minimo di studenti è 1!",
+        "schedule": "Orario",
+        "scheduleRequired": "Inserisci l'orario!",
+        "selectDay": "Seleziona giorno",
+        "selectDayRequired": "Seleziona un giorno!",
+        "startTime": "Ora di inizio",
+        "endTime": "Ora di fine",
+        "addMore": "Aggiungi altro",
+        "startDate": "Data di inizio",
+        "startDatePlaceholder": "Seleziona la data di inizio",
+        "startDateRequired": "La data di inizio è obbligatoria!",
+        "endDate": "Data di fine",
+        "endDatePlaceholder": "Seleziona la data di fine",
+        "endDateRequired": "La data di fine è obbligatoria!",
+        "startDateAfterEndDate": "La data di inizio non può essere successiva alla data di fine!",
+        "pricingSection": "Prezzi",
+        "isFree": "Classe gratuita",
+        "isFreeDescription": "Se selezionato, questa classe sarà gratuita per gli studenti",
+        "price": "Prezzo",
+        "pricePlaceholder": "Inserisci il prezzo della classe",
+        "priceDescription": "Prezzo base della classe (le lezioni 1-on-1 solitamente costano di più delle lezioni di gruppo)",
+        "priceRequired": "Inserisci il prezzo della classe!",
+        "discountPrice": "Prezzo scontato",
+        "discountPricePlaceholder": "Inserisci il prezzo scontato (opzionale)",
+        "discountPriceDescription": "Il prezzo scontato deve essere inferiore al prezzo base",
+        "discountPriceMustBeLessThanPrice": "Il prezzo scontato deve essere inferiore al prezzo base!",
+        "discountPriceNotAllowedForFree": "Non è possibile impostare un prezzo scontato per una classe gratuita!",
+        "effectivePrice": "Prezzo effettivo"
+      },
+      "notifications": {
+        "createSuccess": "Classe creata con successo!",
+        "createFailed": "Creazione della classe fallita",
+        "loadFailed": "Caricamento dei dettagli del corso fallito"
+      },
+      "card": {
+        "maxStudents": "Max studenti",
+        "enrolledStudents": "Studenti iscritti",
+        "sessions": "Sessioni",
+        "schedule": "Orario",
+        "viewDetails": "Vedi dettagli",
+        "viewSchedule": "Vedi calendario",
+        "attendance": "Presenze",
+        "pricing": "Prezzo",
+        "free": "Gratuito",
+        "off": "sconto",
+        "oneOnOne": "1-a-1"
+      },
+      "detail": {
+        "course": "Corso",
+        "maxStudents": "studenti massimi",
+        "enrolled": "iscritti",
+        "editClassroom": "Modifica classe",
+        "backToList": "Torna alla lista",
+        "totalStudents": "Totale studenti",
+        "enrolledStudents": "Studenti iscritti",
+        "totalSessions": "Totale sessioni",
+        "schedule": "Orario",
+        "scheduleInfo": "Informazioni sull'orario",
+        "upcomingSessions": "Prossime sessioni",
+        "addSession": "Aggiungi sessione",
+        "noSessions": "Nessuna sessione imminente",
+        "attended": "presente",
+        "joinMeeting": "Partecipa alla riunione",
+        "meetingLink": "Link riunione",
+        "sessionStatus": {
+          "scheduled": "Programmato",
+          "ongoing": "In corso",
+          "completed": "Completato",
+          "cancelled": "Annullato"
+        },
+        "editSession": "Modifica sessione",
+        "sessionTopic": "Argomento sessione",
+        "sessionTopicPlaceholder": "Inserisci l'argomento della sessione",
+        "sessionDescription": "Descrizione",
+        "sessionDescriptionPlaceholder": "Inserisci la descrizione della sessione",
+        "startTime": "Ora di inizio",
+        "endTime": "Ora di fine",
+        "location": "Luogo",
+        "locationPlaceholder": "Inserisci luogo o sala conferenze",
+        "meetingInfo": "Informazioni riunione",
+        "meetingId": "ID riunione",
+        "meetingIdPlaceholder": "Inserisci ID riunione",
+        "meetingPassword": "Password riunione",
+        "meetingPasswordPlaceholder": "Inserisci password riunione",
+        "participantLimit": "Limite partecipanti",
+        "status": "Stato",
+        "scheduled": "Programmato",
+        "ongoing": "In corso",
+        "completed": "Completato",
+        "cancelled": "Annullato",
+        "saveSession": "Salva sessione",
+        "sessionUpdated": "Sessione aggiornata con successo",
+        "sessionUpdateFailed": "Aggiornamento sessione fallito",
+        "sessionCreated": "Sessione creata con successo",
+        "sessionCreateFailed": "Creazione sessione fallita",
+        "sessionsLoadFailed": "Caricamento sessioni fallito",
+        "classroomUpdated": "Classe aggiornata con successo",
+        "classroomUpdateFailed": "Aggiornamento classe fallito",
+        "createSession": "Crea sessione",
+        "sessionTopicRequired": "L'argomento della sessione è obbligatorio",
+        "startTimeRequired": "L'ora di inizio è obbligatoria",
+        "endTimeRequired": "L'ora di fine è obbligatoria",
+        "startTimeInPast": "L'ora di inizio non può essere nel passato",
+        "endTimeAfterStartTime": "L'ora di fine deve essere successiva all'ora di inizio",
+        "sessionTooShort": "La sessione deve durare almeno 15 minuti",
+        "sessionTooLong": "La sessione non può superare le 8 ore",
+        "deleteSession": "Elimina sessione",
+        "confirmDeleteSession": "Sei sicuro di voler eliminare questa sessione?",
+        "deleteSessionWarning": "Questa azione non può essere annullata. Tutti i dati della sessione saranno eliminati definitivamente.",
+        "sessionDeleted": "Sessione eliminata con successo",
+        "sessionDeleteFailed": "Eliminazione sessione fallita",
+        "viewStudents": "Visualizza studenti",
+        "studentList": "Elenco studenti",
+        "noStudents": "Nessuno studente iscritto a questa classe",
+        "studentsLoadFailed": "Caricamento elenco studenti fallito",
+        "enrolledOn": "Iscritto il",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "sessionAttendance": "Registro presenze sessione",
+        "attendanceLoadFailed": "Impossibile caricare i dati delle presenze",
+        "noAttendance": "Nessun record di presenza",
+        "totalAttendance": "Presenze totali",
+        "present": "Presente",
+        "late": "In ritardo",
+        "checkedAt": "Registrato alle"
+      },
+      "error": {
+        "cannotJoinClass": "Impossibile partecipare alla classe",
+        "checkInFailed": "Impossibile entrare nella classe. Riprova più tardi.",
+        "checkInTooEarly": "Stai cercando di accedere troppo presto. Attendi l'inizio della classe.",
+        "checkInNotYetAvailable": "Check-in non ancora disponibile. Disponibile da {time}",
+        "checkInNotYetAvailableFrom": "Check-in non ancora disponibile. Disponibile da {time}",
+        "Check-in not yet available. Available from 2025-10-13T01:15:00+00:00": "Check-in non ancora disponibile. Disponibile dal 2025-10-13T01:15:00+00:00"
+      },
+      "edit": {
+        "title": "Modifica classe",
+        "classroomTitle": "Nome della classe",
+        "classroomTitlePlaceholder": "Inserisci nome della classe",
+        "studentCount": "Massimo numero di studenti",
+        "studentCountPlaceholder": "Inserisci massimo numero di studenti",
+        "startDate": "Data di inizio",
+        "startDatePlaceholder": "Seleziona data di inizio",
+        "endDate": "Data di fine",
+        "endDatePlaceholder": "Seleziona data di fine",
+        "meetingLink": "Link riunione",
+        "meetingLinkPlaceholder": "Inserisci link riunione",
+        "currentInfo": "Informazioni attuali",
+        "course": "Corso",
+        "enrolled": "Iscritti",
+        "students": "studenti",
+        "sessions": "sessioni",
+        "save": "Salva modifiche",
+        "cancel": "Annulla",
+        "titleRequired": "Il nome della classe è obbligatorio",
+        "titleLength": "Il nome deve contenere tra 3 e 100 caratteri",
+        "studentCountRequired": "Il numero di studenti è obbligatorio",
+        "studentCountRange": "Il numero di studenti deve essere tra 1 e 1000",
+        "startDateRequired": "La data di inizio è obbligatoria",
+        "endDateRequired": "La data di fine è obbligatoria",
+        "schedule": "Orario",
+        "addSchedule": "Aggiungi orario",
+        "noSchedules": "Nessun orario ancora",
+        "scheduleItem": "Orario",
+        "dayOfWeek": "Giorno della settimana",
+        "startTime": "Ora di inizio",
+        "endTime": "Ora di fine"
+      },
+      "meetingLink": {
+        "editMeetingLink": "Modifica link riunione",
+        "noMeetingLink": "Nessun link riunione impostato",
+        "meetingLinkPlaceholder": "Inserisci link riunione (es: https://zoom.us/j/123456789)",
+        "saveMeetingLink": "Salva link riunione",
+        "cancel": "Annulla",
+        "meetingLinkUpdated": "Link riunione aggiornato con successo!",
+        "meetingLinkUpdateFailed": "Impossibile aggiornare il link riunione",
+        "meetingLinkCopied": "Link riunione copiato negli appunti!",
+        "meetingLinkCopyFailed": "Impossibile copiare il link riunione"
+      }
+    },
+    "courses": {
+      "title": "Gestione dei corsi",
+      "createCourse": "Crea corso",
+      "courseNotFound": "Corso non trovato",
+      "tabs": {
+        "classroom": "Classe",
+        "quiz": "Quiz",
+        "students": "Studenti",
+        "chapters": "Capitoli",
+        "resources": "Materiali",
+        "pricing": "Prezzi",
+        "detail": "Dettagli"
+      },
+      "breadcrumb": {
+        "course": "Corso"
+      }
+    },
+    "pricePlans": {
+      "title": "Gestione piani tariffari",
+      "description": "Gestisci i piani tariffari con durata per questo corso",
+      "actions": {
+        "add": "Aggiungi piano",
+        "edit": "Modifica",
+        "delete": "Elimina"
+      },
+      "table": {
+        "columns": {
+          "duration": "Durata",
+          "price": "Prezzo",
+          "status": "Stato",
+          "available": "Disponibile",
+          "dateRange": "Intervallo date",
+          "actions": "Azioni"
+        },
+        "totalPlans": "piani tariffari",
+        "months": "mesi",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "default": "Predefinito",
+        "available": "Disponibile",
+        "unavailable": "Non disponibile",
+        "noDateRange": "Senza limite",
+        "fromDate": "Da {date}",
+        "untilDate": "Fino a {date}"
+      },
+      "form": {
+        "duration": "Durata (mesi)",
+        "durationRequired": "Inserisci la durata",
+        "durationPlaceholder": "Inserisci numero di mesi",
+        "priceAmount": "Prezzo",
+        "priceAmountRequired": "Inserisci il prezzo",
+        "priceAmountPlaceholder": "Inserisci prezzo",
+        "priceCurrency": "Valuta",
+        "priceCurrencyRequired": "Seleziona una valuta",
+        "priceCurrencyPlaceholder": "Seleziona valuta",
+        "startsAt": "Data di inizio",
+        "startsAtPlaceholder": "Seleziona data di inizio",
+        "endsAt": "Data di fine",
+        "endsAtPlaceholder": "Seleziona data di fine",
+        "isActive": "Attiva",
+        "isAvailable": "Disponibile",
+        "isDefault": "Predefinito"
+      },
+      "modal": {
+        "createTitle": "Aggiungi piano tariffario",
+        "editTitle": "Modifica piano tariffario",
+        "save": "Salva",
+        "cancel": "Annulla"
+      },
+      "notifications": {
+        "loadFailed": "Caricamento piani tariffari fallito",
+        "createSuccess": "Piano tariffario creato con successo",
+        "updateSuccess": "Piano tariffario aggiornato con successo",
+        "deleteSuccess": "Piano tariffario eliminato con successo",
+        "deleteFailed": "Eliminazione piano tariffario fallita",
+        "saveFailed": "Salvataggio piano tariffario fallito"
+      },
+      "deleteConfirm": {
+        "title": "Conferma eliminazione",
+        "content": "Sei sicuro di voler eliminare il piano da {duration} mesi con prezzo {price}?",
+        "okText": "Elimina",
+        "cancelText": "Annulla"
+      },
+      "empty": {
+        "title": "Nessun piano tariffario",
+        "description": "Aggiungi il primo piano tariffario per questo corso"
+      }
+    },
+    "students": {
+      "title": "Studenti del corso",
+      "description": "Gestisci gli studenti iscritti a questo corso",
+      "stats": {
+        "totalStudents": "Totale studenti",
+        "activeStudents": "Studenti attivi",
+        "averageProgress": "Progresso medio",
+        "recentEnrollments": "Iscrizioni recenti"
+      },
+      "filters": {
+        "searchPlaceholder": "Cerca studenti per nome, email o username..."
+      },
+      "table": {
+        "columns": {
+          "student": "Studente",
+          "classroom": "Classe",
+          "progress": "Progresso",
+          "lastAccessed": "Ultimo accesso",
+          "enrolled": "Iscritto",
+          "actions": "Azioni"
+        },
+        "status": {
+          "active": "Attivo",
+          "inactive": "Inattivo",
+          "notCompleted": "Non completato",
+          "enrolled": "Iscritto",
+          "disabled": "Disabilitato"
+        },
+        "emptyState": {
+          "title": "Nessuno studente trovato",
+          "description": "Prova a modificare i criteri di ricerca",
+          "clearSearch": "Pulisci ricerca"
+        },
+        "totalStudents": "Totale studenti: {total}"
+      },
+      "actions": {
+        "refresh": "Aggiorna",
+        "viewProgress": "Vedi progresso",
+        "removeFromCourse": "Rimuovi dal corso",
+        "disableStudent": "Disabilita studente",
+        "enableStudent": "Abilita studente"
+      },
+      "error": {
+        "title": "Errore nel caricamento studenti",
+        "tryAgain": "Riprova"
+      },
+      "messages": {
+        "refreshSuccess": "Lista studenti aggiornata con successo",
+        "viewProgressMessage": "Visualizza progresso di {name}",
+        "removeStudentMessage": "Rimuovi {name} dal corso",
+        "disableStudentSuccess": "Studente {name} disabilitato",
+        "enableStudentSuccess": "Studente {name} abilitato",
+        "disableStudentError": "Impossibile disabilitare studente",
+        "enableStudentError": "Impossibile abilitare studente"
+      }
+    },
+    "resources": {
+      "title": "Gestione materiali",
+      "description": "Gestisci file, video e risorse del corso",
+      "addResource": "Aggiungi materiale",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "downloadable": "Scaricabile",
+      "notDownloadable": "Non scaricabile",
+      "classrooms": "Classi",
+      "allClassrooms": "Tutte le classi",
+      "table": {
+        "totalResources": "materiali",
+        "columns": {
+          "order": "Ordine",
+          "type": "Tipo",
+          "title": "Titolo",
+          "size": "Dimensione",
+          "duration": "Durata",
+          "downloadable": "Scaricabile",
+          "classrooms": "Classi",
+          "uploadedAt": "Caricato il",
+          "actions": "Azioni"
+        }
+      },
+      "empty": {
+        "title": "Nessun materiale",
+        "subtitle": "Aggiungi il primo materiale per questo corso"
+      },
+      "deleteConfirm": {
+        "title": "Elimina materiale",
+        "content": "Sei sicuro di voler eliminare il materiale \"{title}\"? L'azione non può essere annullata.",
+        "okText": "Elimina",
+        "cancelText": "Annulla"
+      },
+      "form": {
+        "addTitle": "Aggiungi nuovo materiale",
+        "editTitle": "Modifica materiale",
+        "assetType": "Tipo materiale",
+        "assetTypeRequired": "Seleziona il tipo di materiale!",
+        "assetTypePlaceholder": "Seleziona tipo materiale",
+        "title": "Titolo",
+        "titleRequired": "Inserisci il titolo!",
+        "titlePlaceholder": "Inserisci titolo materiale",
+        "description": "Descrizione",
+        "descriptionPlaceholder": "Inserisci descrizione (opzionale)",
+        "file": "File",
+        "fileRequired": "Seleziona un file!",
+        "fileUploading": "Caricamento file in corso...",
+        "selectFile": "Seleziona file",
+        "selectFiles": "Seleziona più file",
+        "fileUploaded": "File caricato con successo",
+        "uploaded": "Caricato",
+        "dragText": "Trascina file qui o",
+        "dragHint": "Supporta caricamento multiplo, max 100MB per file.",
+        "upload": "Carica",
+        "save": "Salva",
+        "cancel": "Annulla",
+        "uploadingProgress": "Caricamento: {percent}%",
+        "invalidFileType": "Tipo file non valido",
+        "invalidFileTypeDescription": "Seleziona file valido (pdf, doc, ppt, zip, immagine, audio)",
+        "videoNotAllowed": "File video non consentito",
+        "videoNotAllowedDescription": "Questo tipo di risorsa non permette video. Seleziona un altro tipo di file.",
+        "fileTooLarge": "File troppo grande",
+        "fileTooLargeDescription": "Il file non può superare 100MB",
+        "uploadFailed": "Caricamento fallito",
+        "getPresignedUrlFailed": "Errore ottenendo URL di upload",
+        "missingUploadUrls": "URL upload mancanti",
+        "uploadToS3Failed": "Errore upload su S3",
+        "createAssetFailed": "Errore creazione materiale",
+        "duration": "Durata",
+        "durationPlaceholder": "Inserisci durata (secondi)",
+        "durationDescription": "Durata in secondi (solo per video/audio)",
+        "seconds": "secondi",
+        "order": "Ordine visualizzazione",
+        "orderRequired": "Inserisci ordine!",
+        "orderPlaceholder": "Inserisci ordine",
+        "isDownloadable": "Consenti download",
+        "isDownloadableDescription": "Gli studenti possono scaricare il file",
+        "visibleClassrooms": "Classi visibili",
+        "visibleClassroomsPlaceholder": "Seleziona classi che possono vedere questo materiale",
+        "visibleClassroomsDescription": "Solo le classi selezionate potranno accedere (lascia vuoto per tutte)"
+      },
+      "notifications": {
+        "createSuccess": "Materiale creato con successo!",
+        "updateSuccess": "Materiale aggiornato con successo!",
+        "saveFailed": "Salvataggio fallito",
+        "deleteSuccess": "Materiale eliminato con successo!",
+        "deleteFailed": "Eliminazione fallita",
+        "loadFailed": "Caricamento materiali fallito",
+        "loadClassroomsFailed": "Caricamento classi fallito",
+        "uploadSuccess": "{count} materiali caricati con successo!",
+        "uploadPartialSuccess": "{total} caricati, {failed} falliti. File falliti: {files}",
+        "uploadAllFailed": "Tutti i caricamenti falliti. File: {files}",
+        "allFilesUploaded": "Tutti i file caricati"
+      }
+    },
+    "formCourse": {
+      "title": {
+        "create": "Crea un nuovo corso",
+        "edit": "Modifica corso"
+      },
+      "description": {
+        "create": "Aggiungi un nuovo corso al programma",
+        "edit": "Aggiorna informazioni e contenuti del corso"
+      },
+      "courseDetails": "Dettagli del corso",
+      "form": {
+        "title": "Titolo del corso",
+        "titlePlaceholder": "Inserisci il titolo del corso",
+        "titleRequired": "Inserisci il titolo del corso!",
+        "slug": "Slug del corso",
+        "slugPlaceholder": "Generato automaticamente dal titolo",
+        "shortDescription": "Descrizione breve del corso",
+        "shortDescriptionPlaceholder": "Inserisci una breve descrizione",
+        "shortDescriptionRequired": "Inserisci la descrizione breve!",
+        "category": "Categoria del corso",
+        "categoryPlaceholder": "Seleziona categoria",
+        "categoryRequired": "Seleziona una categoria!",
+        "courseType": "Tipo di corso",
+        "courseTypePlaceholder": "Seleziona tipo di corso",
+        "courseTypeRequired": "Seleziona un tipo di corso!",
+        "courseLevel": "Livello del corso",
+        "courseLevelPlaceholder": "Seleziona livello (opzionale)",
+        "courseSubLevel": "Livello secondario",
+        "courseSubLevelPlaceholder": "Seleziona livello secondario (opzionale)",
+        "courseSubLevelRequired": "Seleziona un livello secondario se hai scelto un livello!",
+        "level": "Livello corso (Legacy)",
+        "levelPlaceholder": "Seleziona livello",
+        "levelRequired": "Seleziona un livello!",
+        "isFree": "Corso gratuito",
+        "free": "Gratuito",
+        "paid": "A pagamento",
+        "price": "Prezzo del corso",
+        "pricePlaceholder": "Inserisci il prezzo",
+        "priceRequired": "Inserisci il prezzo del corso!",
+        "discountPrice": "Prezzo scontato",
+        "discountPricePlaceholder": "Inserisci prezzo scontato",
+        "durationHours": "Durata del corso (ore)",
+        "durationHoursPlaceholder": "Inserisci durata del corso",
+        "durationHoursRequired": "Inserisci la durata del corso!",
+        "introVideo": "Carica video introduttivo",
+        "introImage": "Carica immagine introduttiva",
+        "description": "Descrizione",
+        "descriptionRequired": "Inserisci la descrizione del corso!"
+      },
+      "upload": {
+        "videoDragText": "Trascina il file qui, oppure",
+        "videoBrowse": "Sfoglia",
+        "videoHint": "Carica video nei formati Mov o MP4.",
+        "imageDragText": "Trascina il file qui, oppure",
+        "imageBrowse": "Sfoglia",
+        "imageHint": "Carica immagine nei formati JPEG o PNG.",
+        "uploading": "Caricamento video in corso...",
+        "fileUnchanged": "Il file non è cambiato, upload ignorato"
+      },
+      "buttons": {
+        "previewCourse": "Anteprima corso",
+        "deleteCourse": "Elimina corso",
+        "createCourse": "Crea corso",
+        "updateCourse": "Aggiorna corso",
+        "uploading": "Caricamento...",
+        "cancel": "Annulla",
+        "delete": "Elimina"
+      },
+      "deleteDialog": {
+        "title": "Elimina corso",
+        "confirmTitle": "Conferma eliminazione corso",
+        "confirmMessage": "Questa azione non può essere annullata.",
+        "courseLabel": "Corso:",
+        "confirmDescription": "Sei sicuro di voler eliminare questo corso? Verrà contrassegnato come eliminato (soft delete) e non sarà visibile pubblicamente. Può essere ripristinato in seguito."
+      },
+      "notifications": {
+        "loginRequired": "Accedi per salvare il corso",
+        "createSuccess": "Corso creato con successo",
+        "updateSuccess": "Corso aggiornato con successo",
+        "createFailed": "Creazione del corso fallita",
+        "updateFailed": "Aggiornamento del corso fallito",
+        "deleteSuccess": "Corso eliminato con successo",
+        "deleteSuccessDescription": "Il corso è stato contrassegnato come eliminato (soft delete). Può essere ripristinato.",
+        "deleteFailed": "Eliminazione corso fallita",
+        "deleteFailedDescription": "Errore durante l'eliminazione. Riprova.",
+        "uploadImageFailed": "Caricamento immagine fallito"
+      }
+    },
+    "orders": {
+      "title": "Gestione ordini",
+      "description": "Gestisci e monitora tutti gli ordini dei corsi",
+      "stats": {
+        "totalOrders": "Totale ordini",
+        "totalRevenue": "Entrate totali",
+        "pendingOrders": "Ordini in attesa",
+        "completedOrders": "Ordini completati"
+      },
+      "filters": {
+        "searchPlaceholder": "Cerca per fattura, studente o corso...",
+        "statusFilter": "Filtra per stato",
+        "dateRange": "Intervallo date",
+        "clearFilters": "Pulisci filtri"
+      },
+      "table": {
+        "columns": {
+          "invoice": "Fattura",
+          "student": "Studente",
+          "course": "Corso",
+          "classroom": "Classe",
+          "plan": "Piano",
+          "amount": "Importo",
+          "status": "Stato",
+          "date": "Data",
+          "actions": "Azioni"
+        },
+        "plan": {
+          "months": "mesi",
+          "pricePlan": "Piano tariffario"
+        },
+        "status": {
+          "pending": "In attesa",
+          "complete": "Completato",
+          "cancel": "Annullato"
+        },
+        "actions": {
+          "viewDetails": "Vedi dettagli",
+          "confirmReceive": "Conferma pagamento",
+          "reject": "Rifiuta"
+        },
+        "detailDialog": {
+          "title": "Dettagli ordine",
+          "invoice": "Codice fattura",
+          "student": "Studente",
+          "course": "Corso",
+          "classroom": "Classe",
+          "amount": "Importo",
+          "status": "Stato",
+          "paymentMethod": "Metodo di pagamento",
+          "paymentReference": "Riferimento pagamento",
+          "notes": "Note",
+          "adminNote": "Nota amministratore",
+          "canceledReason": "Motivo annullamento",
+          "createdAt": "Creato il",
+          "updatedAt": "Aggiornato il",
+          "close": "Chiudi"
+        },
+        "confirmDialog": {
+          "confirmReceive": {
+            "title": "Conferma pagamento ricevuto",
+            "message": "Confermi di aver ricevuto il pagamento per questo ordine?",
+            "confirm": "Sì, conferma",
+            "cancel": "Annulla"
+          },
+          "reject": {
+            "title": "Rifiuta ordine",
+            "message": "Sei sicuro di voler rifiutare questo ordine?",
+            "reason": "Motivo rifiuto",
+            "reasonPlaceholder": "Inserisci il motivo del rifiuto...",
+            "confirm": "Sì, rifiuta",
+            "cancel": "Annulla"
+          }
+        },
+        "emptyState": {
+          "title": "Nessun ordine trovato",
+          "description": "Non ci sono ordini corrispondenti ai filtri selezionati",
+          "clearFilters": "Pulisci filtri"
+        },
+        "loading": "Caricamento ordini...",
+        "error": "Impossibile caricare ordini. Riprova.",
+        "refresh": "Aggiorna"
+      },
+      "detailDialog": {
+        "title": "Dettagli ordine",
+        "invoice": "Codice fattura",
+        "student": "Studente",
+        "course": "Corso",
+        "classroom": "Classe",
+        "amount": "Importo",
+        "status": "Stato",
+        "paymentMethod": "Metodo di pagamento",
+        "paymentReference": "Riferimento pagamento",
+        "notes": "Note",
+        "adminNote": "Nota amministratore",
+        "canceledReason": "Motivo annullamento",
+        "createdAt": "Creato il",
+        "updatedAt": "Aggiornato il",
+        "close": "Chiudi"
+      }
+    },
+    "settings": {
+      "title": "Impostazioni piattaforma",
+      "description": "Configura impostazioni e preferenze della piattaforma.",
+      "tabs": {
+        "general": "Generale",
+        "users": "Utenti",
+        "courses": "Corsi",
+        "language": "Lingua"
+      },
+      "general": {
+        "title": "Impostazioni generali",
+        "platformName": "Nome piattaforma",
+        "platformDescription": "Descrizione piattaforma",
+        "contactEmail": "Email di contatto"
+      },
+      "users": {
+        "title": "Gestione utenti",
+        "allowRegistration": "Permetti registrazione utenti",
+        "allowRegistrationDesc": "Consenti ai nuovi utenti di registrarsi",
+        "emailVerificationRequired": "Richiedi verifica email",
+        "emailVerificationDesc": "Gli utenti devono verificare la loro email"
+      },
+      "courses": {
+        "title": "Gestione corsi",
+        "approvalRequired": "Richiede approvazione corso",
+        "approvalRequiredDesc": "Un admin deve approvare nuovi corsi",
+        "maxPrice": "Prezzo massimo consentito"
+      },
+      "language": {
+        "title": "Impostazioni lingua",
+        "selectLanguage": "Seleziona lingua",
+        "currentLanguage": "Lingua corrente",
+        "languageDesc": "Scegli la lingua preferita per la piattaforma"
+      },
+      "saveSettings": "Salva impostazioni"
+    },
+    "sidebar": {
+      "title": "PANNELLO DI CONTROLLO",
+      "subtitle": "Impara l'italiano con",
+      "author": "Phan Tâm"
+    }
+  },
+  "sidebar": {
+    "search": "Cerca",
+    "studyNow": "Studia ora",
+    "helpCenter": "Centro Assistenza",
+    "helpCenterDesc": "Risposte qui",
+    "attendance": "Presenze",
+    "completeCourse": "Completa il tuo corso",
+    "checkVideo": "Guarda il video di 1 minuto e inizia a usare i componenti come un professionista"
+  },
+  "menu": {
+    "home": "Home",
+    "myCourses": "I Miei Corsi",
+    "calendars": "Calendari",
+    "settings": "Impostazioni",
+    "editProfile": "Modifica Profilo",
+    "language": "Lingua",
+    "notifications": "Notifiche",
+    "password": "Password",
+    "devices": "Dispositivi"
+  },
+  "adminMenu": {
+    "overview": "Panoramica",
+    "course": "Corso",
+    "classroom": "Aula",
+    "quizManagement": "Gestione Quiz",
+    "students": "Studenti",
+    "orders": "Ordini",
+    "settings": "Impostazioni"
+  },
+  "profile": {
+    "title": "Profilo",
+    "editButton": "Modifica",
+    "joinDate": "Iscritto dal",
+    "coursesCount": "corsi",
+    "tabs": {
+      "personalInfo": "Informazioni Personali",
+      "myCourses": "I Miei Corsi"
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Telefono",
+      "address": "Indirizzo",
+      "profession": "Professione",
+      "gender": "Genere",
+      "dateOfBirth": "Data di Nascita",
+      "bio": "Biografia",
+      "notAvailable": "Non disponibile"
+    },
+    "genders": {
+      "male": "Maschio",
+      "female": "Femmina",
+      "other": "Altro"
+    },
+    "edit": {
+      "title": "Modifica Profilo",
+      "save": "Salva Modifiche",
+      "cancel": "Annulla",
+      "success": "Profilo aggiornato con successo!",
+      "error": "Impossibile aggiornare il profilo"
+    },
+    "avatar": {
+      "title": "Foto del Profilo",
+      "upload": "Carica nuova foto",
+      "remove": "Rimuovi foto",
+      "change": "Cambia foto",
+      "uploading": "Caricamento...",
+      "maxSize": "Max 5MB",
+      "formats": "JPG, PNG, GIF"
+    },
+    "profile": "Profilo",
+    "myCourses": "I Miei Corsi",
+    "settings": "Impostazioni",
+    "dashboard": "Dashboard",
+    "actions": "Azioni",
+    "logout": "Esci",
+    "courses": {
+      "title": "I Miei Corsi",
+      "loading": "Caricamento corsi iscritti...",
+      "schedule": "Programma",
+      "progress": "Progresso",
+      "classroom": "Aula",
+      "teacher": {
+        "title": "Sei un insegnante",
+        "message": "Visualizza l'elenco dei corsi nella dashboard admin per gestire i tuoi corsi.",
+        "goToDashboard": "Vai alla Dashboard"
+      },
+      "error": {
+        "title": "Errore nel Caricamento dei Corsi",
+        "tryAgain": "Riprova"
+      },
+      "empty": {
+        "title": "Nessun Corso Iscritto",
+        "message": "Non ti sei ancora iscritto a nessun corso.",
+        "browseCourses": "Sfoglia i Corsi"
+      }
+    }
+  },
+  "learning": {
+    "welcome": "Bentornato, {name}! 👋",
+    "welcomeDesc": "Continua il tuo percorso di apprendimento e raggiungi i tuoi obiettivi",
+    "stats": {
+      "totalCourses": "Totale Corsi",
+      "inProgress": "In Corso",
+      "completed": "Completati",
+      "avgProgress": "Progresso Medio"
+    },
+    "continueLearning": {
+      "title": "Continua ad Apprendere",
+      "subtitle": "Riprendi da dove avevi lasciato",
+      "viewAll": "Visualizza Tutto",
+      "noCourses": "Nessun corso in corso",
+      "noCoursesDesc": "Inizia ad imparare qualcosa di nuovo oggi!",
+      "browseCourses": "Sfoglia i Corsi",
+      "progress": "Progresso",
+      "lessonsCompleted": "{completed} di {total} lezioni completate",
+      "continue": "Continua"
+    },
+    "lessonCompleted": "Lezione Completata! 🎉",
+    "lessonCompletedDesc": "Congratulazioni! Hai completato la lezione '{title}'",
+    "lessonCompletionFailed": "Impossibile Completare la Lezione",
+    "lessonCompletionFailedDesc": "Si è verificato un errore durante il completamento della lezione. Riprova.",
+    "lessonMaterials": {
+      "title": "Materiali",
+      "empty": "Questa lezione non ha materiali allegati",
+      "selectLesson": "Seleziona una lezione per visualizzare i materiali",
+      "loadFailed": "Impossibile caricare i materiali",
+      "loadFailedDescription": "Si è verificato un errore durante il caricamento dei materiali. Riprova."
+    },
+    "recommended": {
+      "title": "Consigliati per Te",
+      "subtitle": "Esplora nuovi corsi adatti alle tue interessi",
+      "viewAll": "Visualizza Tutto"
+    },
+    "recentActivity": {
+      "title": "Attività Recente",
+      "subtitle": "Your latest learning activities",
+      "noActivity": "Nessuna attività recente",
+      "completed": "Completato",
+      "continueLearning": "Continua ad Imparare"
+    },
+    "quickActions": {
+      "title": "Azioni Rapide",
+      "browseCourses": "Esplora Corsi",
+      "browseCoursesDesc": "Esplora nuove strade di apprendimento",
+      "myCourses": "I Miei Corsi",
+      "myCoursesDesc": "Visualizza corsi iscritti",
+      "myProfile": "Il Mio Profilo",
+      "myProfileDesc": "Gestisci il tuo account"
+    },
+    "date": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "daysAgo": "{days} giorni fa",
+      "weeksAgo": "{weeks} settimane fa"
+    },
+    "pendingCourses": {
+      "title": "Corsi in Attesa",
+      "subtitle": "Esplora nuovi corsi che corrispondono alle tue interessi",
+      "viewAll": "Visualizza Tutto",
+      "noPendingCourses": "Nessun corso in attesa",
+      "noPendingCoursesDesc": "Al momento non hai corsi in attesa di approvazione",
+      "browseCourses": "Esplora Corsi",
+      "statusText": "In Attesa di Approvazione"
+    },
+    "lesson": {
+      "materials": {
+        "title": "Materiali della Lezione",
+        "download": "Scarica",
+        "open": "Apri",
+        "empty": "Nessun materiale disponibile",
+        "emptyDescription": "Questa lezione non ha materiali allegati",
+        "noAccess": "Non hai accesso a questo materiale",
+        "noAccessDescription": "Iscriviti al corso per accedere ai materiali"
+      }
+    }
+  },
+  "profilePage": {
+    "shareProfileSuccess": "Link del profilo copiato negli appunti!"
+  },
+  "profileSidebar": {
+    "profile": "Profilo",
+    "myCourses": "I Miei Corsi",
+    "teachers": "Insegnanti",
+    "message": "Messaggio",
+    "myReviews": "Le Mie Recensioni"
+  },
+  "profileForm": {
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "username": "Nome Utente",
+    "email": "Email",
+    "enterFirstName": "Inserisci il nome",
+    "enterLastName": "Inserisci il cognome",
+    "enterUsername": "Inserisci il nome utente",
+    "enterEmail": "Inserisci l'email",
+    "updateProfile": "Aggiorna Profilo",
+    "avatar": {
+      "title": "Avatar",
+      "uploadCustom": "Carica la tua immagine",
+      "fileFormat": "JPG, PNG max 5MB",
+      "uploading": "Caricamento",
+      "invalidFileType": "Seleziona un file immagine",
+      "fileSizeExceeded": "La dimensione del file non può superare 5MB",
+      "uploadFailed": "Caricamento avatar fallito"
+    },
+    "validation": {
+      "firstNameRequired": "Inserisci il tuo nome!",
+      "lastNameRequired": "Inserisci il tuo cognome!",
+      "usernameRequired": "Inserisci il tuo nome utente!",
+      "emailRequired": "Inserisci la tua email!",
+      "emailInvalid": "Inserisci un'email valida!"
+    },
+    "messages": {
+      "updateSuccess": "Profilo aggiornato con successo!",
+      "updateFailed": "Aggiornamento profilo fallito"
+    }
+  },
+  "classroomDetail": {
+    "loading": "Caricamento informazioni aula...",
+    "maxStudents": "studenti max",
+    "breadcrumb": {
+      "home": "Home"
+    },
+    "error": {
+      "title": "Impossibile caricare",
+      "description": "Si è verificato un errore durante il caricamento delle informazioni dell'aula. Riprova.",
+      "tryAgain": "Riprova",
+      "backToHome": "Torna alla Home"
+    },
+    "notFound": {
+      "title": "Aula non trovata",
+      "description": "L'aula che stai cercando non esiste o è stata eliminata.",
+      "backToHome": "Torna alla Home"
+    },
+    "notifications": {
+      "loadFailed": "Impossibile caricare le informazioni dell'aula",
+      "notFound": "Aula non trovata"
+    },
+    "resources": {
+      "title": "Risorse",
+      "downloadable": "Scaricabile",
+      "download": "Scarica",
+      "empty": "Nessuna risorsa disponibile per questa aula",
+      "loadMore": "Carica Altro",
+      "loadingMore": "Caricamento altro...",
+      "loadMoreFailed": "Impossibile caricare altre risorse",
+      "loadMoreFailedDescription": "Si è verificato un errore durante il caricamento di altre risorse. Riprova."
+    }
+  },
+  "courseDetail": {
+    "loading": "Caricamento dettagli corso...",
+    "error": {
+      "title": "Impossibile Caricare il Corso",
+      "description": "Si è verificato un errore durante il caricamento del corso.",
+      "tryAgain": "Riprova",
+      "backToCourses": "Torna ai Corsi"
+    },
+    "notFound": {
+      "title": "Corso Non Trovato",
+      "description": "Il corso che stai cercando non esiste o è stato rimosso.",
+      "backToCourses": "Torna ai Corsi"
+    },
+    "notifications": {
+      "loadFailed": "Impossibile caricare il corso",
+      "courseNotFound": "Corso non trovato"
+    },
+    "resources": {
+      "title": "Risorse",
+      "empty": "Nessuna risorsa disponibile per questo corso",
+      "loadMore": "Carica Altro",
+      "loadingMore": "Caricamento altro...",
+      "loadMoreFailed": "Impossibile caricare altre risorse",
+      "loadMoreFailedDescription": "Si è verificato un errore durante il caricamento di altre risorse. Riprova."
+    }
+  },
+  "descriptionCourse": {
+    "about": "Informazioni su questo corso",
+    "whatYouWillLearn": "Cosa imparerai",
+    "requirements": "Requisiti",
+    "description": "Descrizione",
+    "curriculum": "Programma",
+    "instructor": "Istruttore",
+    "reviews": "Recensioni",
+    "students": "studenti",
+    "lessons": "lezioni",
+    "hours": "ore",
+    "level": "Livello",
+    "language": "Lingua",
+    "lastUpdated": "Ultimo aggiornamento",
+    "enrolled": "iscritti",
+    "rating": "valutazioni"
+  },
+  "courseCard": {
+    "featured": "In Evidenza",
+    "by": "Di",
+    "unknownTeacher": "Insegnante Sconosciuto",
+    "unknownCategory": "Categoria Sconosciuta",
+    "ratings": "Valutazioni",
+    "totalHours": "Ore Totali",
+    "lectures": "Lezioni",
+    "studentsEnrolled": "studenti iscritti",
+    "free": "Gratuito"
+  },
+    "checkoutCard": {
+    "enrollNow": "Iscriviti Ora",
+    "buyNow": "Acquista Ora",
+    "addToCart": "Aggiungi al Carrello",
+    "classroom": "Aula",
+    "free": "Gratuito",
+    "selectPricePlan": "Seleziona Piano Prezzo",
+    "selectPricePlanPlaceholder": "Seleziona durata e prezzo",
+    "months": "mesi",
+    "originalPrice": "Prezzo Originale",
+    "discount": "Sconto",
+    "total": "Totale",
+    "includes": "Questo corso include:",
+    "lifetimeAccess": "Accesso a vita",
+    "certificate": "Certificato di completamento",
+    "mobileAccess": "Accesso su mobile e desktop",
+    "assignments": "Compiti",
+    "moneyBack": "Garanzia rimborso 30 giorni",
+    "share": "Condividi",
+    "copyLink": "Copia Link",
+    "wishlist": "Aggiungi alla Lista Desideri",
+    "gift": "Regala questo corso",
+    "messages": {
+      "selectClassroom": "Seleziona un'aula",
+      "selectClassroomDesc": "Devi selezionare un'aula prima di aggiungere al carrello.",
+      "selectClassroomBuy": "Devi selezionare un'aula prima di acquistare.",
+      "addedToCart": "Aggiunto al carrello",
+      "addedToCartDesc": "Il corso \"{title}\" con l'aula \"{classroom}\" è stato aggiunto al carrello.",
+      "alreadyInCart": "Già nel carrello",
+      "alreadyInCartDesc": "Il corso \"{title}\" con l'aula \"{classroom}\" è già nel carrello.",
+      "classroomChanged": "Aula cambiata",
+      "classroomChangedDesc": "L'aula è stata cambiata per il corso \"{title}\".",
+      "noClassroom": "Questo corso non ha ancora aule",
+      "generatedAccountCannotPurchase": "Gli account generati dal sistema non possono acquistare corsi",
+      "noPricePlans": "Questo corso non ha ancora piani prezzi",
+      "selectPricePlan": "Seleziona un piano prezzo",
+      "selectPricePlanDesc": "Devi selezionare un piano prezzo prima di aggiungere al carrello.",
+      "selectPricePlanBuy": "Devi selezionare un piano prezzo prima di acquistare.",
+      "linkCopied": "Link copiato",
+      "linkCopiedDesc": "Il link del corso è stato copiato negli appunti",
+      "copyFailed": "Impossibile copiare",
+      "copyFailedDesc": "Impossibile copiare il link negli appunti"
+    },
+    "buttons": {
+      "checkoutNow": "Checkout Ora",
+      "viewCart": "Visualizza Carrello",
+      "editCourse": "Modifica Corso"
+    }
+  },
+  "checkout": {
+    "title": "Carrello",
+    "breadcrumb": {
+      "home": "Home",
+      "cart": "Carrello"
+    },
+    "courseInfo": {
+      "format": "{hours} Ore Totali. {lessons} Lezioni. {level}"
+    },
+    "summary": {
+      "coursesInCart": "{count} Corso{plural} nel carrello",
+      "emptyCart": {
+        "title": "Carrello Vuoto",
+        "description": "Non hai ancora corsi nel carrello.",
+        "continueShopping": "Continua lo Shopping"
+      }
+    },
+    "orderSummary": {
+      "title": "Dettagli Ordine",
+      "price": "Prezzo",
+      "discount": "Sconto",
+      "tax": "Tasse",
+      "total": "Totale",
+      "proceedToCheckout": "Procedi al Checkout",
+      "remove": "Rimuovi"
+    },
+    "messages": {
+      "removedFromCart": "Rimosso dal carrello",
+      "removedFromCartDesc": "L'articolo è stato rimosso dal carrello.",
+      "emptyCart": "Carrello vuoto",
+      "emptyCartDesc": "Aggiungi articoli al carrello prima del checkout.",
+      "paymentError": "Errore di pagamento",
+      "paymentErrorDesc": "Si è verificato un errore durante l'elaborazione del tuo ordine. Riprova."
+    },
+    "paymentDialog": {
+      "title": "Conferma Pagamento",
+      "confirmTitle": "Conferma di aver trasferito denaro all'insegnante",
+      "description": "Conferma di aver effettuato un bonifico bancario all'insegnante per l'importo di {amount}.",
+      "afterConfirm": "Dopo la conferma, l'insegnante ti notificherà quando il corso sarà stato aggiunto al tuo account.",
+      "orderDetails": "Dettagli Ordine:",
+      "totalAmount": "Importo Totale:",
+      "discount": "Sconto:",
+      "tax": "Tasse:",
+      "finalAmount": "Importo Finale:",
+      "cancel": "Annulla",
+      "confirmTransfer": "Trasferimento Confermato"
+    },
+    "loginDialog": {
+      "title": "Accesso Richiesto",
+      "confirmTitle": "Effettua l'accesso per continuare",
+      "description": "Devi effettuare l'accesso per poter pagare e acquistare corsi.",
+      "registerInfo": "Se non hai un account, puoi registrarti gratuitamente.",
+      "cancel": "Annulla",
+      "login": "Accedi",
+      "register": "Registrati"
+    }
+  },
+  "checkoutComplete": {
+    "title": "Ordine Completato",
+    "description": "Riceverai presto un'email di conferma!",
+    "buttons": {
+      "goToMyCourses": "Vai ai Miei Corsi",
+      "continueShopping": "Continua lo Shopping"
+    },
+    "autoRedirect": "Sarai reindirizzato automaticamente ai tuoi corsi tra 5 secondi..."
+  },
+  "customerReviews": {
+    "title": "Cosa dicono i nostri studenti",
+    "subtitle": "Unisciti a migliaia di studenti soddisfatti",
+    "showAll": "Mostra tutte le recensioni",
+    "rating": "valutazione",
+    "ratings": "valutazioni",
+    "basedOn": "Basato su",
+    "reviews": "recensioni"
+  },
+  "coursesIndex": {
+    "hero": {
+      "badge": "Esplora i Corsi di Italiano",
+      "title": "Scopri il Tuo",
+      "subtitle": "Percorso Italiano",
+      "description": "Padroneggia l'italiano con istruttori esperti e lezioni interattive",
+      "searchPlaceholder": "Cerca corsi di italiano...",
+      "searchButton": "Cerca"
+    },
+    "stats": {
+      "totalCourses": "Totale Corsi",
+      "activeStudents": "Studenti Attivi",
+      "expertInstructors": "Istruttore Esperto",
+      "languagesAvailable": "Lingua Specializzata"
+    },
+    "filters": {
+      "allLevels": "Tutti i Livelli",
+      "allPrices": "Tutti i Prezzi",
+      "free": "Gratuito",
+      "paid": "A Pagamento",
+      "mostPopular": "Più Popolare",
+      "highestRated": "Più Votato",
+      "newest": "Più Recente",
+      "priceLowToHigh": "Prezzo: Dal Basso all'Alto",
+      "priceHighToLow": "Prezzo: Dall'Alto al Basso",
+      "clearAll": "Pulisci Tutto",
+      "coursesFound": "corsi trovati"
+    },
+    "emptyState": {
+      "title": "Nessun corso trovato",
+      "description": "Prova a modificare i filtri o la query di ricerca",
+      "clearFilters": "Pulisci Filtri"
+    },
+    "successStories": {
+      "title": "Unisciti a 50.000+ Studenti di Lingue",
+      "description": "Inizia il tuo percorso linguistico oggi e sblocca nuove opportunità con i nostri metodi di apprendimento provati",
+      "interactiveLearning": {
+        "title": "Apprendimento Interattivo",
+        "description": "Pratica con madrelingua e conversazioni alimentate dall'IA"
+      },
+      "certifiedProgress": {
+        "title": "Progresso Certificato",
+        "description": "Ottieni certificati e traccia il miglioramento della tua fluidità"
+      },
+      "flexibleSchedule": {
+        "title": "Programma Flessibile",
+        "description": "Impara al tuo ritmo, in qualsiasi momento, ovunque"
+      },
+      "startLearningNow": "Inizia ad Apprendere Ora",
+      "viewSuccessStories": "Visualizza Storie di Successo",
+      "registerNow": "Registrati Ora"
+    }
+  },
+  "layoutAuthHeader": {
+    "brand": {
+      "tagline": "Impara l'Italiano con Phan Tam"
+    },
+    "navigation": {
+      "courses": "Corsi",
+      "contact": "Contatti",
+      "about": "Chi Siamo",
+      "pricing": "Prezzi",
+      "learning": "Apprendimento",
+      "myCourses": "I Miei Corsi",
+      "profile": "Profilo",
+      "resources": "Risorse",
+      "cart": "Carrello",
+      "quiz": "Quiz",
+      "video": "Video",
+      "details": "Dettagli"
+    },
+    "levels": {
+      "basic": {
+        "label": "Base",
+        "summary": "Costruisci le basi dell'italiano con il curriculum standard CEFR."
+      },
+      "intermediate": {
+        "label": "Intermedio",
+        "summary": "Perfeziona le abilità di ascolto, parlato e scrittura accademica."
+      },
+      "advanced": {
+        "label": "Avanzato",
+        "summary": "Conquista certificati di livello C e progetti approfonditi."
+      },
+      "driving_theory": {
+        "label": "Teoria della Guida",
+        "summary": "Impara la teoria della guida con il curriculum standard."
+      }
+    },
+    "buttons": {
+      "contactDirectly": "Contatta direttamente",
+      "signUpForFree": "Registrati gratuitamente",
+      "signIn": "Accedi",
+      "goToMyCourse": "Vai al mio corso",
+      "language": "Lingua"
+    },
+    "mobile": {
+      "toggleMenu": "Attiva/disattiva menu mobile"
+    }
+  },
+  "quiz": {
+    "management": {
+      "title": "Gestione Quiz",
+      "description": "Crea e gestisci quiz per il tuo corso",
+      "createNewQuiz": "Crea Nuovo Quiz",
+      "totalQuizzes": "Totale",
+      "published": "Pubblicato",
+      "draft": "Bozza",
+      "loading": "Caricamento quiz...",
+      "noQuizzes": "Nessun quiz trovato",
+      "createFirstQuiz": "Crea il tuo primo quiz",
+      "tryAgain": "Riprova",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "publish": "Pubblica",
+      "unpublish": "Annulla Pubblicazione",
+      "deleteConfirm": {
+        "title": "Elimina Quiz",
+        "message": "Sei sicuro di voler eliminare questo quiz?",
+        "warning": "Questa azione non può essere annullata. Tutti i dati del quiz, incluse domande e risposte, saranno eliminati definitivamente.",
+        "cancel": "Annulla",
+        "confirm": "Elimina Quiz"
+      }
+    },
+    "editor": {
+      "createTitle": "Crea Quiz",
+      "editTitle": "Modifica Quiz",
+      "backToList": "Torna all'Elenco Quiz",
+      "title": "Titolo quiz",
+      "titlePlaceholder": "Quiz Italiano Base – Livello Principiante",
+      "description": "Descrizione quiz",
+      "descriptionPlaceholder": "Questo breve quiz è progettato per testare la tua conoscenza base dell'italiano. Troverai sia domande a scelta multipla che a risposta breve che coprono saluti, numeri e vocabolario semplice. Buona fortuna! 🍀",
+      "category": "Categorie",
+      "categoryPlaceholder": "Seleziona una categoria",
+      "chapter": "Capitolo",
+      "chapterPlaceholder": "Seleziona un capitolo",
+      "timeLimit": "Limite di Tempo",
+      "timeLimitPlaceholder": "30",
+      "unit": "Unità",
+      "unitPlaceholder": "minuto",
+      "questions": "Domande",
+      "noQuestions": "Nessuna domanda aggiunta ancora",
+      "addTextInput": "Aggiungi Domanda a Risposta Testuale",
+      "addMultipleChoice": "Aggiungi Domanda a Scelta Multipla",
+      "validationErrors": "Correggi i seguenti problemi:",
+      "createQuiz": "Crea Quiz",
+      "updateQuiz": "Aggiorna Quiz",
+      "createQuizNoQuestions": "Crea Quiz (Nessuna domanda)",
+      "updateQuizNoQuestions": "Aggiorna Quiz (Nessuna domanda)",
+      "questionsCount": "domanda",
+      "questionsCountPlural": "domande",
+      "loadingCategories": "Caricamento categorie e capitoli...",
+      "loadingQuiz": "Caricamento dati quiz..."
+    },
+    "messages": {
+      "createSuccess": "Quiz creato con successo!",
+      "updateSuccess": "Quiz aggiornato con successo!",
+      "deleteSuccess": "Il quiz \"{title}\" è stato eliminato con successo!",
+      "publishSuccess": "Quiz pubblicato con successo!",
+      "unpublishSuccess": "Pubblicazione quiz annullata con successo!",
+      "createError": "Impossibile creare il quiz",
+      "updateError": "Impossibile aggiornare il quiz",
+      "deleteError": "Impossibile eliminare il quiz",
+      "publishError": "Impossibile aggiornare lo stato del quiz",
+      "loadError": "Impossibile caricare i dati",
+      "loadQuizError": "Impossibile caricare i dati del quiz",
+      "validationError": "Correggi gli errori del modulo prima di inviare",
+      "formValidationError": "Validazione del modulo fallita",
+      "formValidationMessage": "Controlla tutti i campi obbligatori e riprova"
+    },
+    "freeTime": "Tempo libero",
+    "timeLimit": "{timeValue} {timeUnit}",
+    "minute": "minuto",
+    "minutes": "minuti",
+    "hour": "ora",
+    "hours": "ore",
+    "second": "secondo",
+    "seconds": "secondi",
+    "questions": "domande",
+    "attempts": "tentativi",
+    "startQuiz": "Inizia Quiz",
+    "viewResults": "Visualizza Risultati",
+    "failedToFetchQuizzes": "Impossibile recuperare i quiz",
+    "loadingQuizzes": "Caricamento quiz...",
+    "noQuizzesAvailable": "Nessun quiz disponibile per questo capitolo ancora.",
+    "startQuizConfirm": "Iniziare il Quiz?",
+    "confirmStartMessage": "Sei sicuro di voler iniziare {title}?",
+    "confirmStartWarning": "Una volta iniziato, il timer partirà e dovrai completare tutte le domande."
+  },
+  "calendar": {
+    "header": {
+      "subtitle": "Calendario",
+      "title": "Traccia il tuo programma di apprendimento",
+      "home": "Home"
+    },
+    "datePicker": {
+      "title": "Seleziona Data",
+      "description": "Usa il calendario per navigare rapidamente tra settimane e classi."
+    },
+    "upcomingEvents": {
+      "title": "Programma di Oggi",
+      "hasEvents": "Programmato",
+      "noEvents": "Vuoto",
+      "noClassesToday": "Nessuna classe programmata per oggi."
+    },
+    "event": {
+      "time": "Ora",
+      "course": "Corso",
+      "noInfo": "Nessuna informazione disponibile",
+      "ended": "Terminato",
+      "noMeetingLink": "Nessun link di riunione disponibile",
+      "session": "Sessione",
+      "classroom": "Aula",
+      "description": "Descrizione",
+      "meetingLinkNote": "Nota Importante",
+      "meetingLinkWarning": "Se clicchi sul link per unirti alla classe, non sarai segnato come presente",
+      "studentCount": "Numero di Studenti",
+      "students": "studenti",
+      "enrollmentCount": "Iscritti",
+      "enrolled": "iscritti"
+    },
+    "joinClass": {
+      "joinNow": "Unisciti Ora"
+    },
+    "detailedCalendar": {
+      "title": "Programma Dettagliato",
+      "classCount": "{count} classi"
+    },
+    "modal": {
+      "title": "Conferma Unisciti alla Classe",
+      "confirmation": "Sei sicuro di volerti unire a questa classe?",
+      "cancel": "Annulla",
+      "joinNow": "Unisciti Ora",
+      "joining": "Unione in corso..."
+    },
+    "loading": "Caricamento calendario...",
+    "error": {
+      "cannotJoinClass": "Impossibile unirsi alla classe",
+      "checkInFailed": "Impossibile unirsi alla classe. Riprova più tardi.",
+      "checkInTooEarly": "Stai cercando di unirti alla classe troppo presto. Attendi fino all'inizio della classe."
+    }
+  },
+  "course": {
+    "loadingCourse": "Caricamento corso...",
+    "errorLoadingCourse": "Errore nel Caricamento del Corso",
+    "defaultTitle": "Introduzione al Design dell'Esperienza Utente",
+    "details": "Dettagli",
+    "overview": "Panoramica del Corso",
+    "instructor": "Istruttore",
+    "defaultInstructor": "Ronald Richards",
+    "instructorTitle": "UI/UX Designer",
+    "reviews": "{count} Recensioni",
+    "students": "{count} Studenti",
+    "courses": "{count} Corsi",
+    "instructorDescription": "Con oltre un decennio di esperienza nel settore, Ronald porta una ricchezza di conoscenze pratiche in classe. Ha svolto un ruolo fondamentale nella progettazione di interfacce centrate sull'utente per aziende tecnologiche rinomate, garantendo esperienze utente fluide e coinvolgenti.",
+    "quizTab": "Quiz",
+    "courseQuiz": "Quiz del Corso",
+    "comments": "Commenti",
+    "selectLessonToViewComments": "Seleziona una lezione per visualizzare i commenti",
+    "courseContent": "Contenuto del Corso",
+    "classmates": "Compagni di Classe ({count})",
+    "loadingClassmates": "Caricamento compagni di classe...",
+    "noClassmatesYet": "Nessun compagno di classe ancora"
+  },
+  "auth": {
+    "login": {
+      "form": {
+        "title": "Bentornato!",
+        "subtitle": "Accedi per continuare il tuo percorso di apprendimento",
+        "email": "Indirizzo Email",
+        "emailRequired": "Inserisci la tua email!",
+        "emailInvalid": "Inserisci un'email valida!",
+        "password": "Password",
+        "passwordPlaceholder": "Inserisci la tua password",
+        "passwordRequired": "Inserisci la tua password!",
+        "rememberMe": "Ricordami",
+        "forgotPassword": "Password dimenticata?",
+        "submitButton": "Accedi",
+        "loading": "Caricamento...",
+        "divider": "Oppure continua con",
+        "googleButton": "Google",
+        "googleLoading": "Accesso in corso...",
+        "registerPrompt": "Non hai un account?",
+        "registerLink": "Registrati ora"
+      },
+      "notifications": {
+        "success": "Accesso riuscito!",
+        "failed": "Accesso fallito",
+        "error": "Si è verificato un errore, riprova",
+        "googleSuccess": "Bentornato!",
+        "googleWelcome": "Benvenuto! Il tuo account è stato creato con successo.",
+        "googleFailed": "Accesso Google fallito",
+        "googleNotConfigured": "L'accesso Google non è configurato",
+        "googlePopupClosed": "L'accesso è stato annullato",
+        "googleAccessDenied": "Accesso negato da Google",
+        "googlePopupBlocked": "Il popup è stato bloccato. Consenti i popup per questo sito."
+      },
+      "errors": {
+        "device_type_limit_exceeded": "L'account ha già un dispositivo {device_type} registrato ({device_id}). È consentito solo un dispositivo per tipo. Utilizza il dispositivo precedentemente registrato.",
+        "invalidCredentials": "Email/nome utente o password non corretti. Controlla di nuovo.",
+        "validation_error": "Credenziali di accesso non valide"
+      }
+    },
+    "register": {
+      "hero": {
+        "title": "Unisciti alla Nostra Community",
+        "description": "Crea il tuo account e sblocca l'accesso a corsi di italiano di livello mondiale, connettiti con insegnanti esperti e unisciti a una community fiorente di studenti."
+      },
+      "benefits": {
+        "freeTrial": "Prova gratuita per i nuovi membri",
+        "lifetimeAccess": "Accesso a vita ai materiali",
+        "qualityInstructors": "Insegnanti di qualità"
+      },
+      "testimonial": {
+        "name": "Maria Rossi",
+        "role": "Studente",
+        "quote": "Miglior piattaforma per imparare l'italiano! I corsi sono ben strutturati e gli insegnanti sono fantastici."
+      },
+      "form": {
+        "title": "Crea Account",
+        "subtitle": "Inizia il tuo percorso di apprendimento oggi",
+        "username": "Nome Utente",
+        "usernamePlaceholder": "Scegli un nome utente",
+        "usernameRequired": "Inserisci il tuo nome utente!",
+        "usernameMinLength": "Il nome utente deve essere di almeno 3 caratteri",
+        "email": "Indirizzo Email",
+        "emailRequired": "Inserisci la tua email!",
+        "emailInvalid": "Inserisci un'email valida!",
+        "password": "Password",
+        "passwordPlaceholder": "Crea una password forte",
+        "passwordRequired": "Inserisci la tua password!",
+        "passwordMinLength": "La password deve essere di almeno 8 caratteri",
+        "confirmPassword": "Conferma Password",
+        "confirmPasswordPlaceholder": "Reinserisci la tua password",
+        "confirmPasswordRequired": "Conferma la tua password!",
+        "termsText": "Accetto i",
+        "termsLink": "Termini e Condizioni",
+        "and": "e",
+        "privacyLink": "Informativa sulla Privacy",
+        "submitButton": "Crea Account",
+        "divider": "Oppure registrati con",
+        "googleButton": "Continua con Google",
+        "loginPrompt": "Hai già un account?",
+        "loginLink": "Accedi"
+      },
+      "validation": {
+        "termsRequired": "Accetta i Termini e Condizioni",
+        "passwordLength": "La password deve essere di almeno 8 caratteri",
+        "passwordMismatch": "La conferma della password non corrisponde"
+      },
+      "notifications": {
+        "success": "Registrazione riuscita! Effettua l'accesso.",
+        "failed": "Registrazione fallita",
+        "error": "Si è verificato un errore, riprova"
+      }
+    },
+    "forgotPassword": {
+      "hero": {
+        "title": "Sicurezza Account",
+        "description": "Prendiamo sul serio la sicurezza del tuo account. Segui le istruzioni inviate alla tua email per reimpostare la password in modo sicuro."
+      },
+      "securityTips": {
+        "strongPassword": "Usa una password forte e unica",
+        "dontShare": "Non condividere la tua password",
+        "twoFactor": "Abilita l'autenticazione a due fattori"
+      },
+      "support": {
+        "title": "Hai Bisogno di Aiuto?",
+        "description": "Se hai problemi a reimpostare la password, il nostro team di supporto è qui per aiutarti.",
+        "contactLink": "Contatta il Supporto →"
+      },
+      "form": {
+        "title": "Password Dimenticata?",
+        "subtitle": "Nessun problema, ti invieremo le istruzioni per reimpostarla",
+        "resetTitle": "Reimposta Password",
+        "resetSubtitle": "Inserisci la tua nuova password qui sotto",
+        "email": "Indirizzo Email",
+        "emailRequired": "Inserisci la tua email!",
+        "emailInvalid": "Inserisci un'email valida!",
+        "newPassword": "Nuova Password",
+        "newPasswordPlaceholder": "Crea una nuova password",
+        "newPasswordRequired": "Inserisci la tua nuova password!",
+        "passwordMinLength": "La password deve essere di almeno 8 caratteri",
+        "confirmPassword": "Conferma Password",
+        "confirmPasswordPlaceholder": "Reinserisci la tua nuova password",
+        "confirmPasswordRequired": "Conferma la tua password!",
+        "confirmPasswordMinLength": "La conferma della password deve essere di almeno 8 caratteri",
+        "sendButton": "Invia Email di Reimpostazione",
+        "resetButton": "Reimposta Password",
+        "backToEmail": "Torna all'Email",
+        "backToLogin": "Torna all'Accesso",
+        "helpTitle": "Non trovi l'email?",
+        "helpText": "Controlla la cartella spam o prova a usare un indirizzo email diverso."
+      },
+      "notifications": {
+        "emailSent": "Email di reimpostazione password inviata con successo!",
+        "emailFailed": "Impossibile inviare l'email di reimpostazione password",
+        "passwordMismatch": "La conferma della password non corrisponde",
+        "resetSuccess": "Reimpostazione password riuscita! Effettua l'accesso.",
+        "resetFailed": "Reimpostazione password fallita",
+        "error": "Si è verificato un errore, riprova"
+      }
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "courses": "Corsi",
+    "about": "Chi Siamo",
+    "contact": "Contatti",
+    "login": "Accedi",
+    "register": "Registrati",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "logout": "Esci",
+    "dashboard": "Dashboard",
+    "myCourses": "I Miei Corsi",
+    "calendar": "Calendario",
+    "admin": "Admin",
+    "language": "Lingua"
+  },
+  "footer": {
+    "company": {
+      "title": "Azienda",
+      "about": "Chi Siamo",
+      "careers": "Carriere",
+      "contact": "Contatti",
+      "blog": "Blog"
+    },
+    "support": {
+      "title": "Supporto",
+      "helpCenter": "Centro Assistenza",
+      "faq": "FAQ",
+      "community": "Community",
+      "tutorials": "Tutorial"
+    },
+    "legal": {
+      "title": "Legale",
+      "privacy": "Informativa sulla Privacy",
+      "terms": "Termini di Servizio",
+      "cookies": "Politica dei Cookie",
+      "gdpr": "GDPR"
+    },
+    "social": {
+      "title": "Social Media",
+      "followUs": "Seguici"
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Ricevi aggiornamenti su nuovi corsi e offerte speciali.",
+      "emailPlaceholder": "Inserisci la tua email",
+      "subscribe": "Iscriviti",
+      "success": "Iscrizione riuscita!",
+      "error": "Iscrizione fallita. Riprova."
+    },
+    "copyright": "© 2024 Phan Tam. Tutti i diritti riservati.",
+    "madeWith": "Realizzato con",
+    "by": "da"
+  },
+  "error": {
+    "pageNotFound": "Pagina Non Trovata",
+    "pageNotFoundDescription": "La pagina che stai cercando potrebbe essere stata rimossa, aver cambiato nome o essere temporaneamente non disponibile.",
+    "needHelp": "Hai bisogno di aiuto?",
+    "popularLinks": "Link Popolari"
+  },
+  "errors": {
+    "pageNotFound": {
+      "title": "Pagina Non Trovata",
+      "description": "Spiacenti, la pagina che stai cercando non esiste.",
+      "backHome": "Torna alla Home",
+      "errorCode": "Errore 404"
+    },
+    "serverError": {
+      "title": "Errore del Server",
+      "description": "Si è verificato un errore del server. Riprova più tardi.",
+      "tryAgain": "Riprova",
+      "errorCode": "Errore 500"
+    },
+    "networkError": {
+      "title": "Errore di Rete",
+      "description": "Impossibile connettersi al server. Controlla la tua connessione internet.",
+      "checkConnection": "Controlla Connessione"
+    },
+    "unauthorized": {
+      "title": "Non Autorizzato",
+      "description": "Non hai il permesso di accedere a questa pagina.",
+      "login": "Accedi",
+      "errorCode": "Errore 401"
+    },
+    "forbidden": {
+      "title": "Vietato",
+      "description": "Non hai il permesso di accedere a questa risorsa.",
+      "contactAdmin": "Contatta l'Amministratore",
+      "errorCode": "Errore 403"
+    }
+  },
+  "common": {
+    "tryAgain": "Riprova",
+    "goBack": "Torna Indietro",
+    "goHome": "Vai alla Home",
+    "contactSupport": "Contatta il Supporto",
+    "home": "Home",
+    "courses": "Corsi",
+    "learning": "Apprendimento",
+    "levels": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzato"
+    },
+    "loading": "Caricamento...",
+    "saving": "Salvataggio...",
+    "deleting": "Eliminazione...",
+    "uploading": "Caricamento...",
+    "processing": "Elaborazione...",
+    "success": "Successo",
+    "error": "Errore",
+    "warning": "Avviso",
+    "info": "Info",
+    "confirm": "Conferma",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "create": "Crea",
+    "update": "Aggiorna",
+    "view": "Visualizza",
+    "close": "Chiudi",
+    "back": "Indietro",
+    "next": "Avanti",
+    "previous": "Precedente",
+    "finish": "Termina",
+    "submit": "Invia",
+    "reset": "Reimposta",
+    "search": "Cerca",
+    "filter": "Filtra",
+    "sort": "Ordina",
+    "export": "Esporta",
+    "import": "Importa",
+    "download": "Scarica",
+    "upload": "Carica",
+    "copy": "Copia",
+    "paste": "Incolla",
+    "cut": "Taglia",
+    "undo": "Annulla",
+    "redo": "Ripeti",
+    "refresh": "Aggiorna",
+    "reload": "Ricarica",
+    "yes": "Sì",
+    "no": "No",
+    "ok": "OK",
+    "apply": "Applica",
+    "clear": "Pulisci",
+    "select": "Seleziona",
+    "selectAll": "Seleziona Tutto",
+    "deselectAll": "Deseleziona Tutto",
+    "selectNone": "Non Selezionare Nulla",
+    "all": "Tutti",
+    "none": "Nessuno",
+    "other": "Altro",
+    "more": "Di Più",
+    "less": "Di Meno",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "expand": "Espandi",
+    "collapse": "Comprimi",
+    "enable": "Abilita",
+    "disable": "Disabilita",
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "online": "Online",
+    "offline": "Offline",
+    "available": "Disponibile",
+    "unavailable": "Non Disponibile",
+    "public": "Pubblico",
+    "private": "Privato",
+    "draft": "Bozza",
+    "published": "Pubblicato",
+    "pending": "In Attesa",
+    "approved": "Approvato",
+    "rejected": "Rifiutato",
+    "completed": "Completato",
+    "inProgress": "In Corso",
+    "cancelled": "Annullato",
+    "scheduled": "Programmato",
+    "expired": "Scaduto",
+    "new": "Nuovo",
+    "old": "Vecchio",
+    "recent": "Recente",
+    "popular": "Popolare",
+    "featured": "In Evidenza",
+    "recommended": "Consigliato",
+    "trending": "Di Tendenza",
+    "bestSeller": "Bestseller",
+    "topRated": "Più Votato",
+    "free": "Gratuito",
+    "paid": "A Pagamento",
+    "premium": "Premium",
+    "basic": "Base",
+    "advanced": "Avanzato",
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "expert": "Esperto",
+    "easy": "Facile",
+    "medium": "Medio",
+    "hard": "Difficile",
+    "low": "Basso",
+    "high": "Alto",
+    "small": "Piccolo",
+    "large": "Grande",
+    "short": "Corto",
+    "long": "Lungo",
+    "fast": "Veloce",
+    "slow": "Lento",
+    "early": "Presto",
+    "late": "Tardi",
+    "today": "Oggi",
+    "yesterday": "Ieri",
+    "tomorrow": "Domani",
+    "thisWeek": "Questa Settimana",
+    "lastWeek": "Settimana Scorsa",
+    "nextWeek": "Prossima Settimana",
+    "thisMonth": "Questo Mese",
+    "lastMonth": "Mese Scorso",
+    "nextMonth": "Prossimo Mese",
+    "thisYear": "Quest'Anno",
+    "lastYear": "Anno Scorso",
+    "nextYear": "Prossimo Anno",
+    "january": "Gennaio",
+    "february": "Febbraio",
+    "march": "Marzo",
+    "april": "Aprile",
+    "may": "Maggio",
+    "june": "Giugno",
+    "july": "Luglio",
+    "august": "Agosto",
+    "september": "Settembre",
+    "october": "Ottobre",
+    "november": "Novembre",
+    "december": "Dicembre",
+    "monday": "Lunedì",
+    "tuesday": "Martedì",
+    "wednesday": "Mercoledì",
+    "thursday": "Giovedì",
+    "friday": "Venerdì",
+    "saturday": "Sabato",
+    "sunday": "Domenica",
+    "morning": "Mattina",
+    "afternoon": "Pomeriggio",
+    "evening": "Sera",
+    "night": "Notte",
+    "am": "AM",
+    "pm": "PM",
+    "hours": "ore",
+    "minutes": "minuti",
+    "seconds": "secondi",
+    "days": "giorni",
+    "weeks": "settimane",
+    "months": "mesi",
+    "years": "anni",
+    "ago": "fa",
+    "fromNow": "da ora",
+    "now": "ora",
+    "never": "mai",
+    "always": "sempre",
+    "sometimes": "a volte",
+    "often": "spesso",
+    "rarely": "raramente",
+    "every": "ogni",
+    "each": "ogni",
+    "both": "entrambi",
+    "either": "o",
+    "neither": "né",
+    "first": "primo",
+    "last": "ultimo",
+    "second": "secondo",
+    "third": "terzo",
+    "fourth": "quarto",
+    "fifth": "quinto",
+    "sixth": "sesto",
+    "seventh": "settimo",
+    "eighth": "ottavo",
+    "ninth": "nono",
+    "tenth": "decimo"
+  }
+}

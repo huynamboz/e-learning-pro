@@ -6,10 +6,10 @@
  */
 export function formatCurrency(amount: number, locale?: string): string {
   // Get current locale from i18n if not provided
-  const currentLocale = locale || useI18n().locale.value || 'vi'
+  const currentLocale = locale || useI18n().locale.value || 'it'
   
   // Determine currency based on locale
-  const currency = currentLocale !== 'vi' ? 'EUR' : 'VND'
+  const currency = currentLocale === 'vi' ? 'VND' : 'EUR'
   
   // Format the amount
   if (currency === 'EUR') {
@@ -35,8 +35,8 @@ export function formatCurrencyWithOptions(
   } = {}
 ): string {
   const { locale, currency, showSymbol = true } = options
-  const currentLocale = locale || useI18n().locale.value || 'vi'
-  const targetCurrency = currency || (currentLocale === 'en' ? 'EUR' : 'VND')
+  const currentLocale = locale || useI18n().locale.value || 'it'
+  const targetCurrency = currency || (currentLocale === 'vi' ? 'VND' : 'EUR')
   
   if (targetCurrency === 'EUR') {
     return new Intl.NumberFormat('it-IT', {

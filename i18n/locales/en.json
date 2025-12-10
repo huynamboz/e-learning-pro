@@ -1773,7 +1773,30 @@
       "pricing": "Pricing",
       "learning": "Learning",
       "myCourses": "My Courses",
-      "profile": "Profile"
+      "profile": "Profile",
+      "resources": "Resources",
+      "cart": "Cart",
+      "quiz": "Quiz",
+      "video": "Video",
+      "details": "Details"
+    },
+    "levels": {
+      "basic": {
+        "label": "Basic",
+        "summary": "Build Italian foundation with CEFR standard curriculum."
+      },
+      "intermediate": {
+        "label": "Intermediate",
+        "summary": "Perfect listening, speaking, and academic writing skills."
+      },
+      "advanced": {
+        "label": "Advanced",
+        "summary": "Conquer C-level certificates & in-depth projects."
+      },
+      "driving_theory": {
+        "label": "Driving Theory",
+        "summary": "Learn driving theory with standard curriculum."
+      }
     },
     "buttons": {
       "contactDirectly": "Contact directly",
@@ -2087,9 +2110,7 @@
         "resetSuccess": "Password reset successful! Please login.",
         "resetFailed": "Password reset failed",
         "error": "An error occurred, please try again"
-      }
-    },
-    "forgotPassword": {
+      },
       "title": "Forgot Password",
       "subtitle": "Enter your email to receive a password reset link.",
       "email": "Email",

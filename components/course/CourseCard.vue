@@ -1,6 +1,6 @@
+<!-- eslint-disable vue/prop-name-casing -->
 <script setup lang="ts">
 import type { Category, Teacher } from '~/types/course.type'
-import { Icon } from '#components'
 
 // Course Card Props (for components)
 export interface CourseCardProps {
@@ -24,20 +24,10 @@ export interface CourseCardProps {
   discount_price: string | null
 }
 
-const props = defineProps<CourseCardProps>()
+defineProps<CourseCardProps>()
 const { t } = useI18n()
 
-// Computed properties for better performance
-const averageRating = computed(() => Number.parseFloat(props.rating_average) || 0)
-const roundedRating = computed(() => Math.round(averageRating.value))
-const formattedPrice = computed(() => {
-  if (props.is_free)
-    return t('courseCard.free')
-  if (props.has_discount)
-    return `€${Number(props.effective_price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-  return `€${Number(props.effective_price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-})
-const originalPrice = computed(() => props.discount_price && Number.parseFloat(props.discount_price) > 0 ? `€${Number(props.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : null)
+// Computed properties for better performance 
 </script>
 
 <template>
@@ -77,15 +67,6 @@ const originalPrice = computed(() => props.discount_price && Number.parseFloat(p
         <p class="text-xs text-gray-500">
           {{ (enrollment_count || 0).toLocaleString() }} {{ t('courseCard.studentsEnrolled') }}
         </p>
-
-        <div class="text-lg sm:text-xl font-semibold text-gray-900">
-          <span v-if="is_free" class="text-green-600">{{ t('courseCard.free') }}</span>
-          <span v-else-if="originalPrice" class="flex items-center gap-2">
-            <span class="text-gray-500 line-through">{{ originalPrice }}</span>
-            <span class="text-green-600">{{ formattedPrice }}</span>
-          </span>
-          <span v-else>{{ formattedPrice }}</span>
-        </div>
       </div>
     </div>
   </RouterLink>

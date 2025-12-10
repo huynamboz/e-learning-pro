@@ -117,7 +117,7 @@ const companyInfo = {
             <li v-for="link in section.links" :key="link.title">
               <NuxtLink
                 :to="link.url"
-                class="text-green-100 text-sm hover:text-white transition-colors duration-200 flex items-center group"
+                class="!text-green-100 text-sm hover:text-white transition-colors duration-200 flex items-center group"
               >
                 <Icon name="i-heroicons-chevron-right" class="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
                 {{ link.title }}

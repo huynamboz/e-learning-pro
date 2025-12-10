@@ -744,7 +744,7 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- Students Section -->
-          <div class="rounded-2xl p-4 mt-9">
+          <div v-if="course?.course_type === 'course'" class="rounded-2xl p-4 mt-9">
             <div class="mb-4">
               <div class="text-xl font-semibold text-gray-900 mb-2 px-2">
                 {{ t('course.classmates', { count: courseStudents.length }) }}

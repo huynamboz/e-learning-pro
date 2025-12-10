@@ -6,7 +6,7 @@ export default defineNuxtConfig({
       title: 'ItalianoLive - Học Tiếng Ý Trực Tuyến',
       titleTemplate: '%s | ItalianoLive',
       htmlAttrs: {
-        lang: 'vi',
+        lang: 'it',
       },
       meta: [
         { charset: 'utf-8' },
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         },
         { property: 'og:url', content: 'https://italianolive.com' },
         { property: 'og:site_name', content: 'ItalianoLive' },
-        { property: 'og:locale', content: 'vi_VN' },
+        { property: 'og:locale', content: 'it_IT' },
         { property: 'og:image', content: 'https://italianolive.com/og-image.jpg' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
