@@ -30,6 +30,7 @@ const formState = ref<CoursePayload>({
   level: 'beginner', // Will be auto-mapped from course_level
   language: 'en',
   duration_hours: '',
+  price: 0,
   is_published: true,
   is_featured: false,
   video_preview: '',
@@ -381,6 +382,7 @@ onMounted(async () => {
       description: c.description || '',
       category_id: c.category?.id || '',
       teacher_id: c.teacher?.id,
+      price: 0,
       course_type: c.course_type || 'course',
       course_level: c.course_level || undefined,
       course_sub_level: c.course_sub_level || undefined,

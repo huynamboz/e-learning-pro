@@ -10,10 +10,6 @@ const { fetchCourseDetail, currentCourse } = useCourse()
 const listOptions = computed(() => {
   const baseTabs = [
     {
-      path: 'classrooms/all-classrooms',
-      name: t('admin.courses.tabs.classroom'),
-    },
-    {
       path: 'quiz/all-quiz',
       name: t('admin.courses.tabs.quiz'),
     },
@@ -36,6 +32,13 @@ const listOptions = computed(() => {
     baseTabs.push({
       path: 'price-plans',
       name: t('admin.courses.tabs.pricing'),
+    })
+  }
+
+  if (currentCourse.value?.course_type === 'course') {
+    baseTabs.push({
+      path: 'classrooms/all-classrooms',
+      name: t('admin.courses.tabs.classroom'),
     })
   }
 
