@@ -1,5 +1,5 @@
 import en from './locales/en.json'
-import it from './locales/it.json'
+// import it from './locales/it.json'
 import vi from './locales/vi.json'
 
 export default defineI18nConfig(() => {
@@ -12,7 +12,7 @@ export default defineI18nConfig(() => {
         messages: {
             en,
             vi,
-            it,
+            // it,
         },
     }
 })

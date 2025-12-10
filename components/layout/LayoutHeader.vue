@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const { isCollapsed } = useSidebar()
-
 const props = defineProps<{ showHamburger?: boolean }>()
 const emit = defineEmits<{
   (e: 'hamburgerClick'): void
 }>()
+const { isCollapsed } = useSidebar()
+const cartStore = useCartStore()
 
 // Language settings
 const languageCookie = useCookie('locale', {
@@ -37,6 +37,8 @@ onMounted(() => {
   // Initialize language from cookie
   const { $i18n } = useNuxtApp()
   $i18n.locale.value = languageCookie.value
+  // Load cart
+  cartStore.loadCart()
 })
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -131,6 +133,20 @@ function handleScroll(): void {
             </a-menu>
           </template>
         </a-dropdown>
+
+        <!-- Shopping Cart -->
+        <NuxtLink
+          to="/checkout"
+          class="relative size-10 flex items-center justify-center hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <Icon name="solar:bag-heart-bold" class="!text-gray-600" size="26" />
+          <span
+            v-if="cartStore.totalItems > 0"
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
+          >
+            {{ cartStore.totalItems }}
+          </span>
+        </NuxtLink>
 
         <BaseUserProfilePopup />
       </div>

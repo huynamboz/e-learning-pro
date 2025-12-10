@@ -31,6 +31,31 @@ const jobOptions = computed(() => [
   { value: 'unemployed', label: t('onboarding.step3.jobs.unemployed'), icon: 'solar:search-bold' },
   { value: 'other', label: t('onboarding.step3.jobs.other'), icon: 'solar:more-circle-bold' },
 ])
+
+const selectedJob = ref<string | null>(null)
+
+// Initialize selectedJob from formData
+watch(() => props.formData.headline, (headline) => {
+  if (headline) {
+    selectedJob.value = headline
+  }
+  else {
+    selectedJob.value = null
+  }
+}, { immediate: true })
+
+// Watch selectedJob and update formData
+watch(selectedJob, (newValue) => {
+  emit('update:form-data', { ...props.formData, headline: newValue || '' })
+})
+
+// Job validation
+const jobError = computed(() => {
+  if (!selectedJob.value) {
+    return t('onboarding.step3.profession.required') || 'Vui lòng chọn nghề nghiệp'
+  }
+  return ''
+})
 </script>
 
 <template>
@@ -57,21 +82,27 @@ const jobOptions = computed(() => [
       <h3 class="text-lg font-semibold text-gray-900 mb-4">
         {{ t('onboarding.step3.profession.title') }}
       </h3>
-      <a-select
-        :value="formData.headline"
-        :placeholder="t('onboarding.step3.profession.placeholder')"
-        size="large"
-        class="w-full"
-        @change="(e: any) => emit('update:form-data', { ...props.formData, headline: e })"
+      <select
+        v-model="selectedJob"
+        required
+        class="w-full !text-gray-900 h-12 px-4 border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+        :class="jobError ? 'border-red-500' : 'border-gray-300'"
       >
-        <a-select-option
+        <option :value="null" disabled>
+          {{ t('onboarding.step3.profession.placeholder') }}
+        </option>
+        <option
           v-for="job in jobOptions"
           :key="job.value"
           :value="job.value"
+          class="!text-gray-900"
         >
           {{ job.label }}
-        </a-select-option>
-      </a-select>
+        </option>
+      </select>
+      <p v-if="jobError" class="text-xs text-red-500 mt-2">
+        {{ jobError }}
+      </p>
     </div>
   </div>
 </template>

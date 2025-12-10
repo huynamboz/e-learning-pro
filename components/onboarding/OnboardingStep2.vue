@@ -37,15 +37,73 @@ const phoneError = computed(() => {
   return ''
 })
 
+// Date select values
+const selectedDay = ref<number | null>(null)
+const selectedMonth = ref<number | null>(null)
+const selectedYear = ref<number | null>(null)
+
+// Initialize date selects from formData
+watch(() => props.formData.date_of_birth, (date) => {
+  if (date) {
+    selectedDay.value = date.date()
+    selectedMonth.value = date.month() + 1 // dayjs month is 0-indexed
+    selectedYear.value = date.year()
+  }
+  else {
+    selectedDay.value = null
+    selectedMonth.value = null
+    selectedYear.value = null
+  }
+}, { immediate: true })
+
+// Generate year options (from current year back to 100 years ago)
+const yearOptions = computed(() => {
+  const currentYear = new Date().getFullYear()
+  const years = []
+  for (let year = currentYear - 1; year >= currentYear - 100; year--) {
+    years.push({ value: year, label: year.toString() })
+  }
+  return years
+})
+
+// Generate month options (1-12)
+const monthOptions = computed(() => {
+  const months = []
+  for (let month = 1; month <= 12; month++) {
+    months.push({ value: month, label: month.toString() })
+  }
+  return months
+})
+
+// Generate day options (always 1-31)
+const dayOptions = computed(() => {
+  const days = []
+  for (let day = 1; day <= 31; day++) {
+    days.push({ value: day, label: day.toString() })
+  }
+  return days
+})
+
+// Update date when any select changes
+function updateDate() {
+  if (selectedDay.value && selectedMonth.value && selectedYear.value) {
+    const date = dayjs(`${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`)
+    if (date.isValid()) {
+      updateFormData('date_of_birth', date)
+    }
+  }
+  else {
+    updateFormData('date_of_birth', null)
+  }
+}
+
 // Date validation
 const dateError = computed(() => {
-  if (!props.formData.date_of_birth)
+  if (!selectedDay.value || !selectedMonth.value || !selectedYear.value)
     return ''
 
   const currentYear = new Date().getFullYear()
-  const birthYear = props.formData.date_of_birth.year()
-
-  if (birthYear === currentYear) {
+  if (selectedYear.value === currentYear) {
     return t('onboarding.step2.validation.birthYearInvalid')
   }
   return ''
@@ -56,11 +114,6 @@ function updateFormData(field: string, value: any) {
   // Emit the entire updated formData object
   const updatedData = { ...props.formData, [field]: value }
   emit('update:form-data', updatedData)
-}
-
-// Disable future dates
-function disabledDate(current: Dayjs) {
-  return current && current > dayjs().endOf('day')
 }
 </script>
 
@@ -93,20 +146,64 @@ function disabledDate(current: Dayjs) {
       <h3 class="text-lg font-semibold text-gray-900 mb-4">
         {{ t('onboarding.step2.dateOfBirth.title') }}
       </h3>
-      <a-date-picker
-        :value="formData.date_of_birth"
-        :placeholder="t('onboarding.step2.dateOfBirth.placeholder')"
-        size="large"
-        class="w-full"
-        :status="dateError ? 'error' : ''"
-        :disabled-date="disabledDate"
-        format="DD/MM/YYYY"
-        @change="(date: any) => updateFormData('date_of_birth', date)"
-      >
-        <template #prefix>
-          <Icon name="solar:calendar-bold" size="16" class="text-gray-400" />
-        </template>
-      </a-date-picker>
+      <div class="grid grid-cols-3 gap-4">
+        <!-- Day Select -->
+        <select
+          v-model="selectedDay"
+          class="w-full h-12 px-4 border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          :class="dateError ? 'border-red-500' : 'border-gray-300'"
+          @change="updateDate"
+        >
+          <option :value="null" disabled>
+            {{ t('onboarding.step2.dateOfBirth.day') || 'Ngày' }}
+          </option>
+          <option
+            v-for="day in dayOptions"
+            :key="day.value"
+            :value="day.value"
+          >
+            {{ day.label }}
+          </option>
+        </select>
+
+        <!-- Month Select -->
+        <select
+          v-model="selectedMonth"
+          class="w-full h-12 px-4 border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          :class="dateError ? 'border-red-500' : 'border-gray-300'"
+          @change="updateDate"
+        >
+          <option :value="null" disabled>
+            {{ t('onboarding.step2.dateOfBirth.month') || 'Tháng' }}
+          </option>
+          <option
+            v-for="month in monthOptions"
+            :key="month.value"
+            :value="month.value"
+          >
+            {{ month.label }}
+          </option>
+        </select>
+
+        <!-- Year Select -->
+        <select
+          v-model="selectedYear"
+          class="w-full h-12 px-4 border rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          :class="dateError ? 'border-red-500' : 'border-gray-300'"
+          @change="updateDate"
+        >
+          <option :value="null" disabled>
+            {{ t('onboarding.step2.dateOfBirth.year') || 'Năm' }}
+          </option>
+          <option
+            v-for="year in yearOptions"
+            :key="year.value"
+            :value="year.value"
+          >
+            {{ year.label }}
+          </option>
+        </select>
+      </div>
       <p v-if="dateError" class="text-xs text-red-500 mt-2">
         {{ dateError }}
       </p>

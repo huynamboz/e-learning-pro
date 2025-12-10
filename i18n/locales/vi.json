@@ -49,7 +49,10 @@
       },
       "dateOfBirth": {
         "title": "Ngày tháng năm sinh",
-        "placeholder": "Chọn ngày sinh"
+        "placeholder": "Chọn ngày sinh",
+        "day": "Ngày",
+        "month": "Tháng",
+        "year": "Năm"
       },
       "phone": {
         "title": "Số điện thoại",
@@ -71,7 +74,8 @@
       },
       "profession": {
         "title": "Công việc hiện tại",
-        "placeholder": "Chọn nghề nghiệp của bạn"
+        "placeholder": "Chọn nghề nghiệp của bạn",
+        "required": "Vui lòng chọn nghề nghiệp"
       },
       "bio": {
         "title": "Thông tin bổ sung (Tùy chọn)",
@@ -1356,6 +1360,17 @@
     "dashboard": "Bảng điều khiển",
     "actions": "Hành động",
     "logout": "Đăng xuất",
+    "switchAccount": "Đăng nhập tài khoản học",
+    "switchAccountSuccess": "Đăng nhập thành công",
+    "switchAccountFailed": "Đăng nhập thất bại",
+    "noOtherAccounts": "Không có tài khoản khác để chuyển đổi",
+    "clickToLogin": "Nhấn để đăng nhập",
+    "switching": "Đang đăng nhập...",
+    "savedAccounts": "Tài khoản đã lưu",
+    "or": "Hoặc",
+    "loginNewAccount": "Đăng nhập tài khoản mới",
+    "loginFormRequired": "Vui lòng nhập email và mật khẩu",
+    "accountDeleted": "Đã xóa tài khoản",
     "courses": {
       "title": "Khóa học của tôi",
       "loading": "Đang tải khóa học đã đăng ký...",
@@ -2068,6 +2083,7 @@
       "notifications": {
         "success": "Đăng ký thành công! Vui lòng đăng nhập.",
         "failed": "Đăng ký thất bại",
+        "loginFailed": "Đăng ký thành công nhưng đăng nhập thất bại",
         "error": "Có lỗi xảy ra, vui lòng thử lại"
       }
     },

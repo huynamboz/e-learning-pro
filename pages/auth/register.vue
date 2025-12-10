@@ -7,7 +7,7 @@ definePageMeta({
   middleware: 'guest',
 })
 
-const { register } = useAuth()
+const { register, login } = useAuth()
 const { t } = useI18n()
 
 const formState = reactive<RegisterRequest>({
@@ -18,17 +18,25 @@ const formState = reactive<RegisterRequest>({
 })
 
 const loading = ref(false)
-const agreedToTerms = ref(false)
+
+/**
+ * Generate username from email by taking the part before @
+ */
+function generateUsernameFromEmail(email: string): string {
+  if (!email || !email.includes('@')) {
+    return ''
+  }
+  return email.split('@')[0]
+}
+
+// Watch email changes and auto-generate username
+watch(() => formState.email, (newEmail) => {
+  if (newEmail) {
+    formState.username = generateUsernameFromEmail(newEmail)
+  }
+})
 
 async function onFinish() {
-  // Validate terms agreement
-  if (!agreedToTerms.value) {
-    notification.error({
-      message: t('auth.register.validation.termsRequired'),
-    })
-    return
-  }
-
   // Validate password length
   if (formState.password.length < 8) {
     notification.error({
@@ -45,16 +53,73 @@ async function onFinish() {
     return
   }
 
+  // Auto-generate username from email if not set
+  if (!formState.username && formState.email) {
+    formState.username = generateUsernameFromEmail(formState.email)
+  }
+
+  // Validate username is generated
+  if (!formState.username || formState.username.length < 3) {
+    notification.error({
+      message: t('auth.register.form.usernameMinLength'),
+    })
+    return
+  }
+
   loading.value = true
 
   try {
     const result = await register(formState)
 
     if (result.success) {
-      notification.success({
-        message: t('auth.register.notifications.success'),
+      // Save account credentials to cookie for account switching feature
+      const savedAccountsCookie = useCookie<Array<{ email: string, password: string }>>('saved_accounts', {
+        default: () => [],
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+        secure: true,
+        sameSite: 'strict',
       })
-      await navigateTo('/auth/login')
+
+      // Check if account already exists in saved accounts
+      const existingAccountIndex = savedAccountsCookie.value.findIndex(
+        account => account.email === formState.email,
+      )
+
+      if (existingAccountIndex >= 0) {
+        // Update existing account
+        savedAccountsCookie.value[existingAccountIndex] = {
+          email: formState.email,
+          password: formState.password,
+        }
+      }
+      else {
+        // Add new account
+        savedAccountsCookie.value.push({
+          email: formState.email,
+          password: formState.password,
+        })
+      }
+
+      // Auto login after successful registration
+      const loginResult = await login({
+        email: formState.email,
+        password: formState.password,
+      })
+
+      if (loginResult.success) {
+        notification.success({
+          message: t('auth.register.notifications.success'),
+        })
+        // Navigate to home page or dashboard
+        await navigateTo('/')
+      }
+      else {
+        notification.error({
+          message: loginResult.error || t('auth.register.notifications.loginFailed'),
+        })
+        // If auto login fails, redirect to login page
+        await navigateTo('/auth/login')
+      }
     }
     else {
       notification.error({
@@ -62,7 +127,8 @@ async function onFinish() {
       })
     }
   }
-  catch {
+  catch (error: any) {
+    console.error('Register error:', error)
     notification.error({
       message: t('auth.register.notifications.error'),
     })
@@ -120,8 +186,12 @@ async function onFinish() {
           <div class="flex items-center gap-3 mb-3">
             <img src="/images/avatar.jpg" alt="user" class="w-12 h-12 rounded-full border-2 border-white/50">
             <div>
-              <div class="font-semibold">{{ t('auth.register.testimonial.name') }}</div>
-              <div class="text-sm text-white/80">{{ t('auth.register.testimonial.role') }}</div>
+              <div class="font-semibold">
+                {{ t('auth.register.testimonial.name') }}
+              </div>
+              <div class="text-sm text-white/80">
+                {{ t('auth.register.testimonial.role') }}
+              </div>
             </div>
           </div>
           <p class="text-sm text-white/90 italic">
@@ -157,35 +227,13 @@ async function onFinish() {
 
           <!-- Form Fields -->
           <div class="space-y-4">
-            <!-- Username -->
-            <a-form-item
-              :label="t('auth.register.form.username')"
-              name="username"
-              :rules="[
-                { required: true, message: t('auth.register.form.usernameRequired') },
-                { min: 3, message: t('auth.register.form.usernameMinLength') }
-              ]"
-              class="mb-0"
-            >
-              <a-input
-                v-model:value="formState.username"
-                size="large"
-                :placeholder="t('auth.register.form.usernamePlaceholder')"
-                class="!h-12 !rounded-xl"
-              >
-                <template #prefix>
-                  <Icon name="solar:user-bold" size="20" class="text-gray-400" />
-                </template>
-              </a-input>
-            </a-form-item>
-
             <!-- Email -->
             <a-form-item
               :label="t('auth.register.form.email')"
               name="email"
               :rules="[
                 { required: true, message: t('auth.register.form.emailRequired') },
-                { type: 'email', message: t('auth.register.form.emailInvalid') }
+                { type: 'email', message: t('auth.register.form.emailInvalid') },
               ]"
               class="mb-0"
             >
@@ -207,7 +255,7 @@ async function onFinish() {
               name="password"
               :rules="[
                 { required: true, message: t('auth.register.form.passwordRequired') },
-                { min: 8, message: t('auth.register.form.passwordMinLength') }
+                { min: 8, message: t('auth.register.form.passwordMinLength') },
               ]"
               class="mb-0"
             >
@@ -229,7 +277,7 @@ async function onFinish() {
               name="password2"
               :rules="[
                 { required: true, message: t('auth.register.form.confirmPasswordRequired') },
-                { min: 8, message: t('auth.register.form.passwordMinLength') }
+                { min: 8, message: t('auth.register.form.passwordMinLength') },
               ]"
               class="mb-0"
             >
@@ -244,17 +292,6 @@ async function onFinish() {
                 </template>
               </a-input-password>
             </a-form-item>
-          </div>
-
-          <!-- Terms & Conditions -->
-          <div class="flex items-start gap-2 pt-2">
-            <a-checkbox v-model:checked="agreedToTerms" class="mt-1" />
-            <span class="text-sm text-gray-600">
-              {{ t('auth.register.form.termsText') }}
-              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">{{ t('auth.register.form.termsLink') }}</a>
-              {{ t('auth.register.form.and') }}
-              <a href="#" class="text-green-600 hover:text-green-700 font-semibold">{{ t('auth.register.form.privacyLink') }}</a>
-            </span>
           </div>
 
           <!-- Create Account Button -->

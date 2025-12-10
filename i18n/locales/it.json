@@ -49,7 +49,10 @@
       },
       "dateOfBirth": {
         "title": "Data di Nascita",
-        "placeholder": "Seleziona la tua data di nascita"
+        "placeholder": "Seleziona la tua data di nascita",
+        "day": "Giorno",
+        "month": "Mese",
+        "year": "Anno"
       },
       "phone": {
         "title": "Numero di Telefono",
@@ -71,7 +74,8 @@
       },
       "profession": {
         "title": "Lavoro Attuale",
-        "placeholder": "Seleziona la tua professione"
+        "placeholder": "Seleziona la tua professione",
+        "required": "Seleziona una professione"
       },
       "bio": {
         "title": "Informazioni Aggiuntive (Opzionale)",
@@ -1356,6 +1360,17 @@
     "dashboard": "Dashboard",
     "actions": "Azioni",
     "logout": "Esci",
+    "switchAccount": "Cambia Account di Apprendimento",
+    "switchAccountSuccess": "Accesso riuscito",
+    "switchAccountFailed": "Accesso fallito",
+    "noOtherAccounts": "Nessun altro account disponibile",
+    "clickToLogin": "Clicca per accedere",
+    "switching": "Accesso in corso...",
+    "savedAccounts": "Account Salvati",
+    "or": "Oppure",
+    "loginNewAccount": "Accedi con Nuovo Account",
+    "loginFormRequired": "Inserisci email e password",
+    "accountDeleted": "Account eliminato",
     "courses": {
       "title": "I Miei Corsi",
       "loading": "Caricamento corsi iscritti...",
@@ -2068,6 +2083,7 @@
       "notifications": {
         "success": "Registrazione riuscita! Effettua l'accesso.",
         "failed": "Registrazione fallita",
+        "loginFailed": "Registrazione riuscita ma accesso fallito",
         "error": "Si è verificato un errore, riprova"
       }
     },
