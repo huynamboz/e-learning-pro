@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { CourseAsset } from '~/composables/api/useAssetApi'
 import type { CourseStudent } from '~/types/course.type'
 import { VideoPlayer } from '@videojs-player/vue'
 import { notification } from 'ant-design-vue'
 import CommentList from '~/components/learning/CommentList.vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
 import LearningQuizList from '~/components/learning/QuizList.vue'
+import ResourceItem from '~/components/learning/ResourceItem.vue'
+import { useAssetApi } from '~/composables/api/useAssetApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useLearnStore } from '~/stores/learn.store'
 import 'video.js/dist/video-js.css'
@@ -26,6 +29,7 @@ const learnStore = useLearnStore()
 
 // Use course API
 const courseApi = useCourseApi()
+const assetApi = useAssetApi()
 
 // Computed properties from store
 const course = computed(() => learnStore.course)
@@ -57,6 +61,18 @@ const studentsError = ref<string | null>(null)
 
 // Comment data
 const commentCount = ref(0)
+
+// Resources data
+const resources = ref<CourseAsset[]>([])
+const resourcesData = ref<{ count: number, next: string | null, previous: string | null } | null>(null)
+const isLoadingResources = ref(false)
+const isLoadingMoreResources = ref(false)
+const currentResourcePage = ref(1)
+const resourcePageSize = ref(10)
+
+// Lesson materials data
+const lessonMaterials = ref<any[]>([])
+const isLoadingLessonMaterials = ref(false)
 
 // Video progress tracking
 const videoProgress = ref(0)
@@ -132,7 +148,6 @@ function applyDrmAttributes(player: any) {
       event.preventDefault()
     }
   }
-
 }
 
 function handlePlayerReady(player: any) {
@@ -204,6 +219,19 @@ async function completeLessonAutomatically() {
   }
 }
 
+// Get classroom ID from course students (user's enrolled classroom)
+const classroomId = computed(() => {
+  // Try to get from courseStudents (user's enrollment)
+  if (courseStudents.value.length > 0 && courseStudents.value[0].enrollment?.classroom_id) {
+    return courseStudents.value[0].enrollment.classroom_id
+  }
+  // Fallback to course classrooms if available
+  if (course.value?.classrooms && course.value.classrooms.length > 0) {
+    return course.value.classrooms[0].id
+  }
+  return null
+})
+
 // Load course classmates
 async function loadCourseStudents() {
   try {
@@ -220,6 +248,149 @@ async function loadCourseStudents() {
     studentsLoading.value = false
   }
 }
+
+// Load resources/assets filtered by classroom
+async function loadResources() {
+  if (!classroomId.value) {
+    return
+  }
+
+  try {
+    isLoadingResources.value = true
+    currentResourcePage.value = 1
+
+    const response = await assetApi.getAssets(courseId, {
+      ordering: 'order',
+      visible_classrooms: classroomId.value,
+      page: 1,
+      limit: resourcePageSize.value,
+    })
+
+    resources.value = response.results || []
+    resourcesData.value = {
+      count: response.count || 0,
+      next: response.next,
+      previous: response.previous,
+    }
+  }
+  catch (error: any) {
+    console.error('Error loading resources:', error)
+    notification.error({
+      message: t('classroomDetail.resources.loadMoreFailed'),
+      description: error?.data?.message || t('classroomDetail.resources.loadMoreFailedDescription'),
+    })
+  }
+  finally {
+    isLoadingResources.value = false
+  }
+}
+
+// Load more resources
+async function loadMoreResources() {
+  if (!classroomId.value || !resourcesData.value?.next || isLoadingMoreResources.value) {
+    return
+  }
+
+  try {
+    isLoadingMoreResources.value = true
+    currentResourcePage.value += 1
+
+    const response = await assetApi.getAssets(courseId, {
+      ordering: 'order',
+      visible_classrooms: classroomId.value,
+      page: currentResourcePage.value,
+      limit: resourcePageSize.value,
+    })
+
+    if (response.results && response.results.length > 0) {
+      resources.value = [...resources.value, ...response.results]
+      resourcesData.value = {
+        count: response.count || 0,
+        next: response.next,
+        previous: response.previous,
+      }
+    }
+  }
+  catch (error: any) {
+    console.error('Error loading more resources:', error)
+    notification.error({
+      message: t('classroomDetail.resources.loadMoreFailed'),
+      description: error?.data?.message || t('classroomDetail.resources.loadMoreFailedDescription'),
+    })
+  }
+  finally {
+    isLoadingMoreResources.value = false
+  }
+}
+
+// Check if there are more resource pages
+const hasMoreResources = computed(() => !!resourcesData.value?.next)
+
+// Load lesson materials
+async function loadLessonMaterials() {
+  if (!activeLesson.value || !learnStore.currentChapterId) {
+    lessonMaterials.value = []
+    return
+  }
+
+  try {
+    isLoadingLessonMaterials.value = true
+    const response = await courseApi.getLesson(
+      courseId,
+      learnStore.currentChapterId,
+      activeLesson.value.id,
+    )
+
+    // Materials are included in lesson response
+    lessonMaterials.value = (response as any).materials || []
+  }
+  catch (error: any) {
+    console.error('Error loading lesson materials:', error)
+    notification.error({
+      message: t('learning.lessonMaterials.loadFailed'),
+      description: error?.data?.message || t('learning.lessonMaterials.loadFailedDescription'),
+    })
+    lessonMaterials.value = []
+  }
+  finally {
+    isLoadingLessonMaterials.value = false
+  }
+}
+
+// Watch for classroomId changes to load resources
+watch([classroomId, activeTab], ([newClassroomId, newTab]) => {
+  if (newClassroomId && newTab === 'resources') {
+    loadResources()
+  }
+}, { immediate: true })
+
+// Format file size helper
+function formatFileSize(bytes: number): string {
+  if (bytes === 0)
+    return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
+}
+
+// Handle material click
+function handleMaterialClick(material: any) {
+  const fileUrl = material.file_path || material.file_url
+  if (fileUrl && process.client) {
+    window.open(fileUrl, '_blank', 'noopener,noreferrer')
+  }
+}
+
+// Watch for activeLesson changes to load materials
+watch(activeLesson, (newLesson) => {
+  if (newLesson) {
+    loadLessonMaterials()
+  }
+  else {
+    lessonMaterials.value = []
+  }
+}, { immediate: true })
 
 onMounted(async () => {
   await Promise.all([
@@ -343,6 +514,62 @@ onBeforeUnmount(() => {
               {{ Math.round(videoProgress) }}%
             </div>
           </div>
+
+          <!-- Lesson Materials Section -->
+          <div v-if="activeLesson" class="mb-6">
+            <div class="bg-white rounded-2xl p-6 border border-gray-200">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
+                <Icon name="solar:document-text-bold" size="24" class="text-blue-600" />
+                {{ t('learning.lessonMaterials.title') }} của {{ activeLesson.title }}
+              </h2>
+
+              <!-- Loading State -->
+              <div v-if="isLoadingLessonMaterials" class="flex justify-center items-center py-12">
+                <a-spin size="large" />
+              </div>
+
+              <!-- Materials List -->
+              <div v-else-if="lessonMaterials.length > 0" class="space-y-3">
+                <div
+                  v-for="material in lessonMaterials"
+                  :key="material.id"
+                  class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                  @click="handleMaterialClick(material)"
+                >
+                  <div class="flex-shrink-0">
+                    <div class="p-3 rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors">
+                      <Icon name="solar:document-text-bold-duotone" size="24" class="text-blue-600" />
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      {{ material.title }}
+                    </h3>
+                    <p v-if="material.description" class="text-sm text-gray-500 line-clamp-1 mt-1">
+                      {{ material.description }}
+                    </p>
+                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                      <span>{{ formatFileSize(material.file_size) }}</span>
+                      <span>•</span>
+                      <span>{{ material.file_type }}</span>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <Icon name="solar:external-link-bold" size="20" class="text-gray-400 group-hover:text-blue-600 transition-colors" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else-if="!isLoadingLessonMaterials && lessonMaterials.length === 0" class="text-center py-12">
+                <Icon name="solar:document-text-bold-duotone" size="48" class="text-gray-300 mx-auto mb-4" />
+                <p class="text-gray-500">
+                  {{ t('learning.lessonMaterials.empty') }}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <a-divider />
           <!-- Tabs Section -->
           <div class="mb-6">
@@ -438,6 +665,58 @@ onBeforeUnmount(() => {
                     <Icon name="tabler:video" class="text-gray-400 text-4xl mx-auto mb-3" />
                     <p class="text-gray-500">
                       {{ t('course.selectLessonToViewComments') }}
+                    </p>
+                  </div>
+                </div>
+              </a-tab-pane>
+
+              <a-tab-pane key="resources" :tab="`${t('classroomDetail.resources.title')} (${lessonMaterials.length})`">
+                <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                  <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
+                    <Icon name="solar:document-text-bold" size="24" class="text-blue-600" />
+                    {{ $t('classroomDetail.resources.title') }}
+                  </h2>
+
+                  <!-- Loading State -->
+                  <div v-if="isLoadingResources" class="flex justify-center items-center py-12">
+                    <a-spin size="large" />
+                  </div>
+
+                  <!-- Resources List -->
+                  <div v-else-if="resources.length > 0" class="space-y-3">
+                    <ResourceItem
+                      v-for="resource in resources"
+                      :key="resource.id"
+                      :resource="resource"
+                      :is-openable="true"
+                    />
+
+                    <!-- Load More Button -->
+                    <div v-if="hasMoreResources" class="flex justify-center pt-4">
+                      <a-button
+                        type="default"
+                        size="large"
+                        :loading="isLoadingMoreResources"
+                        class="!flex items-center gap-2"
+                        @click="loadMoreResources"
+                      >
+                        <Icon name="solar:download-bold" size="16" />
+                        {{ $t('classroomDetail.resources.loadMore') }}
+                      </a-button>
+                    </div>
+
+                    <!-- Loading More State -->
+                    <div v-if="isLoadingMoreResources" class="flex justify-center items-center py-4">
+                      <a-spin size="small" />
+                      <span class="ml-2 text-sm text-gray-500">{{ $t('classroomDetail.resources.loadingMore') }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div v-else-if="!isLoadingResources && resources.length === 0" class="text-center py-12">
+                    <Icon name="solar:document-text-bold-duotone" size="48" class="text-gray-300 mx-auto mb-4" />
+                    <p class="text-gray-500">
+                      {{ $t('classroomDetail.resources.empty') }}
                     </p>
                   </div>
                 </div>

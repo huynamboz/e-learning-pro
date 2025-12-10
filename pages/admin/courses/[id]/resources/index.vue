@@ -25,11 +25,21 @@ const isCourseType = computed(() => currentCourse.value?.course_type === 'course
 // View mode: 'grid' or 'table'
 const viewMode = ref<'grid' | 'table'>('table')
 
+// Handle view mode change
+function handleViewModeChange(mode: 'grid' | 'table') {
+  viewMode.value = mode
+  if (process.client) {
+    localStorage.setItem('resources-view-mode', mode)
+  }
+}
+
 // Load view mode preference from localStorage
 onMounted(() => {
-  const savedViewMode = localStorage.getItem('resources-view-mode')
-  if (savedViewMode === 'grid' || savedViewMode === 'table') {
-    viewMode.value = savedViewMode
+  if (process.client) {
+    const savedViewMode = localStorage.getItem('resources-view-mode')
+    if (savedViewMode === 'grid' || savedViewMode === 'table') {
+      viewMode.value = savedViewMode
+    }
   }
 })
 
@@ -218,14 +228,14 @@ onMounted(async () => {
             <a-button
               :type="viewMode === 'table' ? 'primary' : 'default'"
               class="rounded-l-lg"
-              @click="viewMode = 'table'; localStorage.setItem('resources-view-mode', 'table')"
+              @click="handleViewModeChange('table')"
             >
               <Icon name="solar:list-bold" size="18" />
             </a-button>
             <a-button
               :type="viewMode === 'grid' ? 'primary' : 'default'"
               class="rounded-r-lg"
-              @click="viewMode = 'grid'; localStorage.setItem('resources-view-mode', 'grid')"
+              @click="handleViewModeChange('grid')"
             >
               <Icon name="solar:widget-4-bold" size="18" />
             </a-button>

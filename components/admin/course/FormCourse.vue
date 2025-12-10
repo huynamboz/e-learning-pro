@@ -30,9 +30,6 @@ const formState = ref<CoursePayload>({
   level: 'beginner', // Will be auto-mapped from course_level
   language: 'en',
   duration_hours: '',
-  price: 0,
-  discount_price: null,
-  is_free: false,
   is_published: true,
   is_featured: false,
   video_preview: '',
@@ -257,25 +254,7 @@ async function handleSave() {
   const payload: CoursePayload = {
     ...formState.value,
     teacher_id: user.value?.id, // Set teacher_id from current user
-  }
-
-  // If course is free, set price and discount_price to 0
-  if (payload.is_free) {
-    payload.price = 0
-    payload.discount_price = null
-  }
-
-  // Convert price to number if it's string
-  if (typeof payload.price === 'string') {
-    payload.price = Number.parseFloat(payload.price) || 0
-  }
-
-  // Convert discount_price to number or null
-  if (payload.discount_price !== null && payload.discount_price !== undefined) {
-    if (typeof payload.discount_price === 'string') {
-      payload.discount_price = Number.parseFloat(payload.discount_price) || null
-    }
-  }
+  } as CoursePayload
 
   // Auto-map course_level to level (legacy field)
   if (payload.course_level) {
@@ -407,9 +386,6 @@ onMounted(async () => {
       course_sub_level: c.course_sub_level || undefined,
       duration_hours: c.duration_hours || '',
       level: 'beginner', // Will be auto-mapped from course_level on save
-      discount_price: c.discount_price ? (typeof c.discount_price === 'string' ? Number.parseFloat(c.discount_price) : c.discount_price) : null,
-      is_free: c.is_free || false,
-      price: c.price ? (typeof c.price === 'string' ? Number.parseFloat(c.price) : c.price) : 0,
       video_preview: c.video_preview || '',
       thumbnail: c.thumbnail || '',
       is_featured: c.is_featured || false,
@@ -460,27 +436,6 @@ function previewCourse() {
   if (courseId.value) {
     // Navigate to course detail page
     navigateTo(`/courses/${courseId.value}`)
-  }
-}
-
-// Handle free course toggle
-function handleFreeToggle(checked: boolean) {
-  if (checked) {
-    // If toggle is turned on, set price to 0
-    formState.value.price = 0
-    formState.value.discount_price = null
-  }
-}
-
-// Handle price change
-function handlePriceChange(value: number | null) {
-  if (value && value > 0) {
-    // If price is greater than 0, turn off free toggle
-    formState.value.is_free = false
-  }
-  else {
-    formState.value.is_free = true
-    formState.value.price = 0
   }
 }
 
@@ -717,53 +672,6 @@ async function confirmDeleteCourse() {
           </a-form-item>
         </div>
 
-        <!-- Free Course Toggle -->
-        <a-form-item
-          :label="t('admin.formCourse.form.isFree')"
-          name="is_free"
-          class="w-full"
-        >
-          <a-switch
-            v-model:checked="formState.is_free"
-            :checked-children="t('admin.formCourse.form.free')"
-            :un-checked-children="t('admin.formCourse.form.paid')"
-            @change="handleFreeToggle"
-          />
-        </a-form-item>
-
-        <div class="flex flex-col sm:flex-row items-center w-full gap-3">
-          <a-form-item
-            :label="t('admin.formCourse.form.price')"
-            name="price"
-            class="w-full"
-          >
-            <a-input-number
-              v-model:value="formState.price"
-              class="!w-full"
-              size="large"
-              :placeholder="t('admin.formCourse.form.pricePlaceholder')"
-              :disabled="formState.is_free"
-              :min="0"
-              :precision="0"
-              @blur="handlePriceChange($event.target.value)"
-            />
-          </a-form-item>
-          <a-form-item
-            :label="t('admin.formCourse.form.discountPrice')"
-            name="discount_price"
-            class="w-full"
-          >
-            <a-input-number
-              v-model:value="formState.discount_price"
-              class="!w-full"
-              size="large"
-              :placeholder="t('admin.formCourse.form.discountPricePlaceholder')"
-              :disabled="formState.is_free"
-              :min="0"
-              :precision="0"
-            />
-          </a-form-item>
-        </div>
         <a-form-item
           :label="t('admin.formCourse.form.durationHours')"
           name="duration_hours"

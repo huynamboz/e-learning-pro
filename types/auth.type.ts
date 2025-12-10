@@ -23,6 +23,7 @@ export interface LoginResponse {
 }
 
 export interface User {
+  account_type: 'generated' | 'google' | 'email'
   id: number
   email: string
   username: string

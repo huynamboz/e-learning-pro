@@ -131,8 +131,8 @@ export interface CoursePayload {
   level: string // Legacy field
   language: string
   duration_hours?: string
-  price: number // Changed from string to number
-  discount_price?: number | null // Changed from string to number | null, optional
+  price?: number // Optional - removed from form
+  discount_price?: number | null // Optional - removed from form
   is_free?: boolean
   is_published: boolean
   is_featured?: boolean
@@ -183,6 +183,21 @@ export interface Chapter {
   updated_at: string
 }
 
+export interface LessonMaterial {
+  id?: string // Optional: có id = update, không có = create mới
+  title: string
+  description?: string
+  file_url?: string // Public URL từ upload step (dùng khi upload mới)
+  file_path?: string // File path từ API response (dùng khi update)
+  file_type: string // MIME type hoặc model choice (backend tự convert)
+  file_size: number
+  order?: number // Optional: Display order, default: auto-increment
+  is_downloadable?: boolean // Optional: Can students download?, default: true
+  uploaded_at?: string // Read-only from API
+  uploaded_by?: number // Read-only from API
+  has_access?: boolean // Read-only from API
+}
+
 export interface LessonPayload {
   chapter_id: string
   title: string
@@ -196,6 +211,7 @@ export interface LessonPayload {
   is_published: boolean
   is_unlocked: boolean
   is_completed?: boolean
+  materials?: LessonMaterial[]
 }
 
 export interface Lesson {
@@ -214,6 +230,7 @@ export interface Lesson {
   is_completed: boolean
   quiz_count: number
   comment_count: number
+  materials?: LessonMaterial[]
 }
 
 // Course API Response Types

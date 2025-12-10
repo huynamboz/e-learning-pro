@@ -263,6 +263,21 @@ export function useCourseApi() {
     getLesson: (courseId: string, chapterId: string, lessonId: string) =>
       apiClient.get<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`),
 
+    // Get lesson material upload URL
+    getLessonMaterialUploadUrl: (
+      courseId: string,
+      chapterId: string,
+      lessonId: string,
+      payload: { file_name: string, content_type: string },
+    ) =>
+      apiClient.post<{
+        upload_url: string
+        key: string
+        public_url: string
+        expires_in: number
+        file_name: string
+      }>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/upload-material-url/`, payload),
+
     // Get lesson detail
     deleteLesson: (courseId: string, chapterId: string, lessonId: string) =>
       apiClient.delete<Lesson>(`/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`),

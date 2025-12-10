@@ -17,6 +17,9 @@ const { user } = useAuth()
 // Check if user is teacher
 const isTeacher = computed(() => user.value?.is_teacher || false)
 
+// Check if user has generated account (system-generated accounts cannot purchase)
+const isGeneratedAccount = computed(() => user.value?.account_type === 'generated')
+
 // Selected price plan
 const selectedPlanId = ref<string>('')
 
@@ -211,6 +214,15 @@ onMounted(() => {
           <Icon name="solar:settings-bold" size="20" class="mr-2" />
           {{ t('checkoutCard.buttons.editCourse') }}
         </a-button>
+      </template>
+      <template v-else-if="isGeneratedAccount">
+        <!-- Generated account - show warning message -->
+        <div class="w-full p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div class="flex items-center gap-2">
+            <Icon name="tabler:info-circle" class="text-yellow-600" size="20" />
+            <span class="text-yellow-800 font-medium">{{ $t('checkoutCard.messages.generatedAccountCannotPurchase') }}</span>
+          </div>
+        </div>
       </template>
       <template v-else>
         <!-- Student - show cart buttons -->

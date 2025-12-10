@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import type { CourseAsset } from '~/composables/api/useAssetApi'
 import { notification } from 'ant-design-vue'
-import ResourceCheckoutCard from '~/components/course/ResourceCheckoutCard.vue'
+import CheckoutCard from '~/components/course/CheckoutCard.vue'
+import ResourceItem from '~/components/learning/ResourceItem.vue'
 import { useAssetApi } from '~/composables/api/useAssetApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 
@@ -142,31 +143,6 @@ const currentClassroom = computed(() => {
 const isLoading = computed(() => isLoadingCourse.value || isLoadingResources.value)
 const fetchError = computed(() => courseError.value || resourcesError.value)
 
-// Get asset type info
-function getAssetTypeInfo(type: string) {
-  const typeMap: Record<string, { icon: string, color: string, label: string }> = {
-    video: { icon: 'solar:videocamera-record-bold', color: 'text-red-600', label: 'Video' },
-    pdf: { icon: 'solar:document-text-bold', color: 'text-red-600', label: 'PDF' },
-    doc: { icon: 'solar:document-bold', color: 'text-blue-600', label: 'Document' },
-    ppt: { icon: 'solar:presentation-graph-bold', color: 'text-orange-600', label: 'PowerPoint' },
-    zip: { icon: 'solar:archive-bold', color: 'text-purple-600', label: 'ZIP' },
-    image: { icon: 'solar:gallery-bold', color: 'text-green-600', label: 'Image' },
-    audio: { icon: 'solar:music-note-bold', color: 'text-pink-600', label: 'Audio' },
-    other: { icon: 'solar:file-bold', color: 'text-gray-600', label: 'Other' },
-  }
-  return typeMap[type] || typeMap.other
-}
-
-// Format file size
-function formatFileSize(bytes: number): string {
-  if (bytes === 0)
-    return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
-}
-
 // Watch for errors and show notifications
 watch(fetchError, (error) => {
   if (error) {
@@ -273,34 +249,12 @@ watch([currentCourse, currentClassroom], ([course, classroom]) => {
 
                   <!-- Resources List -->
                   <div v-else-if="resources.length > 0" class="space-y-3">
-                    <div
+                    <ResourceItem
                       v-for="resource in resources"
                       :key="resource.id"
-                      class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group"
-                    >
-                      <!-- Icon -->
-                      <div class="size-12 flex items-center justify-center rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors flex-shrink-0">
-                        <Icon :name="getAssetTypeInfo(resource.asset_type).icon" size="24" :class="getAssetTypeInfo(resource.asset_type).color" />
-                      </div>
-
-                      <!-- Content -->
-                      <div class="flex-1 min-w-0">
-                        <h3 class="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
-                          {{ resource.title }}
-                        </h3>
-                        <p v-if="resource.description" class="text-sm text-gray-600 mb-2 line-clamp-1">
-                          {{ resource.description }}
-                        </p>
-                        <div class="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
-                          <div class="flex items-center gap-1">
-                            <Icon name="solar:file-bold" size="12" />
-                            <span>{{ formatFileSize(resource.file_size) }}</span>
-                          </div>
-                          <span class="text-gray-300">•</span>
-                          <span class="uppercase">{{ resource.asset_type }}</span>
-                        </div>
-                      </div>
-                    </div>
+                      :resource="resource"
+                      :is-openable="false"
+                    />
 
                     <!-- Load More Button -->
                     <div v-if="hasMore" class="flex justify-center pt-4">
@@ -324,7 +278,7 @@ watch([currentCourse, currentClassroom], ([course, classroom]) => {
                   </div>
 
                   <!-- Empty State -->
-                  <div v-else class="text-center py-12">
+                  <div v-if="resources.length === 0 && !isLoadingResources" class="text-center py-12">
                     <Icon name="solar:document-text-bold-duotone" size="48" class="text-gray-300 mx-auto mb-4" />
                     <p class="text-gray-500">
                       {{ $t('classroomDetail.resources.empty') }}
@@ -337,9 +291,9 @@ watch([currentCourse, currentClassroom], ([course, classroom]) => {
 
           <!-- Right: Checkout Card -->
           <div class="lg:w-[35%] w-full lg:sticky lg:top-8">
-            <ResourceCheckoutCard
+            <CheckoutCard
               :course-data="currentCourse"
-              :classroom-id="classroomId"
+              :preselected-classroom-id="classroomId"
             />
           </div>
         </div>

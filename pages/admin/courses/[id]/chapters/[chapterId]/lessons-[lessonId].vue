@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import type { FormInstance, UploadChangeParam, UploadFile } from 'ant-design-vue'
-import type { LessonPayload } from '~/types/course.type'
+import type { LessonMaterial, LessonPayload } from '~/types/course.type'
 import { useCourse } from '#imports'
 import { CloseOutlined } from '@ant-design/icons-vue'
-import { notification } from 'ant-design-vue'
+import { Modal, notification } from 'ant-design-vue'
+import LessonMaterialUpload from '~/components/admin/course/lesson/LessonMaterialUpload.vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { generateSlug } from '~/utils/slug'
 
@@ -31,6 +32,7 @@ const formState = ref<LessonPayload>({
   is_published: true,
   is_unlocked: true,
   thumbnail: '',
+  materials: [],
 } as any)
 
 // Upload state
@@ -65,6 +67,31 @@ async function fetchLesson() {
         is_published: data.is_published,
         is_unlocked: data.is_unlocked,
         thumbnail: (data as any).thumbnail || '',
+        materials: Array.isArray((data as any).materials) ? [...(data as any).materials] : [],
+        // materials: [
+        //   {
+        //     id: '1',
+        //     title: 'Material 1',
+        //     description: 'Description 1',
+        //     file_url: 'https://example.com/material1.pdf',
+        //     file_type: 'application/pdf',
+        //     file_size: 1000,
+        //     uploaded_at: '2021-01-01',
+        //     uploaded_by: 1,
+        //     has_access: true,
+        //   },
+        //   {
+        //     id: '2',
+        //     title: 'Material 2',
+        //     description: 'Description 2',
+        //     file_url: 'https://example.com/material2.pdf',
+        //     file_type: 'application/pdf',
+        //     file_size: 1000,
+        //     uploaded_at: '2021-01-01',
+        //     uploaded_by: 1,
+        //     has_access: true,
+        //   },
+        // ],
       } as any
 
       // Hiển thị video preview nếu có sẵn
@@ -105,6 +132,7 @@ async function fetchLesson() {
       is_preview: false,
       is_published: true,
       is_unlocked: true,
+      materials: [],
     } as any
     // Reset video states
     videoPreviewUrl.value = ''
@@ -365,6 +393,8 @@ async function saveLesson() {
       notification.success({
         message: t('admin.formLesson.notifications.updateLessonSuccess'),
       })
+      // Reload lesson detail to get updated materials from API
+      await fetchLesson()
     }
     else {
       notification.error({
@@ -389,6 +419,8 @@ async function saveLesson() {
             lessonId: newLessonId,
           },
         })
+        // Reload lesson detail after URL update
+        await fetchLesson()
       }
     }
     else {
@@ -456,6 +488,126 @@ async function confirmDeleteLesson() {
   finally {
     isDeleting.value = false
   }
+}
+
+// Format file size helper
+function formatFileSize(bytes: number): string {
+  if (bytes === 0)
+    return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
+}
+
+// Handle material upload complete
+async function handleMaterialUpload(material: LessonMaterial) {
+  // Add material to formState (clone array to avoid readonly Proxy)
+
+  formState.value.materials?.push(material)
+
+  // For new lessons, just show success (materials will be saved when lesson is created)
+  if (!lessonId.value || lessonId.value === 'create') {
+    notification.success({
+      message: t('admin.formLesson.materials.notifications.uploadSuccess'),
+    })
+    return
+  }
+
+  // Auto-save to existing lesson
+  try {
+    const response = await updateLesson(
+      courseId.value,
+      chapterId.value,
+      lessonId.value,
+      {
+        ...formState.value,
+        chapter_id: chapterId.value,
+      },
+    )
+
+    if (response.success) {
+      notification.success({
+        message: t('admin.formLesson.materials.notifications.uploadSuccess'),
+      })
+      await fetchLesson()
+    }
+    else {
+      throw new Error('Update lesson failed')
+    }
+  }
+  catch (error: any) {
+    console.error('Failed to save material to lesson:', error)
+    notification.error({
+      message: t('admin.formLesson.materials.notifications.saveFailed'),
+    })
+    // Rollback: remove the material that failed to save
+    formState.value.materials?.pop()
+  }
+}
+
+// Handle edit material
+function handleEditMaterial(_material: LessonMaterial, _index: number) {
+  // TODO: Implement edit material modal
+  notification.info({
+    message: t('admin.formLesson.materials.notifications.editMaterial'),
+    description: 'Edit material functionality coming soon',
+  })
+}
+
+// Handle delete material
+async function handleDeleteMaterial(material: LessonMaterial, index: number) {
+  Modal.confirm({
+    title: t('admin.resources.deleteConfirm.title'),
+    content: t('admin.resources.deleteConfirm.content', { title: material.title }),
+    okText: t('admin.resources.deleteConfirm.okText'),
+    cancelText: t('admin.resources.deleteConfirm.cancelText'),
+    okType: 'danger',
+    async onOk() {
+      // Remove from formState
+      if (formState.value.materials) {
+        formState.value.materials = formState.value.materials.filter((_, i) => i !== index)
+      }
+
+      // If lesson exists, update it
+      if (lessonId.value && lessonId.value !== 'create') {
+        try {
+          const response = await updateLesson(
+            courseId.value,
+            chapterId.value,
+            lessonId.value,
+            {
+              ...formState.value,
+              chapter_id: chapterId.value,
+            },
+          )
+
+          if (response.success) {
+            notification.success({
+              message: t('admin.formLesson.materials.notifications.deleteSuccess'),
+            })
+            await fetchLesson()
+          }
+          else {
+            throw new Error('Update lesson failed')
+          }
+        }
+        catch (error: any) {
+          console.error('Failed to delete material:', error)
+          notification.error({
+            message: t('admin.formLesson.materials.notifications.deleteFailed'),
+          })
+          // Reload to restore state
+          await fetchLesson()
+        }
+      }
+      else {
+        notification.success({
+          message: t('admin.formLesson.materials.notifications.deleteSuccess'),
+        })
+      }
+    },
+  })
 }
 </script>
 
@@ -616,6 +768,76 @@ async function confirmDeleteLesson() {
             :placeholder="t('admin.formLesson.form.descriptionPlaceholder')"
             :auto-size="{ minRows: 5, maxRows: 5 }"
           />
+        </a-form-item>
+
+        <!-- Materials Section -->
+        <a-form-item v-if="lessonId && lessonId !== 'create'" class="w-full">
+          <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 shadow-sm w-full">
+            <LessonMaterialUpload
+              :course-id="courseId"
+              :chapter-id="chapterId"
+              :lesson-id="lessonId"
+              @upload-complete="handleMaterialUpload"
+            />
+
+            <!-- Materials List (temporary display until LessonMaterialList component) -->
+            <div v-if="formState.materials && formState.materials.length > 0" class="mt-6">
+              <h4 class="text-md font-semibold text-gray-900 mb-3">
+                {{ t('admin.formLesson.materials.title') }} ({{ formState.materials.length }})
+              </h4>
+              <div class="space-y-2">
+                <div
+                  v-for="(material, index) in formState.materials"
+                  :key="material.id || index"
+                  class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                >
+                  <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <Icon name="solar:document-text-bold-duotone" size="24" class="text-gray-600 flex-shrink-0" />
+                    <div class="flex-1 min-w-0">
+                      <a
+                        :href="material.file_path || material.file_url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-medium text-gray-900 truncate block !hover:text-blue-600 hover:underline transition-colors"
+                      >
+                        {{ material.title }}
+                      </a>
+                      <p v-if="material.description" class="text-sm text-gray-500 truncate mt-1">
+                        {{ material.description }}
+                      </p>
+                      <p class="text-xs text-gray-400 mt-1">
+                        {{ formatFileSize(material.file_size) }} • {{ material.file_type }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex-shrink-0">
+                    <a-dropdown :trigger="['click']" placement="bottomRight">
+                      <a-button type="text" size="small" class="!h-8 !w-8 !p-0 flex items-center justify-center">
+                        <Icon name="solar:menu-dots-bold" size="20" class="text-gray-600" />
+                      </a-button>
+                      <template #overlay>
+                        <a-menu>
+                          <a-menu-item key="edit" @click="handleEditMaterial(material, index)">
+                            <div class="flex items-center gap-2">
+                              <Icon name="solar:pen-bold" size="16" />
+                              {{ t('admin.resources.edit') }}
+                            </div>
+                          </a-menu-item>
+                          <a-menu-divider />
+                          <a-menu-item key="delete" danger @click="handleDeleteMaterial(material, index)">
+                            <div class="flex items-center gap-2">
+                              <Icon name="solar:trash-bin-trash-bold" size="16" />
+                              {{ t('admin.resources.delete') }}
+                            </div>
+                          </a-menu-item>
+                        </a-menu>
+                      </template>
+                    </a-dropdown>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </a-form-item>
 
         <!-- Preview Switch -->

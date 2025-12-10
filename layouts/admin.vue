@@ -38,7 +38,7 @@ function closeSidebar() {
     </div>
     <div
       class="w-full bg-shade-1 flex flex-col pt-[80px] transition-all duration-300 ease-in-out"
-      :class="cn(isCollapsed ? 'md:pl-[80px]' : 'md:pl-[280px]')"
+      :class="cn(isCollapsed ? 'lg:pl-[80px]' : 'lg:pl-[280px]')"
     >
       <LayoutHeader :show-hamburger="true" @hamburger-click="openSidebar" />
       <div class="flex-1 p-4 overflow-x-hidden">

@@ -573,6 +573,34 @@
         "lessonLabel": "Bài học:",
         "confirmDescription": "Bạn có chắc chắn muốn xóa bài học này? Tất cả nội dung bài học, bao gồm video và tài liệu, sẽ bị xóa vĩnh viễn."
       },
+      "materials": {
+        "title": "Tài liệu bài học",
+        "upload": "Tải lên tài liệu",
+        "uploadDescription": "Kéo thả file hoặc click để chọn",
+        "addMaterial": "Thêm tài liệu",
+        "editMaterial": "Chỉnh sửa tài liệu",
+        "deleteMaterial": "Xóa tài liệu",
+        "materialTitle": "Tiêu đề",
+        "materialTitlePlaceholder": "Nhập tiêu đề tài liệu",
+        "materialTitleRequired": "Vui lòng nhập tiêu đề tài liệu!",
+        "materialDescription": "Mô tả",
+        "materialDescriptionPlaceholder": "Nhập mô tả tài liệu (tùy chọn)",
+        "fileType": "Loại file",
+        "fileSize": "Kích thước",
+        "uploadedAt": "Ngày tải lên",
+        "empty": "Chưa có tài liệu nào",
+        "emptyDescription": "Tải lên tài liệu để học viên có thể tải xuống và sử dụng",
+        "notifications": {
+          "uploadSuccess": "Tải lên tài liệu thành công",
+          "uploadFailed": "Tải lên tài liệu thất bại",
+          "saveSuccess": "Lưu tài liệu thành công",
+          "saveFailed": "Lưu tài liệu thất bại",
+          "deleteSuccess": "Xóa tài liệu thành công",
+          "deleteFailed": "Xóa tài liệu thất bại",
+          "editSuccess": "Cập nhật tài liệu thành công",
+          "editFailed": "Cập nhật tài liệu thất bại"
+        }
+      },
       "notifications": {
         "uploadVideoFailed": "Tải lên video thất bại",
         "uploadImageFailed": "Tải lên hình ảnh thất bại",
@@ -1373,6 +1401,13 @@
     "lessonCompletedDesc": "Chúc mừng! Bạn đã hoàn thành bài học '{title}'",
     "lessonCompletionFailed": "Không thể hoàn thành bài học",
     "lessonCompletionFailedDesc": "Đã xảy ra lỗi khi đánh dấu bài học là hoàn thành. Vui lòng thử lại.",
+    "lessonMaterials": {
+      "title": "Tài liệu",
+      "empty": "Bài học này chưa có tài liệu đính kèm",
+      "selectLesson": "Vui lòng chọn bài học để xem tài liệu",
+      "loadFailed": "Không thể tải tài liệu",
+      "loadFailedDescription": "Đã xảy ra lỗi khi tải tài liệu. Vui lòng thử lại."
+    },
     "recommended": {
       "title": "Được đề xuất cho bạn",
       "subtitle": "Khám phá các khóa học mới phù hợp với sở thích của bạn",
@@ -1408,6 +1443,17 @@
       "noPendingCoursesDesc": "Hiện tại bạn chưa có khóa học nào đang chờ duyệt",
       "browseCourses": "Khám phá khóa học",
       "statusText": "Đang chờ duyệt"
+    },
+    "lesson": {
+      "materials": {
+        "title": "Tài liệu bài học",
+        "download": "Tải xuống",
+        "open": "Mở",
+        "empty": "Không có tài liệu nào",
+        "emptyDescription": "Bài học này chưa có tài liệu đính kèm",
+        "noAccess": "Bạn không có quyền truy cập tài liệu này",
+        "noAccessDescription": "Vui lòng đăng ký khóa học để truy cập tài liệu"
+      }
     }
   },
   "profilePage": {
@@ -1570,6 +1616,7 @@
       "classroomChanged": "Đã thay đổi lớp học",
       "classroomChangedDesc": "Đã thay đổi lớp học cho khóa học \"{title}\".",
       "noClassroom": "Khóa học này chưa có lớp học",
+      "generatedAccountCannotPurchase": "Tài khoản được hệ thống cấp không được phép mua khóa học",
       "noPricePlans": "Khóa học này chưa có gói giá",
       "selectPricePlan": "Vui lòng chọn gói giá",
       "selectPricePlanDesc": "Bạn cần chọn một gói giá trước khi thêm vào giỏ hàng.",

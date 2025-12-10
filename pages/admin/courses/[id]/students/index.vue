@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { User } from '~/types/auth.type'
 import type { CourseStudent } from '~/types/course.type'
-import { useCourseApi } from '~/composables/api/useCourseApi'
 import { message } from 'ant-design-vue'
+import { useCourseApi } from '~/composables/api/useCourseApi'
 
 const { t } = useI18n()
 
@@ -36,18 +36,20 @@ const error = ref<string | null>(null)
 const students = ref<CourseStudent[]>([])
 
 // Load course students
-const loadStudents = async () => {
+async function loadStudents() {
   try {
     loading.value = true
     error.value = null
     const response = await courseApi.getCourseStudents(courseId)
     students.value = response.results
     total.value = response.count
-  } catch (err: any) {
+  }
+  catch (err: any) {
     console.error('Error loading course students:', err)
     error.value = err.message || 'Failed to load students'
     message.error('Failed to load students')
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
@@ -73,7 +75,8 @@ const filteredStudents = computed(() => {
 const totalStudents = computed(() => students.value.length)
 const activeStudents = computed(() => students.value.filter(s => s.enrollment.is_active).length)
 const averageProgress = computed(() => {
-  if (students.value.length === 0) return 0
+  if (students.value.length === 0)
+    return 0
   const totalProgress = students.value.reduce((sum, s) => sum + s.enrollment.completion_percentage, 0)
   return Math.round(totalProgress / students.value.length)
 })
@@ -114,9 +117,12 @@ const columns = [
 
 // Methods
 function getProgressColor(progress: number) {
-  if (progress >= 80) return 'bg-green-500'
-  if (progress >= 50) return 'bg-blue-500'
-  if (progress >= 25) return 'bg-yellow-500'
+  if (progress >= 80)
+    return 'bg-green-500'
+  if (progress >= 50)
+    return 'bg-blue-500'
+  if (progress >= 25)
+    return 'bg-yellow-500'
   return 'bg-red-500'
 }
 
@@ -124,36 +130,37 @@ function getStatusBadge(status: string, isActive: boolean) {
   if (!isActive) {
     return {
       text: t('admin.students.table.status.disabled'),
-      class: 'bg-red-100 text-red-800 border-red-200'
+      class: 'bg-red-100 text-red-800 border-red-200',
     }
   }
-  
+
   switch (status.toLowerCase()) {
     case 'completed':
       return {
         text: t('admin.students.table.status.completed'),
-        class: 'bg-green-100 text-green-800 border-green-200'
+        class: 'bg-green-100 text-green-800 border-green-200',
       }
     case 'in_progress':
       return {
         text: t('admin.students.table.status.active'),
-        class: 'bg-blue-100 text-blue-800 border-blue-200'
+        class: 'bg-blue-100 text-blue-800 border-blue-200',
       }
     case 'not_started':
       return {
         text: t('admin.students.table.status.enrolled'),
-        class: 'bg-gray-100 text-gray-800 border-gray-200'
+        class: 'bg-gray-100 text-gray-800 border-gray-200',
       }
     default:
       return {
         text: t('admin.students.table.status.active'),
-        class: 'bg-blue-100 text-blue-800 border-blue-200'
+        class: 'bg-blue-100 text-blue-800 border-blue-200',
       }
   }
 }
 
 function formatDate(dateString: string) {
-  if (!dateString) return 'N/A'
+  if (!dateString)
+    return 'N/A'
   return new Date(dateString).toLocaleDateString('vi-VN', {
     year: 'numeric',
     month: 'short',
@@ -164,7 +171,8 @@ function formatDate(dateString: string) {
 }
 
 function formatEnrolledDate(dateString: string) {
-  if (!dateString) return 'N/A'
+  if (!dateString)
+    return 'N/A'
   return new Date(dateString).toLocaleDateString('vi-VN', {
     year: 'numeric',
     month: 'short',
@@ -195,7 +203,8 @@ async function disableStudent(student: CourseStudent) {
     message.success(t('admin.students.messages.disableStudentSuccess', { name: student.full_name }))
     // Refresh the students list to update the status
     await loadStudents()
-  } catch (err: any) {
+  }
+  catch (err: any) {
     console.error('Error disabling student:', err)
     message.error(t('admin.students.messages.disableStudentError'))
   }
@@ -207,7 +216,8 @@ async function enableStudent(student: CourseStudent) {
     message.success(t('admin.students.messages.enableStudentSuccess', { name: student.full_name }))
     // Refresh the students list to update the status
     await loadStudents()
-  } catch (err: any) {
+  }
+  catch (err: any) {
     console.error('Error enabling student:', err)
     message.error(t('admin.students.messages.enableStudentError'))
   }
@@ -241,7 +251,7 @@ onMounted(() => {
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <a-button @click="refreshStudents" class="rounded-lg gap-1 text-sm !font-semibold !flex !items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800">
+          <a-button class="rounded-lg gap-1 text-sm !font-semibold !flex !items-center justify-center bg-green-700 border-green-700 text-white hover:bg-green-800 hover:border-green-800" @click="refreshStudents">
             <template #icon>
               <Icon name="solar:refresh-bold" size="18" />
             </template>
@@ -355,8 +365,8 @@ onMounted(() => {
         :loading="loading"
         :pagination="{
           current: currentPage,
-          pageSize: pageSize,
-          total: total,
+          pageSize,
+          total,
           showSizeChanger: true,
           showTotal: (total: number) => t('admin.students.table.totalStudents', { total }),
         }"
@@ -377,7 +387,7 @@ onMounted(() => {
             <p class="text-gray-500 mb-4">
               {{ t('admin.students.table.emptyState.description') }}
             </p>
-            <a-button @click="searchQuery = ''" class="rounded-lg">
+            <a-button class="rounded-lg" @click="searchQuery = ''">
               {{ t('admin.students.table.emptyState.clearSearch') }}
             </a-button>
           </div>
@@ -388,9 +398,9 @@ onMounted(() => {
           <!-- Student Column -->
           <template v-if="column.key === 'student'">
             <div class="flex items-center gap-3">
-              <a-avatar 
+              <a-avatar
                 :size="48"
-                class="!bg-gradient-to-br !from-blue-500 !to-purple-600 !text-white !font-bold"
+                class="!font-bold"
               >
                 {{ record.full_name.charAt(0) }}
               </a-avatar>
@@ -430,7 +440,7 @@ onMounted(() => {
                   <span class="font-medium text-gray-900">{{ Math.round(record.enrollment.completion_percentage) }}%</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     class="h-2 rounded-full transition-all duration-300"
                     :class="getProgressColor(record.enrollment.completion_percentage)"
                     :style="{ width: `${record.enrollment.completion_percentage}%` }"
@@ -450,7 +460,7 @@ onMounted(() => {
                 {{ formatEnrolledDate(record.enrollment.enrolled_at) }}
               </div>
               <div class="flex items-center gap-2">
-                <span 
+                <span
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
                   :class="getStatusBadge(record.enrollment.progress_status, record.enrollment.is_active).class"
                 >
@@ -523,7 +533,7 @@ onMounted(() => {
 /* Custom table styles */
 :deep(.custom-table) {
   .ant-pagination {
-    display: flex; 
+    display: flex;
     align-items: center;
     padding: 0 20px;
   }

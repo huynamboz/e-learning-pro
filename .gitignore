@@ -25,3 +25,4 @@ logs
 
 # MCP
 .vscode/mcp.json
+.cursor

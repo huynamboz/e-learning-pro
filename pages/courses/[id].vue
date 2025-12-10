@@ -3,6 +3,7 @@ import type { CourseAsset } from '~/composables/api/useAssetApi'
 import { notification } from 'ant-design-vue'
 import { useCourseApi } from '@/composables/api/useCourseApi'
 import ResourceCheckoutCard from '~/components/course/ResourceCheckoutCard.vue'
+import ResourceItem from '~/components/learning/ResourceItem.vue'
 import { useAssetApi } from '~/composables/api/useAssetApi'
 
 definePageMeta({
@@ -295,34 +296,12 @@ watch(fetchError, (error) => {
 
               <!-- Resources List -->
               <div v-else-if="resources.length > 0" class="space-y-3">
-                <div
+                <ResourceItem
                   v-for="resource in resources"
                   :key="resource.id"
-                  class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group"
-                >
-                  <!-- Icon -->
-                  <div class="size-12 flex items-center justify-center rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors flex-shrink-0">
-                    <Icon :name="getAssetTypeInfo(resource.asset_type).icon" size="24" :class="getAssetTypeInfo(resource.asset_type).color" />
-                  </div>
-
-                  <!-- Content -->
-                  <div class="flex-1 min-w-0">
-                    <h3 class="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
-                      {{ resource.title }}
-                    </h3>
-                    <p v-if="resource.description" class="text-sm text-gray-600 mb-2 line-clamp-1">
-                      {{ resource.description }}
-                    </p>
-                    <div class="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
-                      <div class="flex items-center gap-1">
-                        <Icon name="solar:file-bold" size="12" />
-                        <span>{{ formatFileSize(resource.file_size) }}</span>
-                      </div>
-                      <span class="text-gray-300">•</span>
-                      <span class="uppercase">{{ resource.asset_type }}</span>
-                    </div>
-                  </div>
-                </div>
+                  :resource="resource"
+                  :is-openable="false"
+                />
 
                 <!-- Load More Button -->
                 <div v-if="hasMore" class="flex justify-center pt-4">
