@@ -30,39 +30,21 @@
 //   }
 // }
 
-/**
- * Convert ArrayBuffer or Uint8Array to hex string
- */
-function bytesToHex(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer)
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-}
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
 /**
- * Generate a device ID for this browser/device
+ * Generate a device ID using FingerprintJS
  */
 async function generateDeviceId(): Promise<string> {
-  // Get location information
-  // const location = await getLocationInfo()
-
-  // Create a device fingerprint based on available browser information
-  const fingerprint = [
-    navigator.userAgent,
-    `${screen.width}x${screen.height}`,
-    new Date().getTimezoneOffset().toString(),
-    navigator.hardwareConcurrency?.toString() || 'unknown',
-    // location ? `${location.countryCode}|${location.country}|${location.city}|${location.continent}|${location.ip}` : 'location-unknown',
-  ].join('|')
-
-  // Hash the fingerprint to create a consistent device ID
-  const encoder = new TextEncoder()
-  const data = encoder.encode(fingerprint)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-  const fingerprintHash = bytesToHex(hashBuffer)
-
-  return fingerprintHash.substring(0, 16) // Use first 16 chars
+  try {
+    const fp = await FingerprintJS.load()
+    const result = await fp.get()
+    return result.visitorId
+  }
+  catch (error) {
+    console.error('Error generating device ID with FingerprintJS:', error)
+    throw error
+  }
 }
 
 export default defineNuxtPlugin(async () => {
@@ -76,8 +58,8 @@ export default defineNuxtPlugin(async () => {
         localStorage.setItem('device-id', deviceId)
       }
       catch (error) {
-        console.error('Error generating device ID:', error)
-        // Fallback: generate simple ID
+        console.error('Error generating device ID with FingerprintJS:', error)
+        // Fallback: generate simple ID based on browser info
         const fingerprint = [
           navigator.userAgent,
           `${screen.width}x${screen.height}`,
@@ -85,6 +67,7 @@ export default defineNuxtPlugin(async () => {
           navigator.hardwareConcurrency?.toString() || 'unknown',
         ].join('|')
 
+        // Simple hash function for fallback
         let hash = 5381
         for (let i = 0; i < fingerprint.length; i++) {
           hash = ((hash << 5) + hash) + fingerprint.charCodeAt(i)

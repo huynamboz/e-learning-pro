@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@noble/hashes": "^2.0.1",
     "@nuxt/icon": "1.14.0",
     "@nuxtjs/google-fonts": "3.2.0",

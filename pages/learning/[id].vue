@@ -522,8 +522,10 @@ onBeforeUnmount(() => {
               <Icon name="tabler:play-filled" class="text-white text-6xl" />
             </div> -->
             <img v-if="!activeLesson" :src="course?.thumbnail || undefined" class="w-full h-full object-cover">
+
+            <!-- Video Player -->
             <VideoPlayer
-              v-if="activeLesson"
+              v-if="activeLesson && activeLesson.video_url"
               :poster="activeLesson?.thumbnail || course?.thumbnail || undefined"
               :options="videoPlayerOptions"
               :width="400"
@@ -539,8 +541,18 @@ onBeforeUnmount(() => {
               @ended="handleVideoEnded"
             />
 
+            <!-- No Video Message -->
+            <div v-if="activeLesson && !activeLesson.video_url" class="w-full h-full flex items-center justify-center">
+              <div class="text-center text-white">
+                <Icon name="solar:video-frame-play-vertical-bold-duotone" size="64" class="mx-auto mb-4 text-gray-400" />
+                <p class="text-lg font-medium text-gray-300">
+                  Bài học này hiện chưa có video
+                </p>
+              </div>
+            </div>
+
             <!-- Video Progress Indicator -->
-            <div v-if="activeLesson && videoProgress > 0" class="absolute top-4 right-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm font-medium">
+            <div v-if="activeLesson && activeLesson.video_url && videoProgress > 0" class="absolute top-4 right-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm font-medium">
               {{ Math.round(videoProgress) }}%
             </div>
           </div>
