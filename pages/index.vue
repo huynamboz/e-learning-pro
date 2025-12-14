@@ -79,7 +79,7 @@ onMounted(() => {
 })
 
 // Fetch courses data
-const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, refresh: _retryFetch } = await useLazyAsyncData(
+const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, refresh: _retryFetch } = useLazyAsyncData(
   'homepage-courses',
   async () => {
     try {
@@ -170,7 +170,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
 
           <div class="relative">
             <div class="relative rounded-3xl overflow-hidden bg-green-50 aspect-[4/5]">
-              <img src="/images/cotam2.jpg" alt="Instructor Phan Tam" class="w-full h-full object-cover">
+              <img src="/images/cotam1.jpg" alt="Instructor Phan Tam" class="w-full h-full object-cover">
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               <div class="absolute bottom-8 left-8 right-8">
                 <div class="bg-background/95 backdrop-blur rounded-2xl p-3 shadow-xl">

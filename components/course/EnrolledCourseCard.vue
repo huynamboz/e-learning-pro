@@ -98,9 +98,9 @@ function handleClick() {
           {{ course.title }}
         </h3>
         
-        <p class="text-sm text-shade-6 flex items-center gap-2">
+        <p v-if="course.teacher" class="text-sm text-shade-6 flex items-center gap-2">
           <Icon name="solar:user-circle-bold" size="16" />
-          {{ course.teacher?.full_name || 'Unknown Teacher' }}
+          {{ course.teacher?.last_name }} {{ course.teacher?.first_name }}
         </p>
 
         <p class="text-sm text-shade-6 line-clamp-2">
@@ -131,7 +131,7 @@ function handleClick() {
             <span class="text-blue-700 font-medium block mb-2">Lịch học:</span>
             <div class="space-y-1">
               <div
-                v-for="(schedule, index) in course.classroom.schedules"
+                v-for="(schedule) in course.classroom.schedules"
                 :key="schedule.id"
                 class="flex items-center gap-2 text-blue-800"
               >
