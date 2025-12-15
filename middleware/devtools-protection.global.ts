@@ -7,55 +7,56 @@
  * Note: This is a client-only middleware as DevTools detection only works in browser.
  */
 
-export default defineNuxtRouteMiddleware((to) => {
-  if (import.meta.dev) return
-  // Only run on client side
-  if (import.meta.server) {
-    return
-  }
+export default defineNuxtRouteMiddleware(() => {
+  // if (import.meta.dev) return
+  // // Only run on client side
+  // if (import.meta.server) {
+  //   return
+  // }
 
-  // Protected routes that require DevTools protection
-  const protectedRoutes = [
-    '/learning', // Learning pages
-    '/courses', // Course detail pages (if needed)
-  ]
+  // // Protected routes that require DevTools protection
+  // const protectedRoutes = [
+  //   '/learning', // Learning pages
+  //   '/courses', // Course detail pages (if needed)
+  // ]
 
-  // Check if current route should be protected
-  const isProtectedRoute = protectedRoutes.some(route => to.path.startsWith(route))
+  // // Check if current route should be protected
+  // const isProtectedRoute = protectedRoutes.some(route => to.path.startsWith(route))
 
-  if (!isProtectedRoute) {
-    return
-  }
+  // if (!isProtectedRoute) {
+  //   return
+  // }
 
   // Skip if already on 404 page to avoid infinite loop
-  if (to.path === '/404') {
-    return
-  }
+  // if (to.path === '/404') {
+  //   return
+  // }
 
   // Check DevTools using multiple detection methods
-  const isDevToolsOpen = detectDevTools()
+  // const isDevToolsOpen = detectDevTools()
+  // const isDevToolsOpen = false
 
-  if (isDevToolsOpen) {
-    console.warn('⚠️ DevTools detected in middleware - Redirecting for security')
-    return navigateTo('/404', { replace: true })
-  }
+  // if (isDevToolsOpen) {
+  //   console.warn('⚠️ DevTools detected in middleware - Redirecting for security')
+  //   return navigateTo('/404', { replace: true })
+  // }
 
   // Start continuous monitoring if on protected route
-  if (typeof window !== 'undefined') {
-    startDevToolsMonitoring()
-  }
+  // if (typeof window !== 'undefined') {
+  //   startDevToolsMonitoring()
+  // }
 })
 
 // DevTools detection function
 function detectDevTools(): boolean {
   // Method 1: Check window size difference
-  const threshold = 160
-  const widthThreshold = window.outerWidth - window.innerWidth > threshold
-  const heightThreshold = window.outerHeight - window.innerHeight > threshold
+  // const threshold = 160
+  // const widthThreshold = window.outerWidth - window.innerWidth > threshold
+  // const heightThreshold = window.outerHeight - window.innerHeight > threshold
 
-  if (widthThreshold || heightThreshold) {
-    return true
-  }
+  // if (widthThreshold || heightThreshold) {
+  //   return true
+  // }
 
   // Method 2: Check if debugger is active
   try {
