@@ -77,7 +77,7 @@ onMounted(() => {
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
             <h4 class="font-extrabold text-[#0F172A] text-base whitespace-nowrap">
-              PHAN THI TAM
+              Phiên Dịch Viên Phan Tâm
             </h4>
             <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
               E-Learning Platform

@@ -282,7 +282,7 @@ function navigateToCourse(enrollmentId: string) {
                   </h3>
                   <p class="text-sm text-shade-6 mb-4 flex items-center gap-2">
                     <Icon name="solar:user-circle-bold" size="16" />
-                    {{ enrollment.teacher?.full_name || 'Unknown Teacher' }}
+                    {{ enrollment.teacher?.last_name }} {{ enrollment.teacher?.first_name }}
                   </p>
 
                   <!-- Progress Bar -->

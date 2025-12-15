@@ -355,12 +355,12 @@ watch(resourceMenu, (newMenu) => {
       <div class="flex items-center justify-between w-full lg:w-auto">
         <div class="flex items-center h-16 lg:h-[76px]">
           <NuxtLink to="/" class="flex-shrink-0">
-            <img src="@/assets/images/logo.webp" alt="PHAN THI TAM Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+            <img src="@/assets/images/logo.webp" alt="Phiên Dịch Viên Phan Tâm Logo" class="w-10 h-10 sm:w-12 sm:h-12">
           </NuxtLink>
           <!-- Brand name -->
           <div class="ml-3">
             <div class="text-lg font-bold">
-              <span class="text-red-600">PHAN THI TAM</span>
+              <span class="text-red-600">Phiên Dịch Viên Phan Tâm</span>
             </div>
             <div class="text-xs text-green-600 font-medium">
               {{ $t('layoutAuthHeader.brand.tagline') }}

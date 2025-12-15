@@ -50,7 +50,7 @@ function getUserInitials(email: string) {
 }
 
 function getUserDisplayName(user: any) {
-  return user.full_name || `${user.last_name} ${user.first_name}`.trim()
+  return `${user.last_name} ${user.first_name}`.trim()
 }
 
 // Fetch latest students
