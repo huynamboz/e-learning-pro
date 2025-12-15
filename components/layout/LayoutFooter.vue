@@ -56,7 +56,7 @@ const socialMedia: SocialMedia[] = [
 
 const companyInfo = {
   name: 'Cô Tâm Italian',
-  description: 'Học tiếng Ý cùng cô Phan Thị Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.',
+  description: 'Học tiếng Ý cùng cô Phan Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.',
 }
 </script>
 

@@ -228,8 +228,8 @@
   "homepage": {
     "hero": {
       "badge": "Học với sự hướng dẫn chuyên nghiệp",
-      "title": "Học tiếng Ý cùng cô Tâm",
-      "description": "Cùng học tiếng Ý với cô Phan Thị Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.",
+      "title": "Học tiếng Ý cùng Phan Tâm",
+      "description": "Mỗi ngôn ngữ là một cánh cửa đến thế giới mới. \n Hãy để Phan Tâm đồng hành cùng bạn trên hành trình chinh phục tiếng Ý.",
       "exploreCourses": "Khám phá khóa học",
       "signUpNow": "Đăng ký ngay",
       "stats": {
@@ -325,8 +325,8 @@
     },
     "instructor": {
       "badge": "Gặp gỡ giảng viên của bạn",
-      "title": "Học cùng cô Tâm",
-      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế, cô Phan Thị Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
+      "title": "Học cùng Phan Tâm",
+      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế, cô Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
       "experience": "10+ Năm",
       "experienceText": "Giảng dạy tiếng Ý",
       "features": {
@@ -2200,7 +2200,7 @@
       "success": "Đăng ký thành công!",
       "error": "Đăng ký thất bại. Vui lòng thử lại."
     },
-    "copyright": "© 2024 Cô Phan Thị Tâm. Tất cả quyền được bảo lưu.",
+    "copyright": "© 2024 Cô Phan Tâm. Tất cả quyền được bảo lưu.",
     "madeWith": "Được tạo với",
     "by": "bởi"
   },

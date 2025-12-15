@@ -182,7 +182,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
                     </div>
                     <div>
                       <div class="font-semibold">
-                        Phan Thị Tâm
+                        Phan Tâm
                       </div>
                       <div class="text-sm text-muted-foreground">
                         Italian Language Expert
@@ -574,7 +574,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
         <div class="grid lg:grid-cols-2 gap-16 items-center">
           <div class="relative">
             <div class="aspect-square rounded-3xl overflow-hidden bg-green-50">
-              <img src="/images/cotam3.jpg" alt="Phan Thị Tâm" class="w-full h-full object-cover">
+              <img src="/images/cotam3.jpg" alt="Phan Tâm" class="w-full h-full object-cover">
             </div>
             <div class="absolute -bottom-8 -right-8 bg-green-600 text-white rounded-3xl p-8 shadow-2xl max-w-xs">
               <div class="text-4xl font-bold mb-2">
