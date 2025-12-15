@@ -76,7 +76,7 @@ onMounted(() => {
         <NuxtLink v-if="!isCollapsed" class="flex gap-2" to="/">
           <img src="@/assets/images/logo.webp" alt="" class="h-10 w-10 object-contain">
           <div class="grid">
-            <h4 class="font-extrabold text-[#0F172A] text-base whitespace-nowrap">
+            <h4 class="font-extrabold text-[#0F172A] text-xs whitespace-nowrap">
               Phiên Dịch Viên Phan Tâm
             </h4>
             <p class="font-medium text-[#15803D] text-xs -mt-2 whitespace-nowrap">
