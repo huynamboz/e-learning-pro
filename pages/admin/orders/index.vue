@@ -511,7 +511,7 @@ async function handleRefresh() {
             <div class="flex items-center gap-3">
               <div>
                 <div class="font-semibold text-gray-900">
-                  {{ record.student.full_name.charAt(0) }}
+                  {{ record.student.full_name }}
                 </div>
                 <div class="text-sm text-gray-500">
                   {{ record.student.email }}
