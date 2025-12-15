@@ -456,7 +456,7 @@ onMounted(async () => {
       <div v-else-if="activeChapter">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
           <h2 class="text-lg sm:text-2xl font-semibold !m-0">
-            {{ activeChapter.title }} ({{ activeChapter.lessons.length }} {{ t('admin.chapterManagement.lessons.minutes') }})
+            {{ activeChapter.title }}
           </h2>
           <NuxtLink :to="`/admin/courses/${courseId}/chapters/${activeChapter.id}/lessons-create`">
             <a-button
