@@ -15,10 +15,8 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Configuration
-SERVICE_NAME="app"
 OLD_CONTAINER="elearning-app"
 NEW_CONTAINER="elearning-app-new"
-IMAGE_NAME="elearning-pro-app"
 HEALTH_CHECK_URL="http://localhost:3001"
 HEALTH_CHECK_TIMEOUT=120  # seconds
 HEALTH_CHECK_INTERVAL=5   # seconds
@@ -55,18 +53,13 @@ docker network create elearning-network 2>/dev/null || true
 # Step 4: Start new container on temporary port (old container still running)
 echo -e "${BLUE}🚀 Starting new container on temporary port ${PORT_NEW}...${NC}"
 
-# Get environment variables from existing container if available
-ENV_VARS=""
-if docker ps -a | grep -q "${OLD_CONTAINER}"; then
-    # Extract env vars from old container
-    ENV_VARS=$(docker inspect ${OLD_CONTAINER} --format='{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null || echo "")
-fi
-
 # Create a temporary docker-compose override for new container
 cat > docker-compose.new.yml <<EOF
 services:
   app-new:
-    image: ${IMAGE_NAME}:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: ${NEW_CONTAINER}
     ports:
       - "${PORT_NEW}:3000"
@@ -106,9 +99,8 @@ echo -e "${GREEN}✅ New container started on port ${PORT_NEW}${NC}"
 # Step 5: Wait for new container to be healthy
 echo -e "${BLUE}⏳ Waiting for new container to be healthy...${NC}"
 ELAPSED=0
-MAX_WAIT=$HEALTH_CHECK_TIMEOUT
 
-while [ $ELAPSED -lt $MAX_WAIT ]; do
+while [ $ELAPSED -lt $HEALTH_CHECK_TIMEOUT ]; do
     # Check if container is running
     if ! docker ps | grep -q "${NEW_CONTAINER}"; then
         echo -e "${RED}❌ New container stopped unexpectedly${NC}"
@@ -124,13 +116,13 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
         break
     fi
 
-    echo -e "${YELLOW}   Waiting... (${ELAPSED}s/${MAX_WAIT}s)${NC}"
+    echo -e "${YELLOW}   Waiting... (${ELAPSED}s/${HEALTH_CHECK_TIMEOUT}s)${NC}"
     sleep $HEALTH_CHECK_INTERVAL
     ELAPSED=$((ELAPSED + HEALTH_CHECK_INTERVAL))
 done
 
-if [ $ELAPSED -ge $MAX_WAIT ]; then
-    echo -e "${RED}❌ New container failed health check after ${MAX_WAIT}s${NC}"
+if [ $ELAPSED -ge $HEALTH_CHECK_TIMEOUT ]; then
+    echo -e "${RED}❌ New container failed health check after ${HEALTH_CHECK_TIMEOUT}s${NC}"
     echo -e "${YELLOW}📋 New container logs:${NC}"
     docker compose -f docker-compose.new.yml logs --tail=50
     docker compose -f docker-compose.new.yml down
@@ -138,18 +130,9 @@ if [ $ELAPSED -ge $MAX_WAIT ]; then
     exit 1
 fi
 
-# Step 6: Stop old container gracefully (new container is healthy and ready)
-echo -e "${BLUE}🛑 Stopping old container (new container is ready on port ${PORT_NEW})...${NC}"
-
-# Check if old container exists and is running
-if docker ps | grep -q "${OLD_CONTAINER}"; then
-    echo -e "${YELLOW}   Old container is running, stopping gracefully...${NC}"
-    docker stop ${OLD_CONTAINER} --time=10 || true
-    docker rm ${OLD_CONTAINER} || true
-else
-    echo -e "${YELLOW}   Old container not running, skipping...${NC}"
-    docker compose down || true
-fi
+# Step 6: Stop old container (new container is healthy and ready)
+echo -e "${BLUE}🛑 Stopping old container...${NC}"
+docker compose down || true
 
 # Step 7: Switch new container to production port
 echo -e "${BLUE}🔄 Switching new container to production port ${PORT_OLD}...${NC}"
@@ -163,45 +146,8 @@ docker compose up -d
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Failed to start container on production port${NC}"
-    # Try to restore old container if available
-    docker compose up -d || true
     rm -f docker-compose.new.yml
     exit 1
-fi
-
-# Wait for production container to be ready with retries
-echo -e "${BLUE}⏳ Waiting for production container to be ready...${NC}"
-MAX_RETRIES=15
-RETRY_COUNT=0
-PRODUCTION_READY=false
-
-while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    # Check if container is running
-    if ! docker ps | grep -q "${OLD_CONTAINER}"; then
-        echo -e "${YELLOW}   Container not running yet, waiting...${NC}"
-        sleep 2
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-        continue
-    fi
-
-    # Check health via HTTP
-    if curl -f -s "http://localhost:${PORT_OLD}" > /dev/null 2>&1; then
-        echo -e "${GREEN}✅ Production container is healthy!${NC}"
-        PRODUCTION_READY=true
-        break
-    fi
-
-    RETRY_COUNT=$((RETRY_COUNT + 1))
-    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-        echo -e "${YELLOW}   Retrying health check... (${RETRY_COUNT}/${MAX_RETRIES})${NC}"
-        sleep 2
-    fi
-done
-
-if [ "$PRODUCTION_READY" = false ]; then
-    echo -e "${YELLOW}⚠️  Production container may still be starting...${NC}"
-    echo -e "${YELLOW}   Check logs: docker compose logs${NC}"
-    echo -e "${YELLOW}   Container status: docker compose ps${NC}"
 fi
 
 # Cleanup
