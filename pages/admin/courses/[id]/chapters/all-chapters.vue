@@ -217,7 +217,7 @@ onMounted(async () => {
 <template>
   <div class="flex flex-col lg:flex-row gap-4">
     <!-- Sidebar Chapter List -->
-    <div class="w-full lg:w-1/4">
+    <div class="w-full lg:w-1/3">
       <div class="bg-white rounded-md shadow p-3 flex flex-col gap-2">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3">
           <h1 class="text-base sm:text-lg font-semibold mb-2 text-gray-600 !m-0">

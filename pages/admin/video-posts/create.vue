@@ -3,9 +3,9 @@ import type { Rule } from 'ant-design-vue/es/form'
 import type { VideoPostCreate } from '~/composables/api/useVideoBlogApi'
 import { notification } from 'ant-design-vue'
 import { reactive, ref } from 'vue'
-import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useVideoBlogApi } from '~/composables/api/useVideoBlogApi'
 import { useFileUpload } from '~/composables/useFileUpload'
+import { useThumbnailExtractor } from '~/composables/useThumbnailExtractor'
 import { useVideoUpload } from '~/composables/useVideoUpload'
 
 definePageMeta({
@@ -17,8 +17,8 @@ const { t } = useI18n()
 const router = useRouter()
 const { createPost } = useVideoBlogApi()
 const { uploadVideoFile, uploadProgress, isUploading } = useVideoUpload()
-const { uploadImage } = useCourseApi()
 const { uploadFileWithProgress, uploading } = useFileUpload()
+const { extractAndUploadThumbnail, uploadThumbnailImage } = useThumbnailExtractor()
 
 const formRef = ref()
 const loading = ref(false)
@@ -121,88 +121,6 @@ function removeImage() {
   formData.thumbnail = ''
 }
 
-// Extract first frame from video and upload as thumbnail
-async function extractAndUploadThumbnail(videoFile: File): Promise<string | null> {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement('video')
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-
-    if (!ctx) {
-      reject(new Error('Canvas context not available'))
-      return
-    }
-
-    video.preload = 'metadata'
-    video.muted = true
-    video.playsInline = true
-
-    video.onloadedmetadata = () => {
-      // Set canvas size to video dimensions
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
-
-      // Seek to first frame (0 seconds)
-      video.currentTime = 0
-    }
-
-    video.onseeked = async () => {
-      try {
-        // Draw video frame to canvas
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-
-        // Convert canvas to blob (JPEG format)
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            reject(new Error('Failed to extract frame from video'))
-            return
-          }
-
-          try {
-            // Create file from blob
-            const thumbnailFile = new File([blob], `thumbnail-${Date.now()}.jpg`, {
-              type: 'image/jpeg',
-            })
-
-            // Get presigned URL for thumbnail upload
-            const presignedResponse = await uploadImage({
-              file_name: thumbnailFile.name,
-              content_type: thumbnailFile.type,
-              folder: 'thumbnails',
-            })
-
-            const uploadUrl = presignedResponse?.upload_url
-            const publicUrl = presignedResponse?.public_url
-
-            if (!uploadUrl || !publicUrl) {
-              reject(new Error('Missing upload URLs'))
-              return
-            }
-
-            // Upload thumbnail to S3
-            await uploadFileWithProgress(thumbnailFile, uploadUrl)
-
-            resolve(publicUrl)
-          }
-          catch (err) {
-            reject(err)
-          }
-        }, 'image/jpeg', 0.9) // 90% quality
-      }
-      catch (err) {
-        reject(err)
-      }
-    }
-
-    video.onerror = () => {
-      reject(new Error('Failed to load video'))
-    }
-
-    // Load video file
-    video.src = URL.createObjectURL(videoFile)
-  })
-}
-
 // Handle tag input
 const tagInput = ref('')
 const tagInputVisible = ref(false)
@@ -272,21 +190,7 @@ async function handleSubmit() {
         isUploading.value = true
         uploadProgress.value = 0
 
-        const presign = await uploadImage({
-          file_name: imageFile.name,
-          content_type: imageFile.type,
-          folder: 'thumbnails',
-        })
-
-        const uploadUrl = presign?.upload_url
-        const publicUrl = presign?.public_url
-
-        if (!uploadUrl || !publicUrl)
-          throw new Error('Missing upload URLs')
-
-        // Upload image with progress tracking
-        await uploadFileWithProgress(imageFile, uploadUrl)
-        thumbnailUrl = publicUrl
+        thumbnailUrl = await uploadThumbnailImage(imageFile, 'thumbnails')
         isUploading.value = false
       }
       catch (err) {

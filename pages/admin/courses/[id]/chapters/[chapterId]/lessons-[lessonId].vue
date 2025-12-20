@@ -6,6 +6,7 @@ import { CloseOutlined } from '@ant-design/icons-vue'
 import { Modal, notification } from 'ant-design-vue'
 import LessonMaterialUpload from '~/components/admin/course/lesson/LessonMaterialUpload.vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import { useThumbnailExtractor } from '~/composables/useThumbnailExtractor'
 import { generateSlug } from '~/utils/slug'
 
 const { t } = useI18n()
@@ -18,6 +19,7 @@ const router = useRouter()
 
 const { uploadFile, uploadImage, deleteLesson } = useCourseApi()
 const { createLesson, updateLesson, detailLesson, currentLesson, fetchChapters, isCreatingLesson } = useCourse()
+const { extractAndUploadThumbnail } = useThumbnailExtractor()
 
 const formRef = ref<FormInstance>()
 const formState = ref<LessonPayload>({
@@ -166,10 +168,35 @@ function handleVideoChange(info: UploadChangeParam) {
   videoFileList.value = [...info.fileList].slice(-1)
   const last = videoFileList.value[0]
   if (last?.originFileObj) {
+    const file = last.originFileObj as File
     if (videoPreviewUrl.value)
       URL.revokeObjectURL(videoPreviewUrl.value)
-    videoPreviewUrl.value = URL.createObjectURL(last.originFileObj as File)
+    videoPreviewUrl.value = URL.createObjectURL(file)
+
+    // Get video duration and fill into form
+    getVideoDuration(file)
   }
+}
+
+// Get video duration from file
+function getVideoDuration(file: File) {
+  const video = document.createElement('video')
+  video.preload = 'metadata'
+
+  video.onloadedmetadata = () => {
+    window.URL.revokeObjectURL(video.src)
+    // Duration is in seconds, convert to minutes (rounded)
+    const durationInMinutes = Math.round(video.duration / 60)
+    formState.value.video_duration = durationInMinutes
+  }
+
+  video.onerror = () => {
+    window.URL.revokeObjectURL(video.src)
+    // If failed to get duration, set to 0
+    formState.value.video_duration = 0
+  }
+
+  video.src = URL.createObjectURL(file)
 }
 
 function handleImageChange(info: UploadChangeParam) {
@@ -316,6 +343,20 @@ async function uploadVideoAndSaveLesson() {
         await uploadFileWithProgress(file, uploadUrl)
         formState.value.video_url = publicUrl
         isUploading.value = false
+
+        // Auto-extract and upload thumbnail if not provided
+        if (!imageFileList.value.length && !(formState.value as any).thumbnail) {
+          try {
+            const thumbnailUrl = await extractAndUploadThumbnail(file)
+            if (thumbnailUrl) {
+              (formState.value as any).thumbnail = thumbnailUrl
+            }
+          }
+          catch (thumbnailErr) {
+            console.warn('Failed to extract thumbnail:', thumbnailErr)
+            // Don't block submission if thumbnail extraction fails
+          }
+        }
       }
       catch (err) {
         notification.error({
