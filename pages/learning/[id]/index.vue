@@ -376,10 +376,18 @@ function formatFileSize(bytes: number): string {
 
 // Handle material click
 function handleMaterialClick(material: any) {
-  const fileUrl = material.file_path || material.file_url
-  if (fileUrl && process.client) {
-    window.open(fileUrl, '_blank', 'noopener,noreferrer')
+  if (!material.id || !activeLesson.value) {
+    return
   }
+
+  // Navigate to document preview page
+  router.push({
+    path: `/learning/${courseId}/documents`,
+    query: {
+      lessonId: activeLesson.value.id,
+      documentId: material.id,
+    },
+  })
 }
 
 // Drawer state for mobile lesson list
