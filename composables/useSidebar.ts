@@ -68,6 +68,11 @@ export function useSidebar() {
       link: '/admin/quiz-management',
     },
     {
+      name: t('adminMenu.newQuizManagement'),
+      icon: 'i-heroicons-clipboard-document-list',
+      link: '/admin/new-quiz-management',
+    },
+    {
       name: t('adminMenu.students'),
       icon: 'i-heroicons-users',
       link: '/admin/users',

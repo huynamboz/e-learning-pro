@@ -1,83 +1,50 @@
-<!--
-Sync Impact Report:
-Version change: [TEMPLATE] → 1.0.0
-Modified principles: N/A (initial creation)
-Added sections: All core principles (I-VII), Development Workflow, Governance
-Removed sections: N/A
-Templates requiring updates:
-  ✅ plan-template.md - Constitution Check section updated with Vue/Nuxt-specific gates
-  ⚠️ spec-template.md - No changes needed (generic template works for Vue/Nuxt)
-  ⚠️ tasks-template.md - No changes needed (generic template works for Vue/Nuxt)
-Follow-up TODOs: None
--->
-
-# E-Learning Platform Constitution
+# [PROJECT_NAME] Constitution
+<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
 
 ## Core Principles
 
-### I. Component-First Architecture
-Every feature MUST be implemented as reusable Vue components. Components MUST be self-contained with clear props/emits contracts. Shared logic MUST be extracted into composables. Page components SHOULD orchestrate components rather than contain business logic directly.
+### [PRINCIPLE_1_NAME]
+<!-- Example: I. Library-First -->
+[PRINCIPLE_1_DESCRIPTION]
+<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
 
-**Rationale**: Vue's component model enables reusability, testability, and maintainability. Separating concerns between components, composables, and pages reduces coupling and improves developer experience.
+### [PRINCIPLE_2_NAME]
+<!-- Example: II. CLI Interface -->
+[PRINCIPLE_2_DESCRIPTION]
+<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
-### II. Type Safety (NON-NEGOTIABLE)
-All TypeScript interfaces MUST be defined in `types/` directory. API responses MUST be typed. Props and emits MUST have explicit types. Avoid `any` type except for third-party library integrations where unavoidable.
+### [PRINCIPLE_3_NAME]
+<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
+[PRINCIPLE_3_DESCRIPTION]
+<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
-**Rationale**: Type safety prevents runtime errors, improves IDE support, and serves as living documentation. This is critical for a complex e-learning platform with multiple data models.
+### [PRINCIPLE_4_NAME]
+<!-- Example: IV. Integration Testing -->
+[PRINCIPLE_4_DESCRIPTION]
+<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
-### III. API Integration Standards
-API calls MUST use composables from `composables/api/`. All API errors MUST be handled with user-friendly messages. Loading states MUST be displayed during async operations. Authentication tokens MUST be managed centrally via `useAuth()` composable.
+### [PRINCIPLE_5_NAME]
+<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
+[PRINCIPLE_5_DESCRIPTION]
+<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
 
-**Rationale**: Centralized API logic ensures consistent error handling, authentication, and reduces code duplication across the application.
+## [SECTION_2_NAME]
+<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
-### IV. Internationalization (i18n)
-All user-facing text MUST use `$t()` or `t()` from `useI18n()`. Translation keys MUST follow hierarchical structure (e.g., `admin.orders.table.columns.invoice`). New features MUST include translations for both Vietnamese (`vi.json`) and English (`en.json`).
+[SECTION_2_CONTENT]
+<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
-**Rationale**: The platform serves Vietnamese and international users. i18n ensures maintainable multi-language support and enables future language additions.
+## [SECTION_3_NAME]
+<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
 
-### V. State Management
-Global state MUST use Pinia stores. Component-local state SHOULD use `ref()` or `reactive()`. Shared state between sibling components SHOULD be lifted to a common parent or Pinia store. Cart, authentication, and user preferences MUST use Pinia stores.
-
-**Rationale**: Pinia provides type-safe, devtools-integrated state management. Clear boundaries between local and global state prevent prop drilling and maintainability issues.
-
-### VI. UI Component Libraries
-Ant Design Vue components MUST be used for complex UI patterns (tables, forms, modals, notifications). shadcn-nuxt components SHOULD be used for custom UI elements. Tailwind CSS utility classes MUST be used for styling. Custom CSS SHOULD be avoided unless absolutely necessary.
-
-**Rationale**: Leveraging established component libraries accelerates development and ensures accessibility. Tailwind provides consistent design system implementation.
-
-### VII. Error Handling & User Feedback
-API errors MUST display user-friendly notifications via `notification` from Ant Design Vue. Form validation errors MUST be displayed inline using Ant Design Vue form validation. Critical errors MUST log to console for debugging. User actions MUST provide immediate feedback (loading states, success/error messages).
-
-**Rationale**: Clear error communication improves user experience and reduces support burden. Consistent error handling patterns make debugging easier.
-
-## Development Workflow
-
-### Code Quality
-- ESLint MUST pass before commit (enforced via `@nuxt/eslint`)
-- Prettier MUST format code (enforced via `prettier` script)
-- TypeScript errors MUST be resolved before merge
-- Components MUST follow Vue 3 Composition API with `<script setup lang="ts">`
-
-### Testing Requirements
-- Critical user flows (authentication, checkout, enrollment) SHOULD have manual test scenarios documented
-- API integration points MUST be tested with real backend responses
-- Component props/emits MUST be validated at development time via TypeScript
-
-### File Organization
-- Pages MUST be in `pages/` directory following Nuxt routing conventions
-- Components MUST be in `components/` with logical subdirectories (e.g., `components/admin/`, `components/course/`)
-- Composables MUST be in `composables/` directory
-- Types MUST be in `types/` directory organized by domain (e.g., `course.type.ts`, `auth.type.ts`)
-- API client logic MUST be in `composables/api/` directory
+[SECTION_3_CONTENT]
+<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
 ## Governance
+<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-This constitution supersedes all other coding standards and practices. All pull requests and code reviews MUST verify compliance with these principles. When principles conflict with implementation needs, the conflict MUST be documented in the PR with justification for the deviation.
+[GOVERNANCE_RULES]
+<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-Amendments to this constitution require:
-1. Documentation of the proposed change and rationale
-2. Review and approval from project maintainers
-3. Update to version number following semantic versioning (MAJOR.MINOR.PATCH)
-4. Propagation of changes to dependent templates and documentation
-
-**Version**: 1.0.0 | **Ratified**: 2025-01-27 | **Last Amended**: 2025-01-27
+**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
+<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

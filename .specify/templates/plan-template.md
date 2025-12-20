@@ -31,19 +31,7 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-**Component-First**: Verify feature can be implemented as Vue components with clear props/emits contracts.
-
-**Type Safety**: Ensure all new interfaces are defined in `types/` directory. API responses must be typed.
-
-**API Integration**: Confirm API calls use composables from `composables/api/`. Error handling must be implemented.
-
-**i18n**: Verify all user-facing text uses translation keys. Add keys to both `vi.json` and `en.json`.
-
-**State Management**: Determine if feature requires Pinia store or can use component-local state.
-
-**UI Components**: Confirm use of Ant Design Vue for complex patterns, Tailwind for styling.
-
-**Error Handling**: Plan user-friendly error messages and loading states.
+[Gates determined based on constitution file]
 
 ## Project Structure
 

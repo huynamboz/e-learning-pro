@@ -1,0 +1,776 @@
+openapi: 3.0.3
+info:
+  title: New Quiz Management API
+  description: API for managing standalone quizzes organized by Levels (independent of courses)
+  version: 1.0.0
+  contact:
+    name: E-Learning Platform API
+
+servers:
+  - url: https://elearning.genfash.online/api/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+tags:
+  - name: Levels
+    description: Level management (A1, A2, B1, etc.)
+  - name: Quizzes
+    description: Standalone quiz management
+  - name: Attempts
+    description: Student quiz attempts
+  - name: Essay Grading
+    description: Essay question grading
+
+paths:
+  /new_quiz/levels/:
+    get:
+      tags: [Levels]
+      summary: List all levels
+      description: Get a list of all quiz levels with optional filtering
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: is_active
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in code, name, description
+        - name: ordering
+          in: query
+          schema:
+            type: string
+          description: Order results (e.g., "order,code")
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevelListResponse'
+    post:
+      tags: [Levels]
+      summary: Create a new level
+      description: Create a new quiz level (Teacher/Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelCreate'
+      responses:
+        '201':
+          description: Level created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Level'
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+
+  /new_quiz/levels/{id}/:
+    get:
+      tags: [Levels]
+      summary: Get level details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Level details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Level'
+    put:
+      tags: [Levels]
+      summary: Update level (full)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelCreate'
+      responses:
+        '200':
+          description: Level updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Level'
+    patch:
+      tags: [Levels]
+      summary: Update level (partial)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LevelUpdate'
+      responses:
+        '200':
+          description: Level updated
+    delete:
+      tags: [Levels]
+      summary: Delete level
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Level deleted
+
+  /new_quiz/quizzes/:
+    get:
+      tags: [Quizzes]
+      summary: List all quizzes
+      description: Get a list of standalone quizzes with optional filtering
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: level
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter by level ID
+        - name: is_published
+          in: query
+          schema:
+            type: boolean
+          description: Filter by publish status
+        - name: created_by
+          in: query
+          schema:
+            type: integer
+          description: Filter by creator user ID
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search in title/description
+        - name: ordering
+          in: query
+          schema:
+            type: string
+          description: Order results (e.g., "-created_at")
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizListResponse'
+    post:
+      tags: [Quizzes]
+      summary: Create a new quiz
+      description: Create a new standalone quiz (Teacher/Admin only)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizCreate'
+      responses:
+        '201':
+          description: Quiz created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+
+  /new_quiz/quizzes/{id}/:
+    get:
+      tags: [Quizzes]
+      summary: Get quiz details
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Quiz details with all questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizDetail'
+    put:
+      tags: [Quizzes]
+      summary: Update quiz (full)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizUpdate'
+      responses:
+        '200':
+          description: Quiz updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+    patch:
+      tags: [Quizzes]
+      summary: Update quiz (partial)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizUpdate'
+      responses:
+        '200':
+          description: Quiz updated
+    delete:
+      tags: [Quizzes]
+      summary: Delete quiz
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Quiz deleted
+
+  /new_quiz/quizzes/{id}/publish/:
+    patch:
+      tags: [Quizzes]
+      summary: Publish quiz
+      description: Make quiz visible to students (requires at least one question)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Quiz published
+        '400':
+          description: Validation error (e.g., no questions)
+        '401':
+          description: Unauthorized
+
+  /new_quiz/quizzes/{id}/unpublish/:
+    patch:
+      tags: [Quizzes]
+      summary: Unpublish quiz
+      description: Hide quiz from students
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Quiz unpublished
+        '401':
+          description: Unauthorized
+
+  /new_quiz/quizzes/mine/:
+    get:
+      tags: [Quizzes]
+      summary: Get my quizzes
+      description: Get all quizzes created by current teacher/admin
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of user's quizzes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizListResponse'
+
+  /new_quiz/quizzes/by_level/:
+    get:
+      tags: [Quizzes]
+      summary: Get quizzes by level
+      description: Get all published quizzes for a specific level
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: level_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of quizzes for the level
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizListResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Level:
+      type: object
+      required: [id, code, name, order, is_active]
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          maxLength: 20
+          example: "A1"
+        name:
+          type: string
+          maxLength: 100
+          example: "Beginner A1"
+        order:
+          type: integer
+          minimum: 1
+          example: 1
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          default: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LevelCreate:
+      type: object
+      required: [code, name, order]
+      properties:
+        code:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 100
+        order:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+          default: true
+
+    LevelUpdate:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 100
+        order:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+
+    LevelListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Level'
+
+    QuizOption:
+      type: object
+      required: [label, text, is_correct]
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+          maxLength: 10
+          example: "A"
+        text:
+          type: string
+        is_correct:
+          type: boolean
+        order:
+          type: integer
+
+    QuizSampleAnswer:
+      type: object
+      required: [text]
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+
+    QuizQuestion:
+      type: object
+      required: [id, question_type, prompt, order, score]
+      properties:
+        id:
+          type: string
+          format: uuid
+        question_type:
+          type: string
+          enum: [multiple_choice, text_input, essay]
+        prompt:
+          type: string
+        explanation:
+          type: string
+          nullable: true
+        media:
+          type: string
+          format: uri
+          nullable: true
+        order:
+          type: integer
+          minimum: 1
+        score:
+          type: number
+          format: decimal
+          default: 1.0
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizOption'
+        sample_answer:
+          $ref: '#/components/schemas/QuizSampleAnswer'
+          nullable: true
+
+    Quiz:
+      type: object
+      required: [id, title, level, time_type, is_published, retake_limit]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        level:
+          type: string
+          format: uuid
+        level_code:
+          type: string
+          example: "A1"
+        level_name:
+          type: string
+          example: "Beginner A1"
+        time_type:
+          type: string
+          enum: [limit, none]
+        time_value:
+          type: integer
+          nullable: true
+          minimum: 1
+        time_unit:
+          type: string
+          enum: [minute, second]
+          nullable: true
+        time_limit_display:
+          type: string
+          example: "30 minutes"
+        is_published:
+          type: boolean
+          default: false
+        retake_limit:
+          type: integer
+          minimum: 1
+          default: 1
+        total_questions:
+          type: integer
+        created_by:
+          type: integer
+        created_by_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    QuizDetail:
+      allOf:
+        - $ref: '#/components/schemas/Quiz'
+        - type: object
+          properties:
+            questions:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuizQuestion'
+
+    QuizCreate:
+      type: object
+      required: [title, level_id, time_type, retake_limit]
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        level_id:
+          type: string
+          format: uuid
+        time_type:
+          type: string
+          enum: [limit, none]
+        time_value:
+          type: integer
+          nullable: true
+          minimum: 1
+        time_unit:
+          type: string
+          enum: [minute, second]
+          nullable: true
+        retake_limit:
+          type: integer
+          minimum: 1
+          default: 1
+        is_published:
+          type: boolean
+          default: false
+        questions:
+          type: array
+          items:
+            type: object
+            required: [question_type, prompt, order, score]
+            properties:
+              question_type:
+                type: string
+                enum: [multiple_choice, text_input, essay]
+              prompt:
+                type: string
+              explanation:
+                type: string
+                nullable: true
+              order:
+                type: integer
+                minimum: 1
+              score:
+                type: number
+                format: decimal
+              options:
+                type: array
+                items:
+                  type: object
+                  required: [label, text, is_correct]
+                  properties:
+                    label:
+                      type: string
+                      maxLength: 10
+                    text:
+                      type: string
+                    is_correct:
+                      type: boolean
+              sample_answer:
+                type: object
+                properties:
+                  text:
+                    type: string
+
+    QuizUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        level_id:
+          type: string
+          format: uuid
+        time_type:
+          type: string
+          enum: [limit, none]
+        time_value:
+          type: integer
+          nullable: true
+          minimum: 1
+        time_unit:
+          type: string
+          enum: [minute, second]
+          nullable: true
+        retake_limit:
+          type: integer
+          minimum: 1
+        is_published:
+          type: boolean
+        questions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              question_type:
+                type: string
+                enum: [multiple_choice, text_input, essay]
+              prompt:
+                type: string
+              explanation:
+                type: string
+                nullable: true
+              order:
+                type: integer
+                minimum: 1
+              score:
+                type: number
+                format: decimal
+              options:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    label:
+                      type: string
+                      maxLength: 10
+                    text:
+                      type: string
+                    is_correct:
+                      type: boolean
+              sample_answer:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  text:
+                    type: string
+
+    QuizListResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quiz'
+
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
