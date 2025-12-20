@@ -7,7 +7,7 @@ const { t } = useI18n()
 
 const listOfLinks = computed(() => [
   { name: t('layoutAuthHeader.navigation.quiz'), href: '/#quiz' },
-  { name: t('layoutAuthHeader.navigation.video'), href: '/#video' },
+  { name: t('layoutAuthHeader.navigation.video'), href: '/video' },
 ])
 
 const isMobileMenuOpen = ref(false)
