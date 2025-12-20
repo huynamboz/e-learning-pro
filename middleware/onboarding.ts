@@ -4,21 +4,11 @@ function checkOnboardingCompletion(user: any): boolean {
     return false
 
   // Required fields for onboarding completion
-  const requiredFields = [
-    'first_name',
-    'last_name',
-    'gender',
-    'date_of_birth',
-    'phone_number',
-    'contact_address',
-    'headline',
-  ]
+  const hasFirstName = user.first_name && user.first_name.trim() !== ''
+  const hasLastName = user.last_name && user.last_name.trim() !== ''
+  const hasAvatar = user.avatar && user.avatar.trim() !== ''
 
-  // Check if all required fields are present and not empty
-  return requiredFields.every((field) => {
-    const value = user[field]
-    return value !== null && value !== undefined && value !== ''
-  })
+  return hasFirstName && hasLastName && hasAvatar
 }
 
 export default defineNuxtRouteMiddleware((to, _from) => {
