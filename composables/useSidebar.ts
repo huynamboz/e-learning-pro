@@ -83,6 +83,11 @@ export function useSidebar() {
       link: '/admin/orders',
     },
     {
+      name: t('adminMenu.videoPosts'),
+      icon: 'solar:video-frame-play-vertical-bold',
+      link: '/admin/video-posts',
+    },
+    {
       name: t('adminMenu.settings'),
       icon: 'i-heroicons-cog-6-tooth',
       link: '/admin/settings',

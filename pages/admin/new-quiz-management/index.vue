@@ -202,7 +202,7 @@ useHead({
             allow-clear
           >
             <template #prefix>
-              <Icon name="solar:magnifer-bold" />
+              <Icon name="solar:magnifer-linear" />
             </template>
           </a-input>
         </div>

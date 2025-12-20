@@ -113,7 +113,7 @@ useHead({
             class="flex-1 rounded-lg"
           >
             <template #prefix>
-              <Icon name="solar:magnifer-bold" />
+              <Icon name="solar:magnifer-linear" />
             </template>
           </a-input>
         </div>

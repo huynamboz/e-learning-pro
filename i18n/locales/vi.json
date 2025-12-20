@@ -548,7 +548,7 @@
         "isPreview": "Cài đặt xem trước",
         "previewLabel": "Cho phép xem trước",
         "previewNote": "Khi bật lựa chọn này thì người dùng có thể xem trước được video (video xem thử)",
-        "introVideo": "Tải lên video giới thiệu",
+        "introVideo": "Tải lên video",
         "introImage": "Tải lên hình ảnh giới thiệu"
       },
       "upload": {
@@ -1097,7 +1097,7 @@
         "durationHours": "Thời lượng khóa học (giờ)",
         "durationHoursPlaceholder": "Nhập thời lượng khóa học",
         "durationHoursRequired": "Vui lòng nhập thời lượng khóa học!",
-        "introVideo": "Tải lên video giới thiệu",
+        "introVideo": "Tải lên video",
         "introImage": "Tải lên hình ảnh giới thiệu",
         "description": "Mô tả",
         "descriptionRequired": "Vui lòng nhập mô tả khóa học!"
@@ -1242,6 +1242,140 @@
         "close": "Đóng"
       }
     },
+    "videoPosts": {
+      "title": "Quản lý Video Posts",
+      "description": "Quản lý và theo dõi tất cả các video blog posts",
+      "stats": {
+        "totalPosts": "Tổng bài viết",
+        "publishedPosts": "Bài viết đã xuất bản",
+        "unpublishedPosts": "Bài viết chưa xuất bản",
+        "totalViews": "Tổng lượt xem"
+      },
+      "filters": {
+        "searchPlaceholder": "Tìm kiếm theo tiêu đề, tác giả...",
+        "statusFilter": "Lọc theo trạng thái",
+        "allStatus": "Tất cả",
+        "published": "Đã xuất bản",
+        "unpublished": "Chưa xuất bản"
+      },
+      "table": {
+        "columns": {
+          "title": "Tiêu đề",
+          "author": "Tác giả",
+          "status": "Trạng thái",
+          "views": "Lượt xem",
+          "publishedAt": "Ngày xuất bản",
+          "createdAt": "Ngày tạo",
+          "actions": "Thao tác"
+        },
+        "status": {
+          "published": "Đã xuất bản",
+          "unpublished": "Chưa xuất bản"
+        },
+        "noAuthor": "Không có tác giả",
+        "emptyState": {
+          "title": "Không tìm thấy bài viết",
+          "description": "Chưa có video post nào. Tạo bài viết đầu tiên để bắt đầu."
+        }
+      },
+      "actions": {
+        "create": "Tạo bài viết mới",
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa",
+        "publish": "Xuất bản",
+        "unpublish": "Gỡ xuất bản",
+        "refresh": "Làm mới",
+        "deleteConfirm": {
+          "title": "Xóa Video Post",
+          "message": "Bạn có chắc chắn muốn xóa bài viết \"{title}\"?",
+          "confirm": "Xóa",
+          "cancel": "Hủy"
+        }
+      },
+      "messages": {
+        "loadError": "Không thể tải danh sách bài viết",
+        "createSuccess": "Tạo bài viết thành công",
+        "createError": "Không thể tạo bài viết",
+        "updateSuccess": "Cập nhật bài viết thành công",
+        "updateError": "Không thể cập nhật bài viết",
+        "deleteSuccess": "Đã xóa bài viết \"{title}\" thành công",
+        "deleteError": "Không thể xóa bài viết",
+        "publishSuccess": "Đã xuất bản bài viết \"{title}\" thành công",
+        "unpublishSuccess": "Đã gỡ xuất bản bài viết \"{title}\" thành công",
+        "togglePublishError": "Không thể thay đổi trạng thái xuất bản",
+        "refreshSuccess": "Làm mới thành công"
+      },
+      "error": {
+        "loadError": "Không thể tải danh sách bài viết"
+      },
+      "editor": {
+        "createTitle": "Tạo Video Post Mới",
+        "editTitle": "Chỉnh sửa Video Post",
+        "createDescription": "Tạo video post mới với nội dung và video",
+        "editDescription": "Chỉnh sửa thông tin video post",
+        "back": "Quay lại",
+        "cancel": "Hủy",
+        "create": "Tạo Bài viết",
+        "update": "Cập nhật Bài viết",
+        "basicInfo": "Thông tin cơ bản",
+        "videoInfo": "Thông tin Video",
+        "title": "Tiêu đề",
+        "titlePlaceholder": "Nhập tiêu đề bài viết...",
+        "titleRequired": "Vui lòng nhập tiêu đề",
+        "titleMaxLength": "Tiêu đề không được vượt quá 200 ký tự",
+        "content": "Nội dung",
+        "contentPlaceholder": "Nhập nội dung bài viết (HTML)...",
+        "contentRequired": "Vui lòng nhập nội dung",
+        "contentHint": "Bạn có thể sử dụng HTML để định dạng nội dung",
+        "author": "Tác giả",
+        "authorPlaceholder": "Nhập tên tác giả (tùy chọn)...",
+        "authorMaxLength": "Tên tác giả không được vượt quá 100 ký tự",
+        "videoUrl": "URL Video",
+        "videoUrlPlaceholder": "https://www.youtube.com/watch?v=...",
+        "videoUrlRequired": "Vui lòng nhập URL video",
+        "videoUrlInvalid": "Vui lòng nhập URL hợp lệ",
+        "videoUrlHint": "Hỗ trợ YouTube, Vimeo hoặc direct video URL",
+        "thumbnail": "Thumbnail",
+        "thumbnailPlaceholder": "https://example.com/thumbnail.jpg (tùy chọn)",
+        "thumbnailInvalid": "Vui lòng nhập URL hợp lệ",
+        "thumbnailHint": "URL của hình ảnh thumbnail (tùy chọn)",
+        "thumbnailUploadText": "Kéo thả ảnh vào đây hoặc",
+        "thumbnailBrowse": "chọn ảnh",
+        "thumbnailAutoHint": "Nếu không chọn ảnh, hệ thống sẽ tự động tạo thumbnail từ frame đầu tiên của video.",
+        "tags": "Tags",
+        "tagPlaceholder": "Nhập tag và nhấn Enter",
+        "addTag": "Thêm Tag",
+        "settings": "Cài đặt",
+        "isPublished": "Xuất bản ngay",
+        "isPublishedHint": "Bài viết sẽ được hiển thị công khai nếu bật",
+        "videoFile": "Video",
+        "videoFileUploadText": "Click hoặc kéo thả file video vào đây",
+        "videoFileUploadHint": "Hỗ trợ MP4, WebM, OGG, MOV, AVI (tối đa 500MB)",
+        "videoFileOrUrl": "Hoặc nhập URL video bên dưới",
+        "uploadingVideo": "Đang tải lên video...",
+        "removeVideo": "Xóa",
+        "existingVideo": "Video hiện tại",
+        "replaceVideo": "Thay thế",
+        "clearUrl": "Xóa URL",
+        "videoRequired": "Vui lòng chọn file video hoặc nhập URL video",
+        "loadingPost": "Đang tải dữ liệu bài viết..."
+      },
+      "messages": {
+        "loadError": "Không thể tải danh sách bài viết",
+        "createSuccess": "Tạo bài viết thành công",
+        "createError": "Không thể tạo bài viết",
+        "updateSuccess": "Cập nhật bài viết thành công",
+        "updateError": "Không thể cập nhật bài viết",
+        "uploadError": "Tải lên video thất bại",
+        "uploadThumbnailFailed": "Tải lên thumbnail thất bại",
+        "deleteSuccess": "Đã xóa bài viết \"{title}\" thành công",
+        "deleteError": "Không thể xóa bài viết",
+        "publishSuccess": "Đã xuất bản bài viết \"{title}\" thành công",
+        "unpublishSuccess": "Đã gỡ xuất bản bài viết \"{title}\" thành công",
+        "togglePublishError": "Không thể thay đổi trạng thái xuất bản",
+        "refreshSuccess": "Làm mới thành công"
+      }
+    },
     "settings": {
       "title": "Cài đặt nền tảng",
       "description": "Cấu hình các cài đặt và tùy chọn cho toàn bộ nền tảng.",
@@ -1312,6 +1446,7 @@
     "newQuizManagement": "Quản lý Quiz độc lập",
     "students": "Học viên",
     "orders": "Đơn hàng",
+    "videoPosts": "Video Posts",
     "settings": "Cài đặt"
   },
   "profile": {

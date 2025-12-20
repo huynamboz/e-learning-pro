@@ -470,11 +470,11 @@ async function confirmDeleteLesson() {
       description: t('admin.formLesson.notifications.deleteLessonSuccessDescription'),
     })
 
-    // Close dialog and navigate back to chapter
+    // Close dialog and navigate back to chapters list
     showDeleteDialog.value = false
 
-    // Navigate back to lessons list page
-    await router.push(`/admin/courses/${courseId.value}/chapters/${chapterId.value}/lessons`)
+    // Navigate back to all chapters page
+    await router.push(`/admin/courses/${courseId.value}/chapters`)
 
     // Refresh chapters list
     await fetchChapters(courseId.value)

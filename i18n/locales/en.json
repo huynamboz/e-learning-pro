@@ -1244,6 +1244,140 @@
         "close": "Close"
       }
     },
+    "videoPosts": {
+      "title": "Video Posts Management",
+      "description": "Manage and track all video blog posts",
+      "stats": {
+        "totalPosts": "Total Posts",
+        "publishedPosts": "Published Posts",
+        "unpublishedPosts": "Unpublished Posts",
+        "totalViews": "Total Views"
+      },
+      "filters": {
+        "searchPlaceholder": "Search by title, author...",
+        "statusFilter": "Filter by status",
+        "allStatus": "All",
+        "published": "Published",
+        "unpublished": "Unpublished"
+      },
+      "table": {
+        "columns": {
+          "title": "Title",
+          "author": "Author",
+          "status": "Status",
+          "views": "Views",
+          "publishedAt": "Published At",
+          "createdAt": "Created At",
+          "actions": "Actions"
+        },
+        "status": {
+          "published": "Published",
+          "unpublished": "Unpublished"
+        },
+        "noAuthor": "No author",
+        "emptyState": {
+          "title": "No posts found",
+          "description": "No video posts yet. Create your first post to get started."
+        }
+      },
+      "actions": {
+        "create": "Create New Post",
+        "edit": "Edit",
+        "delete": "Delete",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "refresh": "Refresh",
+        "deleteConfirm": {
+          "title": "Delete Video Post",
+          "message": "Are you sure you want to delete post \"{title}\"?",
+          "confirm": "Delete",
+          "cancel": "Cancel"
+        }
+      },
+      "messages": {
+        "loadError": "Failed to load posts",
+        "createSuccess": "Post created successfully",
+        "createError": "Failed to create post",
+        "updateSuccess": "Post updated successfully",
+        "updateError": "Failed to update post",
+        "deleteSuccess": "Post \"{title}\" deleted successfully",
+        "deleteError": "Failed to delete post",
+        "publishSuccess": "Post \"{title}\" published successfully",
+        "unpublishSuccess": "Post \"{title}\" unpublished successfully",
+        "togglePublishError": "Failed to toggle publish status",
+        "refreshSuccess": "Refreshed successfully"
+      },
+      "error": {
+        "loadError": "Failed to load posts"
+      },
+      "editor": {
+        "createTitle": "Create New Video Post",
+        "editTitle": "Edit Video Post",
+        "createDescription": "Create a new video post with content and video",
+        "editDescription": "Edit video post information",
+        "back": "Back",
+        "cancel": "Cancel",
+        "create": "Create Post",
+        "update": "Update Post",
+        "basicInfo": "Basic Information",
+        "videoInfo": "Video Information",
+        "title": "Title",
+        "titlePlaceholder": "Enter post title...",
+        "titleRequired": "Please enter title",
+        "titleMaxLength": "Title cannot exceed 200 characters",
+        "content": "Content",
+        "contentPlaceholder": "Enter post content (HTML)...",
+        "contentRequired": "Please enter content",
+        "contentHint": "You can use HTML to format content",
+        "author": "Author",
+        "authorPlaceholder": "Enter author name (optional)...",
+        "authorMaxLength": "Author name cannot exceed 100 characters",
+        "videoUrl": "Video URL",
+        "videoUrlPlaceholder": "https://www.youtube.com/watch?v=...",
+        "videoUrlRequired": "Please enter video URL",
+        "videoUrlInvalid": "Please enter a valid URL",
+        "videoUrlHint": "Supports YouTube, Vimeo or direct video URL",
+        "thumbnail": "Thumbnail",
+        "thumbnailPlaceholder": "https://example.com/thumbnail.jpg (optional)",
+        "thumbnailInvalid": "Please enter a valid URL",
+        "thumbnailHint": "URL of thumbnail image (optional)",
+        "thumbnailUploadText": "Drag and drop image here or",
+        "thumbnailBrowse": "browse",
+        "thumbnailAutoHint": "If no image is selected, the system will automatically create a thumbnail from the first frame of the video.",
+        "tags": "Tags",
+        "tagPlaceholder": "Enter tag and press Enter",
+        "addTag": "Add Tag",
+        "settings": "Settings",
+        "isPublished": "Publish Now",
+        "isPublishedHint": "Post will be publicly visible if enabled",
+        "videoFile": "Video",
+        "videoFileUploadText": "Click or drag video file here",
+        "videoFileUploadHint": "Supports MP4, WebM, OGG, MOV, AVI (max 500MB)",
+        "videoFileOrUrl": "Or enter video URL below",
+        "uploadingVideo": "Uploading video...",
+        "removeVideo": "Remove",
+        "existingVideo": "Current video",
+        "replaceVideo": "Replace",
+        "clearUrl": "Clear URL",
+        "videoRequired": "Please select a video file or enter video URL",
+        "loadingPost": "Loading post data..."
+      },
+      "messages": {
+        "loadError": "Failed to load posts",
+        "createSuccess": "Post created successfully",
+        "createError": "Failed to create post",
+        "updateSuccess": "Post updated successfully",
+        "updateError": "Failed to update post",
+        "uploadError": "Failed to upload video",
+        "uploadThumbnailFailed": "Failed to upload thumbnail",
+        "deleteSuccess": "Post \"{title}\" deleted successfully",
+        "deleteError": "Failed to delete post",
+        "publishSuccess": "Post \"{title}\" published successfully",
+        "unpublishSuccess": "Post \"{title}\" unpublished successfully",
+        "togglePublishError": "Failed to toggle publish status",
+        "refreshSuccess": "Refreshed successfully"
+      }
+    },
     "settings": {
       "title": "Platform Settings",
       "description": "Configure platform-wide settings and preferences.",
@@ -1314,6 +1448,7 @@
     "newQuizManagement": "Standalone Quiz Management",
     "students": "Students",
     "orders": "Orders",
+    "videoPosts": "Video Posts",
     "settings": "Settings"
   },
   "profile": {

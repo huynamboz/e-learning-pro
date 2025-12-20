@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import type { VideoPost as ApiVideoPost } from '~/composables/api/useVideoBlogApi'
+import { VideoPlayer } from '@videojs-player/vue'
 import VideoPostCard from '~/components/video/VideoPostCard.vue'
+import { useVideoBlogApi } from '~/composables/api/useVideoBlogApi'
+import 'video.js/dist/video-js.css'
 
 interface VideoPost {
   id: string
   title: string
   content: string
-  videoUrl: string
-  thumbnail?: string
+  videoUrl: string | null
+  thumbnail?: string | null
   publishedAt: string
   author?: string
+  hasAccess?: boolean
+  tags?: string[]
 }
 
 definePageMeta({
@@ -17,71 +23,145 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
+const { getPost, getRelatedPosts } = useVideoBlogApi()
 const postId = computed(() => route.params.id as string)
 
-// Mock data - Same as in video.vue, replace with API call later
-const allPosts: VideoPost[] = [
-  {
-    id: '1',
-    title: 'Học tiếng Ý cơ bản - Bài 1: Chào hỏi và giới thiệu',
-    content: '<p>Trong video này, chúng ta sẽ học cách chào hỏi và giới thiệu bản thân bằng tiếng Ý. Đây là bài học đầu tiên trong series học tiếng Ý cơ bản.</p><p>Chúng ta sẽ bắt đầu với những câu chào hỏi cơ bản như "Ciao", "Buongiorno", "Buonasera" và cách sử dụng chúng trong các tình huống khác nhau. Sau đó, chúng ta sẽ học cách giới thiệu tên, tuổi, quốc tịch và nghề nghiệp của mình.</p><p>Video này phù hợp cho người mới bắt đầu học tiếng Ý và muốn có nền tảng vững chắc để tiếp tục học các bài học nâng cao hơn.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-15T10:00:00Z',
-    author: 'Giáo viên Maria',
-  },
-  {
-    id: '2',
-    title: 'Ngữ pháp tiếng Ý: Động từ essere và avere',
-    content: '<p>Học cách sử dụng hai động từ quan trọng nhất trong tiếng Ý: essere (là) và avere (có). Chúng ta sẽ xem các ví dụ thực tế và cách áp dụng trong giao tiếp hàng ngày.</p><p>Động từ essere và avere là nền tảng của ngữ pháp tiếng Ý. Chúng được sử dụng rất thường xuyên và có nhiều cách chia khác nhau tùy theo chủ ngữ.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-14T14:30:00Z',
-    author: 'Giáo viên Luca',
-  },
-  {
-    id: '3',
-    title: 'Văn hóa Ý: Phong tục và truyền thống',
-    content: '<p>Khám phá những nét đẹp văn hóa của nước Ý, từ ẩm thực đến lễ hội, giúp bạn hiểu sâu hơn về đất nước và con người Ý.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-13T09:15:00Z',
-    author: 'Giáo viên Sofia',
-  },
-  {
-    id: '4',
-    title: 'Luyện phát âm tiếng Ý: Nguyên âm và phụ âm',
-    content: '<p>Hướng dẫn chi tiết cách phát âm đúng các nguyên âm và phụ âm trong tiếng Ý, với các bài tập thực hành để cải thiện kỹ năng phát âm của bạn.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-12T16:45:00Z',
-    author: 'Giáo viên Marco',
-  },
-  {
-    id: '5',
-    title: 'Từ vựng tiếng Ý: Chủ đề gia đình',
-    content: '<p>Học các từ vựng liên quan đến gia đình trong tiếng Ý, bao gồm các thành viên trong gia đình và cách sử dụng chúng trong câu.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-11T11:20:00Z',
-    author: 'Giáo viên Elena',
-  },
-  {
-    id: '6',
-    title: 'Giao tiếp tiếng Ý: Tại nhà hàng',
-    content: '<p>Học cách giao tiếp khi đi ăn tại nhà hàng Ý, từ cách đặt bàn, gọi món đến thanh toán. Các tình huống thực tế và mẫu câu hữu ích.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-10T13:00:00Z',
-    author: 'Giáo viên Antonio',
-  },
-]
+const loading = ref(false)
+const error = ref<string | null>(null)
+const currentPost = ref<VideoPost | null>(null)
+const relatedPosts = ref<VideoPost[]>([])
 
-// Find current post
-const currentPost = computed(() => {
-  return allPosts.find(post => post.id === postId.value)
-})
+// Video player instance
+const playerInstance = ref<any>(null)
+const drmContainer = ref<HTMLElement | null>(null)
 
-// Related posts (exclude current post)
-const relatedPosts = computed(() => {
-  return allPosts
-    .filter(post => post.id !== postId.value)
-    .slice(0, 3)
-})
+// Video player options (same as learning page)
+const videoPlayerOptions = {
+  controls: true,
+  preload: 'auto',
+  autoplay: false,
+  responsive: true,
+  fluid: true,
+  controlBar: {
+    pictureInPictureToggle: false,
+    remainingTimeDisplay: false,
+    playToggle: true,
+    progressControl: true,
+    fullscreenToggle: true,
+    currentTimeDisplay: true,
+    volumePanel: {
+      inline: false,
+    },
+  },
+  html5: {
+    nativeTextTracks: false,
+    nativeAudioTracks: false,
+    nativeVideoTracks: false,
+  },
+}
+
+// DRM protection functions
+function preventContextMenu(event: MouseEvent) {
+  if (!drmContainer.value) {
+    return
+  }
+  const target = event.target as HTMLElement | null
+  if (target && drmContainer.value.contains(target)) {
+    event.preventDefault()
+  }
+}
+
+function preventKeydown(event: KeyboardEvent) {
+  const blockedByModifier = (event.ctrlKey || event.metaKey)
+  if (blockedByModifier && ['s', 'S', 'p', 'P', 'u', 'U'].includes(event.key)) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  if (blockedByModifier && event.shiftKey && ['I', 'i', 'C', 'c', 'J', 'j'].includes(event.key)) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  if (event.key === 'F12') {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+}
+
+function applyDrmAttributes(player: any) {
+  if (!player) {
+    return
+  }
+  const videoEl = player?.el?.()?.querySelector?.('video') as HTMLVideoElement | null
+  if (videoEl) {
+    videoEl.setAttribute('controlsList', 'nodownload noremoteplayback')
+    videoEl.setAttribute('disablePictureInPicture', 'true')
+    videoEl.setAttribute('playsinline', 'true')
+    videoEl.setAttribute('webkit-playsinline', 'true')
+    videoEl.oncontextmenu = (event) => {
+      event.preventDefault()
+    }
+  }
+}
+
+function handlePlayerReady(player: any) {
+  playerInstance.value = player
+  applyDrmAttributes(player)
+}
+
+// Map API response to component format
+function mapApiPostToComponent(apiPost: ApiVideoPost): VideoPost {
+  return {
+    id: apiPost.id,
+    title: apiPost.title,
+    content: apiPost.content,
+    videoUrl: apiPost.video_url,
+    thumbnail: apiPost.thumbnail || undefined,
+    publishedAt: apiPost.published_at || apiPost.created_at,
+    author: apiPost.author || undefined,
+    hasAccess: apiPost.has_access,
+    tags: apiPost.tags || undefined,
+  }
+}
+
+// Load post detail
+async function loadPost() {
+  try {
+    loading.value = true
+    error.value = null
+
+    const post = await getPost(postId.value)
+    currentPost.value = mapApiPostToComponent(post)
+
+    // Load related posts (limit: 3, max: 10)
+    try {
+      const relatedResponse = await getRelatedPosts(postId.value, 3)
+      if (relatedResponse?.results) {
+        relatedPosts.value = relatedResponse.results
+          .filter(p => p.id !== postId.value) // Exclude current post
+          .map(mapApiPostToComponent)
+      }
+    }
+    catch (relatedErr) {
+      console.warn('Failed to load related posts:', relatedErr)
+      relatedPosts.value = []
+    }
+  }
+  catch (err: any) {
+    console.error('Error loading video post:', err)
+    if (err?.status === 404 || err?.statusCode === 404) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Video post not found',
+      })
+    }
+    error.value = err?.message || 'Không thể tải video. Vui lòng thử lại sau.'
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 // Format date
 function formatDate(dateString: string): string {
@@ -100,29 +180,11 @@ function formatDate(dateString: string): string {
   }
 }
 
-// Get video embed URL
-function getVideoEmbedUrl(url: string): string {
-  // YouTube
-  if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
-    const youtubeId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1]
-    if (youtubeId) {
-      return `https://www.youtube.com/embed/${youtubeId}`
-    }
-  }
-  // Vimeo
-  if (url.includes('vimeo.com/')) {
-    const vimeoId = url.match(/vimeo\.com\/(\d+)/)?.[1]
-    if (vimeoId) {
-      return `https://player.vimeo.com/video/${vimeoId}`
-    }
-  }
-  return url
-}
-
-const embedUrl = computed(() => {
+// Get thumbnail URL with fallback
+const thumbnailUrl = computed(() => {
   if (!currentPost.value)
-    return ''
-  return getVideoEmbedUrl(currentPost.value.videoUrl)
+    return '/images/course-thumbnail-default.webp'
+  return currentPost.value.thumbnail || '/images/course-thumbnail-default.webp'
 })
 
 // SEO
@@ -136,13 +198,32 @@ useHead({
   ],
 })
 
-// Handle not found
-watchEffect(() => {
-  if (!currentPost.value && postId.value) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Video post not found',
+// Load post on mount
+onMounted(() => {
+  loadPost()
+  drmContainer.value = document.querySelector('.drm-protected')
+  document.addEventListener('contextmenu', preventContextMenu)
+  document.addEventListener('keydown', preventKeydown)
+})
+
+// Reload when route changes
+watch(() => postId.value, () => {
+  if (postId.value) {
+    loadPost()
+    nextTick(() => {
+      if (playerInstance.value) {
+        applyDrmAttributes(playerInstance.value)
+      }
     })
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('contextmenu', preventContextMenu)
+  document.removeEventListener('keydown', preventKeydown)
+
+  if (playerInstance.value?.dispose) {
+    playerInstance.value.dispose()
   }
 })
 </script>
@@ -163,28 +244,87 @@ watchEffect(() => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="!currentPost" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div v-if="loading" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="flex items-center justify-center min-h-[400px]">
         <a-spin size="large" />
       </div>
     </div>
 
+    <!-- Error State -->
+    <div v-else-if="error" class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="max-w-2xl mx-auto text-center">
+        <a-alert
+          :message="error"
+          type="error"
+          show-icon
+          closable
+          class="mb-6"
+          @close="error = null"
+        />
+        <a-button type="primary" @click="loadPost">
+          Thử lại
+        </a-button>
+      </div>
+    </div>
+
     <!-- Post Content -->
-    <div v-else class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div v-else-if="currentPost" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <div class="max-w-4xl mx-auto">
-        <!-- Video Player -->
+        <!-- Video Player / Access Control -->
         <div class="mb-8">
-          <div class="relative w-full aspect-video bg-gray-900 rounded-2xl overflow-hidden shadow-lg">
-            <iframe
-              v-if="embedUrl"
-              :src="embedUrl"
-              class="w-full h-full"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+          <div ref="drmContainer" class="relative w-full aspect-video bg-gray-900 rounded-2xl shadow-lg drm-protected" @contextmenu.prevent>
+            <!-- Video Player (if has access) -->
+            <VideoPlayer
+              v-if="currentPost.videoUrl && currentPost.hasAccess"
+              :poster="thumbnailUrl"
+              :options="videoPlayerOptions"
+              :width="400"
+              :height="225"
+              class="rounded-2xl overflow-hidden"
+              :src="currentPost.videoUrl"
+              controls
+              :loop="false"
+              :volume="0.6"
+              playsinline
+              @mounted="handlePlayerReady"
             />
-            <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
-              <Icon name="solar:play-circle-bold-duotone" class="text-6xl" />
+
+            <!-- No Access Message -->
+            <div
+              v-else-if="!currentPost.hasAccess"
+              class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 text-white p-8"
+            >
+              <Icon name="solar:lock-password-bold-duotone" class="text-6xl mb-4 text-purple-400" />
+              <h3 class="text-2xl font-bold mb-2">
+                Video này yêu cầu quyền truy cập
+              </h3>
+              <p class="text-gray-300 text-center max-w-md mb-6">
+                Để xem video này, bạn cần mua ít nhất một khóa học (course hoặc resource) trên hệ thống.
+              </p>
+              <a-button
+                type="primary"
+                size="large"
+                class="!flex !justify-center !items-center !gap-1"
+                @click="router.push('/courses')"
+              >
+                <Icon name="solar:shop-bold" size="18" />
+                Xem các khóa học
+              </a-button>
+            </div>
+
+            <!-- Thumbnail Placeholder (if no video URL) -->
+            <div
+              v-else
+              class="absolute inset-0 flex items-center justify-center bg-gray-900"
+            >
+              <img
+                :src="thumbnailUrl"
+                :alt="currentPost.title"
+                class="w-full h-full object-cover opacity-50"
+              >
+              <div class="absolute inset-0 flex items-center justify-center">
+                <Icon name="solar:play-circle-bold-duotone" class="text-6xl text-white" />
+              </div>
             </div>
           </div>
         </div>
@@ -206,9 +346,21 @@ watchEffect(() => {
           </div>
 
           <!-- Title -->
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             {{ currentPost.title }}
           </h1>
+
+          <!-- Tags -->
+          <div v-if="currentPost.tags && currentPost.tags.length > 0" class="flex flex-wrap gap-2 mb-6">
+            <a-tag
+              v-for="tag in currentPost.tags"
+              :key="tag"
+              color="purple"
+              class="!m-0"
+            >
+              {{ tag }}
+            </a-tag>
+          </div>
 
           <!-- Content -->
           <div
@@ -229,7 +381,18 @@ watchEffect(() => {
               :to="`/video/${post.id}`"
               class="block"
             >
-              <VideoPostCard :post="post" />
+              <VideoPostCard
+                :post="{
+                  id: post.id,
+                  title: post.title,
+                  content: post.content,
+                  videoUrl: post.videoUrl,
+                  thumbnail: post.thumbnail,
+                  publishedAt: post.publishedAt,
+                  author: post.author,
+                  tags: post.tags,
+                }"
+              />
             </NuxtLink>
           </div>
         </div>
@@ -254,5 +417,19 @@ watchEffect(() => {
 
 .prose p:last-child {
   margin-bottom: 0;
+}
+
+/* DRM Protection Styles */
+.drm-protected video::-webkit-media-controls-enclosure {
+  overflow: hidden;
+}
+
+.drm-protected video::-webkit-media-controls-download-button,
+.drm-protected video::-webkit-media-controls-remote-playback-button {
+  display: none !important;
+}
+
+.drm-protected video {
+  pointer-events: auto;
 }
 </style>

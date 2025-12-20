@@ -452,7 +452,7 @@ function navigateToCourse(enrollmentId: string) {
               <NuxtLink to="/courses" class="block group">
                 <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-blue/30 hover:bg-blue/5 transition-all duration-300 cursor-pointer">
                   <div class="p-2.5 size-[50px] flex justify-center items-center bg-blue rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
-                    <Icon name="solar:magnifer-bold" size="20" class="text-white" />
+                    <Icon name="solar:magnifer-linear" size="20" class="text-white" />
                   </div>
                   <div class="flex-1">
                     <div class="font-semibold text-shade-9 group-hover:text-blue transition-colors">

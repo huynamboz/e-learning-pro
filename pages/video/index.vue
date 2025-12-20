@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { VideoPost as ApiVideoPost } from '~/composables/api/useVideoBlogApi'
+import { useDebounceFn } from '@vueuse/core'
 import VideoPostCard from '~/components/video/VideoPostCard.vue'
+import { useVideoBlogApi } from '~/composables/api/useVideoBlogApi'
 
 interface VideoPost {
   id: string
@@ -9,85 +12,101 @@ interface VideoPost {
   thumbnail?: string
   publishedAt: string
   author?: string
+  tags?: string[]
 }
 
 definePageMeta({
   layout: 'auth',
 })
 
-// Mock data - Replace with API call later
-const videoPosts = ref<VideoPost[]>([
-  {
-    id: '1',
-    title: 'Học tiếng Ý cơ bản - Bài 1: Chào hỏi và giới thiệu',
-    content: '<p>Trong video này, chúng ta sẽ học cách chào hỏi và giới thiệu bản thân bằng tiếng Ý. Đây là bài học đầu tiên trong series học tiếng Ý cơ bản.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-15T10:00:00Z',
-    author: 'Giáo viên Maria',
-  },
-  {
-    id: '2',
-    title: 'Ngữ pháp tiếng Ý: Động từ essere và avere',
-    content: '<p>Học cách sử dụng hai động từ quan trọng nhất trong tiếng Ý: essere (là) và avere (có). Chúng ta sẽ xem các ví dụ thực tế và cách áp dụng trong giao tiếp hàng ngày.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-14T14:30:00Z',
-    author: 'Giáo viên Luca',
-  },
-  {
-    id: '3',
-    title: 'Văn hóa Ý: Phong tục và truyền thống',
-    content: '<p>Khám phá những nét đẹp văn hóa của nước Ý, từ ẩm thực đến lễ hội, giúp bạn hiểu sâu hơn về đất nước và con người Ý.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-13T09:15:00Z',
-    author: 'Giáo viên Sofia',
-  },
-  {
-    id: '4',
-    title: 'Luyện phát âm tiếng Ý: Nguyên âm và phụ âm',
-    content: '<p>Hướng dẫn chi tiết cách phát âm đúng các nguyên âm và phụ âm trong tiếng Ý, với các bài tập thực hành để cải thiện kỹ năng phát âm của bạn.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-12T16:45:00Z',
-    author: 'Giáo viên Marco',
-  },
-  {
-    id: '5',
-    title: 'Từ vựng tiếng Ý: Chủ đề gia đình',
-    content: '<p>Học các từ vựng liên quan đến gia đình trong tiếng Ý, bao gồm các thành viên trong gia đình và cách sử dụng chúng trong câu.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-11T11:20:00Z',
-    author: 'Giáo viên Elena',
-  },
-  {
-    id: '6',
-    title: 'Giao tiếp tiếng Ý: Tại nhà hàng',
-    content: '<p>Học cách giao tiếp khi đi ăn tại nhà hàng Ý, từ cách đặt bàn, gọi món đến thanh toán. Các tình huống thực tế và mẫu câu hữu ích.</p>',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    publishedAt: '2025-01-10T13:00:00Z',
-    author: 'Giáo viên Antonio',
-  },
-])
-
+const { getPosts } = useVideoBlogApi()
 const loading = ref(false)
+const error = ref<string | null>(null)
 const searchQuery = ref('')
+const videoPosts = ref<VideoPost[]>([])
+const totalCount = ref(0)
+const currentPage = ref(1)
+const pageSize = ref(20)
+const hasMore = ref(false)
 
-// Filter posts by search query
-const filteredPosts = computed(() => {
-  if (!searchQuery.value.trim()) {
-    return videoPosts.value
+// Map API response to component format
+function mapApiPostToComponent(apiPost: ApiVideoPost): VideoPost {
+  return {
+    id: apiPost.id,
+    title: apiPost.title,
+    content: apiPost.content,
+    videoUrl: apiPost.video_url,
+    thumbnail: apiPost.thumbnail || undefined,
+    publishedAt: apiPost.published_at || apiPost.created_at,
+    author: apiPost.author || undefined,
+    tags: apiPost.tags || undefined,
   }
-  const query = searchQuery.value.toLowerCase()
-  return videoPosts.value.filter(post =>
-    post.title.toLowerCase().includes(query)
-    || post.content.toLowerCase().includes(query)
-    || post.author?.toLowerCase().includes(query),
-  )
+}
+
+// Load posts from API
+async function loadPosts() {
+  try {
+    loading.value = true
+    error.value = null
+
+    const params: any = {
+      page: currentPage.value,
+      page_size: pageSize.value,
+      is_published: true,
+      ordering: '-published_at,-created_at',
+    }
+
+    if (searchQuery.value.trim()) {
+      params.search = searchQuery.value.trim()
+    }
+
+    const response = await getPosts(params)
+
+    if (response) {
+      const newPosts = response.results.map(mapApiPostToComponent)
+      if (currentPage.value === 1) {
+        videoPosts.value = newPosts
+      }
+      else {
+        videoPosts.value = [...videoPosts.value, ...newPosts]
+      }
+      totalCount.value = response.count || 0
+      hasMore.value = !!response.next
+    }
+  }
+  catch (err: any) {
+    console.error('Error loading video posts:', err)
+    error.value = 'Không thể tải danh sách video. Vui lòng thử lại sau.'
+    videoPosts.value = []
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+// Debounced search
+const debouncedSearch = useDebounceFn(() => {
+  currentPage.value = 1
+  loadPosts()
+}, 500)
+
+watch(searchQuery, () => {
+  debouncedSearch()
 })
 
-// Sort posts by date (newest first)
+// Load posts on mount
+onMounted(() => {
+  loadPosts()
+})
+
+// Filter posts by search query (client-side fallback if needed)
+const filteredPosts = computed(() => {
+  return videoPosts.value
+})
+
+// Sort posts by date (newest first) - already sorted by API
 const sortedPosts = computed(() => {
-  return [...filteredPosts.value].sort((a, b) => {
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  })
+  return filteredPosts.value
 })
 
 useHead({
@@ -114,7 +133,7 @@ useHead({
                 Video Blog
               </h1>
               <p class="text-sm sm:text-base text-gray-600 mt-1">
-                Học tiếng Ý qua các video bài học chất lượng
+                Khám phá các video mới nhất về tiếng Ý
               </p>
             </div>
           </div>
@@ -122,7 +141,7 @@ useHead({
           <div class="sm:max-w-xs">
             <div class="relative">
               <Icon
-                name="solar:magnifer-bold"
+                name="solar:magnifer-linear"
                 class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
               />
               <input
@@ -139,8 +158,29 @@ useHead({
 
     <!-- Main Content -->
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <!-- Error State -->
+      <div
+        v-if="error && !loading"
+        class="text-center py-16"
+      >
+        <Icon name="solar:danger-triangle-bold-duotone" class="text-6xl text-red-300 mb-4 mx-auto" />
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">
+          Đã xảy ra lỗi
+        </h3>
+        <p class="text-gray-600 mb-6">
+          {{ error }}
+        </p>
+        <button
+          class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors !flex !justify-center !items-center !gap-1 mx-auto"
+          @click="loadPosts"
+        >
+          <Icon name="solar:refresh-bold" size="18" />
+          Thử lại
+        </button>
+      </div>
+
       <!-- Loading State -->
-      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="i in 6"
           :key="i"
@@ -162,15 +202,17 @@ useHead({
       >
         <Icon name="solar:video-frame-play-vertical-bold-duotone" class="text-6xl text-gray-300 mb-4 mx-auto" />
         <h3 class="text-2xl font-bold text-gray-900 mb-2">
-          Không tìm thấy video nào
+          {{ searchQuery ? 'Không tìm thấy video nào' : 'Chưa có video nào' }}
         </h3>
         <p class="text-gray-600 mb-6">
-          Thử tìm kiếm với từ khóa khác
+          {{ searchQuery ? 'Thử tìm kiếm với từ khóa khác' : 'Hiện tại chưa có video nào được xuất bản.' }}
         </p>
         <button
-          class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+          v-if="searchQuery"
+          class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors !flex !justify-center !items-center !gap-1 mx-auto"
           @click="searchQuery = ''"
         >
+          <Icon name="solar:close-circle-bold" size="18" />
           Xóa bộ lọc
         </button>
       </div>
@@ -192,12 +234,14 @@ useHead({
 
       <!-- Load More Button (if needed) -->
       <div
-        v-if="sortedPosts.length > 0 && sortedPosts.length >= 6"
+        v-if="sortedPosts.length > 0 && hasMore && !loading"
         class="mt-12 text-center"
       >
         <button
-          class="px-8 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+          class="px-8 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors font-medium !flex !justify-center !items-center !gap-1 mx-auto"
+          @click="() => { currentPage++; loadPosts() }"
         >
+          <Icon name="solar:arrow-down-bold" size="18" />
           Xem thêm video
         </button>
       </div>
