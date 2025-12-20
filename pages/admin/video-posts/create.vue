@@ -17,7 +17,7 @@ const { t } = useI18n()
 const router = useRouter()
 const { createPost } = useVideoBlogApi()
 const { uploadVideoFile, uploadProgress, isUploading } = useVideoUpload()
-const { uploadFileWithProgress, uploading } = useFileUpload()
+const { uploading } = useFileUpload()
 const { extractAndUploadThumbnail, uploadThumbnailImage } = useThumbnailExtractor()
 
 const formRef = ref()

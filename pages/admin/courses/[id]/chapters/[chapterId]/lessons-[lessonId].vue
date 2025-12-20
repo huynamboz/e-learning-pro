@@ -515,7 +515,12 @@ async function confirmDeleteLesson() {
     showDeleteDialog.value = false
 
     // Navigate back to all chapters page
-    await router.push(`/admin/courses/${courseId.value}/chapters`)
+    await router.push({
+      path: `/admin/courses/${courseId.value}/chapters/all-chapters`,
+      query: {
+        chapterId: chapterId.value,
+      },
+    })
 
     // Refresh chapters list
     await fetchChapters(courseId.value)
@@ -529,6 +534,16 @@ async function confirmDeleteLesson() {
   finally {
     isDeleting.value = false
   }
+}
+
+function handleBack() {
+  // Navigate back to chapters page with chapterId query
+  router.push({
+    path: `/admin/courses/${courseId.value}/chapters/all-chapters`,
+    query: {
+      chapterId: chapterId.value,
+    },
+  })
 }
 
 // Format file size helper
@@ -664,7 +679,7 @@ async function handleDeleteMaterial(material: LessonMaterial, index: number) {
               type="text"
               size="large"
               class="!h-10 !w-10 sm:!h-12 sm:!w-12 !flex items-center justify-center !p-0 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-800"
-              @click="router.back()"
+              @click="handleBack"
             >
               <Icon name="solar:alt-arrow-left-outline" size="20" class="sm:text-2xl" />
             </a-button>

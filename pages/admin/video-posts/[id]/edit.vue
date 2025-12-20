@@ -18,7 +18,7 @@ const route = useRoute()
 const router = useRouter()
 const { getPost, updatePost } = useVideoBlogApi()
 const { uploadVideoFile, uploadProgress, isUploading } = useVideoUpload()
-const { uploadFileWithProgress, uploading } = useFileUpload()
+const { uploading } = useFileUpload()
 const { extractAndUploadThumbnail, uploadThumbnailImage } = useThumbnailExtractor()
 
 const postId = computed(() => route.params.id as string)

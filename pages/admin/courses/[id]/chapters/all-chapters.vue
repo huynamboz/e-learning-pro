@@ -15,6 +15,7 @@ const { patchChapter, updateChapter, deleteChapter } = useCourseApi()
 const route = useRoute()
 
 const courseId = computed(() => route.params.id as string)
+const router = useRouter()
 const open = ref<boolean>(false)
 const editOpen = ref<boolean>(false)
 const deleteModalVisible = ref<boolean>(false)
@@ -204,12 +205,37 @@ async function handleDeleteChapter() {
   }
 }
 
+function selectChapter(chapterId: string) {
+  activeChapterId.value = chapterId
+  // Update URL query to persist selected chapter
+  router.push({
+    query: {
+      ...route.query,
+      chapterId,
+    },
+  })
+}
+
 onMounted(async () => {
   await fetchChapters(courseId.value)
   chaptersList.value = [...chapters.value] as any
-  // Set first chapter as active if available
-  if (chapters.value && chapters.value.length > 0) {
+
+  // Check if chapterId exists in query params
+  const queryChapterId = route.query.chapterId as string
+  if (queryChapterId && chapters.value?.some(ch => ch.id === queryChapterId)) {
+    // Set active chapter from query
+    activeChapterId.value = queryChapterId
+  }
+  // Otherwise set first chapter as active if available
+  else if (chapters.value && chapters.value.length > 0) {
     activeChapterId.value = chapters.value[0].id
+    // Update URL query with first chapter
+    router.push({
+      query: {
+        ...route.query,
+        chapterId: chapters.value[0].id,
+      },
+    })
   }
 })
 </script>
@@ -266,7 +292,7 @@ onMounted(async () => {
             :class="activeChapterId === ch.id
               ? 'border-green-500 bg-green-50 font-medium'
               : 'border-gray-300 hover:bg-gray-100'"
-            @click="activeChapterId = ch.id"
+            @click="selectChapter(ch.id)"
           >
             <div class="flex items-center flex-1 min-w-0">
               <Icon v-if="activeChapterId === ch.id" name="i-charm-tick" class="text-sm sm:text-lg mr-1 sm:mr-2 text-green-600 flex-shrink-0" />
