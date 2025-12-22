@@ -326,7 +326,7 @@
     "instructor": {
       "badge": "Gặp gỡ giảng viên của bạn",
       "title": "Học cùng Phan Tâm",
-      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế, cô Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
+      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế,Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
       "experience": "10+ Năm",
       "experienceText": "Giảng dạy tiếng Ý",
       "features": {
@@ -2554,7 +2554,7 @@
       "success": "Đăng ký thành công!",
       "error": "Đăng ký thất bại. Vui lòng thử lại."
     },
-    "copyright": "© 2024 Cô Phan Tâm. Tất cả quyền được bảo lưu.",
+    "copyright": "© 2024 Phan Tâm. Tất cả quyền được bảo lưu.",
     "madeWith": "Được tạo với",
     "by": "bởi"
   },
