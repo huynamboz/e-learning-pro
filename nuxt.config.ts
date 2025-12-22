@@ -123,5 +123,6 @@ export default defineNuxtConfig({
     '/learning/**': { ssr: false },
     '/auth/**': { ssr: false },
     '/admin/**': { ssr: false },
+    '/quizz/**': { ssr: false },
   },
 })

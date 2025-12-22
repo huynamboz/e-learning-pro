@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { NewQuiz, NewQuizLevel } from '~/composables/api/useNewQuizApi'
+import type { LeaderboardEntry, NewQuiz, NewQuizLevel } from '~/composables/api/useNewQuizApi'
 import { useNewQuizApi } from '~/composables/api/useNewQuizApi'
 
 // empty layout
 definePageMeta({
-  layout: 'empty',
+  layout: 'auth',
 })
 
 useHead({
@@ -17,7 +17,7 @@ useHead({
   ],
 })
 
-const { getLevels, getQuizzes } = useNewQuizApi()
+const { getLevels, getQuizzes, getLeaderboard, getQuizAttempts } = useNewQuizApi()
 
 const heroHighlights = [
   'Cấu trúc theo khung CEFR',
@@ -41,18 +41,6 @@ const heroBackgroundStyle = computed(() => ({
   backgroundSize: '160px 160px',
 }))
 
-const insightCards = computed(() => {
-  const totalLevel = levels.value.length
-  const publishedQuizzes = quizzes.value.length
-  const questionCount = quizzes.value.reduce((sum, quiz) => sum + quiz.total_questions, 0)
-
-  return [
-    { label: 'Level đang mở', value: totalLevel },
-    { label: 'Quiz sẵn sàng', value: publishedQuizzes },
-    { label: 'Câu hỏi luyện tập', value: questionCount },
-  ]
-})
-
 const searchTerm = ref('')
 const selectedLevel = ref<'all' | string>('all')
 const loading = ref(true)
@@ -60,6 +48,10 @@ const errorMessage = ref('')
 
 const levels = ref<NewQuizLevel[]>([])
 const quizzes = ref<NewQuiz[]>([])
+const leaderboard = ref<LeaderboardEntry[]>([])
+const leaderboardLoading = ref(false)
+const leaderboardQuizTitle = ref<string>('')
+const quizAttemptsMap = ref<Record<string, number>>({}) // Map quiz_id -> number of attempts
 
 const levelFilters = computed(() => [
   { label: 'Tất cả level', value: 'all' },
@@ -98,7 +90,7 @@ const levelSections = computed(() => {
   return levels.value
     .filter(level => level.is_active)
     .sort((a, b) => a.order - b.order)
-    .map((level) => ({
+    .map(level => ({
       level,
       quizzes: (map.get(level.id) ?? []).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
     }))
@@ -118,6 +110,14 @@ async function loadQuizzData() {
 
     levels.value = levelResponse.results
     quizzes.value = quizResponse.results
+
+    // Load leaderboard for the first quiz
+    if (quizResponse.results.length > 0) {
+      await loadLeaderboard(quizResponse.results[0].id, quizResponse.results[0].title)
+    }
+
+    // Load attempts count for each quiz
+    await loadQuizAttemptsCounts()
   }
   catch (error) {
     console.error(error)
@@ -126,6 +126,37 @@ async function loadQuizzData() {
   finally {
     loading.value = false
   }
+}
+
+async function loadLeaderboard(quizId: string, quizTitle: string) {
+  try {
+    leaderboardLoading.value = true
+    const response = await getLeaderboard(quizId)
+    leaderboard.value = response.entries.slice(0, 10) // Top 10
+    leaderboardQuizTitle.value = quizTitle
+  }
+  catch (error) {
+    console.error('Error loading leaderboard:', error)
+    leaderboard.value = []
+  }
+  finally {
+    leaderboardLoading.value = false
+  }
+}
+
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  if (mins > 0)
+    return `${mins}p ${secs}s`
+  return `${secs}s`
+}
+
+function formatScore(score: string | number): string {
+  const numScore = typeof score === 'string' ? Number.parseFloat(score) : score
+  if (Number.isNaN(numScore))
+    return '0.0'
+  return numScore.toFixed(1)
 }
 
 function formatTimeLimit(quiz: NewQuiz) {
@@ -153,6 +184,32 @@ function formatUpdatedAt(date: string) {
   catch {
     return ''
   }
+}
+
+async function loadQuizAttemptsCounts() {
+  // Load attempts count for each quiz in parallel
+  const promises = quizzes.value.map(async (quiz) => {
+    try {
+      const response = await getQuizAttempts(quiz.id)
+      quizAttemptsMap.value[quiz.id] = response.results.length
+    }
+    catch (error) {
+      console.error(`Error loading attempts for quiz ${quiz.id}:`, error)
+      quizAttemptsMap.value[quiz.id] = 0
+    }
+  })
+  await Promise.all(promises)
+}
+
+function getAttemptsCount(quizId: string): number {
+  return quizAttemptsMap.value[quizId] || 0
+}
+
+function isRetakeLimitReached(quiz: NewQuiz): boolean {
+  if (!quiz.retake_limit || quiz.retake_limit <= 0)
+    return false // No limit
+  const attemptsCount = getAttemptsCount(quiz.id)
+  return attemptsCount >= quiz.retake_limit
 }
 
 onMounted(() => {
@@ -206,69 +263,72 @@ onMounted(() => {
           </div>
         </div>
         <div class="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-xl">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between mb-6">
             <div>
-              <p class="text-sm text-slate-500">
-                Học viên đang online
+              <p class="text-sm text-slate-500 uppercase tracking-wide">
+                Bảng xếp hạng
               </p>
-              <p class="text-3xl font-semibold">
-                128
+              <p class="text-lg font-semibold text-slate-900 mt-1 line-clamp-1">
+                {{ leaderboardQuizTitle || 'Đang tải...' }}
               </p>
             </div>
-            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-              <Icon name="mdi:lightning-bolt" class="text-base text-slate-500" />
-              Real-time
-            </span>
+            <Icon name="mdi:trophy" class="text-2xl text-amber-500" />
           </div>
-          <div class="mt-6 space-y-4">
-            <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
-              <div>
-                <p class="text-xs text-slate-500 uppercase tracking-wide">
-                  Mục tiêu hôm nay
-                </p>
-                <p class="text-lg font-semibold">
-                  3 Quiz hoàn thành
-                </p>
-              </div>
-              <span class="text-sm font-semibold text-slate-700">
-                +1 so với hôm qua
-              </span>
+
+          <div v-if="leaderboardLoading" class="space-y-3">
+            <div v-for="i in 5" :key="i" class="animate-pulse">
+              <div class="h-12 bg-slate-200 rounded-lg" />
             </div>
-            <div class="rounded-2xl border border-slate-100 p-4 space-y-3">
-              <div class="flex justify-between text-xs text-slate-500 uppercase tracking-wide">
-                <span>Tiến độ tuần</span>
-                <span>72%</span>
+          </div>
+
+          <div v-else-if="leaderboard.length === 0" class="text-center py-8">
+            <Icon name="mdi:trophy-outline" class="text-4xl text-slate-300 mx-auto mb-3" />
+            <p class="text-sm text-slate-500">
+              Chưa có kết quả
+            </p>
+          </div>
+
+          <div v-else class="space-y-2 max-h-[500px] overflow-y-auto">
+            <div
+              v-for="entry in leaderboard"
+              :key="entry.student_id"
+              class="flex items-center gap-3 p-3 rounded-xl transition-colors"
+              :class="{
+                'bg-amber-50 border border-amber-200': entry.rank === 1,
+                'bg-slate-50 border border-slate-100': entry.rank !== 1,
+              }"
+            >
+              <!-- Rank -->
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+                :class="{
+                  'bg-amber-500 text-white': entry.rank === 1,
+                  'bg-amber-400 text-white': entry.rank === 2,
+                  'bg-amber-300 text-white': entry.rank === 3,
+                  'bg-slate-200 text-slate-700': entry.rank > 3,
+                }"
+              >
+                {{ entry.rank }}
               </div>
-              <div class="h-2 rounded-full bg-slate-100">
-                <div class="h-2 rounded-full bg-slate-900" style="width: 72%;" />
-              </div>
-              <div class="flex items-center justify-between text-sm text-slate-600">
-                <span>Thời gian trung bình</span>
-                <span>18 phút/quiz</span>
-              </div>
-            </div>
-            <div class="rounded-2xl border border-slate-100 p-4 space-y-3">
-              <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold text-slate-900">
-                  Level được truy cập nhiều nhất
+
+              <!-- Student Info -->
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-slate-900 truncate">
+                  {{ entry.student_name }}
                 </p>
-                <span class="text-xs text-slate-500">
-                  7 ngày gần đây
-                </span>
+                <p class="text-xs text-slate-500">
+                  {{ formatTime(entry.time_spent_seconds) }}
+                </p>
               </div>
-              <div class="space-y-2 text-sm text-slate-600">
-                <div class="flex items-center justify-between">
-                  <span>A1 · Starter</span>
-                  <span class="text-slate-700">45 lượt</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span>B1 · Explorer</span>
-                  <span class="text-slate-700">32 lượt</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span>C1 · Mastery</span>
-                  <span class="text-slate-700">18 lượt</span>
-                </div>
+
+              <!-- Score -->
+              <div class="flex-shrink-0 text-right">
+                <p class="font-bold text-slate-900">
+                  {{ formatScore(entry.score) }}
+                </p>
+                <p class="text-xs text-slate-500">
+                  {{ entry.correct_answers }} đúng
+                </p>
               </div>
             </div>
           </div>
@@ -370,13 +430,6 @@ onMounted(() => {
                     {{ section.level.description || 'Các bài quiz được thiết kế để củng cố nền tảng trước khi bước sang level tiếp theo.' }}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                >
-                  Xem roadmap level
-                  <Icon name="mdi:arrow-right" class="text-base text-slate-500" />
-                </button>
               </div>
 
               <div class="space-y-3">
@@ -409,13 +462,39 @@ onMounted(() => {
                       GV: {{ quiz.created_by_name }} · Cập nhật {{ formatUpdatedAt(quiz.updated_at) }}
                     </p>
                   </div>
-                  <NuxtLink
-                    :to="`/quizz/${quiz.id}`"
-                    class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500 shrink-0"
-                  >
-                    Bắt đầu
-                    <Icon name="mdi:arrow-top-right" class="text-base" />
-                  </NuxtLink>
+                  <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <NuxtLink
+                      :to="`/quizz/${quiz.id}/leaderboard`"
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      <Icon name="mdi:trophy" class="text-base" />
+                      Bảng xếp hạng
+                    </NuxtLink>
+                    <NuxtLink
+                      v-if="getAttemptsCount(quiz.id) > 0"
+                      :to="`/quizz/${quiz.id}/attempts`"
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors"
+                    >
+                      <Icon name="mdi:history" class="text-base" />
+                      Xem kết quả
+                    </NuxtLink>
+                    <NuxtLink
+                      v-if="!isRetakeLimitReached(quiz)"
+                      :to="`/quizz/${quiz.id}`"
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-500 transition-colors"
+                    >
+                      Bắt đầu
+                      <Icon name="mdi:arrow-top-right" class="text-base" />
+                    </NuxtLink>
+                    <button
+                      v-else
+                      disabled
+                      class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-300 text-slate-500 text-sm font-semibold cursor-not-allowed"
+                    >
+                      Đã hết lượt
+                      <Icon name="mdi:lock" class="text-base" />
+                    </button>
+                  </div>
                 </article>
               </div>
             </div>

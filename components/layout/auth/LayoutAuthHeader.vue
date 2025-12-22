@@ -6,7 +6,7 @@ import { useCartStore } from '~/stores/cart.store'
 const { t } = useI18n()
 
 const listOfLinks = computed(() => [
-  { name: t('layoutAuthHeader.navigation.quiz'), href: '/#quiz' },
+  { name: t('layoutAuthHeader.navigation.quiz'), href: '/quizz' },
   { name: t('layoutAuthHeader.navigation.video'), href: '/video' },
 ])
 

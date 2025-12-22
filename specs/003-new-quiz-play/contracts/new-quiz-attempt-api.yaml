@@ -1,0 +1,433 @@
+openapi: 3.0.3
+info:
+  title: New Quiz Attempt API
+  description: API for student quiz attempts with auto-save and immediate feedback
+  version: 1.0.0
+  contact:
+    name: E-Learning Platform API
+
+servers:
+  - url: https://elearning.genfash.online/api/v1
+    description: Production server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+tags:
+  - name: Attempts
+    description: Student quiz attempts with auto-save
+
+paths:
+  /new_quiz/attempts/start/:
+    post:
+      tags: [Attempts]
+      summary: Start a new quiz attempt
+      description: |
+        Start a new quiz attempt for a student. Creates a new attempt with status "in_progress".
+        Validates that quiz is published and student hasn't exceeded retake limit.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quiz_id
+              properties:
+                quiz_id:
+                  type: string
+                  format: uuid
+                  description: ID of the quiz to start
+      responses:
+        '201':
+          description: Quiz attempt started successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Quiz attempt started"
+                  attempt:
+                    $ref: '#/components/schemas/QuizAttempt'
+        '400':
+          description: Validation error (quiz not published, retake limit exceeded, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Quiz not found
+
+  /new_quiz/attempts/{attempt_id}/:
+    get:
+      tags: [Attempts]
+      summary: Get attempt details
+      description: |
+        Retrieve a quiz attempt with all saved answers. Used for resuming a session after page refresh.
+        Returns full attempt state including all answers with their correct/incorrect status.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: attempt_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the quiz attempt
+      responses:
+        '200':
+          description: Attempt details with all saved answers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizAttempt'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (attempt doesn't belong to current user)
+        '404':
+          description: Attempt not found
+
+  /new_quiz/attempts/{attempt_id}/save-answer/:
+    post:
+      tags: [Attempts]
+      summary: Save an answer (auto-save)
+      description: |
+        Save a single answer for a question. Auto-grades MCQ and text-input questions immediately.
+        Returns correct/incorrect status and correct answer for auto-graded questions.
+        Essay questions are saved but not graded (requires teacher review).
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: attempt_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the quiz attempt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/SaveAnswerMCQ'
+                - $ref: '#/components/schemas/SaveAnswerTextInput'
+                - $ref: '#/components/schemas/SaveAnswerEssay'
+      responses:
+        '200':
+          description: Answer saved successfully with auto-grading results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Answer saved successfully"
+                  answer:
+                    $ref: '#/components/schemas/SavedAnswer'
+                  is_correct:
+                    type: boolean
+                    nullable: true
+                    description: True/false for auto-graded questions, null for essay
+                  auto_graded:
+                    type: boolean
+                    description: Whether answer was auto-graded
+        '400':
+          description: Validation error (invalid question type, time expired, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (attempt doesn't belong to current user or already completed)
+        '404':
+          description: Attempt or question not found
+
+  /new_quiz/attempts/{attempt_id}/submit/:
+    post:
+      tags: [Attempts]
+      summary: Submit quiz attempt
+      description: |
+        Submit and complete a quiz attempt. All answers should already be saved via save-answer endpoint.
+        Recalculates final scores and marks attempt as completed.
+        Request body is empty - all answers are already saved.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: attempt_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the quiz attempt
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Empty object (no data needed, answers already saved)
+      responses:
+        '200':
+          description: Quiz submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Quiz submitted successfully"
+                  attempt:
+                    $ref: '#/components/schemas/QuizAttempt'
+                  results:
+                    $ref: '#/components/schemas/QuizResults'
+        '400':
+          description: Validation error (already completed, time expired, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden (attempt doesn't belong to current user)
+        '404':
+          description: Attempt not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    QuizAttempt:
+      type: object
+      required:
+        - id
+        - quiz
+        - quiz_title
+        - student
+        - student_name
+        - status
+        - started_at
+        - total_questions
+      properties:
+        id:
+          type: string
+          format: uuid
+        quiz:
+          type: string
+          format: uuid
+        quiz_title:
+          type: string
+        student:
+          type: integer
+        student_name:
+          type: string
+        status:
+          type: string
+          enum: [in_progress, completed, expired]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        time_spent_seconds:
+          type: integer
+        time_remaining_seconds:
+          type: integer
+          nullable: true
+          description: Remaining time in seconds for timed quizzes
+        total_score:
+          type: number
+          format: float
+          description: Points earned so far
+        max_score:
+          type: number
+          format: float
+          description: Maximum possible score
+        score:
+          type: number
+          format: float
+          nullable: true
+          description: Percentage score (total_score / max_score * 100)
+        correct_answers:
+          type: integer
+          description: Number of correct answers
+        total_questions:
+          type: integer
+        has_pending_essays:
+          type: boolean
+          description: Whether essay questions need teacher grading
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/SavedAnswer'
+          description: All saved answers (empty on start, populated on retrieve)
+
+    SavedAnswer:
+      type: object
+      required:
+        - id
+        - question
+        - question_prompt
+        - question_type
+        - answered_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        question:
+          type: string
+          format: uuid
+        question_prompt:
+          type: string
+        question_type:
+          type: string
+          enum: [multiple_choice, text_input, essay]
+        selected_option:
+          type: string
+          format: uuid
+          nullable: true
+          description: Selected option ID (for MCQ only)
+        selected_option_text:
+          type: string
+          nullable: true
+          description: Selected option text (for MCQ only)
+        text_answer:
+          type: string
+          nullable: true
+          description: Text answer (for text-input/essay)
+        attachment_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Uploaded file URL (for essay only)
+        is_correct:
+          type: boolean
+          nullable: true
+          description: Whether answer is correct (null for essay until graded)
+        correct_answer:
+          type: object
+          nullable: true
+          description: Correct answer information (null for essay)
+          properties:
+            label:
+              type: string
+              description: Option label (for MCQ)
+            text:
+              type: string
+              description: Option/text answer
+        auto_graded:
+          type: boolean
+          description: Whether answer was auto-graded
+        answered_at:
+          type: string
+          format: date-time
+
+    SaveAnswerMCQ:
+      type: object
+      required:
+        - question_id
+        - selected_option_id
+      properties:
+        question_id:
+          type: string
+          format: uuid
+        selected_option_id:
+          type: string
+          format: uuid
+          description: Selected option ID (required for MCQ)
+
+    SaveAnswerTextInput:
+      type: object
+      required:
+        - question_id
+        - text_answer
+      properties:
+        question_id:
+          type: string
+          format: uuid
+        text_answer:
+          type: string
+          description: Text answer (required for text-input)
+
+    SaveAnswerEssay:
+      type: object
+      required:
+        - question_id
+      properties:
+        question_id:
+          type: string
+          format: uuid
+        text_answer:
+          type: string
+          nullable: true
+          description: Text answer (optional for essay)
+        attachment_url:
+          type: string
+          format: uri
+          nullable: true
+          description: Uploaded file URL (optional for essay)
+          note: At least one of text_answer or attachment_url must be provided
+
+    QuizResults:
+      type: object
+      required:
+        - total_score
+        - max_score
+        - percentage
+        - correct_answers
+        - total_questions
+        - formatted
+      properties:
+        total_score:
+          type: number
+          format: float
+        max_score:
+          type: number
+          format: float
+        percentage:
+          type: number
+          format: float
+          description: Score percentage (0-100)
+        correct_answers:
+          type: integer
+        total_questions:
+          type: integer
+        formatted:
+          type: string
+          example: "25.0/30.0 (83.3%)"
+          description: Human-readable score format
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        detail:
+          type: object
+          description: Field-specific validation errors
+          additionalProperties:
+            type: array
+            items:
+              type: string
+

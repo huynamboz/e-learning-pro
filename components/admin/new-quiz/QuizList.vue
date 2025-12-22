@@ -215,7 +215,7 @@ async function handleTogglePublish(quizId: string, newStatus: boolean) {
               </span>
             </div>
 
-            <div class="mt-3 flex items-center justify-between">
+            <div class="mt-3 flex flex-col gap-2">
               <div class="flex flex-wrap gap-2">
                 <a-button
                   size="small"

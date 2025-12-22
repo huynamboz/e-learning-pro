@@ -545,6 +545,35 @@ const totalScore = computed(() => {
               />
             </template>
 
+            <!-- Các nút thêm quiz -->
+            <div class="flex flex-wrap gap-2" v-if="questions.length > 0">
+              <a-button
+                type="default"
+                class="!flex !justify-center !items-center !gap-1"
+                @click="addMultipleChoiceQuestion"
+              >
+                <Icon name="solar:list-check-bold" />
+                {{ $t('newQuiz.editor.addMultipleChoice') }}
+              </a-button>
+
+              <a-button
+                type="default"
+                class="!flex !justify-center !items-center !gap-1"
+                @click="addTextInputQuestion"
+              >
+                <Icon name="solar:text-field-bold" />
+                {{ $t('newQuiz.editor.addTextInput') }}
+              </a-button>
+              <a-button
+                type="default"
+                class="!flex !justify-center !items-center !gap-1"
+                @click="addEssayQuestion"
+              >
+                <Icon name="solar:document-text-bold" />
+                {{ $t('newQuiz.editor.addEssay') }}
+              </a-button>
+            </div>
+
             <!-- Empty State -->
             <div
               v-if="questions.length === 0"

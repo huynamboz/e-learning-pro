@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StudentAnswer, QuizQuestion, QuestionComment } from '~/composables/api/useQuizApi'
+import type { QuestionComment, QuizQuestion, StudentAnswer } from '~/composables/api/useQuizApi'
 import { useQuizApi } from '~/composables/api/useQuizApi'
 
 interface Props {
@@ -19,27 +19,30 @@ const comments = ref<QuestionComment[]>([])
 const loadingComments = ref(false)
 
 // Methods
-const loadComments = async () => {
-  if (!props.quizId || !props.question?.id) return
+async function loadComments() {
+  if (!props.quizId || !props.question?.id)
+    return
 
   try {
     loadingComments.value = true
     const response = await getQuestionComments(props.quizId, props.question.id)
     comments.value = response.results
-  } catch (err: any) {
+  }
+  catch (err: any) {
     console.error('Error loading comments:', err)
-  } finally {
+  }
+  finally {
     loadingComments.value = false
   }
 }
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('vi-VN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -56,23 +59,23 @@ const options = computed(() => {
     return props.question.options.map((option, index) => ({
       label: option.label,
       text: option.text,
-      color: getOptionColor(index)
+      color: getOptionColor(index),
     }))
   }
-  
+
   // Fallback to mock data
   return [
     { label: 'A', text: 'Friend', color: 'bg-blue-200' },
     { label: 'B', text: 'Family', color: 'bg-orange-500' },
     { label: 'C', text: 'House', color: 'bg-pink-500' },
-    { label: 'D', text: 'Food', color: 'bg-yellow-500' }
+    { label: 'D', text: 'Food', color: 'bg-yellow-500' },
   ]
 })
 
 // Get color for option based on index
-const getOptionColor = (index: number) => {
+function getOptionColor(index: number) {
   const colors = [
-  'bg-blue-200',
+    'bg-blue-200',
     'bg-orange-200',
     'bg-red-200',
     'bg-yellow-200',
@@ -81,12 +84,12 @@ const getOptionColor = (index: number) => {
 }
 
 // Check if an option is the correct answer
-const isCorrectOption = (optionLabel: string) => {
+function isCorrectOption(optionLabel: string) {
   return props.answer.correct_answer?.label === optionLabel
 }
 
-const isUserAnswerInCorrect = (optionLabel: string) => {
-  const userAnswerLabel = props.question?.options?.find((o) => o.id === props.answer.selected_option)?.label
+function isUserAnswerInCorrect(optionLabel: string) {
+  const userAnswerLabel = props.question?.options?.find(o => o.id === props.answer.selected_option)?.label
   return userAnswerLabel !== props.answer.correct_answer?.label && userAnswerLabel === optionLabel
 }
 </script>
@@ -94,7 +97,7 @@ const isUserAnswerInCorrect = (optionLabel: string) => {
 <template>
   <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
     <!-- Question Header -->
-    <div class="bg-green-100 px-6 py-4 flex items-center justify-between">
+    <div class="bg-gray-100 px-6 py-4 flex items-center justify-between">
       <div class="text-lg font-bold text-green-700">
         Question {{ questionNumber }}
       </div>
@@ -121,10 +124,10 @@ const isUserAnswerInCorrect = (optionLabel: string) => {
           :class="{
             'bg-green-100 border-green-300': isCorrectOption(option.label),
             'bg-white border-gray-200': !isCorrectOption(option.label),
-            '!bg-red-100 border-red-300': isUserAnswerInCorrect(option.label)
+            '!bg-red-100 border-red-300': isUserAnswerInCorrect(option.label),
           }"
         >
-          <div 
+          <div
             class="w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm"
             :class="option.color"
           >
@@ -136,7 +139,9 @@ const isUserAnswerInCorrect = (optionLabel: string) => {
 
       <!-- Teacher Comments -->
       <div v-if="comments.length > 0" class="mt-6 pt-4 border-t border-gray-200">
-        <h5 class="text-sm font-medium text-gray-700 mb-3">Nhận xét của giáo viên</h5>
+        <h5 class="text-sm font-medium text-gray-700 mb-3">
+          Nhận xét của giáo viên
+        </h5>
         <div class="space-y-3">
           <div
             v-for="comment in comments"
@@ -152,7 +157,9 @@ const isUserAnswerInCorrect = (optionLabel: string) => {
                 {{ formatDate(comment.created_at) }}
               </span>
             </div>
-            <p class="text-sm text-gray-700 whitespace-pre-wrap">{{ comment.content }}</p>
+            <p class="text-sm text-gray-700 whitespace-pre-wrap">
+              {{ comment.content }}
+            </p>
           </div>
         </div>
       </div>

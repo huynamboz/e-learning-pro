@@ -1442,8 +1442,8 @@
     "overview": "Tổng quan",
     "course": "Khóa học",
     "classroom": "Lớp học",
-    "quizManagement": "Quản lý Quiz",
-    "newQuizManagement": "Quản lý Quiz độc lập",
+    "quizManagement": "Quản lý bài làm",
+    "newQuizManagement": "Quản lý Quiz",
     "students": "Học viên",
     "orders": "Đơn hàng",
     "videoPosts": "Video Posts",
@@ -2055,8 +2055,8 @@
   },
   "newQuiz": {
     "management": {
-      "title": "Quản lý Quiz độc lập",
-      "description": "Tạo và quản lý quiz độc lập không gắn với khóa học",
+      "title": "Quản lý Quiz",
+      "description": "Tạo và quản lý quiz không gắn với khóa học",
       "createNewQuiz": "Tạo Quiz Mới",
       "totalQuizzes": "Tổng cộng",
       "published": "Đã xuất bản",

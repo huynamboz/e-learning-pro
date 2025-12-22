@@ -1,5 +1,13 @@
 import type { ListApiResponse } from '~/api/apiClient'
 import { useApiClient } from '~/api/apiClient'
+import type {
+  QuizAttempt,
+  SaveAnswerRequest,
+  SaveAnswerResponse,
+  StartAttemptRequest,
+  StartAttemptResponse,
+  SubmitAttemptResponse,
+} from '~/types/new-quiz.type'
 
 // Level entity types
 export interface NewQuizLevel {
@@ -126,6 +134,23 @@ export interface NewQuizUpdate extends Partial<NewQuizCreate> {
   questions?: Array<NewQuizQuestionCreate & { id?: string }>
 }
 
+// Leaderboard types
+export interface LeaderboardEntry {
+  rank: number
+  student_id: string
+  student_name: string
+  student_email?: string
+  score: string | number
+  correct_answers: number
+  time_spent_seconds: number
+  completed_at: string
+}
+
+export interface LeaderboardResponse {
+  quiz_id: string
+  entries: LeaderboardEntry[]
+}
+
 export function useNewQuizApi() {
   const apiClient = useApiClient()
 
@@ -204,5 +229,28 @@ export function useNewQuizApi() {
 
     getQuizzesByLevel: (levelId: string) =>
       apiClient.get<NewQuizListResponse>(`/new_quiz/quizzes/by_level/?level_id=${levelId}`),
+
+    // Quiz Attempt Management
+    startAttempt: (data: StartAttemptRequest) =>
+      apiClient.post<StartAttemptResponse>('/new_quiz/attempts/start/', data),
+
+    getAttempt: (attemptId: string) =>
+      apiClient.get<QuizAttempt>(`/new_quiz/attempts/${attemptId}/`),
+
+    saveAnswer: (attemptId: string, answerData: SaveAnswerRequest) =>
+      apiClient.post<SaveAnswerResponse>(`/new_quiz/attempts/${attemptId}/save-answer/`, answerData),
+
+    submitAttempt: (attemptId: string) =>
+      apiClient.post<SubmitAttemptResponse>(`/new_quiz/attempts/${attemptId}/submit/`, {}),
+
+    // Get attempts for a quiz (students see only their own)
+    getQuizAttempts: (quizId: string, studentId?: string) => {
+      const queryParams = studentId ? `?student_id=${studentId}` : ''
+      return apiClient.get<ListApiResponse<QuizAttempt>>(`/new_quiz/quizzes/${quizId}/attempts/${queryParams}`)
+    },
+
+    // Leaderboard
+    getLeaderboard: (quizId: string) =>
+      apiClient.get<LeaderboardResponse>(`/new_quiz/quizzes/${quizId}/leaderboard/`),
   }
 }
