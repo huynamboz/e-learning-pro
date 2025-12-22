@@ -10,6 +10,7 @@ definePageMeta({
 // Route params
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const quizId = route.params.id as string
 const attemptId = route.query.attempt as string
 
@@ -93,14 +94,10 @@ function navigateToQuizList() {
   router.push('/quizz')
 }
 
-function navigateToRetakeQuiz() {
-  router.push(`/quizz/${quizId}`)
-}
-
 // Load attempt results
 async function loadResults() {
   if (!attemptId) {
-    error.value = 'No attempt ID provided'
+    error.value = t('newQuiz.results.noAttemptId')
     return
   }
 
@@ -118,7 +115,7 @@ async function loadResults() {
     quiz.value = quizResponse
   }
   catch (err: any) {
-    error.value = err.message || 'Failed to load results'
+    error.value = err.message || t('newQuiz.results.loadError')
     console.error('Error loading results:', err)
   }
   finally {
@@ -138,13 +135,13 @@ onMounted(() => {
       <!-- Header -->
       <div class="flex justify-between mb-6">
         <h3 class="text-2xl font-semibold text-green-700">
-          Quiz Results
+          {{ t('newQuiz.results.title') }}
         </h3>
         <button
           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
           @click="navigateToQuizList"
         >
-          Back to Quiz List
+          {{ t('newQuiz.results.backToQuizList') }}
         </button>
       </div>
 
@@ -153,7 +150,7 @@ onMounted(() => {
         <div class="text-center">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700 mx-auto mb-4" />
           <p class="text-sm text-gray-500">
-            Loading results...
+            {{ t('newQuiz.results.loading') }}
           </p>
         </div>
       </div>
@@ -164,7 +161,7 @@ onMounted(() => {
           <Icon name="tabler:alert-circle" class="text-red-500 text-xl" />
           <div>
             <h3 class="text-red-800 font-medium">
-              Error
+              {{ t('newQuiz.results.error') }}
             </h3>
             <p class="text-red-700">
               {{ error }}
@@ -178,10 +175,10 @@ onMounted(() => {
         <!-- Congratulations Banner -->
         <div class="bg-green-100 rounded-t-2xl p-6 text-center">
           <div class="text-2xl font-bold text-green-700 mb-2">
-            🎉 Congratulations! 🎉
+            {{ t('newQuiz.results.congratulations') }}
           </div>
           <p class="text-gray-600">
-            You've completed the {{ attempt.quiz_title }}
+            {{ t('newQuiz.results.completedQuiz', { quizTitle: attempt.quiz_title }) }}
           </p>
         </div>
 
@@ -191,10 +188,10 @@ onMounted(() => {
             <Icon name="tabler:clock" class="text-yellow-600 text-xl mt-0.5" />
             <div>
               <h3 class="text-yellow-800 font-medium mb-1">
-                Essay Questions Pending Review
+                {{ t('newQuiz.results.essayPendingTitle') }}
               </h3>
               <p class="text-yellow-700 text-sm">
-                Your essay answers are being reviewed by your teacher. Your final score will be updated once grading is complete.
+                {{ t('newQuiz.results.essayPendingDescription') }}
               </p>
             </div>
           </div>
@@ -208,7 +205,7 @@ onMounted(() => {
                 {{ attempt.total_questions }}
               </div>
               <div class="text-sm text-gray-600">
-                Tổng câu hỏi
+                {{ t('newQuiz.results.totalQuestions') }}
               </div>
             </div>
             <div v-if="objectiveAnswers.length > 0" class="bg-gray-50 rounded-lg p-4">
@@ -216,18 +213,18 @@ onMounted(() => {
                 {{ attempt.correct_answers }}
               </div>
               <div class="text-sm text-gray-600">
-                Số câu đúng
+                {{ t('newQuiz.results.correctAnswers') }}
               </div>
             </div>
             <div class="bg-gray-50 rounded-lg p-4">
               <div v-if="hasPendingEssays" class="text-2xl font-bold text-yellow-600">
-                Đang chờ chấm
+                {{ t('newQuiz.results.pendingGrading') }}
               </div>
               <div v-else class="text-2xl font-bold" :class="scoreColor">
                 {{ totalScore.toFixed(1) }}/{{ maxScore.toFixed(1) }}
               </div>
               <div class="text-sm text-gray-600">
-                Điểm
+                {{ t('newQuiz.results.score') }}
               </div>
             </div>
           </div>
@@ -236,7 +233,7 @@ onMounted(() => {
           <div v-if="essayAnswers.length > 0 && hasPendingEssays" class="mt-4 pt-4 border-t border-gray-200">
             <div class="flex items-center justify-center gap-2 text-sm text-gray-600">
               <Icon name="tabler:file-text" class="text-purple-500" />
-              <span>{{ essayAnswers.length }} essay question{{ essayAnswers.length > 1 ? 's' : '' }} requiring manual grading</span>
+              <span>{{ essayAnswers.length }} {{ t('newQuiz.results.essayQuestionsRequiringGrading', { plural: essayAnswers.length > 1 ? 's' : '' }) }}</span>
             </div>
           </div>
         </div>
@@ -252,7 +249,7 @@ onMounted(() => {
             <!-- Question Header -->
             <div class="bg-gray-100 px-6 py-4 flex items-center justify-between">
               <div class="text-lg font-bold text-green-700">
-                Question {{ idx + 1 }}
+                {{ t('newQuiz.results.questionNumber', { number: idx + 1 }) }}
               </div>
               <Icon
                 :name="answer.is_correct ? 'tabler:check' : 'tabler:x'"
@@ -311,7 +308,7 @@ onMounted(() => {
             <!-- Question Header -->
             <div class="bg-gray-100 px-6 py-4 flex items-center justify-between">
               <div class="text-lg font-bold text-green-700">
-                Question {{ objectiveAnswers.findIndex(a => a.id === answer.id) + 1 }}
+                {{ t('newQuiz.results.questionNumber', { number: objectiveAnswers.findIndex(a => a.id === answer.id) + 1 }) }}
               </div>
               <Icon
                 :name="answer.is_correct ? 'tabler:check' : 'tabler:x'"
@@ -330,7 +327,7 @@ onMounted(() => {
               <!-- User's Answer -->
               <div class="space-y-3">
                 <div class="text-sm font-medium text-gray-700">
-                  Your answer:
+                  {{ t('newQuiz.results.yourAnswer') }}
                 </div>
                 <div
                   class="p-4 rounded-xl border"
@@ -340,14 +337,14 @@ onMounted(() => {
                   }"
                 >
                   <span class="text-gray-800">
-                    {{ answer.text_answer || 'No answer provided' }}
+                    {{ answer.text_answer || t('newQuiz.results.noAnswer') }}
                   </span>
                 </div>
 
                 <!-- Correct Answer (if incorrect) -->
                 <div v-if="!answer.is_correct && answer.correct_answer" class="space-y-2">
                   <div class="text-sm font-medium text-gray-700">
-                    Correct answer:
+                    {{ t('newQuiz.results.correctAnswer') }}
                   </div>
                   <div class="p-4 bg-green-100 border border-green-300 rounded-xl">
                     <span class="text-gray-800">
@@ -368,7 +365,7 @@ onMounted(() => {
             <!-- Question Header -->
             <div class="bg-green-100 px-6 py-4 flex items-center justify-between">
               <div class="text-lg font-bold text-green-700">
-                Question {{ attempt.answers.findIndex(a => a.id === answer.id) + 1 }}
+                {{ t('newQuiz.results.questionNumber', { number: attempt.answers.findIndex(a => a.id === answer.id) + 1 }) }}
               </div>
               <Icon
                 name="tabler:clock"
@@ -386,11 +383,11 @@ onMounted(() => {
               <!-- User's Answer -->
               <div class="space-y-3">
                 <div class="text-sm font-medium text-gray-700">
-                  Your answer:
+                  {{ t('newQuiz.results.yourAnswer') }}
                 </div>
                 <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
                   <span class="text-gray-800 whitespace-pre-wrap">
-                    {{ answer.text_answer || 'No answer provided' }}
+                    {{ answer.text_answer || t('newQuiz.results.noAnswer') }}
                   </span>
                 </div>
 
@@ -398,7 +395,7 @@ onMounted(() => {
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <div class="flex items-center gap-2 text-sm text-yellow-800">
                     <Icon name="tabler:clock" class="text-yellow-600" />
-                    <span>This answer is pending teacher review</span>
+                    <span>{{ t('newQuiz.results.pendingReview') }}</span>
                   </div>
                 </div>
               </div>
@@ -412,13 +409,7 @@ onMounted(() => {
             class="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition-colors"
             @click="navigateToQuizList"
           >
-            Go back
-          </button>
-          <button
-            class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
-            @click="navigateToRetakeQuiz"
-          >
-            Retake Quiz
+            {{ t('newQuiz.results.goBack') }}
           </button>
         </div>
       </div>

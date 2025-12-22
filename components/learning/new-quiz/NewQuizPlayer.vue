@@ -14,6 +14,7 @@ const emit = defineEmits<{
 }>()
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 interface Props {
   quiz: NewQuizDetail
@@ -278,7 +279,7 @@ async function handleAnswerSave(questionId: string, answerData: any) {
   }
   catch (err: any) {
     console.error('Error saving answer:', err)
-    saveErrors.value[questionId] = err.message || 'Không thể lưu câu trả lời'
+    saveErrors.value[questionId] = err.message || t('newQuiz.player.saveError')
 
     // Retry logic (exponential backoff)
     let retries = 0
@@ -331,15 +332,18 @@ async function handleSubmit() {
     showResults.value = true
     emit('attemptUpdated', currentAttempt.value)
 
-    // Navigate to results page
+    // Navigate to results page - replace current URL
     const quizId = route.params.id as string
-    router.replace(`/quizz/${quizId}/results?attempt=${currentAttempt.value.id}`)
+    await router.replace({
+      path: `/quizz/${quizId}/results`,
+      query: { attempt: currentAttempt.value.id },
+    })
   }
   catch (err: any) {
     console.error('Error submitting quiz:', err)
     notification.error({
-      message: 'Lỗi',
-      description: err.message || 'Không thể nộp bài. Vui lòng thử lại.',
+      message: t('newQuiz.player.submitError'),
+      description: err.message || t('newQuiz.player.submitErrorDescription'),
       duration: 4,
     })
   }
@@ -379,7 +383,7 @@ function formatTime(seconds: number): string {
       <div class="flex-1 pr-4">
         <div class="flex items-center gap-2 justify-between">
           <h1 class="text-2xl font-bold text-green-700 mb-3">
-            {{ quiz.title || 'Loading...' }}
+            {{ quiz.title || t('newQuiz.player.loading') }}
           </h1>
           <!-- Timer -->
           <div v-if="quiz.time_type === 'limit' && timeRemaining !== null" class="text-green-700 font-bold text-2xl">
@@ -387,14 +391,14 @@ function formatTime(seconds: number): string {
           </div>
         </div>
         <p class="text-gray-700 text-sm leading-relaxed mb-4">
-          {{ quiz.description || 'Làm bài quiz với auto-save và immediate feedback' }}
+          {{ quiz.description || t('newQuiz.player.defaultDescription') }}
           <span class="ml-1">🍀</span>
         </p>
 
         <!-- Progress Bar -->
         <div class="flex items-center gap-3 mb-4">
           <div class="text-sm text-gray-600 font-medium">
-            {{ answeredCount }}/{{ quiz.total_questions }} answered
+            {{ answeredCount }}/{{ quiz.total_questions }} {{ t('newQuiz.player.answered') }}
           </div>
           <div class="flex-1 bg-green-100 rounded-full h-2">
             <div
@@ -421,20 +425,20 @@ function formatTime(seconds: number): string {
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div class="flex-1">
                 <p class="text-sm font-medium text-slate-900 mb-1">
-                  Bạn đã trả lời tất cả câu hỏi
+                  {{ t('newQuiz.player.allAnswered') }}
                 </p>
                 <p class="text-xs text-slate-600">
-                  Vui lòng kiểm tra lại câu trả lời trước khi nộp bài. Sau khi nộp, bạn không thể chỉnh sửa.
+                  {{ t('newQuiz.player.submitWarning') }}
                 </p>
               </div>
               <button
                 :disabled="submitting"
-                class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                class="cursor-pointer px-8 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 @click="handleSubmit"
               >
                 <Icon v-if="submitting" name="mdi:loading" class="animate-spin text-base" />
                 <Icon v-else name="mdi:send" class="text-base" />
-                {{ submitting ? 'Đang nộp...' : 'Nộp bài' }}
+                {{ submitting ? t('newQuiz.player.submitting') : t('newQuiz.player.submit') }}
               </button>
             </div>
           </div>
@@ -456,7 +460,7 @@ function formatTime(seconds: number): string {
         <!-- Question Number Header -->
         <div class="bg-green-100 px-6 py-4">
           <div class="text-lg font-bold text-green-700">
-            Question {{ currentQuestionIndex + 1 }}/{{ quiz.total_questions }}
+            {{ t('newQuiz.player.question') }} {{ currentQuestionIndex + 1 }}/{{ quiz.total_questions }}
           </div>
         </div>
 
@@ -477,18 +481,20 @@ function formatTime(seconds: number): string {
           <div class="flex justify-end gap-3 mt-8">
             <button
               v-if="!isFirstQuestion"
-              class="px-6 py-2 border border-green-500 text-green-700 rounded-full hover:bg-green-50 transition-colors"
+              class="cursor-pointer !flex items-center gap-1 px-6 py-2 border border-green-500 text-green-700 rounded-full hover:bg-green-50 transition-colors"
               @click="previousQuestion"
             >
-              Previous
+              <Icon name="solar:arrow-left-bold" class="text-green-700 text-lg" />
+              {{ t('newQuiz.player.previous') }}
             </button>
 
             <button
               v-if="!isLastQuestion"
-              class="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
+              class="cursor-pointer !flex items-center gap-1 px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
               @click="nextQuestion"
             >
-              Next
+              {{ t('newQuiz.player.next') }}
+              <Icon name="solar:arrow-right-bold" class="text-white text-lg" />
             </button>
           </div>
         </div>
@@ -501,7 +507,7 @@ function formatTime(seconds: number): string {
         <div class="flex items-center gap-2">
           <Icon name="tabler:alert-triangle" class="text-yellow-600 text-lg" />
           <p class="text-yellow-800 text-sm">
-            <strong>Note:</strong> Your answers are automatically saved. You can refresh the page and continue from where you left off.
+            <strong>{{ t('newQuiz.player.note') }}</strong> {{ t('newQuiz.player.autoSaveNote') }}
           </p>
         </div>
       </div>

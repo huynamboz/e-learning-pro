@@ -4,16 +4,18 @@ import type { QuizAttempt, StartAttemptResponse } from '~/types/new-quiz.type'
 import NewQuizPlayer from '~/components/learning/new-quiz/NewQuizPlayer.vue'
 import { useNewQuizApi } from '~/composables/api/useNewQuizApi'
 
+const { t } = useI18n()
+
 definePageMeta({
   layout: 'auth',
 })
 
 useHead({
-  title: 'Làm Quiz',
+  title: () => t('course.quizPage.title'),
   meta: [
     {
       name: 'description',
-      content: 'Làm bài quiz với auto-save và immediate feedback',
+      content: () => t('course.quizPage.description'),
     },
   ],
 })
@@ -40,7 +42,7 @@ async function loadQuiz() {
     quiz.value = quizData
   }
   catch (err: any) {
-    error.value = err.message || 'Không thể tải thông tin quiz'
+    error.value = err.message || t('course.quizPage.loadError')
     console.error('Error loading quiz:', err)
   }
   finally {
@@ -85,16 +87,16 @@ async function startOrResumeAttempt() {
     })
   }
   catch (err: any) {
-    error.value = err.message || 'Không thể bắt đầu quiz'
+    error.value = err.message || t('course.quizPage.startError')
     console.error('Error starting/resuming attempt:', err)
 
     // Handle specific errors
     if (err.statusCode === 400) {
       if (err.data?.error?.includes('retake') || err.data?.error?.includes('limit')) {
-        error.value = 'Bạn đã vượt quá số lần làm lại cho phép'
+        error.value = t('course.quizPage.retakeLimitExceeded')
       }
       else if (err.data?.error?.includes('published')) {
-        error.value = 'Quiz này chưa được xuất bản'
+        error.value = t('course.quizPage.notPublished')
       }
     }
   }
@@ -113,7 +115,7 @@ if (process.client) {
   window.addEventListener('beforeunload', (e) => {
     if (attempt.value && attempt.value.status === 'in_progress') {
       e.preventDefault()
-      e.returnValue = 'Bạn có chắc muốn rời khỏi trang? Tiến độ của bạn đã được lưu tự động.'
+      e.returnValue = t('course.quizPage.leaveConfirm')
       return e.returnValue
     }
   })
@@ -143,7 +145,7 @@ onUnmounted(() => {
           <div class="text-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4" />
             <p class="text-gray-600">
-              Loading quiz...
+              {{ t('course.quizPage.loading') }}
             </p>
           </div>
         </div>
@@ -154,7 +156,7 @@ onUnmounted(() => {
             <Icon name="tabler:alert-circle" class="text-red-500 text-xl" />
             <div>
               <h3 class="text-red-800 font-medium">
-                Error
+                {{ t('course.quizPage.error') }}
               </h3>
               <p class="text-red-700">
                 {{ error }}
@@ -163,7 +165,7 @@ onUnmounted(() => {
                 class="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700"
                 @click="startOrResumeAttempt"
               >
-                Thử lại
+                {{ t('course.quizPage.tryAgain') }}
               </button>
             </div>
           </div>

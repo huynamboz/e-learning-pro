@@ -13,13 +13,14 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
 const emit = defineEmits<{
-  'answer-saved': [questionId: string, answerData: any]
+  answerSaved: [questionId: string, answerData: any]
 }>()
 
+const { t } = useI18n()
+
 function handleAnswerSave(answerData: any) {
-  emit('answer-saved', props.question.id, answerData)
+  emit('answerSaved', props.question.id, answerData)
 }
 </script>
 
@@ -31,7 +32,13 @@ function handleAnswerSave(answerData: any) {
         {{ question.prompt }}
       </div>
       <p class="text-sm text-gray-500">
-        {{ question.question_type === 'multiple_choice' ? 'Select one answer.' : question.question_type === 'text_input' ? 'Type your answer below.' : 'Type your essay answer below.' }}
+        {{
+          question.question_type === 'multiple_choice'
+            ? t('newQuiz.player.questionInstructions.selectOneAnswer')
+            : question.question_type === 'text_input'
+              ? t('newQuiz.player.questionInstructions.typeAnswerBelow')
+              : t('newQuiz.player.questionInstructions.typeEssayAnswerBelow')
+        }}
       </p>
       <!-- Question Media (if any) -->
       <div v-if="question.media" class="mt-4 rounded-xl overflow-hidden border border-gray-200">
@@ -54,7 +61,7 @@ function handleAnswerSave(answerData: any) {
         <Icon name="tabler:alert-circle" class="text-red-500 text-xl shrink-0" />
         <div class="flex-1">
           <h3 class="text-red-800 font-medium">
-            Error saving answer
+            {{ t('newQuiz.player.questionInstructions.errorSavingAnswer') }}
           </h3>
           <p class="text-red-700 text-sm">
             {{ saveError }}
@@ -63,11 +70,10 @@ function handleAnswerSave(answerData: any) {
             class="mt-2 text-sm text-red-700 hover:text-red-800 underline"
             @click="handleAnswerSave(savedAnswer ? { selected_option_id: savedAnswer.selected_option, text_answer: savedAnswer.text_answer } : {})"
           >
-            Try again
+            {{ t('newQuiz.player.questionInstructions.tryAgain') }}
           </button>
         </div>
       </div>
     </div>
   </div>
 </template>
-

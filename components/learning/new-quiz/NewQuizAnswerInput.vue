@@ -11,10 +11,11 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
 const emit = defineEmits<{
-  'answerSaved': [answerData: any]
+  answerSaved: [answerData: any]
 }>()
+
+const { t } = useI18n()
 
 // Local state for answer input
 const selectedOption = ref<string | null>(props.savedAnswer?.selected_option || null)
@@ -174,15 +175,15 @@ function handleEssayInput(text: string) {
       </div>
 
       <!-- Lock Notice -->
-      <div
+      <!-- <div
         v-if="isAnswerLocked"
         class="mt-3 p-2 bg-slate-50 border border-slate-200 rounded-lg"
       >
         <div class="flex items-center gap-2 text-xs text-slate-600">
           <Icon name="mdi:lock" class="text-slate-500" />
-          <span>Đáp án đã được khóa sau khi có kết quả</span>
+          <span>{{ t('newQuiz.player.answerInput.answerLocked') }}</span>
         </div>
-      </div>
+      </div> -->
 
       <!-- Correct Answer Display (if wrong) -->
       <div
@@ -193,7 +194,7 @@ function handleEssayInput(text: string) {
           <Icon name="mdi:information" class="text-emerald-600 shrink-0 mt-0.5" />
           <div class="flex-1">
             <p class="text-sm font-medium text-emerald-900">
-              Đáp án đúng:
+              {{ t('newQuiz.player.answerInput.correctAnswer') }}
             </p>
             <p class="text-sm text-emerald-700 mt-1">
               {{ correctAnswer.label ? `${correctAnswer.label}. ${correctAnswer.text}` : correctAnswer.text }}
@@ -219,7 +220,7 @@ function handleEssayInput(text: string) {
                 : '',
             saving || showFeedback ? 'opacity-50 cursor-not-allowed' : '',
           ]"
-          placeholder="Nhập câu trả lời..."
+          :placeholder="t('newQuiz.player.answerInput.textInputPlaceholder')"
           @input="handleTextInput(($event.target as HTMLInputElement).value)"
           @keyup.enter="handleTextSubmit"
         >
@@ -230,7 +231,7 @@ function handleEssayInput(text: string) {
         >
           <Icon v-if="saving" name="mdi:loading" class="animate-spin text-base" />
           <Icon v-else name="mdi:send" class="text-base" />
-          {{ saving ? 'Đang lưu...' : 'Trả lời' }}
+          {{ saving ? t('newQuiz.player.answerInput.saving') : t('newQuiz.player.answerInput.submit') }}
         </button>
       </div>
       <div
@@ -242,10 +243,10 @@ function handleEssayInput(text: string) {
           :class="isCorrect ? 'text-emerald-600' : 'text-red-600'"
         />
         <span :class="isCorrect ? 'text-emerald-700 font-medium' : 'text-red-700 font-medium'">
-          {{ isCorrect ? 'Đúng!' : 'Sai' }}
+          {{ isCorrect ? t('newQuiz.player.answerInput.correct') : t('newQuiz.player.answerInput.incorrect') }}
         </span>
         <span v-if="!isCorrect && correctAnswer" class="text-sm text-slate-600">
-          - Đáp án đúng: {{ correctAnswer.text }}
+          {{ t('newQuiz.player.answerInput.correctAnswerPrefix') }} {{ correctAnswer.text }}
         </span>
       </div>
     </div>
@@ -258,15 +259,15 @@ function handleEssayInput(text: string) {
         rows="6"
         class="w-full p-4 border border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 resize-none transition-all"
         :class="saving ? 'opacity-50 cursor-wait' : ''"
-        placeholder="Type your answer here..."
+        :placeholder="t('newQuiz.player.answerInput.essayPlaceholder')"
         @input="handleEssayInput(($event.target as HTMLTextAreaElement).value)"
       />
       <div v-if="saving" class="text-xs text-slate-500 flex items-center gap-2">
         <Icon name="mdi:loading" class="animate-spin" />
-        Đang lưu...
+        {{ t('newQuiz.player.answerInput.saving') }}
       </div>
       <p class="text-xs text-slate-500">
-        Câu hỏi tự luận sẽ được giáo viên chấm điểm sau khi bạn nộp bài.
+        {{ t('newQuiz.player.answerInput.essayNote') }}
       </p>
     </div>
   </div>

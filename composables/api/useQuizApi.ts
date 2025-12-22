@@ -230,50 +230,50 @@ export function useQuizApi() {
         queryParams.append('ordering', params.ordering)
 
       const queryString = queryParams.toString()
-      const url = queryString ? `/quiz/quizzes/?${queryString}` : '/quiz/quizzes/'
+      const url = queryString ? `/new_quiz/quizzes/?${queryString}` : '/new_quiz/quizzes/'
 
       return apiClient.get<QuizListResponse>(url)
     },
 
     // Get quiz by ID
     getQuiz: (id: string) =>
-      apiClient.get<QuizApiResponse>(`/quiz/quizzes/${id}/`),
+      apiClient.get<QuizApiResponse>(`/new_quiz/quizzes/${id}/`),
 
     // Create new quiz
     createQuiz: (quizData: any) =>
-      apiClient.post<QuizApiResponse>('/quiz/quizzes/', quizData),
+      apiClient.post<QuizApiResponse>('/new_quiz/quizzes/', quizData),
 
     // Update quiz
     updateQuiz: (id: string, quizData: any) =>
-      apiClient.put<QuizApiResponse>(`/quiz/quizzes/${id}/`, quizData),
+      apiClient.put<QuizApiResponse>(`/new_quiz/quizzes/${id}/`, quizData),
 
     // Patch quiz (partial update)
     patchQuiz: (id: string, quizData: any) =>
-      apiClient.patch<QuizApiResponse>(`/quiz/quizzes/${id}/`, quizData),
+      apiClient.patch<QuizApiResponse>(`/new_quiz/quizzes/${id}/`, quizData),
 
     // Delete quiz
     deleteQuiz: (id: string) =>
-      apiClient.delete(`/quiz/quizzes/${id}/`),
+      apiClient.delete(`/new_quiz/quizzes/${id}/`),
 
     // Start quiz attempt
     startQuizAttempt: (data: StartQuizAttemptRequest) =>
-      apiClient.post<StartQuizAttemptResponse>('/quiz/attempts/start/', data),
+      apiClient.post<StartQuizAttemptResponse>('/new_quiz/attempts/start/', data),
 
     // Submit quiz answers
     submitQuizAnswers: (attemptId: string, data: SubmitAnswersRequest) =>
-      apiClient.post<SubmitAnswersResponse>(`/quiz/attempts/${attemptId}/submit/`, data),
+      apiClient.post<SubmitAnswersResponse>(`/new_quiz/attempts/${attemptId}/submit/`, data),
 
     // Get attempt details
     getAttempt: (attemptId: string) =>
-      apiClient.get<QuizAttempt>(`/quiz/attempts/${attemptId}/`),
+      apiClient.get<QuizAttempt>(`/new_quiz/attempts/${attemptId}/`),
 
     // Get my attempts
     getMyAttempts: () =>
-      apiClient.get<ListApiResponse<QuizAttempt>>('/quiz/attempts/my_attempts/'),
+      apiClient.get<ListApiResponse<QuizAttempt>>('/new_quiz/attempts/my_attempts/'),
 
     // Get attempts for a specific quiz
     getQuizAttempts: (quizId: string) =>
-      apiClient.get<QuizAttempt[]>(`/quiz/quizzes/${quizId}/attempts/`),
+      apiClient.get<QuizAttempt[]>(`/new_quiz/quizzes/${quizId}/attempts/`),
 
     // Essay Grading APIs
     getRecentSubmissions: (params?: {
@@ -286,7 +286,7 @@ export function useQuizApi() {
       if (params?.classroom_id) queryParams.append('classroom_id', params.classroom_id)
       if (params?.needs_grading) queryParams.append('needs_grading', 'true')
       
-      return apiClient.get<RecentSubmissionsResponse>(`/quiz/attempts/recent_submissions/?${queryParams.toString()}`)
+      return apiClient.get<RecentSubmissionsResponse>(`/new_quiz/attempts/recent_submissions/?${queryParams.toString()}`)
     },
 
     getSubmissionsByClassroom: (classroomId: string, quizId?: string) => {
@@ -294,42 +294,42 @@ export function useQuizApi() {
       queryParams.append('classroom_id', classroomId)
       if (quizId) queryParams.append('quiz_id', quizId)
       
-      return apiClient.get<RecentSubmissionsResponse>(`/quiz/attempts/by_classroom/?${queryParams.toString()}`)
+      return apiClient.get<RecentSubmissionsResponse>(`/new_quiz/attempts/by_classroom/?${queryParams.toString()}`)
     },
 
     getEssayGradingsNeedingGrading: (classroomId?: string) => {
       const queryParams = new URLSearchParams()
       if (classroomId) queryParams.append('classroom_id', classroomId)
       
-      return apiClient.get<EssayGradingListResponse>(`/quiz/essay-gradings/needs_grading/?${queryParams.toString()}`)
+      return apiClient.get<EssayGradingListResponse>(`/new_quiz/essay-gradings/needs_grading/?${queryParams.toString()}`)
     },
 
     getPendingEssayGradings: () =>
-      apiClient.get<EssayGradingListResponse>('/quiz/essay-gradings/pending/'),
+      apiClient.get<EssayGradingListResponse>('/new_quiz/essay-gradings/pending/'),
 
     getEssayGradingDetail: (gradingId: string) =>
-      apiClient.get<EssayGrading>(`/quiz/essay-gradings/${gradingId}/`),
+      apiClient.get<EssayGrading>(`/new_quiz/essay-gradings/${gradingId}/`),
 
     gradeEssay: (gradingId: string, data: GradeEssayRequest) =>
-      apiClient.post<GradeEssayResponse>(`/quiz/essay-gradings/${gradingId}/grade/`, data),
+      apiClient.post<GradeEssayResponse>(`/new_quiz/essay-gradings/${gradingId}/grade/`, data),
 
     getMyGradings: () =>
-      apiClient.get<EssayGradingListResponse>('/quiz/essay-gradings/my_gradings/'),
+      apiClient.get<EssayGradingListResponse>('/new_quiz/essay-gradings/my_gradings/'),
 
     // Question Comments APIs
     getQuestionComments: (quizId: string, questionId: string) =>
-      apiClient.get<QuestionCommentListResponse>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/`),
+      apiClient.get<QuestionCommentListResponse>(`/new_quiz/quizzes/${quizId}/questions/${questionId}/comments/`),
 
     createQuestionComment: (quizId: string, questionId: string, data: CreateCommentRequest) =>
-      apiClient.post<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/`, data),
+      apiClient.post<QuestionComment>(`/new_quiz/quizzes/${quizId}/questions/${questionId}/comments/`, data),
 
     getQuestionComment: (quizId: string, questionId: string, commentId: string) =>
-      apiClient.get<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
+      apiClient.get<QuestionComment>(`/new_quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
 
     updateQuestionComment: (quizId: string, questionId: string, commentId: string, data: UpdateCommentRequest) =>
-      apiClient.put<QuestionComment>(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`, data),
+      apiClient.put<QuestionComment>(`/new_quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`, data),
 
     deleteQuestionComment: (quizId: string, questionId: string, commentId: string) =>
-      apiClient.delete(`/quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
+      apiClient.delete(`/new_quiz/quizzes/${quizId}/questions/${questionId}/comments/${commentId}/`),
   }
 }
