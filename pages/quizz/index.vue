@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { LeaderboardEntry, NewQuiz, NewQuizLevel } from '~/composables/api/useNewQuizApi'
+import type { OverallRankingEntry, NewQuiz, NewQuizLevel } from '~/composables/api/useNewQuizApi'
 import { useNewQuizApi } from '~/composables/api/useNewQuizApi'
 
 // empty layout
@@ -17,7 +17,7 @@ useHead({
   ],
 })
 
-const { getLevels, getQuizzes, getLeaderboard, getQuizAttempts } = useNewQuizApi()
+const { getLevels, getQuizzes, getOverallRanking, getQuizAttempts } = useNewQuizApi()
 
 const heroHighlights = [
   'Cấu trúc theo khung CEFR',
@@ -48,9 +48,8 @@ const errorMessage = ref('')
 
 const levels = ref<NewQuizLevel[]>([])
 const quizzes = ref<NewQuiz[]>([])
-const leaderboard = ref<LeaderboardEntry[]>([])
-const leaderboardLoading = ref(false)
-const leaderboardQuizTitle = ref<string>('')
+const overallRanking = ref<OverallRankingEntry[]>([])
+const rankingLoading = ref(false)
 const quizAttemptsMap = ref<Record<string, number>>({}) // Map quiz_id -> number of attempts
 
 const levelFilters = computed(() => [
@@ -111,10 +110,8 @@ async function loadQuizzData() {
     levels.value = levelResponse.results
     quizzes.value = quizResponse.results
 
-    // Load leaderboard for the first quiz
-    if (quizResponse.results.length > 0) {
-      await loadLeaderboard(quizResponse.results[0].id, quizResponse.results[0].title)
-    }
+    // Load overall ranking
+    await loadOverallRanking()
 
     // Load attempts count for each quiz
     await loadQuizAttemptsCounts()
@@ -128,28 +125,23 @@ async function loadQuizzData() {
   }
 }
 
-async function loadLeaderboard(quizId: string, quizTitle: string) {
+async function loadOverallRanking(levelId?: string, quizId?: string) {
   try {
-    leaderboardLoading.value = true
-    const response = await getLeaderboard(quizId)
-    leaderboard.value = response.entries.slice(0, 10) // Top 10
-    leaderboardQuizTitle.value = quizTitle
+    rankingLoading.value = true
+    const response = await getOverallRanking({
+      level_id: levelId,
+      quiz_id: quizId,
+      page_size: 10, // Top 10
+    })
+    overallRanking.value = response.ranking
   }
   catch (error) {
-    console.error('Error loading leaderboard:', error)
-    leaderboard.value = []
+    console.error('Error loading overall ranking:', error)
+    overallRanking.value = []
   }
   finally {
-    leaderboardLoading.value = false
+    rankingLoading.value = false
   }
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
-  if (mins > 0)
-    return `${mins}p ${secs}s`
-  return `${secs}s`
 }
 
 function formatScore(score: string | number): string {
@@ -157,6 +149,10 @@ function formatScore(score: string | number): string {
   if (Number.isNaN(numScore))
     return '0.0'
   return numScore.toFixed(1)
+}
+
+function formatPercentage(percentage: number): string {
+  return `${percentage.toFixed(1)}%`
 }
 
 function formatTimeLimit(quiz: NewQuiz) {
@@ -266,22 +262,22 @@ onMounted(() => {
           <div class="flex items-center justify-between mb-6">
             <div>
               <p class="text-sm text-slate-500 uppercase tracking-wide">
-                Bảng xếp hạng
+                Bảng xếp hạng tổng thể
               </p>
-              <p class="text-lg font-semibold text-slate-900 mt-1 line-clamp-1">
-                {{ leaderboardQuizTitle || 'Đang tải...' }}
+              <p class="text-lg font-semibold text-slate-900 mt-1">
+                Top 10 học sinh
               </p>
             </div>
             <Icon name="mdi:trophy" class="text-2xl text-amber-500" />
           </div>
 
-          <div v-if="leaderboardLoading" class="space-y-3">
+          <div v-if="rankingLoading" class="space-y-3">
             <div v-for="i in 5" :key="i" class="animate-pulse">
               <div class="h-12 bg-slate-200 rounded-lg" />
             </div>
           </div>
 
-          <div v-else-if="leaderboard.length === 0" class="text-center py-8">
+          <div v-else-if="overallRanking.length === 0" class="text-center py-8">
             <Icon name="mdi:trophy-outline" class="text-4xl text-slate-300 mx-auto mb-3" />
             <p class="text-sm text-slate-500">
               Chưa có kết quả
@@ -290,7 +286,7 @@ onMounted(() => {
 
           <div v-else class="space-y-2 max-h-[500px] overflow-y-auto">
             <div
-              v-for="entry in leaderboard"
+              v-for="entry in overallRanking"
               :key="entry.student_id"
               class="flex items-center gap-3 p-3 rounded-xl transition-colors"
               :class="{
@@ -317,17 +313,17 @@ onMounted(() => {
                   {{ entry.student_name }}
                 </p>
                 <p class="text-xs text-slate-500">
-                  {{ formatTime(entry.time_spent_seconds) }}
+                  {{ entry.attempt_count }} bài làm
                 </p>
               </div>
 
               <!-- Score -->
               <div class="flex-shrink-0 text-right">
                 <p class="font-bold text-slate-900">
-                  {{ formatScore(entry.score) }}
+                  {{ formatScore(entry.total_score) }}/{{ formatScore(entry.max_score) }}
                 </p>
                 <p class="text-xs text-slate-500">
-                  {{ entry.correct_answers }} đúng
+                  {{ formatPercentage(entry.percentage) }}
                 </p>
               </div>
             </div>

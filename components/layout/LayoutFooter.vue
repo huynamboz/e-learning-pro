@@ -42,9 +42,9 @@ const footerSections: FooterSection[] = [
 ]
 
 const contactInfo: ContactInfo[] = [
-  { label: 'Địa chỉ', value: 'V Novembre 1, Ponderano, Biella, Italia' },
+  { label: 'Địa chỉ', value: 'Biella, Italia' },
   { label: 'Điện thoại', value: '+39 3926431708' },
-  { label: 'Email', value: 'info@cotamitalian.com' },
+  { label: 'Email', value: 'teamphantam2022@gmail.com' },
 ]
 
 const socialMedia: SocialMedia[] = [
