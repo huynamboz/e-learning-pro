@@ -30,7 +30,7 @@ async function handleUpdateQuiz(quizData: any) {
       message: t('newQuiz.messages.updateSuccess'),
       duration: 3,
     })
-    router.push(`/admin/new-quiz-management/${quizId.value}`)
+    router.push(`/admin/new-quiz-management`)
   }
   catch (err: any) {
     error.value = err.message || t('newQuiz.messages.updateError')

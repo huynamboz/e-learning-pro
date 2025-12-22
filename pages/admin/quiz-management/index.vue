@@ -26,10 +26,40 @@ const showNeedsGrading = ref(false)
 
 // Computed
 const filteredSubmissions = computed(() => {
-  return needsGradingSubmissions.value
+  let filtered = recentSubmissions.value
+
+  if (selectedClassroom.value) {
+    // Filter by classroom if needed (already handled by API)
+  }
+
+  if (showNeedsGrading.value) {
+    filtered = filtered.filter(s => s.has_pending_essays)
+  }
+
+  return filtered
 })
 
 const pendingEssaysCount = computed(() => pendingEssays.value.length)
+
+// Check if submission needs grading
+function needsGrading(submission: RecentSubmission): boolean {
+  return submission.has_pending_essays || false
+}
+
+// Get grading link for a submission
+function getGradingLink(submission: RecentSubmission): string | null {
+  if (!needsGrading(submission)) return null
+  
+  // Find the essay grading ID from pendingEssays by matching attempt_id
+  // RecentSubmission.id should be the attempt_id
+  const essayGrading = pendingEssays.value.find(e => 
+    e.attempt_id === submission.id ||
+    (e.quiz_title === submission.quiz_title && 
+     e.student_name === submission.student_name)
+  )
+  
+  return essayGrading ? `/admin/quiz-management/essay-grading-teacher/${essayGrading.id}` : null
+}
 
 // Methods
 async function loadRecentSubmissions() {
@@ -41,9 +71,7 @@ async function loadRecentSubmissions() {
     if (selectedClassroom.value) {
       params.classroom_id = selectedClassroom.value
     }
-    if (showNeedsGrading.value) {
-      params.needs_grading = true
-    }
+    // Remove needs_grading filter to show all submissions
 
     const response = await getRecentSubmissions(params)
     recentSubmissions.value = response.results
@@ -107,6 +135,22 @@ function formatDate(dateString: string) {
   })
 }
 
+function getStatusBadge(status: string) {
+  const statusMap: Record<string, { label: string; color: string }> = {
+    completed: { label: 'Hoàn thành', color: 'bg-green-100 text-green-800' },
+    in_progress: { label: 'Đang làm', color: 'bg-blue-100 text-blue-800' },
+    expired: { label: 'Hết hạn', color: 'bg-gray-100 text-gray-800' },
+  }
+  return statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-800' }
+}
+
+function formatScore(submission: RecentSubmission) {
+  if (submission.status === 'completed') {
+    return `${submission.total_score}/${submission.max_score}`
+  }
+  return '-'
+}
+
 // Removed unused functions
 
 // Lifecycle
@@ -132,69 +176,16 @@ onMounted(async () => {
       </p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
-        <div class="flex items-center">
-          <div class="p-2 sm:p-3 bg-blue-100 rounded-lg">
-            <Icon name="tabler:clipboard-list" class="text-blue-600 text-lg sm:text-xl" />
-          </div>
-          <div class="ml-3 sm:ml-4">
-            <p class="text-xs sm:text-sm font-medium text-gray-600">
-              Tổng bài làm
-            </p>
-            <p class="text-xl sm:text-2xl font-bold text-gray-900">
-              {{ recentSubmissions.length }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6">
-        <div class="flex items-center">
-          <div class="p-2 sm:p-3 bg-yellow-100 rounded-lg">
-            <Icon name="tabler:file-text" class="text-yellow-600 text-lg sm:text-xl" />
-          </div>
-          <div class="ml-3 sm:ml-4">
-            <p class="text-xs sm:text-sm font-medium text-gray-600">
-              Bài cần chấm
-            </p>
-            <p class="text-xl sm:text-2xl font-bold text-gray-900">
-              {{ pendingEssaysCount }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
-        <div class="flex items-center">
-          <div class="p-2 sm:p-3 bg-green-100 rounded-lg">
-            <Icon name="tabler:check-circle" class="text-green-600 text-lg sm:text-xl" />
-          </div>
-          <div class="ml-3 sm:ml-4">
-            <p class="text-xs sm:text-sm font-medium text-gray-600">
-              Đã hoàn thành
-            </p>
-            <p class="text-xl sm:text-2xl font-bold text-gray-900">
-              {{ recentSubmissions.filter(s => s.status === 'completed').length }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-4 sm:mb-6">
-      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-        Bộ lọc
-      </h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+    <div class="bg-white rounded-lg shadow-sm border p-3 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 items-end">
         <div>
-          <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Lớp học</label>
+          <label class="block text-xs font-medium text-gray-700 mb-1.5">Lớp học</label>
           <a-select
             v-model:value="selectedClassroom"
             placeholder="Chọn lớp học"
             class="w-full"
+            size="small"
             @change="handleClassroomChange"
           >
             <a-select-option value="">
@@ -210,68 +201,32 @@ onMounted(async () => {
           </a-select>
         </div>
 
-        <div class="flex items-center sm:items-end">
-          <a-checkbox v-model:checked="showNeedsGrading" class="text-xs sm:text-sm" @change="handleNeedsGradingToggle">
+        <div class="flex items-center">
+          <a-checkbox v-model:checked="showNeedsGrading" class="text-xs" @change="handleNeedsGradingToggle">
             Chỉ hiện bài cần chấm
           </a-checkbox>
         </div>
 
-        <div class="flex items-center sm:items-end sm:col-span-2 lg:col-span-1">
-          <a-button type="primary" :loading="loading" class="w-full sm:w-auto text-xs sm:text-sm" @click="loadRecentSubmissions">
+        <div class="flex items-center sm:col-span-2 lg:col-span-1">
+          <a-button type="primary" :loading="loading" size="small" class="w-full sm:w-auto text-xs" @click="loadRecentSubmissions">
             Làm mới
           </a-button>
         </div>
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow-sm border p-4 sm:p-6 mb-4 sm:mb-6">
-      <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
-        Thao tác nhanh
-      </h3>
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <NuxtLink
-          :to="`/admin/quiz-management/essay-grading${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`"
-          class="flex-1"
-        >
-          <a-button
-            type="primary"
-            :disabled="pendingEssaysCount === 0"
-            class="w-full text-xs sm:text-sm"
-          >
-            <template #icon>
-              <Icon name="tabler:file-text" class="text-sm sm:text-base" />
-            </template>
-            <span class="hidden sm:inline">Chấm bài tự luận ({{ pendingEssaysCount }})</span>
-          </a-button>
-        </NuxtLink>
-
-        <NuxtLink
-          :to="`/admin/quiz-management/submissions${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`"
-          class="flex-1"
-        >
-          <a-button type="default" class="w-full text-xs sm:text-sm">
-            <template #icon>
-              <Icon name="tabler:clipboard-list" class="text-sm sm:text-base" />
-            </template>
-            <span class="hidden sm:inline">Xem tất cả bài làm</span>
-          </a-button>
-        </NuxtLink>
-      </div>
-    </div>
-
-    <!-- Recent Submissions -->
-    <div class="bg-white rounded-lg shadow-sm border">
+    <!-- Submissions Table -->
+    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
       <div class="p-4 sm:p-6 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h3 class="text-base sm:text-lg font-semibold text-gray-900">
-            Bài làm cần chấm
+            Danh sách bài làm
           </h3>
-          <NuxtLink :to="`/admin/quiz-management/submissions${selectedClassroom ? `?classroom=${selectedClassroom}` : ''}`">
-            <a-button type="link" class="text-xs sm:text-sm">
-              Xem tất cả
-            </a-button>
-          </NuxtLink>
+          <div class="flex items-center gap-2">
+            <span class="text-xs sm:text-sm text-gray-500">
+              Tổng: {{ filteredSubmissions.length }} bài
+            </span>
+          </div>
         </div>
       </div>
 
@@ -296,54 +251,120 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Submissions List -->
-      <div v-else-if="filteredSubmissions.length > 0" class="divide-y divide-gray-200">
-        <div
-          v-for="submission in filteredSubmissions.slice(0, 10)"
-          :key="submission.id"
-          class="p-4 sm:p-6 hover:bg-gray-50 transition-colors"
-        >
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex-1">
-              <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                <h4 class="text-base sm:text-lg font-medium text-gray-900">
+      <!-- Table -->
+      <div v-else class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Học sinh
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Quiz
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Trạng thái
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Điểm
+              </th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Ngày làm
+              </th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                Hành động
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              v-for="submission in filteredSubmissions"
+              :key="submission.id"
+              class="hover:bg-gray-50 transition-colors"
+            >
+              <!-- Student Name -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">
+                  {{ submission.student_name }}
+                </div>
+              </td>
+
+              <!-- Quiz Title -->
+              <td class="px-4 py-3">
+                <div class="text-sm text-gray-900">
                   {{ submission.quiz_title }}
-                </h4>
-                <span class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 w-fit">
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <span
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="getStatusBadge(submission.status).color"
+                >
+                  {{ getStatusBadge(submission.status).label }}
+                </span>
+                <span
+                  v-if="needsGrading(submission)"
+                  class="ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
+                >
                   Cần chấm
                 </span>
-              </div>
-              <p class="text-xs sm:text-sm text-gray-600 mb-1">
-                Học sinh: <span class="font-medium">{{ submission.student_name }}</span>
-              </p>
-              <p class="text-xs sm:text-sm text-gray-500 mb-2 line-clamp-2">
-                Câu hỏi: {{ submission.question_prompt }}
-              </p>
-              <p class="text-xs sm:text-sm text-gray-500">
-                Tạo: {{ formatDate(submission.created_at) }}
-              </p>
-            </div>
-            <div class="flex items-center justify-between sm:justify-end gap-2">
-              <span class="text-sm sm:text-lg font-semibold text-gray-900">
-                0/{{ submission.max_score }}
-              </span>
-              <NuxtLink :to="`/admin/quiz-management/essay-grading-teacher/${submission.id}`">
-                <a-button type="primary" size="small" class="text-xs sm:text-sm">
-                  Chấm bài
-                </a-button>
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </div>
+              </td>
 
-      <!-- Empty State -->
-      <div v-else class="p-4 sm:p-6">
-        <div class="text-center py-6 sm:py-8">
-          <Icon name="tabler:file-text" class="text-gray-400 text-3xl sm:text-4xl mx-auto mb-4" />
-          <p class="text-sm sm:text-base text-gray-500">
-            Không có bài làm nào cần chấm
-          </p>
+              <!-- Score -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ formatScore(submission) }}
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td class="px-4 py-3 whitespace-nowrap">
+                <div class="text-sm text-gray-500">
+                  {{ formatDate(submission.started_at) }}
+                </div>
+              </td>
+
+              <!-- Actions -->
+              <td class="px-4 py-3 whitespace-nowrap text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <NuxtLink
+                    v-if="getGradingLink(submission)"
+                    :to="getGradingLink(submission)!"
+                  >
+                    <a-button type="primary" size="small" class="text-xs">
+                      <template #icon>
+                        <Icon name="tabler:edit" class="text-sm" />
+                      </template>
+                      Chấm bài
+                    </a-button>
+                  </NuxtLink>
+                  <NuxtLink
+                    v-else
+                    :to="`/admin/quiz-management/submission/${submission.id}`"
+                  >
+                    <a-button type="default" size="small" class="text-xs">
+                      <template #icon>
+                        <Icon name="tabler:eye" class="text-sm" />
+                      </template>
+                      Xem
+                    </a-button>
+                  </NuxtLink>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div v-if="filteredSubmissions.length === 0" class="p-4 sm:p-6">
+          <div class="text-center py-6 sm:py-8">
+            <Icon name="tabler:file-text" class="text-gray-400 text-3xl sm:text-4xl mx-auto mb-4" />
+            <p class="text-sm sm:text-base text-gray-500">
+              {{ showNeedsGrading ? 'Không có bài làm nào cần chấm' : 'Không có bài làm nào' }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
