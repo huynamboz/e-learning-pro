@@ -41,12 +41,20 @@ function getModelChoiceFromFile(file: File): string {
   if (mimeType === 'application/pdf' || fileExtension === 'pdf')
     return 'pdf'
 
-  // Word Documents
-  if (mimeType.includes('word') || mimeType.includes('document') || fileExtension === 'doc' || fileExtension === 'docx')
+  // Word Documents - check DOCX first (newer format)
+  if (mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || fileExtension === 'docx')
+    return 'docx'
+
+  // Word Documents - DOC (older format)
+  if (mimeType === 'application/msword' || fileExtension === 'doc')
     return 'doc'
 
-  // PowerPoint
-  if (mimeType.includes('powerpoint') || mimeType.includes('presentation') || fileExtension === 'ppt' || fileExtension === 'pptx')
+  // PowerPoint - check PPTX first (newer format)
+  if (mimeType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || fileExtension === 'pptx')
+    return 'pptx'
+
+  // PowerPoint - PPT (older format)
+  if (mimeType === 'application/vnd.ms-powerpoint' || fileExtension === 'ppt')
     return 'ppt'
 
   // ZIP
@@ -80,19 +88,66 @@ function beforeUpload(file: File): boolean {
     return false
   }
 
-  const isValidType = ['pdf', 'doc', 'ppt', 'zip', 'image', 'audio'].some((type) => {
-    const typeMap: Record<string, string[]> = {
-      pdf: ['application/pdf'],
-      doc: ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-      ppt: ['application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
-      zip: ['application/zip', 'application/x-zip-compressed'],
-      image: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
-      audio: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'],
-    }
-    return typeMap[type]?.includes(file.type)
-  })
+  const mimeType = file.type.toLowerCase()
+  const fileExtension = file.name.split('.').pop()?.toLowerCase()
 
-  if (!isValidType) {
+  // Check by MIME type first
+  const typeMap: Record<string, string[]> = {
+    pdf: ['application/pdf'],
+    doc: ['application/msword'],
+    docx: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+    ppt: ['application/vnd.ms-powerpoint'],
+    pptx: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    zip: ['application/zip', 'application/x-zip-compressed'],
+    image: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'],
+    audio: ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'],
+  }
+
+  // Check MIME type
+  const isValidMimeType = Object.values(typeMap).some(types => types.includes(mimeType))
+
+  // Check file extension as fallback
+  const validExtensions = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'zip', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp3', 'wav', 'm4a', 'ogg']
+  const isValidExtension = fileExtension && validExtensions.includes(fileExtension)
+
+  // Validate specific types - check if extension and MIME type match expected format
+  // DOC: extension .doc should match application/msword
+  if (fileExtension === 'doc' && mimeType && mimeType !== 'application/msword' && mimeType !== 'application/octet-stream') {
+    Modal.error({
+      title: t('admin.resources.form.invalidFileType'),
+      content: 'Invalid DOC file. The file extension does not match the file type. Please ensure the file is a valid Microsoft Word document (.doc).',
+    })
+    return false
+  }
+
+  // DOCX: extension .docx should match application/vnd.openxmlformats-officedocument.wordprocessingml.document
+  if (fileExtension === 'docx' && mimeType && mimeType !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && mimeType !== 'application/octet-stream') {
+    Modal.error({
+      title: t('admin.resources.form.invalidFileType'),
+      content: 'Invalid DOCX file. The file extension does not match the file type. Please ensure the file is a valid Microsoft Word document (.docx).',
+    })
+    return false
+  }
+
+  // PPT: extension .ppt should match application/vnd.ms-powerpoint
+  if (fileExtension === 'ppt' && mimeType && mimeType !== 'application/vnd.ms-powerpoint' && mimeType !== 'application/octet-stream') {
+    Modal.error({
+      title: t('admin.resources.form.invalidFileType'),
+      content: 'Invalid PPT file. The file extension does not match the file type. Please ensure the file is a valid Microsoft PowerPoint presentation (.ppt).',
+    })
+    return false
+  }
+
+  // PPTX: extension .pptx should match application/vnd.openxmlformats-officedocument.presentationml.presentation
+  if (fileExtension === 'pptx' && mimeType && mimeType !== 'application/vnd.openxmlformats-officedocument.presentationml.presentation' && mimeType !== 'application/octet-stream') {
+    Modal.error({
+      title: t('admin.resources.form.invalidFileType'),
+      content: 'Invalid PPTX file. The file extension does not match the file type. Please ensure the file is a valid Microsoft PowerPoint presentation (.pptx).',
+    })
+    return false
+  }
+
+  if (!isValidMimeType && !isValidExtension) {
     Modal.error({
       title: t('admin.resources.form.invalidFileType'),
       content: t('admin.resources.form.invalidFileTypeDescription'),

@@ -374,15 +374,194 @@ function formatFileSize(bytes: number): string {
   return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
 }
 
+// Get icon for material based on file type
+function getMaterialIcon(material: any): string {
+  const fileType = material.file_type || ''
+  const fileTypeLower = fileType.toLowerCase()
+
+  // PDF
+  if (fileTypeLower === 'application/pdf' || fileTypeLower.includes('pdf')) {
+    return 'bi:filetype-pdf'
+  }
+
+  // Word Documents (DOCX, DOC)
+  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || fileTypeLower === 'application/msword'
+    || fileTypeLower.includes('docx')
+    || fileTypeLower.includes('doc')
+    || fileTypeLower.includes('word')) {
+    return 'bi:filetype-docx'
+  }
+
+  // PowerPoint (PPTX, PPT)
+  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    || fileTypeLower === 'application/vnd.ms-powerpoint'
+    || fileTypeLower.includes('pptx')
+    || fileTypeLower.includes('ppt')
+    || fileTypeLower.includes('powerpoint')
+    || fileTypeLower.includes('presentation')) {
+    return 'bi:filetype-pptx'
+  }
+
+  // Excel (XLSX, XLS)
+  if (fileTypeLower.includes('excel')
+    || fileTypeLower.includes('spreadsheet')
+    || fileTypeLower.includes('xlsx')
+    || fileTypeLower.includes('xls')) {
+    return 'solar:file-excel-bold-duotone'
+  }
+
+  // ZIP / Archive
+  if (fileTypeLower === 'application/zip'
+    || fileTypeLower === 'application/x-zip-compressed'
+    || fileTypeLower.includes('zip')
+    || fileTypeLower.includes('rar')
+    || fileTypeLower.includes('archive')) {
+    return 'solar:file-zip-bold-duotone'
+  }
+
+  // Images
+  if (fileTypeLower.startsWith('image/')
+    || fileTypeLower.includes('png')
+    || fileTypeLower.includes('jpg')
+    || fileTypeLower.includes('jpeg')
+    || fileTypeLower.includes('gif')
+    || fileTypeLower.includes('webp')
+    || fileTypeLower.includes('svg')) {
+    return 'solar:file-image-bold-duotone'
+  }
+
+  // Audio
+  if (fileTypeLower.startsWith('audio/')
+    || fileTypeLower.includes('mp3')
+    || fileTypeLower.includes('wav')
+    || fileTypeLower.includes('m4a')
+    || fileTypeLower.includes('ogg')) {
+    return 'solar:file-music-bold-duotone'
+  }
+
+  // Video
+  if (fileTypeLower.startsWith('video/')
+    || fileTypeLower.includes('mp4')
+    || fileTypeLower.includes('avi')
+    || fileTypeLower.includes('mov')) {
+    return 'solar:file-video-bold-duotone'
+  }
+
+  // Text files
+  if (fileTypeLower.includes('text')
+    || fileTypeLower.includes('txt')
+    || fileTypeLower.includes('md')) {
+    return 'solar:file-text-bold-duotone'
+  }
+
+  // Default document icon
+  return 'solar:document-text-bold-duotone'
+}
+
+// Get icon color based on file type
+function getMaterialIconColor(material: any): string {
+  const fileType = material.file_type || ''
+  const fileTypeLower = fileType.toLowerCase()
+
+  // PDF - Red
+  if (fileTypeLower === 'application/pdf' || fileTypeLower.includes('pdf')) {
+    return 'text-red-600'
+  }
+
+  // Word - Blue
+  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || fileTypeLower === 'application/msword'
+    || fileTypeLower.includes('docx')
+    || fileTypeLower.includes('doc')
+    || fileTypeLower.includes('word')) {
+    return 'text-blue-600'
+  }
+
+  // PowerPoint - Orange
+  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    || fileTypeLower === 'application/vnd.ms-powerpoint'
+    || fileTypeLower.includes('pptx')
+    || fileTypeLower.includes('ppt')
+    || fileTypeLower.includes('powerpoint')
+    || fileTypeLower.includes('presentation')) {
+    return 'text-orange-600'
+  }
+
+  // Excel - Green
+  if (fileTypeLower.includes('excel')
+    || fileTypeLower.includes('spreadsheet')
+    || fileTypeLower.includes('xlsx')
+    || fileTypeLower.includes('xls')) {
+    return 'text-green-600'
+  }
+
+  // ZIP - Purple
+  if (fileTypeLower === 'application/zip'
+    || fileTypeLower === 'application/x-zip-compressed'
+    || fileTypeLower.includes('zip')
+    || fileTypeLower.includes('rar')) {
+    return 'text-purple-600'
+  }
+
+  // Images - Pink
+  if (fileTypeLower.startsWith('image/')) {
+    return 'text-pink-600'
+  }
+
+  // Audio - Indigo
+  if (fileTypeLower.startsWith('audio/')) {
+    return 'text-indigo-600'
+  }
+
+  // Video - Red
+  if (fileTypeLower.startsWith('video/')) {
+    return 'text-red-500'
+  }
+
+  // Default - Blue
+  return 'text-blue-600'
+}
+
 // Handle material click
 function handleMaterialClick(material: any) {
   if (!material.id || !activeLesson.value) {
     return
   }
 
+  // Determine file type and route to appropriate preview page
+  const fileType = material.file_type || ''
+  const isPdf = fileType === 'application/pdf' || fileType.includes('pdf')
+  const isDocx = fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || fileType.includes('docx')
+    || fileType.includes('word')
+    || fileType.includes('doc')
+  const isPptx = fileType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    || fileType === 'application/vnd.ms-powerpoint'
+    || fileType.includes('pptx')
+    || fileType.includes('ppt')
+    || fileType.includes('powerpoint')
+    || fileType.includes('presentation')
+
+  // Determine route path based on file type
+  let path = `/learning/${courseId}/documents-pdf` // Default to PDF
+  if (isPdf) {
+    path = `/learning/${courseId}/documents-pdf`
+  }
+  else if (isDocx) {
+    path = `/learning/${courseId}/documents-docx`
+  }
+  else if (isPptx) {
+    path = `/learning/${courseId}/documents-pptx`
+  }
+  else {
+    // For other file types, default to PDF route (will show "Open in New Tab" option)
+    path = `/learning/${courseId}/documents-pdf`
+  }
+
   // Navigate to document preview page
   router.push({
-    path: `/learning/${courseId}/documents`,
+    path,
     query: {
       lessonId: activeLesson.value.id,
       documentId: material.id,
@@ -588,7 +767,7 @@ onBeforeUnmount(() => {
                 >
                   <div class="flex-shrink-0">
                     <div class="p-3 rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors">
-                      <Icon name="solar:document-text-bold-duotone" size="24" class="text-blue-600" />
+                      <Icon :name="getMaterialIcon(material)" size="24" :class="getMaterialIconColor(material)" />
                     </div>
                   </div>
                   <div class="flex-1 min-w-0">
@@ -686,7 +865,7 @@ onBeforeUnmount(() => {
                   </div>
                 </div>
               </a-tab-pane>
-
+              <!--
               <a-tab-pane key="quiz" :tab="`${t('course.quizTab')} (${activeLesson?.quiz_count || 0})`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4">
@@ -697,7 +876,7 @@ onBeforeUnmount(() => {
                     :lesson-id="activeLesson?.id || undefined"
                   />
                 </div>
-              </a-tab-pane>
+              </a-tab-pane> -->
 
               <a-tab-pane key="comments" :tab="`${t('course.comments')} (${activeLesson?.comment_count || 0})`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">

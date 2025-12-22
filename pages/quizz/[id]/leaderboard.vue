@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NewQuizDetail, LeaderboardEntry } from '~/composables/api/useNewQuizApi'
+import type { LeaderboardEntry, NewQuizDetail } from '~/composables/api/useNewQuizApi'
 import { useNewQuizApi } from '~/composables/api/useNewQuizApi'
 
 definePageMeta({
@@ -286,4 +286,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-

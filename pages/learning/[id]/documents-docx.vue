@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
-import VuePdfEmbed from 'vue-pdf-embed'
+import { renderAsync } from 'docx-preview'
 import { useCourseApi } from '~/composables/api/useCourseApi'
-// PDF component - will be loaded dynamically
-// const VuePdfEmbed = ref<any>(null)
-// const usePdfEmbed = ref(false)
 
 definePageMeta({
   layout: 'default',
@@ -28,15 +25,10 @@ const lesson = ref<Lesson | null>(null)
 const document = ref<LessonMaterial | null>(null)
 const currentChapterId = ref<string>('')
 
-// PDF viewer state
-const pdfError = ref<string | null>(null)
-const pdfLoading = ref(true)
-const pdfWidth = ref<number | null>(null) // null = 100% (default), range: 200-2000
-const baseWidth = ref<number | null>(null) // Store initial width for percentage calculation
-const minWidth = 200
-const maxWidth = 2000
-const widthStep = 100
-const pdfWrapperRef = ref<HTMLElement | null>(null)
+// DOCX viewer state
+const docxError = ref<string | null>(null)
+const docxLoading = ref(true)
+const docxContainerRef = ref<HTMLElement | null>(null)
 
 // Fetch course and chapters
 async function fetchCourse() {
@@ -100,6 +92,10 @@ async function fetchLesson(chapterId: string) {
             description: 'You do not have permission to view this document',
           })
         }
+        else {
+          // Load DOCX preview after document is found
+          // await loadDocxPreview()
+        }
       }
       else {
         error.value = 'Document not found'
@@ -120,11 +116,15 @@ async function fetchLesson(chapterId: string) {
   }
 }
 
-// Check if document is PDF
-const isPdf = computed(() => {
+// Check if document is Word document (DOCX or DOC - both can be previewed as DOCX)
+const isDocx = computed(() => {
   if (!document.value)
     return false
-  return document.value.file_type === 'application/pdf' || document.value.file_type?.includes('pdf')
+  return document.value.file_type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    || document.value.file_type === 'application/msword'
+    || document.value.file_type?.includes('docx')
+    || document.value.file_type?.includes('doc')
+    || document.value.file_type?.includes('word')
 })
 
 // Get document URL
@@ -134,79 +134,56 @@ const documentUrl = computed(() => {
   return document.value.file_url || document.value.file_path || null
 })
 
-// PDF viewer handlers
-function handlePdfLoaded(_pdf: any) {
-  pdfLoading.value = false
-  pdfError.value = null
-}
-
-function handlePdfError(error: any) {
-  pdfLoading.value = false
-  pdfError.value = error?.message || 'Failed to load PDF'
-  console.error('PDF loading error:', error)
-}
-
-// Get initial element width (only used once to get base width)
-function getInitialWidth(): number {
-  if (pdfWrapperRef.value) {
-    return pdfWrapperRef.value.offsetWidth || pdfWrapperRef.value.clientWidth
+// Load DOCX preview
+async function loadDocxPreview() {
+  if (!documentUrl.value || !docxContainerRef.value || !isDocx.value) {
+    return
   }
-  // Fallback: if no ref, return default
-  return 800
-}
 
-// Zoom functions using width
-function zoomIn() {
-  // If first time (null), get initial width from element
-  if (pdfWidth.value === null) {
-    const initialWidth = getInitialWidth()
-    baseWidth.value = initialWidth
-    pdfWidth.value = initialWidth + widthStep
-  }
-  else {
-    // Use current pdfWidth value
-    const newWidth = pdfWidth.value + widthStep
-    if (newWidth <= maxWidth) {
-      pdfWidth.value = newWidth
+  try {
+    docxLoading.value = true
+    docxError.value = null
+
+    // Dynamically import docx-preview
+
+    // Fetch the DOCX file
+    const response = await fetch(documentUrl.value)
+    if (!response.ok) {
+      throw new Error('Failed to fetch document')
     }
-    else {
-      pdfWidth.value = maxWidth
+
+    const arrayBuffer = await response.arrayBuffer()
+
+    // Clear container
+    if (!docxContainerRef.value) {
+      throw new Error('Container element not found')
     }
+    docxContainerRef.value.innerHTML = ''
+
+    // Render DOCX
+    await renderAsync(arrayBuffer, docxContainerRef.value as HTMLElement, undefined, {
+
+    })
+
+    docxLoading.value = false
+  }
+  catch (err: any) {
+    console.error('DOCX loading error:', err)
+    docxError.value = err?.message || 'Failed to load DOCX document'
+    docxLoading.value = false
+    notification.error({
+      message: 'Error',
+      description: 'Failed to load DOCX document. Please try again or download the file.',
+    })
   }
 }
 
-function zoomOut() {
-  // If first time (null), get initial width from element
-  if (pdfWidth.value === null) {
-    const initialWidth = getInitialWidth()
-    baseWidth.value = initialWidth
-    pdfWidth.value = initialWidth - widthStep
+watch(docxContainerRef, () => {
+  if (docxContainerRef.value) {
+    loadDocxPreview()
   }
-  else {
-    // Use current pdfWidth value
-    const newWidth = pdfWidth.value - widthStep
-    if (newWidth >= minWidth) {
-      pdfWidth.value = newWidth
-    }
-    else {
-      pdfWidth.value = minWidth
-    }
-  }
-}
-
-function resetZoom() {
-  pdfWidth.value = null // Reset to 100% (null)
-  baseWidth.value = null // Reset base width
-}
-
-// Calculate zoom percentage (null = 100%)
-const zoomPercentage = computed(() => {
-  if (pdfWidth.value === null) {
-    return 100 // Always 100% when null
-  }
-  // Use stored base width for calculation
-  const base = baseWidth.value || getInitialWidth()
-  return Math.round((pdfWidth.value / base) * 100)
+}, {
+  immediate: true,
 })
 
 // Prevent download and save
@@ -243,14 +220,11 @@ function handleBack() {
   router.push(`/learning/${courseId.value}?lessonId=${lessonId.value}`)
 }
 
-// Format file size helper
-function formatFileSize(bytes: number): string {
-  if (bytes === 0)
-    return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
+// Open document in new tab
+function openInNewTab() {
+  if (process.client && documentUrl.value && window) {
+    window.open(documentUrl.value, '_blank', 'noopener,noreferrer')
+  }
 }
 
 // Initialize
@@ -261,20 +235,7 @@ onMounted(async () => {
     return
   }
 
-  fetchCourse()
-
-  // Add event listeners to prevent download
-  // if (process.client) {
-  //   document.value?.addEventListener('contextmenu', preventContextMenu)
-  //   document.value?.addEventListener('keydown', preventKeydown)
-  // }
-})
-
-onBeforeUnmount(() => {
-  // if (process.client) {
-  //   document.value?.removeEventListener('contextmenu', preventContextMenu)
-  //   document.value?.removeEventListener('keydown', preventKeydown)
-  // }
+  await fetchCourse()
 })
 
 // SEO
@@ -291,54 +252,24 @@ useHead({
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
             <a-button
               type="text"
-              class="!flex !items-center !justify-center"
+              size="small"
+              class="!flex !items-center !justify-center !p-1"
               @click="handleBack"
             >
-              <Icon name="solar:alt-arrow-left-outline" size="20" />
+              <Icon name="solar:alt-arrow-left-outline" size="18" />
             </a-button>
-            <div>
-              <h1 class="text-xl font-semibold text-gray-900">
+            <div class="min-w-0 flex-1">
+              <h1 class="text-base font-medium text-gray-900 truncate">
                 {{ document?.title || 'Document Viewer' }}
               </h1>
-              <p v-if="course" class="text-sm text-gray-500 mt-1">
+              <p v-if="course" class="text-xs text-gray-500 truncate">
                 {{ course.title }}
               </p>
-            </div>
-          </div>
-          <div v-if="isPdf" class="flex items-center gap-2">
-            <!-- Zoom Controls -->
-            <div class="flex items-center gap-2">
-              <a-button
-                :disabled="pdfWidth !== null && pdfWidth <= minWidth"
-                size="small"
-                title="Zoom Out"
-                @click="zoomOut"
-              >
-                <Icon name="solar:zoom-out-bold" size="16" />
-              </a-button>
-              <span class="text-sm text-gray-600 px-2 min-w-[60px] text-center">
-                {{ zoomPercentage }}%
-              </span>
-              <a-button
-                :disabled="pdfWidth !== null && pdfWidth >= maxWidth"
-                size="small"
-                title="Zoom In"
-                @click="zoomIn"
-              >
-                <Icon name="solar:zoom-in-bold" size="16" />
-              </a-button>
-              <a-button
-                size="small"
-                title="Reset Zoom"
-                @click="resetZoom"
-              >
-                <Icon name="solar:restart-bold" size="16" />
-              </a-button>
             </div>
           </div>
         </div>
@@ -362,55 +293,32 @@ useHead({
     </div>
 
     <!-- Document Viewer -->
-    <div v-else-if="document && documentUrl" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- PDF Viewer -->
-      <div v-if="isPdf" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="p-4 border-b border-gray-200 bg-gray-50">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <Icon name="solar:file-text-bold" size="20" class="text-red-600" />
-              <span class="text-sm font-medium text-gray-700">PDF Document</span>
-            </div>
-            <span v-if="document.file_size" class="text-xs text-gray-500">
-              {{ formatFileSize(document.file_size) }}
-            </span>
-          </div>
-        </div>
-
+    <div v-else-if="document && documentUrl" class="mx-auto">
+      <!-- DOCX Viewer -->
+      <div v-if="isDocx" class="">
         <div
-          class="pdf-viewer-container"
+          class="docx-viewer-container"
           @contextmenu.prevent="preventDownload"
-          @click.prevent="preventDownload"
         >
-          <div v-if="pdfLoading" class="flex items-center justify-center py-20">
+          <div v-if="docxLoading" class="flex items-center justify-center py-20">
             <a-spin size="large" />
-            <span class="ml-3 text-gray-600">Loading PDF...</span>
+            <span class="ml-3 text-gray-600">Loading DOCX...</span>
           </div>
 
           <a-alert
-            v-if="pdfError"
+            v-if="docxError"
             type="error"
-            :message="pdfError"
+            :message="docxError"
             show-icon
             class="m-4"
           />
 
-          <!-- PDF Embed Component -->
+          <!-- DOCX Preview Container -->
           <div
-            v-if="!pdfError && VuePdfEmbed"
-            ref="pdfWrapperRef"
-            class="pdf-embed-wrapper overflow-auto"
-          >
-            <VuePdfEmbed
-              :source="documentUrl"
-              :page="null"
-              :width="pdfWidth"
-              class="pdf-embed w-full justify-center flex flex-col items-center border-0"
-              @loaded="handlePdfLoaded"
-              @rendered="pdfLoading = false"
-              @error="handlePdfError"
-            />
-          </div>
+            v-if="!docxError"
+            ref="docxContainerRef"
+            class="docx-container overflow-auto"
+          />
         </div>
       </div>
 
@@ -425,7 +333,7 @@ useHead({
         </p>
         <a-button
           type="primary"
-          @click="window.open(documentUrl, '_blank', 'noopener,noreferrer')"
+          @click="openInNewTab"
         >
           Open in New Tab
         </a-button>
@@ -461,7 +369,7 @@ useHead({
 </template>
 
 <style scoped>
-.pdf-viewer-container {
+.docx-viewer-container {
   position: relative;
   min-height: 600px;
   user-select: none;
@@ -470,22 +378,32 @@ useHead({
   -ms-user-select: none;
 }
 
-.pdf-embed-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  background: #f5f5f5;
+.docx-container {
+  /* padding: 2rem; */
+  background: #ffffff;
   min-height: 600px;
 }
 
-.pdf-embed {
+/* DOCX Preview Styles */
+:deep(.docx-wrapper) {
+  background: #ffffff;
+  padding: 2rem;
   max-width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:deep(.docx-wrapper > section) {
+  background: #ffffff;
+  padding: 40px;
+  margin: 0 auto;
+  max-width: 816px; /* A4 width in pixels at 96 DPI */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 /* Prevent text selection */
-.pdf-viewer-container * {
+.docx-viewer-container * {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -494,9 +412,9 @@ useHead({
   user-select: none;
 }
 
-/* Hide download buttons in PDF viewer */
-:deep(.pdf-viewer-container a),
-:deep(.pdf-viewer-container button[download]) {
+/* Hide download buttons */
+:deep(.docx-viewer-container a),
+:deep(.docx-viewer-container button[download]) {
   display: none !important;
 }
 </style>
