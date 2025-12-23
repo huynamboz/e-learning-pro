@@ -1,5 +1,4 @@
 import type { ListApiResponse } from '~/api/apiClient'
-import { useApiClient } from '~/api/apiClient'
 import type {
   QuizAttempt,
   SaveAnswerRequest,
@@ -8,6 +7,7 @@ import type {
   StartAttemptResponse,
   SubmitAttemptResponse,
 } from '~/types/new-quiz.type'
+import { useApiClient } from '~/api/apiClient'
 
 // Level entity types
 export interface NewQuizLevel {
@@ -154,7 +154,7 @@ export interface LeaderboardResponse {
 // Overall Ranking types
 export interface OverallRankingEntry {
   rank: number
-  student_id: string
+  student_id: number
   student_name: string
   student_username: string
   total_score: number
@@ -163,13 +163,7 @@ export interface OverallRankingEntry {
   attempt_count: number
 }
 
-export interface OverallRankingResponse {
-  ranking: OverallRankingEntry[]
-  filters: {
-    level_id: string | null
-    quiz_id: string | null
-  }
-}
+export interface OverallRankingResponse extends ListApiResponse<OverallRankingEntry> {}
 
 export function useNewQuizApi() {
   const apiClient = useApiClient()
@@ -274,11 +268,14 @@ export function useNewQuizApi() {
       apiClient.get<LeaderboardResponse>(`/new_quiz/quizzes/${quizId}/leaderboard/`),
 
     // Overall Ranking
-    getOverallRanking: (params?: { level_id?: string; quiz_id?: string; page_size?: number }) => {
+    getOverallRanking: (params?: { level_id?: string, quiz_id?: string, page_size?: number }) => {
       const queryParams = new URLSearchParams()
-      if (params?.level_id) queryParams.append('level_id', params.level_id)
-      if (params?.quiz_id) queryParams.append('quiz_id', params.quiz_id)
-      if (params?.page_size) queryParams.append('page_size', params.page_size.toString())
+      if (params?.level_id)
+        queryParams.append('level_id', params.level_id)
+      if (params?.quiz_id)
+        queryParams.append('quiz_id', params.quiz_id)
+      if (params?.page_size)
+        queryParams.append('page_size', params.page_size.toString())
       const queryString = queryParams.toString()
       return apiClient.get<OverallRankingResponse>(`/new_quiz/attempts/overall_ranking/${queryString ? `?${queryString}` : ''}`)
     },

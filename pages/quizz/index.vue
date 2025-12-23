@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OverallRankingEntry, NewQuiz, NewQuizLevel } from '~/composables/api/useNewQuizApi'
+import type { NewQuiz, NewQuizLevel, OverallRankingEntry } from '~/composables/api/useNewQuizApi'
 import { useNewQuizApi } from '~/composables/api/useNewQuizApi'
 
 // empty layout
@@ -133,7 +133,10 @@ async function loadOverallRanking(levelId?: string, quizId?: string) {
       quiz_id: quizId,
       page_size: 10, // Top 10
     })
-    overallRanking.value = response.ranking
+    if (response.results && response.results.length > 0)
+      overallRanking.value = response.results
+    else
+      overallRanking.value = []
   }
   catch (error) {
     console.error('Error loading overall ranking:', error)
@@ -277,7 +280,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-else-if="overallRanking.length === 0" class="text-center py-8">
+          <div v-else-if="overallRanking?.length === 0" class="text-center py-8">
             <Icon name="mdi:trophy-outline" class="text-4xl text-slate-300 mx-auto mb-3" />
             <p class="text-sm text-slate-500">
               Chưa có kết quả
@@ -287,7 +290,7 @@ onMounted(() => {
           <div v-else class="space-y-2 max-h-[500px] overflow-y-auto">
             <div
               v-for="entry in overallRanking"
-              :key="entry.student_id"
+              :key="`${entry.student_id}-${entry.rank}`"
               class="flex items-center gap-3 p-3 rounded-xl transition-colors"
               :class="{
                 'bg-amber-50 border border-amber-200': entry.rank === 1,
