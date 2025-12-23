@@ -114,7 +114,7 @@ const handleClose = () => {
             <label class="text-sm font-medium text-gray-700 mb-1">
               {{ $t('admin.orders.detailDialog.classroom') }}
             </label>
-            <div class="p-3 bg-gray-50 rounded-lg">
+            <div class="p-3 bg-gray-50 rounded-lg" v-if="order.classroom">
               <div class="font-medium text-gray-900">{{ order.classroom.title }}</div>
               <div class="text-sm text-gray-500">{{ order.classroom.schedule_summary }}</div>
               <div class="text-sm text-gray-500">{{ order.classroom.student_count }} students</div>
