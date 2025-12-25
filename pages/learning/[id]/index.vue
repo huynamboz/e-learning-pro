@@ -837,7 +837,7 @@ onBeforeUnmount(() => {
                       <div class="flex-1">
                         <div class="mb-2">
                           <h3 class="text-xl font-semibold text-blue-600">
-                            {{ course?.teacher?.last_name }} {{ course?.teacher?.first_name }}
+                            {{ course?.teacher?.first_name }} {{ course?.teacher?.last_name }}
                           </h3>
                           <!-- <p class="text-gray-700">
                             {{ t('course.instructorTitle') }}

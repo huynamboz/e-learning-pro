@@ -303,7 +303,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
                 {{ t('homepage.quiz.badge') }}
               </span>
             </div>
-            <h2 class="text-4xl lg:text-5xl font-serif font-bold text-balance">
+            <h2 class="text-4xl leading-[64px] lg:text-5xl font-serif font-bold text-balance">
               {{ t('homepage.quiz.title') }}
             </h2>
             <p class="text-lg text-muted-foreground leading-relaxed text-pretty">

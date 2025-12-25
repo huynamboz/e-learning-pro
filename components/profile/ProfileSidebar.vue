@@ -54,7 +54,7 @@ function handleShareProfile() {
         class="border-4 border-white shadow-sm"
       />
       <h4 class="text-xl font-semibold text-gray-900 m-0 leading-6">
-        {{ profile?.last_name }} {{ profile?.first_name }}
+        {{ profile?.first_name }} {{ profile?.last_name }}
       </h4>
       <a-button
         type="default"

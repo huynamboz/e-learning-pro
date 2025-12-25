@@ -406,7 +406,7 @@ onMounted(() => {
               </a-avatar>
               <div>
                 <div class="font-semibold text-gray-900">
-                  {{ record.last_name }} {{ record.first_name }}
+                  {{ record.first_name }} {{ record.last_name }}
                 </div>
                 <div class="text-gray-500 text-sm">
                   {{ record.email }}

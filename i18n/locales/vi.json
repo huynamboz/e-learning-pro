@@ -2219,7 +2219,8 @@
         "typeAnswerBelow": "Nhập câu trả lời của bạn bên dưới.",
         "typeEssayAnswerBelow": "Nhập câu trả lời tự luận của bạn bên dưới.",
         "errorSavingAnswer": "Lỗi khi lưu câu trả lời",
-        "tryAgain": "Thử lại"
+        "tryAgain": "Thử lại",
+        "explanation": "Giải thích:"
       },
       "answerInput": {
         "answerLocked": "Đáp án đã được khóa sau khi có kết quả",

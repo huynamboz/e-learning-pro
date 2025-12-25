@@ -100,7 +100,7 @@ function formatDate(dateString: string): string {
                 <!-- Student Info -->
                 <div class="flex-1">
                   <h4 class="font-medium text-gray-900 mb-1">
-                    {{ `${student.last_name || ''} ${student.first_name || ''}`.trim() || student.username || student.email || 'N/A' }}
+                    {{ `${student.first_name || ''} ${student.last_name || ''}`.trim() || student.username || student.email || 'N/A' }}
                   </h4>
                   <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                     <div v-if="student.email" class="flex items-center gap-2">

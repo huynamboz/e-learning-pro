@@ -100,7 +100,7 @@ function handleClick() {
         
         <p v-if="course.teacher" class="text-sm text-shade-6 flex items-center gap-2">
           <Icon name="solar:user-circle-bold" size="16" />
-          {{ course.teacher?.last_name }} {{ course.teacher?.first_name }}
+          {{ course.teacher?.first_name }} {{ course.teacher?.last_name }}
         </p>
 
         <p class="text-sm text-shade-6 line-clamp-2">

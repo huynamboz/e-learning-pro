@@ -109,7 +109,7 @@ function getUserDisplayName(user: SessionAttendance['user_info']): string {
     return user.full_name
   }
   
-  const fullName = `${user.last_name || ''} ${user.first_name || ''}`.trim()
+  const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim()
   if (fullName) {
     return fullName
   }

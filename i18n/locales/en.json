@@ -2221,7 +2221,8 @@
         "typeAnswerBelow": "Type your answer below.",
         "typeEssayAnswerBelow": "Type your essay answer below.",
         "errorSavingAnswer": "Error saving answer",
-        "tryAgain": "Try again"
+        "tryAgain": "Try again",
+        "explanation": "Explanation:"
       },
       "answerInput": {
         "answerLocked": "Answer has been locked after showing results",
