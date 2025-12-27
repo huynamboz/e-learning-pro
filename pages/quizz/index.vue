@@ -154,7 +154,7 @@ function formatScore(score: string | number): string {
   return numScore.toFixed(1)
 }
 
-function formatPercentage(percentage: number): string {
+function _formatPercentage(percentage: number): string {
   return `${percentage.toFixed(1)}%`
 }
 
@@ -265,7 +265,7 @@ onMounted(() => {
                 Top 10 học sinh
               </p>
             </div>
-            <Icon name="mdi:trophy" class="text-2xl text-amber-500" />
+            <Icon name="mdi:trophy" class="text-2xl text-emerald-500" />
           </div>
 
           <div v-if="rankingLoading" class="space-y-3">
@@ -287,7 +287,7 @@ onMounted(() => {
               :key="`${entry.student_id}-${entry.rank}`"
               class="flex items-center gap-3 p-3 rounded-xl transition-colors"
               :class="{
-                'bg-amber-50 border border-amber-200': entry.rank === 1,
+                'bg-emerald-50 border border-emerald-200': entry.rank === 1,
                 'bg-slate-50 border border-slate-100': entry.rank !== 1,
               }"
             >
@@ -295,9 +295,9 @@ onMounted(() => {
               <div
                 class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
                 :class="{
-                  'bg-amber-500 text-white': entry.rank === 1,
-                  'bg-amber-400 text-white': entry.rank === 2,
-                  'bg-amber-300 text-white': entry.rank === 3,
+                  'bg-emerald-600 text-white': entry.rank === 1,
+                  'bg-emerald-500 text-white': entry.rank === 2,
+                  'bg-emerald-400 text-white': entry.rank === 3,
                   'bg-slate-200 text-slate-700': entry.rank > 3,
                 }"
               >
@@ -317,11 +317,11 @@ onMounted(() => {
               <!-- Score -->
               <div class="flex-shrink-0 text-right">
                 <p class="font-bold text-slate-900">
-                  {{ formatScore(entry.total_score) }} 
+                  {{ formatScore(entry.total_score) }}
                 </p>
                 <p class="text-xs text-slate-500">
                   <!-- {{ formatPercentage(entry.percentage) }} -->
-                    Points
+                  Points
                 </p>
               </div>
             </div>

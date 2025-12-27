@@ -208,7 +208,7 @@ onMounted(() => {
               :key="entry.student_id"
               class="px-6 py-4 grid grid-cols-12 gap-4 items-center hover:bg-slate-50 transition-colors"
               :class="{
-                'bg-amber-50': entry.rank <= 3,
+                'bg-emerald-50': entry.rank <= 3,
               }"
             >
               <!-- Rank -->
@@ -216,9 +216,9 @@ onMounted(() => {
                 <div
                   class="inline-flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm"
                   :class="{
-                    'bg-amber-500 text-white': entry.rank === 1,
-                    'bg-amber-400 text-white': entry.rank === 2,
-                    'bg-amber-300 text-white': entry.rank === 3,
+                    'bg-emerald-600 text-white': entry.rank === 1,
+                    'bg-emerald-500 text-white': entry.rank === 2,
+                    'bg-emerald-400 text-white': entry.rank === 3,
                     'bg-slate-200 text-slate-700': entry.rank > 3,
                   }"
                 >
