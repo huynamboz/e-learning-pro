@@ -92,6 +92,36 @@ watch(initialResourcesData, (data) => {
 // Computed for resources
 const resources = computed(() => allResources.value)
 
+// Group resources by asset_type
+const groupedResources = computed(() => {
+  const grouped: Record<string, CourseAsset[]> = {}
+
+  resources.value.forEach((resource) => {
+    const type = resource.asset_type || 'other'
+    if (!grouped[type]) {
+      grouped[type] = []
+    }
+    grouped[type].push(resource)
+  })
+
+  return grouped
+})
+
+// Get sorted asset types (priority order)
+const assetTypeOrder = ['video', 'pdf', 'doc', 'ppt', 'image', 'audio', 'zip', 'other']
+
+const sortedAssetTypes = computed(() => {
+  const types = Object.keys(groupedResources.value)
+  return types.sort((a, b) => {
+    const indexA = assetTypeOrder.indexOf(a)
+    const indexB = assetTypeOrder.indexOf(b)
+    // If type not in order array, put it at the end
+    const orderA = indexA === -1 ? 999 : indexA
+    const orderB = indexB === -1 ? 999 : indexB
+    return orderA - orderB
+  })
+})
+
 // Check if there are more pages
 const hasMore = computed(() => !!resourcesData.value?.next)
 
@@ -130,6 +160,21 @@ async function loadMoreResources() {
   finally {
     isLoadingMore.value = false
   }
+}
+
+// Get asset type info
+function getAssetTypeInfo(type: string) {
+  const typeMap: Record<string, { icon: string, color: string, label: string }> = {
+    video: { icon: 'solar:videocamera-record-bold', color: 'text-red-600', label: 'Video' },
+    pdf: { icon: 'solar:document-text-bold', color: 'text-red-600', label: 'PDF' },
+    doc: { icon: 'solar:document-bold', color: 'text-blue-600', label: 'Document' },
+    ppt: { icon: 'solar:presentation-graph-bold', color: 'text-orange-600', label: 'PowerPoint' },
+    zip: { icon: 'solar:archive-bold', color: 'text-purple-600', label: 'ZIP' },
+    image: { icon: 'solar:gallery-bold', color: 'text-green-600', label: 'Image' },
+    audio: { icon: 'solar:music-note-bold', color: 'text-pink-600', label: 'Audio' },
+    other: { icon: 'solar:file-bold', color: 'text-gray-600', label: 'Other' },
+  }
+  return typeMap[type] || typeMap.other
 }
 
 // Find classroom from course data
@@ -234,55 +279,85 @@ watch([currentCourse, currentClassroom], ([course, classroom]) => {
               />
 
               <!-- Resources Section - Below Curriculum -->
-              <div class="mt-10">
-                <div class="mx-8 line border-1 border-[#E2E8F0] mb-6" />
-                <div class="px-8 flex flex-col gap-3">
-                  <h1 class="font-bold text-2xl !mb-0 flex items-center gap-3">
-                    <Icon name="solar:document-text-bold" size="28" class="text-blue-600" />
-                    {{ $t('classroomDetail.resources.title') }}
-                  </h1>
+              <div class="bg-white rounded-lg my-6 pt-6">
+                <div class="">
+                  <div class="px-8 flex flex-col gap-3">
+                    <h1 class="font-bold text-2xl !mb-0 flex items-center gap-3">
+                      <Icon name="solar:document-text-bold" size="28" class="text-blue-600" />
+                      {{ $t('classroomDetail.resources.title') }}
+                    </h1>
 
-                  <!-- Loading State -->
-                  <div v-if="isLoadingResources" class="flex justify-center items-center py-12">
-                    <a-spin size="large" />
-                  </div>
+                    <!-- Loading State -->
+                    <div v-if="isLoadingResources" class="flex justify-center items-center py-12">
+                      <a-spin size="large" />
+                    </div>
 
-                  <!-- Resources List -->
-                  <div v-else-if="resources.length > 0" class="space-y-3">
-                    <ResourceItem
-                      v-for="resource in resources"
-                      :key="resource.id"
-                      :resource="resource"
-                      :is-openable="false"
-                    />
-
-                    <!-- Load More Button -->
-                    <div v-if="hasMore" class="flex justify-center pt-4">
-                      <a-button
-                        type="default"
-                        size="large"
-                        :loading="isLoadingMore"
-                        class="!flex items-center gap-2"
-                        @click="loadMoreResources"
+                    <!-- Resources List - Grouped by Type -->
+                    <div v-else-if="resources.length > 0" class="space-y-2 border rounded-lg">
+                      <a-collapse
+                        :bordered="false"
+                        class="resources-accordion"
                       >
-                        <Icon name="solar:download-bold" size="16" />
-                        {{ $t('classroomDetail.resources.loadMore') }}
-                      </a-button>
+                        <a-collapse-panel
+                          v-for="assetType in sortedAssetTypes"
+                          :key="assetType"
+                          class="resource-type-panel"
+                        >
+                          <template #header>
+                            <div class="flex items-center gap-3 w-full">
+                              <Icon
+                                :name="getAssetTypeInfo(assetType).icon"
+                                size="20"
+                                :class="getAssetTypeInfo(assetType).color"
+                              />
+                              <span class="font-semibold text-gray-900">
+                                {{ getAssetTypeInfo(assetType).label }}
+                              </span>
+                              <span class="ml-auto text-sm text-gray-500">
+                                ({{ groupedResources[assetType]?.length || 0 }})
+                              </span>
+                            </div>
+                          </template>
+
+                          <div class="space-y-3 pt-2">
+                            <ResourceItem
+                              v-for="resource in groupedResources[assetType]"
+                              :key="resource.id"
+                              :resource="resource"
+                              :is-openable="false"
+                            />
+                          </div>
+                        </a-collapse-panel>
+                      </a-collapse>
+
+                      <!-- Load More Button -->
+                      <div v-if="hasMore" class="flex justify-center pt-4">
+                        <a-button
+                          type="default"
+                          size="large"
+                          :loading="isLoadingMore"
+                          class="!flex items-center gap-2"
+                          @click="loadMoreResources"
+                        >
+                          <Icon name="solar:download-bold" size="16" />
+                          {{ $t('classroomDetail.resources.loadMore') }}
+                        </a-button>
+                      </div>
+
+                      <!-- Loading More State -->
+                      <div v-if="isLoadingMore" class="flex justify-center items-center py-4">
+                        <a-spin size="small" />
+                        <span class="ml-2 text-sm text-gray-500">{{ $t('classroomDetail.resources.loadingMore') }}</span>
+                      </div>
                     </div>
 
-                    <!-- Loading More State -->
-                    <div v-if="isLoadingMore" class="flex justify-center items-center py-4">
-                      <a-spin size="small" />
-                      <span class="ml-2 text-sm text-gray-500">{{ $t('classroomDetail.resources.loadingMore') }}</span>
+                    <!-- Empty State -->
+                    <div v-if="resources.length === 0 && !isLoadingResources" class="text-center py-12">
+                      <Icon name="solar:document-text-bold-duotone" size="48" class="text-gray-300 mx-auto mb-4" />
+                      <p class="text-gray-500">
+                        {{ $t('classroomDetail.resources.empty') }}
+                      </p>
                     </div>
-                  </div>
-
-                  <!-- Empty State -->
-                  <div v-if="resources.length === 0 && !isLoadingResources" class="text-center py-12">
-                    <Icon name="solar:document-text-bold-duotone" size="48" class="text-gray-300 mx-auto mb-4" />
-                    <p class="text-gray-500">
-                      {{ $t('classroomDetail.resources.empty') }}
-                    </p>
                   </div>
                 </div>
               </div>

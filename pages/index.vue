@@ -379,7 +379,7 @@ const { data: _coursesData, pending: _isFetchingCourses, error: _fetchError, ref
               </div>
             </div>
 
-            <NuxtLink to="/learning">
+            <NuxtLink to="/quiz">
               <button
                 class="mt-8 bg-green-600 text-white px-8 py-4 rounded-full font-medium hover:bg-green-700 transition-all hover:scale-105 cursor-pointer"
               >

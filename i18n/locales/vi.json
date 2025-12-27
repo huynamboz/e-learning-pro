@@ -503,6 +503,7 @@
         "edit": "Chỉnh sửa",
         "time": "Thời gian",
         "minutes": "phút",
+        "seconds": "giây",
         "updateOrderSuccess": "Cập nhật thứ tự bài học thành công!",
         "updateOrderFailed": "Cập nhật thứ tự bài học thất bại"
       },
@@ -540,7 +541,7 @@
         "titleRequired": "Vui lòng nhập tiêu đề bài học!",
         "slug": "Slug",
         "slugPlaceholder": "Tự động tạo từ tiêu đề",
-        "videoDuration": "Thời lượng video (phút)",
+        "videoDuration": "Thời lượng video (giây)",
         "videoDurationPlaceholder": "Nhập thời lượng video",
         "videoDurationRequired": "Thời lượng video phải ≥ 0!",
         "description": "Mô tả",

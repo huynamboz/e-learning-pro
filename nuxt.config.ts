@@ -38,10 +38,8 @@ export default defineNuxtConfig({
         { property: 'og:image:alt', content: 'ItalianoLive - Học Tiếng Ý Trực Tuyến' },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
-        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
-        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+        { rel: 'icon', type: 'image/webp', href: '/logo.webp' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logo.webp' },
         { rel: 'canonical', href: 'https://italianolive.com' },
 
         // Preconnect to external domains

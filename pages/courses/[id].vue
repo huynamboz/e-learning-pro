@@ -22,6 +22,7 @@ const { data: currentCourse, pending: isLoading, error: fetchError, refresh: ret
   async () => {
     try {
       const response = await getDetailCourses(courseId.value)
+      console.log(response)
 
       if (!response) {
         throw createError({
@@ -93,6 +94,36 @@ watch(initialResourcesData, (data) => {
 
 // Computed for resources
 const resources = computed(() => allResources.value)
+
+// Group resources by asset_type
+const groupedResources = computed(() => {
+  const grouped: Record<string, CourseAsset[]> = {}
+
+  resources.value.forEach((resource) => {
+    const type = resource.asset_type || 'other'
+    if (!grouped[type]) {
+      grouped[type] = []
+    }
+    grouped[type].push(resource)
+  })
+
+  return grouped
+})
+
+// Get sorted asset types (priority order)
+const assetTypeOrder = ['video', 'pdf', 'doc', 'ppt', 'image', 'audio', 'zip', 'other']
+
+const sortedAssetTypes = computed(() => {
+  const types = Object.keys(groupedResources.value)
+  return types.sort((a, b) => {
+    const indexA = assetTypeOrder.indexOf(a)
+    const indexB = assetTypeOrder.indexOf(b)
+    // If type not in order array, put it at the end
+    const orderA = indexA === -1 ? 999 : indexA
+    const orderB = indexB === -1 ? 999 : indexB
+    return orderA - orderB
+  })
+})
 
 // Check if there are more pages
 const hasMore = computed(() => !!resourcesData.value?.next)
@@ -192,16 +223,6 @@ function getAssetTypeInfo(type: string) {
   return typeMap[type] || typeMap.other
 }
 
-// Format file size
-function formatFileSize(bytes: number): string {
-  if (bytes === 0)
-    return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
-}
-
 const isLoadingAll = computed(() => isLoading.value || isLoadingResources.value)
 
 // Watch for errors and show notifications
@@ -280,9 +301,8 @@ watch(fetchError, (error) => {
         />
 
         <!-- Resources Section - Below Curriculum -->
-        <div class="mt-8 bg-white rounded-lg border border-gray-200 p-6">
-          <div class="mt-10">
-            <div class="mx-8 line border-1 border-[#E2E8F0] mb-6" />
+        <div class="bg-white rounded-lg my-6 pt-6">
+          <div class="">
             <div class="px-8 flex flex-col gap-3">
               <h1 class="font-bold text-2xl !mb-0 flex items-center gap-3">
                 <Icon name="solar:document-text-bold" size="28" class="text-blue-600" />
@@ -294,14 +314,43 @@ watch(fetchError, (error) => {
                 <a-spin size="large" />
               </div>
 
-              <!-- Resources List -->
-              <div v-else-if="resources.length > 0" class="space-y-3">
-                <ResourceItem
-                  v-for="resource in resources"
-                  :key="resource.id"
-                  :resource="resource"
-                  :is-openable="false"
-                />
+              <!-- Resources List - Grouped by Type -->
+              <div v-else-if="resources.length > 0" class="space-y-2 border rounded-lg">
+                <a-collapse
+                  :bordered="false"
+                  class="resources-accordion"
+                >
+                  <a-collapse-panel
+                    v-for="assetType in sortedAssetTypes"
+                    :key="assetType"
+                    class="resource-type-panel"
+                  >
+                    <template #header>
+                      <div class="flex items-center gap-3 w-full">
+                        <Icon
+                          :name="getAssetTypeInfo(assetType).icon"
+                          size="20"
+                          :class="getAssetTypeInfo(assetType).color"
+                        />
+                        <span class="font-semibold text-gray-900">
+                          {{ getAssetTypeInfo(assetType).label }}
+                        </span>
+                        <span class="ml-auto text-sm text-gray-500">
+                          ({{ groupedResources[assetType]?.length || 0 }})
+                        </span>
+                      </div>
+                    </template>
+
+                    <div class="space-y-3 pt-2">
+                      <ResourceItem
+                        v-for="resource in groupedResources[assetType]"
+                        :key="resource.id"
+                        :resource="resource"
+                        :is-openable="false"
+                      />
+                    </div>
+                  </a-collapse-panel>
+                </a-collapse>
 
                 <!-- Load More Button -->
                 <div v-if="hasMore" class="flex justify-center pt-4">

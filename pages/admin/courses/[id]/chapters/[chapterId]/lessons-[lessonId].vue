@@ -185,9 +185,9 @@ function getVideoDuration(file: File) {
 
   video.onloadedmetadata = () => {
     window.URL.revokeObjectURL(video.src)
-    // Duration is in seconds, convert to minutes (rounded)
-    const durationInMinutes = Math.round(video.duration / 60)
-    formState.value.video_duration = durationInMinutes
+    // Duration is in seconds, round to nearest integer
+    const durationInSeconds = Math.round(video.duration)
+    formState.value.video_duration = durationInSeconds
   }
 
   video.onerror = () => {

@@ -323,10 +323,11 @@ onMounted(() => {
               <!-- Score -->
               <div class="flex-shrink-0 text-right">
                 <p class="font-bold text-slate-900">
-                  {{ formatScore(entry.total_score) }}/{{ formatScore(entry.max_score) }}
+                  {{ formatScore(entry.total_score) }} 
                 </p>
                 <p class="text-xs text-slate-500">
-                  {{ formatPercentage(entry.percentage) }}
+                  <!-- {{ formatPercentage(entry.percentage) }} -->
+                    Points
                 </p>
               </div>
             </div>

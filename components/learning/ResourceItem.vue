@@ -45,7 +45,7 @@ function handleResourceClick() {
 
 <template>
   <div
-    class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group"
+    class="flex items-center gap-4 p-4 border bg-white border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group"
     :class="{ 'cursor-pointer': isOpenable }"
   >
     <!-- Icon -->

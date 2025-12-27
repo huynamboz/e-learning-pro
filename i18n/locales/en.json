@@ -503,6 +503,7 @@
         "edit": "Edit",
         "time": "Time",
         "minutes": "minutes",
+        "seconds": "seconds",
         "updateOrderSuccess": "Lesson order updated successfully!",
         "updateOrderFailed": "Failed to update lesson order"
       },
@@ -540,7 +541,7 @@
         "titleRequired": "Please input your lesson title!",
         "slug": "Slug",
         "slugPlaceholder": "Auto-generated from title",
-        "videoDuration": "Video Duration (minutes)",
+        "videoDuration": "Video Duration (seconds)",
         "videoDurationPlaceholder": "Enter video duration",
         "videoDurationRequired": "Video duration must be ≥ 0!",
         "description": "Description",

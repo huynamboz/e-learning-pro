@@ -2,7 +2,6 @@
 import type { Course } from '~/types/course.type'
 import { ref } from 'vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
-import { useUsersAdminApi } from '~/composables/api/useUsersAdminApi'
 
 definePageMeta({
   layout: 'admin',
@@ -27,28 +26,6 @@ const {
 const users = ref<any[]>([])
 const isLoadingUsers = ref(false)
 
-// Format functions
-function formatUserDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-
-  if (diffInHours < 1) {
-    return 'Vừa xong'
-  }
-  else if (diffInHours < 24) {
-    return `${diffInHours} giờ trước`
-  }
-  else {
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} ngày trước`
-  }
-}
-
-function getUserInitials(email: string) {
-  return email.split('@')[0].substring(0, 2).toUpperCase()
-}
-
 function getUserDisplayName(user: any) {
   return `${user.first_name} ${user.last_name}`.trim()
 }
@@ -60,10 +37,12 @@ async function fetchLatestStudents() {
     const response = await getAllStudents()
     // Get only the first 5 students for dashboard
     users.value = response.results.slice(0, 5)
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error fetching latest students:', error)
     users.value = []
-  } finally {
+  }
+  finally {
     isLoadingUsers.value = false
   }
 }
@@ -176,23 +155,23 @@ onMounted(async () => {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- Show loading skeleton when no data -->
       <div
-        v-if="statsCards.length === 0 && isLoadingStats"
         v-for="i in 4"
+        v-if="statsCards.length === 0 && isLoadingStats"
         :key="`loading-${i}`"
         class="group relative overflow-hidden rounded-2xl p-6 bg-gray-200 animate-pulse"
       >
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <div class="w-10 h-10 bg-gray-300 rounded-xl"></div>
-            <div class="w-20 h-6 bg-gray-300 rounded-full"></div>
+            <div class="w-10 h-10 bg-gray-300 rounded-xl" />
+            <div class="w-20 h-6 bg-gray-300 rounded-full" />
           </div>
           <div class="space-y-2">
-            <div class="w-24 h-4 bg-gray-300 rounded"></div>
-            <div class="w-16 h-8 bg-gray-300 rounded"></div>
+            <div class="w-24 h-4 bg-gray-300 rounded" />
+            <div class="w-16 h-8 bg-gray-300 rounded" />
           </div>
         </div>
       </div>
-      
+
       <!-- Show actual stats cards -->
       <div
         v-for="stat in statsCards"
@@ -344,48 +323,6 @@ onMounted(async () => {
         <Icon name="i-heroicons-users" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
         <p class="text-gray-500">
           {{ $t('admin.dashboard.latestUsers.noUsers') }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Top Courses -->
-    <div class="bg-white rounded-2xl border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold text-gray-900">
-          {{ $t('admin.dashboard.topCourses.title') }}
-        </h2>
-        <NuxtLink to="/admin/courses" class="text-sm font-medium text-blue-600 hover:underline">
-          {{ $t('admin.dashboard.topCourses.viewAll') }}
-        </NuxtLink>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="isLoadingCourses" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div v-for="i in 3" :key="i" class="bg-gray-100 rounded-2xl p-4 animate-pulse">
-          <div class="h-36 bg-gray-200 rounded-lg mb-4" />
-          <div class="space-y-3">
-            <div class="h-4 bg-gray-200 rounded w-3/4" />
-            <div class="h-3 bg-gray-200 rounded w-1/2" />
-            <div class="h-3 bg-gray-200 rounded w-2/3" />
-            <div class="h-6 bg-gray-200 rounded w-1/3" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Courses Grid -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <CourseCard
-          v-for="course in topCourses"
-          :key="course.id"
-          v-bind="course"
-        />
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="!isLoadingCourses && topCourses.length === 0" class="text-center py-8">
-        <Icon name="i-heroicons-academic-cap" class="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <p class="text-gray-500">
-          {{ $t('admin.dashboard.topCourses.noCourses') }}
         </p>
       </div>
     </div>
