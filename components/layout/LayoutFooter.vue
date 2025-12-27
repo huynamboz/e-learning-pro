@@ -20,26 +20,7 @@ interface SocialMedia {
   url: string
 }
 
-const footerSections: FooterSection[] = [
-  {
-    title: 'Hỗ trợ',
-    links: [
-      { title: 'Trung tâm trợ giúp', url: '#' },
-      { title: 'Liên hệ với chúng tôi', url: '#' },
-      { title: 'Câu hỏi thường gặp', url: '#' },
-      { title: 'Hướng dẫn sử dụng', url: '#' },
-    ],
-  },
-  {
-    title: 'Công ty',
-    links: [
-      { title: 'Về chúng tôi', url: '#' },
-      { title: 'Đội ngũ phiên dịch viên', url: '#' },
-      { title: 'Tin tức', url: '#' },
-      { title: 'Tuyển dụng', url: '#' },
-    ],
-  },
-]
+const footerSections: FooterSection[] = []
 
 const contactInfo: ContactInfo[] = [
   { label: 'Địa chỉ', value: 'Biella, Italia' },
@@ -64,9 +45,9 @@ const companyInfo = {
   <footer class="bg-gradient-to-br from-green-600 to-green-800 text-white">
     <!-- Main Footer Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
         <!-- Company Info -->
-        <div class="lg:col-span-2 space-y-6">
+        <div class="lg:col-span-3 space-y-6">
           <div>
             <NuxtLink to="/" class="flex items-center space-x-3">
               <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
