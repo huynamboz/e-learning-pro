@@ -171,6 +171,7 @@ async function createRequest<T>(
     headers,
     onResponseError: async ({ response, request }: any) => {
       // Send error to webhook
+      if (window && typeof window !== 'undefined') {
       sendErrorToWebhook({
         url: request?.url || url,
         method: options.method || 'GET',
@@ -179,6 +180,7 @@ async function createRequest<T>(
         error: response._data,
         message: response._data?.message || response._data?.error || 'API request failed',
       })
+      }
 
       // Handle 401 Unauthorized
       if (response.status === 401) {
