@@ -326,21 +326,21 @@
     "instructor": {
       "badge": "Gặp gỡ giảng viên của bạn",
       "title": "Học cùng Phan Tâm",
-      "description": "Với hơn một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế,Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
-      "experience": "10+ Năm",
+      "description": "Với gần một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế,Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
+      "experience": "Gần 10 Năm",
       "experienceText": "Giảng dạy tiếng Ý",
       "features": {
         "certified": {
-          "title": "Chuyên gia được chứng nhận",
-          "description": "Bằng thạc sĩ về Ngôn ngữ học tiếng Ý từ Đại học Bologna"
+          "title": "Chuyên gia dịch thuật và phiên dịch",
+          "description": "Phiên dịch ở rất nhiều ngành: chính trị, kinh tế, y học, ngân hàng, y học răng hàm mặt, lâm nghiệm, nông nghiệm, và cho các công ty liên doanh Ý-Việt, các công ty vốn 100% Ý về sản xuất, xuất khẩu."
         },
         "cultural": {
           "title": "Đắm mình trong văn hóa",
-          "description": "Sống ở Ý 8 năm, giảng dạy và nghiên cứu văn hóa Ý"
+          "description": "10 năm sinh sống và 8 năm giảng dạy tiếng Ý"
         },
         "method": {
-          "title": "Phương pháp đã được chứng minh",
-          "description": "Phát triển phương pháp giảng dạy độc đáo với 98% học viên hài lòng"
+          "title": "Kinh nghiệm dịch thuật và phiên dịch",
+          "description": "6 năm kinh nghiệm dịch thuật và phiên dịch từ 2022 sau COVID"
         }
       },
       "button": "Liên hệ tư vấn"
