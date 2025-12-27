@@ -98,7 +98,7 @@ function initializeEditForm() {
       last_name: profile.value.last_name || '',
       phone_number: profile.value.phone_number || '',
       gender: profile.value.gender || '',
-      date_of_birth: profile.value.date_of_birth || dayjs().format('YYYY-MM-DD'),
+      date_of_birth: "",
       contact_address: profile.value.contact_address || '',
       headline: profile.value.headline || '',
       bio: profile.value.bio || '',

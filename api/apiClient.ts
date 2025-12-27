@@ -36,6 +36,50 @@ function setTokenToCookie(newToken: string | null): void {
   tokenCookie.value = newToken
 }
 
+// Send error to webhook for logging
+async function sendErrorToWebhook(errorData: {
+  url?: string
+  method?: string
+  statusCode?: number
+  statusMessage?: string
+  error?: any
+  message?: string
+  timestamp?: string
+  userAgent?: string
+  deviceId?: string
+  deviceType?: string
+}) {
+  try {
+    const user = useState('auth.user')
+    const webhookUrl = 'https://pro.devmock.dev/webhooks-receive/cmjka8m630001lk29u7exufb5'
+
+    const payload = {
+      ...errorData,
+      timestamp: errorData.timestamp || new Date().toISOString(),
+      userAgent: typeof window !== 'undefined' ? window.navigator?.userAgent : 'server-side',
+      deviceId: getDeviceId(),
+      deviceType: getDeviceType(),
+      user: user?.value,
+    }
+
+    // Fire and forget - don't wait for response
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    }).catch((err) => {
+      // Silently fail - we don't want webhook errors to affect the main error flow
+      console.warn('Failed to send error to webhook:', err)
+    })
+  }
+  catch (err) {
+    // Silently fail - we don't want webhook errors to affect the main error flow
+    console.warn('Failed to send error to webhook:', err)
+  }
+}
+
 // Handle logout when 401 occurs
 async function handleUnauthorized() {
   // Clear auth cookie
@@ -125,7 +169,17 @@ async function createRequest<T>(
     baseURL: getBaseURL(),
     ...options,
     headers,
-    onResponseError: async ({ response }: any) => {
+    onResponseError: async ({ response, request }: any) => {
+      // Send error to webhook
+      sendErrorToWebhook({
+        url: request?.url || url,
+        method: options.method || 'GET',
+        statusCode: response.status,
+        statusMessage: response.statusText || 'Request failed',
+        error: response._data,
+        message: response._data?.message || response._data?.error || 'API request failed',
+      })
+
       // Handle 401 Unauthorized
       if (response.status === 401) {
         console.warn('API: Unauthorized access detected, logging out...')
@@ -145,7 +199,15 @@ async function createRequest<T>(
 
       throw error
     },
-    onRequestError: ({ error }: any) => {
+    onRequestError: ({ error, request }: any) => {
+      // Send error to webhook
+      sendErrorToWebhook({
+        url: request?.url || url,
+        method: options.method || 'GET',
+        error: error?.message || String(error),
+        message: 'Network error occurred',
+      })
+
       console.error('API Request Error:', error)
       throw createError({
         statusCode: 500,
@@ -201,7 +263,17 @@ async function upload<T = any>(
     body: formData,
     ...options,
     headers,
-    onResponseError: async ({ response }: any) => {
+    onResponseError: async ({ response, request }: any) => {
+      // Send error to webhook
+      sendErrorToWebhook({
+        url: request?.url || url,
+        method: 'POST',
+        statusCode: response.status,
+        statusMessage: response.statusText || 'Upload failed',
+        error: response._data,
+        message: response._data?.message || response._data?.error || 'File upload failed',
+      })
+
       if (response.status === 401) {
         console.warn('API: Unauthorized access detected during upload, logging out...')
         await handleUnauthorized()
