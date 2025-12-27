@@ -324,7 +324,7 @@
       }
     },
     "instructor": {
-      "badge": "Gặp gỡ giảng viên của bạn",
+      "badge": "Gặp gỡ phiên dịch viên của bạn",
       "title": "Học cùng Phan Tâm",
       "description": "Với gần một thập kỷ kinh nghiệm giảng dạy tiếng Ý cho sinh viên quốc tế,Phan Tâm mang đến sự kết hợp độc đáo giữa chuyên môn ngôn ngữ và niềm đam mê văn hóa trong mỗi bài học.",
       "experience": "Gần 10 Năm",
@@ -1620,7 +1620,7 @@
   "profileSidebar": {
     "profile": "Hồ sơ",
     "myCourses": "Khóa học của tôi",
-    "teachers": "Giảng viên",
+    "teachers": "Phiên dịch viên",
     "message": "Tin nhắn",
     "myReviews": "Đánh giá của tôi"
   },
@@ -1719,7 +1719,7 @@
     "requirements": "Yêu cầu",
     "description": "Mô tả",
     "curriculum": "Chương trình học",
-    "instructor": "Giảng viên",
+    "instructor": "Phiên dịch viên",
     "reviews": "Đánh giá",
     "students": "học viên",
     "lessons": "bài học",
@@ -1870,14 +1870,14 @@
       "badge": "Khám phá khóa học tiếng Ý",
       "title": "Khám phá hành trình",
       "subtitle": "tiếng Ý của bạn",
-      "description": "Thành thạo tiếng Ý với giảng viên chuyên nghiệp và bài học tương tác",
+      "description": "Thành thạo tiếng Ý với phiên dịch viên chuyên nghiệp và bài học tương tác",
       "searchPlaceholder": "Tìm kiếm khóa học tiếng Ý...",
       "searchButton": "Tìm kiếm"
     },
     "stats": {
       "totalCourses": "Tổng khóa học",
       "activeStudents": "Học viên đang học",
-      "expertInstructors": "Giảng viên chuyên nghiệp",
+      "expertInstructors": "Phiên dịch viên chuyên nghiệp",
       "languagesAvailable": "Ngôn ngữ chuyên sâu"
     },
     "filters": {
@@ -2255,7 +2255,9 @@
       "questionNumber": "Câu hỏi {number}",
       "yourAnswer": "Câu trả lời của bạn:",
       "noAnswer": "Không có câu trả lời",
+      "notAnswered": "Chưa trả lời",
       "correctAnswer": "Đáp án đúng:",
+      "explanation": "Giải thích:",
       "pendingReview": "Câu trả lời này đang chờ giáo viên xem xét",
       "goBack": "Quay lại",
       "retakeQuiz": "Làm lại Quiz"
@@ -2320,7 +2322,7 @@
     "defaultTitle": "Giới thiệu về Thiết kế Trải nghiệm Người dùng",
     "details": "Chi tiết",
     "overview": "Tổng quan khóa học",
-    "instructor": "Giảng viên",
+    "instructor": "Phiên dịch viên",
     "defaultInstructor": "Ronald Richards",
     "instructorTitle": "Nhà thiết kế UI/UX",
     "reviews": "{count} đánh giá",
@@ -2340,7 +2342,12 @@
       "startError": "Không thể bắt đầu quiz",
       "retakeLimitExceeded": "Bạn đã vượt quá số lần làm lại cho phép",
       "notPublished": "Quiz này chưa được xuất bản",
-      "leaveConfirm": "Bạn có chắc muốn rời khỏi trang? Tiến độ của bạn đã được lưu tự động."
+      "leaveConfirm": "Bạn có chắc muốn rời khỏi trang? Tiến độ của bạn đã được lưu tự động.",
+      "expired": {
+        "title": "Thời gian làm bài đã hết",
+        "description": "Thời gian làm bài của bạn đã hết. Bạn không thể tiếp tục làm bài hoặc lưu câu trả lời.",
+        "viewResults": "Xem kết quả"
+      }
     },
     "selectLessonToViewComments": "Chọn một bài học để xem bình luận",
     "courseContent": "Nội dung khóa học",
@@ -2397,7 +2404,7 @@
       "benefits": {
         "freeTrial": "Dùng thử miễn phí cho thành viên mới",
         "lifetimeAccess": "Truy cập trọn đời tài liệu",
-        "qualityInstructors": "Giảng viên chất lượng"
+        "qualityInstructors": "Phiên dịch viên chất lượng"
       },
       "testimonial": {
         "name": "Maria Rossi",

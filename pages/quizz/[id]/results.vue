@@ -82,12 +82,26 @@ const objectiveAnswers = computed(() => {
   )
 })
 
-// Get question data for an answer
-function getQuestionForAnswer(answer: SavedAnswer) {
-  if (!quiz.value?.questions)
+// Get answer for a question
+function getAnswerForQuestion(questionId: string): SavedAnswer | null {
+  if (!attempt.value?.answers)
     return null
-  return quiz.value.questions.find(q => q.id === answer.question)
+  return attempt.value.answers.find(a => a.question === questionId) || null
 }
+
+// Get all questions with their answers (or null if not answered)
+const allQuestionsWithAnswers = computed(() => {
+  if (!quiz.value?.questions)
+    return []
+
+  return quiz.value.questions.map((question) => {
+    const answer = getAnswerForQuestion(question.id)
+    return {
+      question,
+      answer,
+    }
+  })
+})
 
 // Navigation methods
 function navigateToQuizList() {
@@ -240,10 +254,10 @@ onMounted(() => {
 
         <!-- Question Review -->
         <div class="space-y-4">
-          <!-- Multiple Choice Questions -->
+          <!-- All Questions -->
           <div
-            v-for="(answer, idx) in attempt.answers.filter(a => a.question_type === 'multiple_choice')"
-            :key="`mc-${answer.id}`"
+            v-for="(item, idx) in allQuestionsWithAnswers"
+            :key="`q-${item.question.id}`"
             class="bg-white rounded-2xl shadow-sm overflow-hidden"
           >
             <!-- Question Header -->
@@ -252,9 +266,15 @@ onMounted(() => {
                 {{ t('newQuiz.results.questionNumber', { number: idx + 1 }) }}
               </div>
               <Icon
-                :name="answer.is_correct ? 'tabler:check' : 'tabler:x'"
-                :class="answer.is_correct ? 'text-green-600' : 'text-red-600'"
+                v-if="item.answer"
+                :name="item.answer.is_correct ? 'tabler:check' : 'tabler:x'"
+                :class="item.answer.is_correct ? 'text-green-600' : 'text-red-600'"
                 class="text-2xl"
+              />
+              <Icon
+                v-else
+                name="tabler:minus"
+                class="text-gray-400 text-2xl"
               />
             </div>
 
@@ -262,140 +282,165 @@ onMounted(() => {
             <div class="p-6">
               <!-- Question Prompt -->
               <div class="text-green-800 mb-6 font-medium text-xl">
-                {{ answer.question_prompt }}
+                {{ item.question.prompt }}
               </div>
 
-              <!-- Options -->
-              <div class="grid grid-cols-2 gap-3">
-                <div
-                  v-for="option in getQuestionForAnswer(answer)?.options || []"
-                  :key="option.id"
-                  class="flex items-center gap-3 p-3 rounded-xl border"
-                  :class="{
-                    'bg-green-100 border-green-300': option.is_correct,
-                    'bg-white border-gray-200': !option.is_correct,
-                    '!bg-red-100 border-red-300': answer.selected_option === option.id && !option.is_correct,
-                  }"
-                >
+              <!-- Multiple Choice Question -->
+              <div v-if="item.question.question_type === 'multiple_choice'">
+                <!-- Not Answered Notice -->
+                <div v-if="!item.answer" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <div class="flex items-center gap-2 text-red-700">
+                    <Icon name="tabler:alert-circle" class="text-red-500" />
+                    <span>{{ t('newQuiz.results.notAnswered') }}</span>
+                  </div>
+                </div>
+
+                <!-- Show All Options -->
+                <div class="grid grid-cols-2 gap-3">
                   <div
-                    class="w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm shrink-0"
+                    v-for="option in item.question.options || []"
+                    :key="option.id"
+                    class="flex items-center gap-3 p-3 rounded-xl border"
                     :class="{
-                      'bg-blue-200': option.label === 'A',
-                      'bg-orange-200': option.label === 'B',
-                      'bg-red-200': option.label === 'C',
-                      'bg-yellow-200': option.label === 'D',
+                      'bg-green-100 border-green-300': option.is_correct,
+                      'bg-white border-gray-200': !option.is_correct && (!item.answer || item.answer.selected_option !== option.id),
+                      '!bg-red-100 border-red-300': item.answer && item.answer.selected_option === option.id && !option.is_correct,
                     }"
                   >
-                    {{ option.label }}
+                    <div
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-black font-bold text-sm shrink-0"
+                      :class="{
+                        'bg-blue-200': option.label === 'A',
+                        'bg-orange-200': option.label === 'B',
+                        'bg-red-200': option.label === 'C',
+                        'bg-yellow-200': option.label === 'D',
+                      }"
+                    >
+                      {{ option.label }}
+                    </div>
+                    <span class="text-gray-800 flex-1">{{ option.text }}</span>
+                    <Icon
+                      v-if="option.is_correct"
+                      name="tabler:check-circle"
+                      class="text-green-600 text-xl shrink-0"
+                    />
                   </div>
-                  <span class="text-gray-800 flex-1">{{ option.text }}</span>
-                  <Icon
-                    v-if="option.is_correct"
-                    name="tabler:check-circle"
-                    class="text-green-600 text-xl shrink-0"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Text Input Questions -->
-          <div
-            v-for="answer in attempt.answers.filter(a => a.question_type === 'text_input')"
-            :key="`ti-${answer.id}`"
-            class="bg-white rounded-2xl shadow-sm overflow-hidden"
-          >
-            <!-- Question Header -->
-            <div class="bg-gray-100 px-6 py-4 flex items-center justify-between">
-              <div class="text-lg font-bold text-green-700">
-                {{ t('newQuiz.results.questionNumber', { number: objectiveAnswers.findIndex(a => a.id === answer.id) + 1 }) }}
-              </div>
-              <Icon
-                :name="answer.is_correct ? 'tabler:check' : 'tabler:x'"
-                :class="answer.is_correct ? 'text-green-600' : 'text-red-600'"
-                class="text-2xl"
-              />
-            </div>
-
-            <!-- Question Content -->
-            <div class="p-6">
-              <!-- Question Prompt -->
-              <div class="text-green-800 mb-6 font-medium text-xl">
-                {{ answer.question_prompt }}
-              </div>
-
-              <!-- User's Answer -->
-              <div class="space-y-3">
-                <div class="text-sm font-medium text-gray-700">
-                  {{ t('newQuiz.results.yourAnswer') }}
-                </div>
-                <div
-                  class="p-4 rounded-xl border"
-                  :class="{
-                    'bg-green-100 border-green-300': answer.is_correct,
-                    'bg-red-100 border-red-300': !answer.is_correct,
-                  }"
-                >
-                  <span class="text-gray-800">
-                    {{ answer.text_answer || t('newQuiz.results.noAnswer') }}
-                  </span>
                 </div>
 
-                <!-- Correct Answer (if incorrect) -->
-                <div v-if="!answer.is_correct && answer.correct_answer" class="space-y-2">
+                <!-- Explanation -->
+                <div v-if="item.question.explanation" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div class="flex items-start gap-2">
+                    <Icon name="mdi:information" class="text-blue-600 shrink-0 mt-0.5" />
+                    <div class="flex-1">
+                      <p class="text-sm font-medium text-blue-900 mb-1">
+                        {{ t('newQuiz.results.explanation') }}
+                      </p>
+                      <p class="text-sm text-blue-800">
+                        {{ item.question.explanation }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Input Question -->
+              <div v-else-if="item.question.question_type === 'text_input'">
+                <!-- Not Answered -->
+                <div v-if="!item.answer" class="p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <div class="flex items-center gap-2 text-red-700">
+                    <Icon name="tabler:alert-circle" class="text-red-500" />
+                    <span>{{ t('newQuiz.results.notAnswered') }}</span>
+                  </div>
+                </div>
+
+                <!-- Answered -->
+                <div v-else class="space-y-3">
                   <div class="text-sm font-medium text-gray-700">
-                    {{ t('newQuiz.results.correctAnswer') }}
+                    {{ t('newQuiz.results.yourAnswer') }}
                   </div>
-                  <div class="p-4 bg-green-100 border border-green-300 rounded-xl">
+                  <div
+                    class="p-4 rounded-xl border"
+                    :class="{
+                      'bg-green-100 border-green-300': item.answer.is_correct,
+                      'bg-red-100 border-red-300': !item.answer.is_correct,
+                    }"
+                  >
                     <span class="text-gray-800">
-                      {{ answer.correct_answer.text }}
+                      {{ item.answer.text_answer || t('newQuiz.results.noAnswer') }}
                     </span>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- Essay Questions -->
-          <div
-            v-for="answer in essayAnswers"
-            :key="`essay-${answer.id}`"
-            class="bg-white rounded-2xl shadow-sm overflow-hidden"
-          >
-            <!-- Question Header -->
-            <div class="bg-green-100 px-6 py-4 flex items-center justify-between">
-              <div class="text-lg font-bold text-green-700">
-                {{ t('newQuiz.results.questionNumber', { number: attempt.answers.findIndex(a => a.id === answer.id) + 1 }) }}
-              </div>
-              <Icon
-                name="tabler:clock"
-                class="text-yellow-600 text-xl"
-              />
-            </div>
-
-            <!-- Question Content -->
-            <div class="p-6">
-              <!-- Question Prompt -->
-              <div class="text-green-800 mb-6 font-medium text-xl">
-                {{ answer.question_prompt }}
-              </div>
-
-              <!-- User's Answer -->
-              <div class="space-y-3">
-                <div class="text-sm font-medium text-gray-700">
-                  {{ t('newQuiz.results.yourAnswer') }}
-                </div>
-                <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                  <span class="text-gray-800 whitespace-pre-wrap">
-                    {{ answer.text_answer || t('newQuiz.results.noAnswer') }}
-                  </span>
+                  <!-- Correct Answer (if incorrect) -->
+                  <div v-if="!item.answer.is_correct && item.answer.correct_answer" class="space-y-2">
+                    <div class="text-sm font-medium text-gray-700">
+                      {{ t('newQuiz.results.correctAnswer') }}
+                    </div>
+                    <div class="p-4 bg-green-100 border border-green-300 rounded-xl">
+                      <span class="text-gray-800">
+                        {{ item.answer.correct_answer.text }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Pending Grading Notice -->
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <div class="flex items-center gap-2 text-sm text-yellow-800">
-                    <Icon name="tabler:clock" class="text-yellow-600" />
-                    <span>{{ t('newQuiz.results.pendingReview') }}</span>
+                <!-- Explanation -->
+                <div v-if="item.question.explanation" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div class="flex items-start gap-2">
+                    <Icon name="mdi:information" class="text-blue-600 shrink-0 mt-0.5" />
+                    <div class="flex-1">
+                      <p class="text-sm font-medium text-blue-900 mb-1">
+                        {{ t('newQuiz.results.explanation') }}
+                      </p>
+                      <p class="text-sm text-blue-800">
+                        {{ item.question.explanation }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Essay Question -->
+              <div v-else-if="item.question.question_type === 'essay'">
+                <!-- Not Answered -->
+                <div v-if="!item.answer" class="p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <div class="flex items-center gap-2 text-red-700">
+                    <Icon name="tabler:alert-circle" class="text-red-500" />
+                    <span>{{ t('newQuiz.results.notAnswered') }}</span>
+                  </div>
+                </div>
+
+                <!-- Answered -->
+                <div v-else class="space-y-3">
+                  <div class="text-sm font-medium text-gray-700">
+                    {{ t('newQuiz.results.yourAnswer') }}
+                  </div>
+                  <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                    <span class="text-gray-800 whitespace-pre-wrap">
+                      {{ item.answer.text_answer || t('newQuiz.results.noAnswer') }}
+                    </span>
+                  </div>
+
+                  <!-- Pending Grading Notice -->
+                  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div class="flex items-center gap-2 text-sm text-yellow-800">
+                      <Icon name="tabler:clock" class="text-yellow-600" />
+                      <span>{{ t('newQuiz.results.pendingReview') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Explanation -->
+                <div v-if="item.question.explanation" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div class="flex items-start gap-2">
+                    <Icon name="mdi:information" class="text-blue-600 shrink-0 mt-0.5" />
+                    <div class="flex-1">
+                      <p class="text-sm font-medium text-blue-900 mb-1">
+                        {{ t('newQuiz.results.explanation') }}
+                      </p>
+                      <p class="text-sm text-blue-800">
+                        {{ item.question.explanation }}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

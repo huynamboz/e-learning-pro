@@ -50,6 +50,7 @@
     "less-loader": "^12.3.0",
     "lucide-vue-next": "^0.523.0",
     "nuxt": "^3.17.5",
+    "nuxt-gtag": "^3.0.0",
     "nuxt-vue3-google-signin": "^0.0.13",
     "pinia": "^3.0.3",
     "reka-ui": "^2.3.1",

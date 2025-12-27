@@ -58,7 +58,7 @@ export default defineNuxtConfig({
     'highlight.js/styles/atom-one-dark.css',
   ],
 
-  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt', 'nuxt-vue3-google-signin'],
+  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt', 'nuxt-vue3-google-signin', 'nuxt-gtag'],
 
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -105,6 +105,11 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1',
       googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     },
+  },
+
+  // @ts-ignore - nuxt-gtag module configuration
+  gtag: {
+    id: 'G-PBKR19PGSP',
   },
 
   googleSignIn: {

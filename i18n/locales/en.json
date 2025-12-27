@@ -2257,7 +2257,9 @@
       "questionNumber": "Question {number}",
       "yourAnswer": "Your answer:",
       "noAnswer": "No answer provided",
+      "notAnswered": "Not answered",
       "correctAnswer": "Correct answer:",
+      "explanation": "Explanation:",
       "pendingReview": "This answer is pending teacher review",
       "goBack": "Go back",
       "retakeQuiz": "Retake Quiz"
@@ -2342,7 +2344,12 @@
       "startError": "Unable to start quiz",
       "retakeLimitExceeded": "You have exceeded the allowed number of retakes",
       "notPublished": "This quiz has not been published yet",
-      "leaveConfirm": "Are you sure you want to leave this page? Your progress has been saved automatically."
+      "leaveConfirm": "Are you sure you want to leave this page? Your progress has been saved automatically.",
+      "expired": {
+        "title": "Time's Up",
+        "description": "Your quiz time has expired. You can no longer continue or save answers.",
+        "viewResults": "View Results"
+      }
     },
     "selectLessonToViewComments": "Select a lesson to view comments",
     "courseContent": "Course Content",

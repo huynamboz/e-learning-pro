@@ -248,11 +248,11 @@ function navigateToCourse(enrollmentId: string) {
             <p class="text-sm text-shade-6 mb-6">
               {{ $t('learning.continueLearning.noCoursesDesc') }}
             </p>
-            <NuxtLink to="/courses">
+            <!-- <NuxtLink to="/courses">
               <BaseButton variant="primary" class="mx-auto !text-white">
                 {{ $t('learning.continueLearning.browseCourses') }}
               </BaseButton>
-            </NuxtLink>
+            </NuxtLink> -->
           </div>
 
           <!-- Course List -->
@@ -359,11 +359,11 @@ function navigateToCourse(enrollmentId: string) {
             <p class="text-sm text-shade-6 mb-6">
               {{ $t('learning.pendingCourses.noPendingCoursesDesc') }}
             </p>
-            <NuxtLink to="/courses">
+            <!-- <NuxtLink to="/courses">
               <BaseButton variant="primary" class="mx-auto !text-white">
                 {{ $t('learning.pendingCourses.browseCourses') }}
               </BaseButton>
-            </NuxtLink>
+            </NuxtLink> -->
           </div>
 
           <div v-else class="grid sm:grid-cols-2 gap-5">
@@ -449,7 +449,7 @@ function navigateToCourse(enrollmentId: string) {
               {{ $t('learning.quickActions.title') }}
             </h3>
             <div class="space-y-1">
-              <NuxtLink to="/courses" class="block group">
+              <!-- <NuxtLink to="/courses" class="block group">
                 <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-blue/30 hover:bg-blue/5 transition-all duration-300 cursor-pointer">
                   <div class="p-2.5 size-[50px] flex justify-center items-center bg-blue rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-110 transition-all">
                     <Icon name="solar:magnifer-linear" size="20" class="text-white" />
@@ -464,7 +464,7 @@ function navigateToCourse(enrollmentId: string) {
                   </div>
                   <Icon name="solar:alt-arrow-right-line-duotone" size="20" class="text-shade-5 group-hover:text-blue group-hover:translate-x-1 transition-all" />
                 </div>
-              </NuxtLink>
+              </NuxtLink> -->
 
               <NuxtLink to="/my-course" class="block group">
                 <div class="flex items-center gap-3.5 p-3.5 rounded-xl border border-transparent hover:border-purple/30 hover:bg-purple/5 transition-all duration-300 cursor-pointer">

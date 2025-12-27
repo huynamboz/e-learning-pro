@@ -253,12 +253,6 @@ onMounted(() => {
               Bắt đầu khám phá
               <Icon name="mdi:arrow-right" class="text-base" />
             </NuxtLink>
-            <NuxtLink
-              to="/contact"
-              class="inline-flex items-center justify-center px-5 py-3 text-sm font-semibold rounded-2xl border border-slate-200 text-slate-700 hover:bg-slate-100"
-            >
-              Nhận tư vấn cá nhân
-            </NuxtLink>
           </div>
         </div>
         <div class="bg-white border border-slate-200 rounded-3xl p-6 lg:p-8 shadow-xl">

@@ -188,15 +188,15 @@ function handleEssayInput(text: string) {
       <!-- Correct Answer Display (if wrong) -->
       <div
         v-if="showFeedback && !isCorrect && correctAnswer"
-        class="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl"
+        class="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl"
       >
         <div class="flex items-start gap-2">
-          <Icon name="mdi:information" class="text-emerald-600 shrink-0 mt-0.5" />
+          <Icon name="mdi:information" class="text-red-600 shrink-0 mt-0.5" />
           <div class="flex-1">
-            <p class="text-sm font-medium text-emerald-900">
+            <p class="text-sm font-medium text-red-900">
               {{ t('newQuiz.player.answerInput.correctAnswer') }}
             </p>
-            <p class="text-sm text-emerald-700 mt-1">
+            <p class="text-sm text-red-700 mt-1">
               {{ correctAnswer.label ? `${correctAnswer.label}. ${correctAnswer.text}` : correctAnswer.text }}
             </p>
           </div>

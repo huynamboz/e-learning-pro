@@ -32,6 +32,7 @@ const quiz = ref<NewQuizDetail | null>(null)
 const attempt = ref<QuizAttempt | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+const isExpired = ref(false)
 
 // Load quiz and start/resume attempt
 async function loadQuiz() {
@@ -110,6 +111,26 @@ function handleAttemptUpdate(updatedAttempt: QuizAttempt) {
   attempt.value = updatedAttempt
 }
 
+// Handle attempt expired
+function handleAttemptExpired(_attemptId: string) {
+  isExpired.value = true
+  // Replace URL with expired query param
+  router.replace({
+    path: route.path,
+    query: { ...route.query, expired: 'true' },
+  })
+}
+
+// Navigate to results page
+function navigateToResults() {
+  if (attempt.value) {
+    router.push({
+      path: `/quizz/${quizId}/results`,
+      query: { attempt: attempt.value.id },
+    })
+  }
+}
+
 // Prevent accidental navigation during quiz
 if (process.client) {
   window.addEventListener('beforeunload', (e) => {
@@ -171,12 +192,32 @@ onUnmounted(() => {
           </div>
         </div>
 
+        <!-- Expired State -->
+        <div v-else-if="isExpired || route.query.expired === 'true'" class="flex flex-col items-center justify-center py-12">
+          <div class="text-center max-w-md">
+            <Icon name="solar:clock-circle-bold" class="text-6xl text-orange-500 mb-4" />
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">
+              {{ t('course.quizPage.expired.title') }}
+            </h2>
+            <p class="text-gray-600 mb-6">
+              {{ t('course.quizPage.expired.description') }}
+            </p>
+            <button
+              class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              @click="navigateToResults"
+            >
+              {{ t('course.quizPage.expired.viewResults') }}
+            </button>
+          </div>
+        </div>
+
         <!-- Quiz Header Content -->
         <div v-else-if="quiz && attempt">
           <NewQuizPlayer
             :quiz="quiz"
             :attempt="attempt"
             @attempt-updated="handleAttemptUpdate"
+            @attempt-expired="handleAttemptExpired"
           />
         </div>
       </div>

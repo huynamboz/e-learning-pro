@@ -602,11 +602,7 @@ watch(resourceMenu, (newMenu) => {
         </button>
 
         <!-- User menu -->
-        <div class="flex gap-2 py-2  items-center border rounded-full px-3 space-x-2">
-          <button class="flex p-1 cursor-pointer hover:bg-gray-200 rounded transition-colors">
-            <Icon name="solar:hamburger-menu-outline" size="20" class="text-gray-600" />
-          </button>
-
+        <div class="flex gap-2 py-2  items-center border rounded-full px-2 space-x-2">
           <BaseUserProfilePopup />
         </div>
       </div>

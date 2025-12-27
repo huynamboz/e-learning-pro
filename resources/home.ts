@@ -210,7 +210,7 @@ export const reviewsData = [
     id: 2,
     name: 'Jane Doe',
     designation: 'Designer',
-    review: '"Giảng viên vui vẻ, tận tâm, tận tình, luôn đồng hành cùng học viên bất cứ khi nào họ cần!!! Quá tuyệt vời luôn"',
+    review: '"Phiên dịch viên vui vẻ, tận tâm, tận tình, luôn đồng hành cùng học viên bất cứ khi nào họ cần!!! Quá tuyệt vời luôn"',
     image: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop&crop=face',
   },
   {

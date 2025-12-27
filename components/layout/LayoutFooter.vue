@@ -34,7 +34,7 @@ const footerSections: FooterSection[] = [
     title: 'Công ty',
     links: [
       { title: 'Về chúng tôi', url: '#' },
-      { title: 'Đội ngũ giảng viên', url: '#' },
+      { title: 'Đội ngũ phiên dịch viên', url: '#' },
       { title: 'Tin tức', url: '#' },
       { title: 'Tuyển dụng', url: '#' },
     ],
@@ -56,7 +56,7 @@ const socialMedia: SocialMedia[] = [
 
 const companyInfo = {
   name: 'Phan Tâm',
-  description: 'Học tiếng Ý cùng Phan Tâm - giảng viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.',
+  description: 'Học tiếng Ý cùng Phan Tâm - phiên dịch viên có nhiều năm kinh nghiệm, giúp bạn học ngôn ngữ một cách dễ dàng và thú vị.',
 }
 </script>
 

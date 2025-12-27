@@ -5,7 +5,7 @@ definePageMeta({
 
 const highlights = [
   'Masterclass C1/C2 chuẩn CEFR',
-  'Giảng viên bản ngữ 15+ năm kinh nghiệm',
+  'Phiên dịch viên bản ngữ 15+ năm kinh nghiệm',
   'Coaching thuyết trình & nghiên cứu',
 ]
 
@@ -58,7 +58,7 @@ const learningJourney = [
   },
   {
     title: 'Deep Dive Seminar',
-    description: 'Seminar phân tích văn bản triết học, chính trị, kinh tế; tranh biện chuyên sâu cùng giảng viên bản xứ.',
+    description: 'Seminar phân tích văn bản triết học, chính trị, kinh tế; tranh biện chuyên sâu cùng phiên dịch viên bản xứ.',
   },
   {
     title: 'Capstone Project',
@@ -73,7 +73,7 @@ const learningJourney = [
 const benefits = [
   {
     title: 'Hệ thống mentor quốc tế',
-    description: 'Giảng viên C2 từng giảng dạy tại đại học Ý, kèm mentor Việt hỗ trợ định hướng nghề nghiệp.',
+    description: 'Phiên dịch viên C2 từng giảng dạy tại đại học Ý, kèm mentor Việt hỗ trợ định hướng nghề nghiệp.',
     icon: 'solar:users-group-rounded-bold',
   },
   {

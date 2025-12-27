@@ -6,7 +6,7 @@ definePageMeta({
 const highlights = [
   'Chuẩn hoá ngữ pháp B-level',
   'Workshop phản xạ thực chiến',
-  'Giảng viên bản địa + mentor Việt',
+  'Phiên dịch viên bản địa + mentor Việt',
 ]
 
 const stats = [

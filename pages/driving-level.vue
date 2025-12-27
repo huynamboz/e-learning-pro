@@ -5,7 +5,7 @@ definePageMeta({
 
 const highlights = [
   'Thực hành lái xe an toàn',
-  'Giảng viên có kinh nghiệm 10+ năm',
+  'Phiên dịch viên có kinh nghiệm 10+ năm',
   'Hỗ trợ thi bằng lái xe',
 ]
 
@@ -82,8 +82,8 @@ const benefits = [
     icon: 'solar:car-front-line-duotone',
   },
   {
-    title: 'Giảng viên chuyên nghiệp',
-    description: 'Đội ngũ giảng viên có nhiều năm kinh nghiệm, tận tâm và kiên nhẫn với từng học viên.',
+    title: 'Phiên dịch viên chuyên nghiệp',
+    description: 'Đội ngũ phiên dịch viên có nhiều năm kinh nghiệm, tận tâm và kiên nhẫn với từng học viên.',
     icon: 'solar:user-id-bold',
   },
   {
@@ -96,12 +96,12 @@ const benefits = [
 const testimonials = [
   {
     name: 'Nguyễn Văn An · Sinh viên',
-    quote: 'Khoá học giúp mình tự tin lái xe sau 8 tuần. Giảng viên rất tận tâm, chỉ dẫn từng chi tiết nhỏ. Mình đã đậu thi bằng ngay lần đầu.',
+    quote: 'Khoá học giúp mình tự tin lái xe sau 8 tuần. Phiên dịch viên rất tận tâm, chỉ dẫn từng chi tiết nhỏ. Mình đã đậu thi bằng ngay lần đầu.',
     avatar: 'https://i.pravatar.cc/100?img=12',
   },
   {
     name: 'Trần Thị Bình · Nhân viên văn phòng',
-    quote: 'Ban đầu mình rất sợ lái xe, nhưng nhờ sự kiên nhẫn của giảng viên và phương pháp dạy khoa học, mình đã vượt qua nỗi sợ và lái xe tự tin.',
+    quote: 'Ban đầu mình rất sợ lái xe, nhưng nhờ sự kiên nhẫn của phiên dịch viên và phương pháp dạy khoa học, mình đã vượt qua nỗi sợ và lái xe tự tin.',
     avatar: 'https://i.pravatar.cc/100?img=23',
   },
 ]
@@ -109,7 +109,7 @@ const testimonials = [
 const faqItems = [
   {
     question: 'Tôi chưa biết gì về lái xe, có học được không?',
-    answer: 'Hoàn toàn được. Khoá học được thiết kế dành cho người mới bắt đầu, giảng viên sẽ hướng dẫn từ những kiến thức cơ bản nhất.',
+    answer: 'Hoàn toàn được. Khoá học được thiết kế dành cho người mới bắt đầu, phiên dịch viên sẽ hướng dẫn từ những kiến thức cơ bản nhất.',
   },
   {
     question: 'Thời gian học có linh hoạt không?',
@@ -139,7 +139,7 @@ const faqItems = [
             Khoá học lái xe an toàn cho mọi người
           </h1>
           <p class="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
-            Học lái xe từ cơ bản đến nâng cao với đội ngũ giảng viên chuyên nghiệp, xe tập lái đời mới và hỗ trợ thi bằng lái xe.
+            Học lái xe từ cơ bản đến nâng cao với đội ngũ phiên dịch viên chuyên nghiệp, xe tập lái đời mới và hỗ trợ thi bằng lái xe.
           </p>
           <div class="flex flex-wrap gap-3 mb-10">
             <span
@@ -251,10 +251,10 @@ const faqItems = [
               Ưu điểm nổi bật
             </p>
             <h3 class="text-2xl font-bold mb-4">
-              Giảng viên tận tâm · Xe đời mới · Hỗ trợ 24/7
+              Phiên dịch viên tận tâm · Xe đời mới · Hỗ trợ 24/7
             </h3>
             <p class="text-white/90 leading-relaxed">
-              Đội ngũ giảng viên có nhiều năm kinh nghiệm, kiên nhẫn và tận tâm. Xe tập lái được bảo dưỡng định kỳ,
+              Đội ngũ phiên dịch viên có nhiều năm kinh nghiệm, kiên nhẫn và tận tâm. Xe tập lái được bảo dưỡng định kỳ,
               đảm bảo an toàn. Hỗ trợ học viên mọi lúc, mọi nơi.
             </p>
           </div>
@@ -316,7 +316,7 @@ const faqItems = [
             Chọn khoá học phù hợp với nhu cầu của bạn
           </h2>
           <p class="text-gray-600 text-lg">
-            Từ người mới bắt đầu đến nâng cao kỹ năng – mỗi khoá học đều có giảng viên riêng và lộ trình học tập cá nhân hoá.
+            Từ người mới bắt đầu đến nâng cao kỹ năng – mỗi khoá học đều có phiên dịch viên riêng và lộ trình học tập cá nhân hoá.
           </p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
@@ -431,7 +431,7 @@ const faqItems = [
               Học viên nói gì về khoá học?
             </h2>
             <p class="text-gray-600 mb-6 leading-relaxed">
-              95% học viên đậu thi bằng lái xe ngay lần đầu tiên nhờ phương pháp dạy khoa học và sự tận tâm của đội ngũ giảng viên.
+              95% học viên đậu thi bằng lái xe ngay lần đầu tiên nhờ phương pháp dạy khoa học và sự tận tâm của đội ngũ phiên dịch viên.
             </p>
             <NuxtLink
               to="/testimonials"

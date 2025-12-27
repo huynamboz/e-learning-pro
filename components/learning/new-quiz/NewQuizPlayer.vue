@@ -11,6 +11,7 @@ import NewQuizResults from './NewQuizResults.vue'
 const props = defineProps<Props>()
 const emit = defineEmits<{
   attemptUpdated: [attempt: QuizAttempt]
+  attemptExpired: [attemptId: string]
 }>()
 const route = useRoute()
 const router = useRouter()
@@ -279,9 +280,20 @@ async function handleAnswerSave(questionId: string, answerData: any) {
   }
   catch (err: any) {
     console.error('Error saving answer:', err)
+
+    // Check if attempt is expired
+    const errorMessage = err.data?.error || err.message || ''
+    const isExpired = errorMessage.toLowerCase().includes('expired') || errorMessage.toLowerCase().includes('already expired')
+
+    if (isExpired && currentAttempt.value) {
+      // Emit expired event to parent
+      emit('attemptExpired', currentAttempt.value.id)
+      return // Don't retry if expired
+    }
+
     saveErrors.value[questionId] = err.message || t('newQuiz.player.saveError')
 
-    // Retry logic (exponential backoff)
+    // Retry logic (exponential backoff) - only if not expired
     let retries = 0
     const maxRetries = 3
     while (retries < maxRetries) {
@@ -308,7 +320,14 @@ async function handleAnswerSave(questionId: string, answerData: any) {
         }
         emit('attemptUpdated', currentAttempt.value)
       }
-      catch {
+      catch (retryErr: any) {
+        // Check if retry also failed due to expiration
+        const retryErrorMessage = retryErr.data?.error || retryErr.message || ''
+        const isRetryExpired = retryErrorMessage.toLowerCase().includes('expired') || retryErrorMessage.toLowerCase().includes('already expired')
+        if (isRetryExpired && currentAttempt.value) {
+          emit('attemptExpired', currentAttempt.value.id)
+          return
+        }
         retries++
       }
     }
@@ -354,7 +373,13 @@ async function handleSubmit() {
 
 // Timer expired handler
 function handleTimeExpired() {
-  handleSubmit()
+  // Stop timer
+  stopTimer()
+
+  // Emit expired event to show expired UI instead of auto-submitting
+  if (currentAttempt.value) {
+    emit('attemptExpired', currentAttempt.value.id)
+  }
 }
 
 // Question status helpers

@@ -106,12 +106,12 @@ onMounted(() => {
           <p class="text-gray-600 mb-6 max-w-md mx-auto">
             {{ $t('profile.courses.empty.message') }}
           </p>
-          <a-button type="primary" size="large" class="!h-12 !px-8 !rounded-lg" @click="() => navigateTo('/learning')">
+          <!-- <a-button type="primary" size="large" class="!h-12 !px-8 !rounded-lg" @click="() => navigateTo('/learning')">
             <template #icon>
               <Icon name="solar:book-bookmark-bold" size="18" />
             </template>
             {{ $t('profile.courses.empty.browseCourses') }}
-          </a-button>
+          </a-button> -->
         </div>
 
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

@@ -797,7 +797,7 @@ async function handleDeleteMaterial(material: LessonMaterial, index: number) {
           />
         </a-form-item>
 
-        <a-form-item
+        <!-- <a-form-item
           name="video_duration"
           :label="t('admin.formLesson.form.videoDuration')"
           class="w-full"
@@ -812,7 +812,7 @@ async function handleDeleteMaterial(material: LessonMaterial, index: number) {
             size="large"
             :min="0"
           />
-        </a-form-item>
+        </a-form-item> -->
 
         <a-form-item
           name="description"

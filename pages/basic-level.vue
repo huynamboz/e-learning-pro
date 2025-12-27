@@ -5,7 +5,7 @@ definePageMeta({
 
 const highlights = [
   'Học online linh hoạt',
-  'Giáo trình độc quyền từ giảng viên bản xứ',
+  'Giáo trình độc quyền từ phiên dịch viên bản xứ',
   'Cam kết đầu ra theo khung CEFR',
 ]
 
@@ -72,7 +72,7 @@ const learningJourney = [
 
 const benefits = [
   {
-    title: 'Giảng viên bản xứ & song ngữ',
+    title: 'Phiên dịch viên bản xứ & song ngữ',
     description: '100% tutor đạt tối thiểu C2 và có chứng chỉ giảng dạy, hỗ trợ song ngữ Việt - Ý.',
     icon: 'ph:chalkboard-teacher-duotone',
   },
@@ -140,7 +140,7 @@ const faqItems = [
           </h1>
           <p class="text-lg sm:text-xl text-green-100 mb-8 leading-relaxed">
             Học tiếng Ý từ con số 0 với lộ trình 12 tuần: phát âm chuẩn, ngữ pháp nền tảng,
-            luyện phản xạ nói theo phương pháp shadowing cùng giảng viên bản xứ.
+            luyện phản xạ nói theo phương pháp shadowing cùng phiên dịch viên bản xứ.
           </p>
           <div class="flex flex-wrap gap-3 mb-10">
             <span
@@ -511,7 +511,7 @@ const faqItems = [
             Sẵn sàng bắt đầu hành trình tiếng Ý?
           </h2>
           <p class="text-green-100 mb-8 text-lg max-w-2xl mx-auto">
-            Đăng ký ngay để giữ chỗ trong lớp khai giảng gần nhất. Bạn sẽ được kiểm tra đầu vào miễn phí và nhận lộ trình cá nhân hóa từ đội ngũ giảng viên.
+            Đăng ký ngay để giữ chỗ trong lớp khai giảng gần nhất. Bạn sẽ được kiểm tra đầu vào miễn phí và nhận lộ trình cá nhân hóa từ đội ngũ phiên dịch viên.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink

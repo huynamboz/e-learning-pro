@@ -41,7 +41,7 @@ export function useSidebar() {
       subItems: [
         { name: t('menu.editProfile'), link: '/profile' },
         { name: t('menu.password'), link: '/settings/password' },
-        { name: t('menu.devices'), link: '/settings/devices' },
+        // { name: t('menu.devices'), link: '/settings/devices' },
       ],
     },
   ])

@@ -80,6 +80,9 @@ importers:
       nuxt:
         specifier: ^3.17.5
         version: 3.17.5(@parcel/watcher@2.5.1)(@types/node@24.0.3)(db0@0.3.2)(eslint@9.29.0(jiti@2.4.2))(ioredis@5.6.1)(less@4.4.1)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.44.0)(stylus@0.57.0)(terser@5.43.1)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(less@4.4.1)(lightningcss@1.30.1)(stylus@0.57.0)(terser@5.43.1)(yaml@2.8.0))(yaml@2.8.0)
+      nuxt-gtag:
+        specifier: ^3.0.0
+        version: 3.0.3(magicast@0.3.5)
       nuxt-vue3-google-signin:
         specifier: ^0.0.13
         version: 0.0.13(magicast@0.3.5)(vue@3.5.17(typescript@5.8.3))
@@ -4769,6 +4772,9 @@ packages:
 
   nuxt-define@1.0.0:
     resolution: {integrity: sha512-CYZ2WjU+KCyCDVzjYUM4eEpMF0rkPmkpiFrybTqqQCRpUbPt2h3snswWIpFPXTi+osRCY6Og0W/XLAQgDL4FfQ==}
+
+  nuxt-gtag@3.0.3:
+    resolution: {integrity: sha512-1XZc9I3DiF2GC07P7uQOlGN4v1cbnLwWHaQUIlayp4pg0h7wOrna5Nl733/2rXq7ktPL3fT8NBJR7OsV9BtJRA==}
 
   nuxt-vue3-google-signin@0.0.13:
     resolution: {integrity: sha512-D1X3XLzyRjEexgndHiOsM21K7jdK3Ypuz6aIGLAQwxxh9TWM197C19keAd0ZknlhRYMLsTfq7erwkM7GtRoUBA==}
@@ -11802,6 +11808,15 @@ snapshots:
       boolbase: 1.0.0
 
   nuxt-define@1.0.0: {}
+
+  nuxt-gtag@3.0.3(magicast@0.3.5):
+    dependencies:
+      '@nuxt/kit': 3.17.5(magicast@0.3.5)
+      defu: 6.1.4
+      pathe: 2.0.3
+      ufo: 1.6.1
+    transitivePeerDependencies:
+      - magicast
 
   nuxt-vue3-google-signin@0.0.13(magicast@0.3.5)(vue@3.5.17(typescript@5.8.3)):
     dependencies:

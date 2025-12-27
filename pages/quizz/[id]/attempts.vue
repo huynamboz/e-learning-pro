@@ -264,7 +264,7 @@ onMounted(() => {
               <!-- Action Button -->
               <div class="flex-shrink-0">
                 <button
-                  v-if="attempt.status === 'completed'"
+                  v-if="attempt.status === 'completed' || attempt.status === 'expired'"
                   class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 transition-colors text-sm font-medium flex items-center gap-2"
                   @click="viewResults(attempt.id)"
                 >
@@ -272,7 +272,7 @@ onMounted(() => {
                   Xem kết quả
                 </button>
                 <button
-                  v-else-if="attempt.status === 'in_progress'"
+                  v-if="attempt.status === 'in_progress'"
                   class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors text-sm font-medium flex items-center gap-2"
                   @click="navigateToQuiz"
                 >
