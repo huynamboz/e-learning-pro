@@ -9,6 +9,7 @@ interface Props {
     score: number
     files: any[]
   }
+  questionNumber?: number
 }
 
 interface Emits {
@@ -16,8 +17,13 @@ interface Emits {
   (e: 'delete'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  questionNumber: 1,
+})
+
 const emit = defineEmits<Emits>()
+
+const { t } = useI18n()
 
 const formData = reactive({
   question: props.initialData.question || '',
@@ -33,13 +39,13 @@ watch(formData, (newData) => {
 
 const rules = computed(() => ({
   question: [
-    { required: true, message: 'Please input the question!', trigger: 'blur' },
+    { required: true, message: t('quiz.question.questionRequired'), trigger: 'blur' },
   ],
   score: [
-    { required: true, message: 'Please input the score!', trigger: 'blur' },
+    { required: true, message: t('quiz.question.scoreRequired'), trigger: 'blur' },
     { 
       pattern: /^\d+(\.\d+)?$/, 
-      message: 'Score must be a positive number!', 
+      message: t('quiz.question.scoreMustBePositive'), 
       trigger: 'blur' 
     },
   ],
@@ -51,36 +57,42 @@ const rules = computed(() => ({
     <div class="flex justify-between items-center mb-4">
       <div class="flex items-center gap-2">
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          Essay Question
+          {{ t('quiz.question.essayQuestion') }}
         </span>
         <span class="text-sm text-gray-500">
-          Manual grading required
+          {{ t('quiz.question.manualGradingRequired') }}
         </span>
       </div>
       <a-button type="text" class="!flex items-center gap-2" danger size="small" @click="emit('delete')">
         <template #icon>
           <DeleteOutlined />
         </template>
-        Delete
+        {{ t('quiz.question.delete') }}
       </a-button>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-lg font-medium text-slate-900">
+        {{ t('quiz.question.questionNumber', { number: props.questionNumber }) }}
+      </h4>
     </div>
 
     <a-form :model="formData" :rules="rules" layout="vertical" class="space-y-4">
       <!-- Question Text -->
-      <a-form-item label="Question" name="question" class="mb-4">
+      <a-form-item :label="t('quiz.question.question')" name="question" class="mb-4">
         <a-textarea 
           v-model:value="formData.question"
-          placeholder="Enter your essay question here..."
+          :placeholder="t('quiz.question.essayQuestionPlaceholder')"
           :rows="3"
           class="rounded-lg border-gray-300"
         />
       </a-form-item>
 
       <!-- Explanation -->
-      <a-form-item label="Explanation (Optional)" name="explanation" class="mb-4">
+      <a-form-item :label="t('quiz.question.explanationOptional')" name="explanation" class="mb-4">
         <a-textarea 
           v-model:value="formData.explanation"
-          placeholder="Provide explanation or hints for students..."
+          :placeholder="t('quiz.question.explanationHintPlaceholder')"
           :rows="2"
           class="rounded-lg border-gray-300"
         />
@@ -88,7 +100,7 @@ const rules = computed(() => ({
 
       <!-- Score -->
       <div class="flex gap-4 items-end">
-        <a-form-item label="Score" name="score" class="flex-1">
+        <a-form-item :label="t('quiz.question.score')" name="score" class="flex-1">
           <a-input-number 
             v-model:value="formData.score"
             placeholder="1.0"
@@ -105,8 +117,8 @@ const rules = computed(() => ({
         <div class="flex items-start gap-2">
           <InfoCircleOutlined class="text-blue-500 mt-0.5" />
           <div class="text-sm text-blue-700">
-            <p class="font-medium mb-1">Essay Question</p>
-            <p>This question requires manual grading by the teacher. Students will see "Pending review" until you grade their submission.</p>
+            <p class="font-medium mb-1">{{ t('quiz.question.essayQuestion') }}</p>
+            <p>{{ t('quiz.question.essayQuestionInfo') }}</p>
           </div>
         </div>
       </div>

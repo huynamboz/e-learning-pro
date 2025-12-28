@@ -724,18 +724,21 @@ defineExpose({
               <TextInputQuestion
                 v-if="question.type === 'text-input'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />
               <MultipleChoiceQuestion
                 v-else-if="question.type === 'multiple-choice'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />
               <EssayQuestion
                 v-else-if="question.type === 'essay'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />

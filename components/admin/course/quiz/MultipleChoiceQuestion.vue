@@ -7,11 +7,15 @@ import { computed, reactive, watch } from 'vue'
 
 interface Props {
   initialData?: Partial<MultipleChoiceQuestionData>
+  questionNumber?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   initialData: () => ({}),
+  questionNumber: 1,
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   delete: []
@@ -43,18 +47,18 @@ const questionData = reactive<MultipleChoiceQuestionData>({
 
 const rules: Record<string, Rule[]> = {
   question: [
-    { required: true, message: 'Please enter the question!', trigger: 'blur' },
+    { required: true, message: t('quiz.question.questionRequired'), trigger: 'blur' },
   ],
   score: [
-    { required: true, message: 'Please enter the score!', trigger: 'blur' },
+    { required: true, message: t('quiz.question.scoreRequired'), trigger: 'blur' },
     { 
       pattern: /^\d+(\.\d+)?$/, 
-      message: 'Score must be a positive number!', 
+      message: t('quiz.question.scoreMustBePositive'), 
       trigger: 'blur' 
     },
   ],
   correctAnswer: [
-    { required: true, message: 'Please select the correct answer!', trigger: 'change' },
+    { required: true, message: t('quiz.question.correctAnswerRequired'), trigger: 'change' },
   ],
 }
 
@@ -153,7 +157,7 @@ watch(
     <!-- Question Header -->
     <div class="bg-green-50 px-5 py-4 rounded-t-2xl flex items-center justify-between">
       <h4 class="text-lg font-medium text-slate-900">
-        Domanda
+        {{ t('quiz.question.questionNumber', { number: props.questionNumber }) }}
       </h4>
       <button
         type="button"
@@ -177,13 +181,13 @@ watch(
       >
         <!-- Question Input -->
         <a-form-item
-          label="Question"
+          :label="t('quiz.question.question')"
           name="question"
           class="mb-3"
         >
           <a-textarea
             v-model:value="questionData.question"
-            placeholder="Enter your question"
+            :placeholder="t('quiz.question.questionPlaceholder')"
             :rows="3"
             class="rounded-lg border-gray-300"
           />
@@ -192,18 +196,18 @@ watch(
         <!-- Explanation and Score Row -->
         <div class="flex gap-3 mb-3">
           <a-form-item
-            label="Explanation"
+            :label="t('quiz.question.explanation')"
             class="flex-1"
           >
             <a-textarea
               v-model:value="questionData.explanation"
-              placeholder="Explanation for the answer (optional)"
+              :placeholder="t('quiz.question.explanationPlaceholder')"
               :rows="2"
               class="rounded-lg border-gray-300"
             />
           </a-form-item>
           <a-form-item
-            label="Score"
+            :label="t('quiz.question.score')"
             name="score"
             class="w-32"
           >
@@ -249,7 +253,7 @@ watch(
 
         <!-- Answer Options -->
         <div class="mb-3">
-          <label class="block text-base font-normal text-gray-800 mb-2">Answer Options</label>
+          <label class="block text-base font-normal text-gray-800 mb-2">{{ t('quiz.question.answerOptions') }}</label>
           <div class="space-y-2">
             <div
               v-for="(option, index) in questionData.options"
@@ -267,7 +271,7 @@ watch(
               <!-- Option Input -->
               <a-input
                 v-model:value="option.text"
-                :placeholder="`Option ${getOptionLabel(index)}`"
+                :placeholder="t('quiz.question.optionPlaceholder', { label: getOptionLabel(index) })"
                 class="flex-1 rounded-lg border-gray-300"
                 @input="updateOption(index, $event.target.value)"
               />
@@ -277,13 +281,13 @@ watch(
 
         <!-- Correct Answer Selection -->
         <a-form-item
-          label="Correct answer"
+          :label="t('quiz.question.correctAnswer')"
           name="correctAnswer"
           class="mb-0"
         >
           <a-select
             v-model:value="questionData.correctAnswer"
-            placeholder="Select correct answer"
+            :placeholder="t('quiz.question.selectCorrectAnswer')"
             class="h-12"
             :options="correctAnswerOptions"
           />

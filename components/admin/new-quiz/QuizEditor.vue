@@ -176,15 +176,27 @@ function updateQuestion(index: number, data: any) {
   }
 }
 
+// Check if ID is a UUID (real question ID) or temporary ID
+function isRealQuestionId(id: string): boolean {
+  // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(id)
+}
+
 // Transform questions to API format
-function transformQuestionsToApi(): NewQuizQuestionCreate[] {
+function transformQuestionsToApi(): Array<NewQuizQuestionCreate & { id?: string }> {
   return questions.value.map((question, index) => {
-    const baseQuestion: NewQuizQuestionCreate = {
+    const baseQuestion: NewQuizQuestionCreate & { id?: string } = {
       question_type: question.type === 'multiple-choice' ? 'multiple_choice' : question.type === 'text-input' ? 'text_input' : 'essay',
       prompt: question.data.question,
       explanation: question.data.explanation || '',
       order: index + 1,
       score: Number(question.data.score) || 1.0,
+    }
+
+    // Only include id if it's a real UUID (existing question), not a temporary ID
+    if (isRealQuestionId(question.id)) {
+      baseQuestion.id = question.id
     }
 
     if (question.type === 'multiple-choice') {
@@ -528,25 +540,28 @@ const totalScore = computed(() => {
               <TextInputQuestion
                 v-if="question.type === 'text-input'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />
               <MultipleChoiceQuestion
                 v-else-if="question.type === 'multiple-choice'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />
               <EssayQuestion
                 v-else-if="question.type === 'essay'"
                 :initial-data="question.data"
+                :question-number="index + 1"
                 @delete="removeQuestion(index)"
                 @update="updateQuestion(index, $event)"
               />
             </template>
 
             <!-- Các nút thêm quiz -->
-            <div class="flex flex-wrap gap-2" v-if="questions.length > 0">
+            <div v-if="questions.length > 0" class="flex flex-wrap gap-2">
               <a-button
                 type="default"
                 class="!flex !justify-center !items-center !gap-1"
