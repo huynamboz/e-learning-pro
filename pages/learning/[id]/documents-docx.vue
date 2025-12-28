@@ -3,6 +3,7 @@ import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
 import { renderAsync } from 'docx-preview'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import { getFileExtension } from '~/utils/fileExtension'
 
 definePageMeta({
   layout: 'default',
@@ -120,11 +121,9 @@ async function fetchLesson(chapterId: string) {
 const isDocx = computed(() => {
   if (!document.value)
     return false
-  return document.value.file_type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    || document.value.file_type === 'application/msword'
-    || document.value.file_type?.includes('docx')
-    || document.value.file_type?.includes('doc')
-    || document.value.file_type?.includes('word')
+  const extension = getFileExtension(document.value)
+  const extLower = extension.toLowerCase()
+  return extLower === 'docx' || extLower === 'doc'
 })
 
 // Get document URL

@@ -155,7 +155,6 @@ async function handleSave() {
           editForm.value.avatar as File,
           'Tải lên avatar thất bại',
         )
-        console.log('publicUrl', publicUrl)
         updateData.avatar = publicUrl
       }
       catch (error) {

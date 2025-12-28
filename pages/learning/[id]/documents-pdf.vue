@@ -3,6 +3,7 @@ import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
 import VuePdfEmbed from 'vue-pdf-embed'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import { getFileExtension } from '~/utils/fileExtension'
 // PDF component - will be loaded dynamically
 // const VuePdfEmbed = ref<any>(null)
 // const usePdfEmbed = ref(false)
@@ -124,7 +125,9 @@ async function fetchLesson(chapterId: string) {
 const isPdf = computed(() => {
   if (!document.value)
     return false
-  return document.value.file_type === 'application/pdf' || document.value.file_type?.includes('pdf')
+  const extension = getFileExtension(document.value)
+  const extLower = extension.toLowerCase()
+  return extLower === 'pdf'
 })
 
 // Get document URL

@@ -10,6 +10,7 @@ import ResourceItem from '~/components/learning/ResourceItem.vue'
 import { useAssetApi } from '~/composables/api/useAssetApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useLearnStore } from '~/stores/learn.store'
+import { getFileExtension } from '~/utils/fileExtension'
 import 'video.js/dist/video-js.css'
 // Nuxt auto-imports `ref`, `computed`, lifecycle hooks
 
@@ -374,84 +375,53 @@ function formatFileSize(bytes: number): string {
   return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
 }
 
-// Get icon for material based on file type
+// Get icon for material based on file extension
 function getMaterialIcon(material: any): string {
-  const fileType = material.file_type || ''
-  const fileTypeLower = fileType.toLowerCase()
+  const extension = getFileExtension(material)
+  const extLower = extension.toLowerCase()
 
   // PDF
-  if (fileTypeLower === 'application/pdf' || fileTypeLower.includes('pdf')) {
+  if (extLower === 'pdf') {
     return 'bi:filetype-pdf'
   }
 
   // Word Documents (DOCX, DOC)
-  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    || fileTypeLower === 'application/msword'
-    || fileTypeLower.includes('docx')
-    || fileTypeLower.includes('doc')
-    || fileTypeLower.includes('word')) {
+  if (extLower === 'docx' || extLower === 'doc') {
     return 'bi:filetype-docx'
   }
 
   // PowerPoint (PPTX, PPT)
-  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-    || fileTypeLower === 'application/vnd.ms-powerpoint'
-    || fileTypeLower.includes('pptx')
-    || fileTypeLower.includes('ppt')
-    || fileTypeLower.includes('powerpoint')
-    || fileTypeLower.includes('presentation')) {
+  if (extLower === 'pptx' || extLower === 'ppt') {
     return 'bi:filetype-pptx'
   }
 
   // Excel (XLSX, XLS)
-  if (fileTypeLower.includes('excel')
-    || fileTypeLower.includes('spreadsheet')
-    || fileTypeLower.includes('xlsx')
-    || fileTypeLower.includes('xls')) {
+  if (extLower === 'xlsx' || extLower === 'xls') {
     return 'solar:file-excel-bold-duotone'
   }
 
   // ZIP / Archive
-  if (fileTypeLower === 'application/zip'
-    || fileTypeLower === 'application/x-zip-compressed'
-    || fileTypeLower.includes('zip')
-    || fileTypeLower.includes('rar')
-    || fileTypeLower.includes('archive')) {
+  if (extLower === 'zip' || extLower === 'rar' || extLower === '7z' || extLower === 'tar' || extLower === 'gz') {
     return 'solar:file-zip-bold-duotone'
   }
 
   // Images
-  if (fileTypeLower.startsWith('image/')
-    || fileTypeLower.includes('png')
-    || fileTypeLower.includes('jpg')
-    || fileTypeLower.includes('jpeg')
-    || fileTypeLower.includes('gif')
-    || fileTypeLower.includes('webp')
-    || fileTypeLower.includes('svg')) {
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(extLower)) {
     return 'solar:file-image-bold-duotone'
   }
 
   // Audio
-  if (fileTypeLower.startsWith('audio/')
-    || fileTypeLower.includes('mp3')
-    || fileTypeLower.includes('wav')
-    || fileTypeLower.includes('m4a')
-    || fileTypeLower.includes('ogg')) {
+  if (['mp3', 'wav', 'm4a', 'ogg', 'aac', 'flac', 'wma'].includes(extLower)) {
     return 'solar:file-music-bold-duotone'
   }
 
   // Video
-  if (fileTypeLower.startsWith('video/')
-    || fileTypeLower.includes('mp4')
-    || fileTypeLower.includes('avi')
-    || fileTypeLower.includes('mov')) {
+  if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v'].includes(extLower)) {
     return 'solar:file-video-bold-duotone'
   }
 
   // Text files
-  if (fileTypeLower.includes('text')
-    || fileTypeLower.includes('txt')
-    || fileTypeLower.includes('md')) {
+  if (['txt', 'md', 'rtf', 'csv'].includes(extLower)) {
     return 'solar:file-text-bold-duotone'
   }
 
@@ -459,63 +429,48 @@ function getMaterialIcon(material: any): string {
   return 'solar:document-text-bold-duotone'
 }
 
-// Get icon color based on file type
+// Get icon color based on file extension
 function getMaterialIconColor(material: any): string {
-  const fileType = material.file_type || ''
-  const fileTypeLower = fileType.toLowerCase()
+  const extension = getFileExtension(material)
+  const extLower = extension.toLowerCase()
 
   // PDF - Red
-  if (fileTypeLower === 'application/pdf' || fileTypeLower.includes('pdf')) {
+  if (extLower === 'pdf') {
     return 'text-red-600'
   }
 
   // Word - Blue
-  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    || fileTypeLower === 'application/msword'
-    || fileTypeLower.includes('docx')
-    || fileTypeLower.includes('doc')
-    || fileTypeLower.includes('word')) {
+  if (extLower === 'docx' || extLower === 'doc') {
     return 'text-blue-600'
   }
 
   // PowerPoint - Orange
-  if (fileTypeLower === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-    || fileTypeLower === 'application/vnd.ms-powerpoint'
-    || fileTypeLower.includes('pptx')
-    || fileTypeLower.includes('ppt')
-    || fileTypeLower.includes('powerpoint')
-    || fileTypeLower.includes('presentation')) {
+  if (extLower === 'pptx' || extLower === 'ppt') {
     return 'text-orange-600'
   }
 
   // Excel - Green
-  if (fileTypeLower.includes('excel')
-    || fileTypeLower.includes('spreadsheet')
-    || fileTypeLower.includes('xlsx')
-    || fileTypeLower.includes('xls')) {
+  if (extLower === 'xlsx' || extLower === 'xls') {
     return 'text-green-600'
   }
 
   // ZIP - Purple
-  if (fileTypeLower === 'application/zip'
-    || fileTypeLower === 'application/x-zip-compressed'
-    || fileTypeLower.includes('zip')
-    || fileTypeLower.includes('rar')) {
+  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extLower)) {
     return 'text-purple-600'
   }
 
   // Images - Pink
-  if (fileTypeLower.startsWith('image/')) {
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(extLower)) {
     return 'text-pink-600'
   }
 
   // Audio - Indigo
-  if (fileTypeLower.startsWith('audio/')) {
+  if (['mp3', 'wav', 'm4a', 'ogg', 'aac', 'flac', 'wma'].includes(extLower)) {
     return 'text-indigo-600'
   }
 
   // Video - Red
-  if (fileTypeLower.startsWith('video/')) {
+  if (['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm', 'mkv', 'm4v'].includes(extLower)) {
     return 'text-red-500'
   }
 
@@ -529,19 +484,13 @@ function handleMaterialClick(material: any) {
     return
   }
 
-  // Determine file type and route to appropriate preview page
-  const fileType = material.file_type || ''
-  const isPdf = fileType === 'application/pdf' || fileType.includes('pdf')
-  const isDocx = fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    || fileType.includes('docx')
-    || fileType.includes('word')
-    || fileType.includes('doc')
-  const isPptx = fileType === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-    || fileType === 'application/vnd.ms-powerpoint'
-    || fileType.includes('pptx')
-    || fileType.includes('ppt')
-    || fileType.includes('powerpoint')
-    || fileType.includes('presentation')
+  // Determine file type from extension and route to appropriate preview page
+  const extension = getFileExtension(material)
+  const extLower = extension.toLowerCase()
+
+  const isPdf = extLower === 'pdf'
+  const isDocx = extLower === 'docx' || extLower === 'doc'
+  const isPptx = extLower === 'pptx' || extLower === 'ppt'
 
   // Determine route path based on file type
   let path = `/learning/${courseId}/documents-pdf` // Default to PDF

@@ -2,8 +2,10 @@
 import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
 import { useCourseApi } from '~/composables/api/useCourseApi'
+import { getFileExtension } from '~/utils/fileExtension'
 
 // Dynamically import VueOfficePptx component
+// @ts-expect-error - Dynamic import for @vue-office/pptx
 const VueOfficePptx = defineAsyncComponent(() => import('@vue-office/pptx').then(m => m.default))
 
 definePageMeta({
@@ -122,12 +124,9 @@ async function fetchLesson(chapterId: string) {
 const isPptx = computed(() => {
   if (!document.value)
     return false
-  return document.value.file_type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-    || document.value.file_type === 'application/vnd.ms-powerpoint'
-    || document.value.file_type?.includes('pptx')
-    || document.value.file_type?.includes('ppt')
-    || document.value.file_type?.includes('powerpoint')
-    || document.value.file_type?.includes('presentation')
+  const extension = getFileExtension(document.value)
+  const extLower = extension.toLowerCase()
+  return extLower === 'pptx' || extLower === 'ppt'
 })
 
 // Get document URL
