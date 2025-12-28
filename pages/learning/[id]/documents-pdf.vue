@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
-import VuePdfEmbed from 'vue-pdf-embed'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { getFileExtension } from '~/utils/fileExtension'
-// PDF component - will be loaded dynamically
-// const VuePdfEmbed = ref<any>(null)
-// const usePdfEmbed = ref(false)
+
+// Dynamically import VuePdfEmbed component (client-side only)
+// @ts-expect-error - Dynamic import for vue-pdf-embed
+const VuePdfEmbed = defineAsyncComponent(() => import('vue-pdf-embed').then(m => m.default))
 
 definePageMeta({
   layout: 'default',

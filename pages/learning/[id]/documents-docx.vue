@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
-import { renderAsync } from 'docx-preview'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { getFileExtension } from '~/utils/fileExtension'
 
@@ -139,11 +138,18 @@ async function loadDocxPreview() {
     return
   }
 
+  // Only run on client-side
+  if (!process.client) {
+    return
+  }
+
   try {
     docxLoading.value = true
     docxError.value = null
 
-    // Dynamically import docx-preview
+    // Dynamically import docx-preview (client-side only)
+    // @ts-expect-error - Dynamic import for docx-preview
+    const { renderAsync } = await import('docx-preview')
 
     // Fetch the DOCX file
     const response = await fetch(documentUrl.value)
