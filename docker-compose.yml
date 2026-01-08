@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   elearning-blue:
-    image: ceruscs/elearning-app:v1.0.0
+    image: ceruscs/elearning-app:v1.2.0
     container_name: elearning-blue
     environment:
       NODE_ENV: production
