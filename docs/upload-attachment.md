@@ -70,7 +70,7 @@ Lesson Materials là các tài liệu (PDF, DOC, PPT, ZIP, Image, Audio, Video) 
 
 ### Endpoint: `POST /api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/upload-material-url/`
 
-**URL:** `https://elearning.genfash.online/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/upload-material-url/`
+**URL:** `https://api.hoctiengycungphantam.com/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/upload-material-url/`
 
 **Permission:** `IsOwnerTeacherOrAdmin` (teacher của course hoặc staff)
 
@@ -118,7 +118,7 @@ Content-Type: application/json
 
 **Example Request (cURL):**
 ```bash
-curl -X POST "https://elearning.genfash.online/api/v1/courses/b53225f9-e3ec-48e8-998e-b90ee0630757/chapters/aa0fa051-72a9-4e14-b897-094ac16fc91f/lessons/bde01fd9-e51b-4085-b30b-5aafbb276d0e/upload-material-url/" \
+curl -X POST "https://api.hoctiengycungphantam.com/api/v1/courses/b53225f9-e3ec-48e8-998e-b90ee0630757/chapters/aa0fa051-72a9-4e14-b897-094ac16fc91f/lessons/bde01fd9-e51b-4085-b30b-5aafbb276d0e/upload-material-url/" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -129,7 +129,7 @@ curl -X POST "https://elearning.genfash.online/api/v1/courses/b53225f9-e3ec-48e8
 
 **Example Request (JavaScript/Fetch):**
 ```javascript
-const response = await fetch('https://elearning.genfash.online/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/upload-material-url/', {
+const response = await fetch('https://api.hoctiengycungphantam.com/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/upload-material-url/', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${accessToken}`,
@@ -152,7 +152,7 @@ console.log('Public URL:', data.public_url); // Dùng URL này cho LessonMateria
 
 ### Endpoint: `PUT/PATCH /api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/`
 
-**URL:** `https://elearning.genfash.online/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/`
+**URL:** `https://api.hoctiengycungphantam.com/api/v1/courses/{course_pk}/chapters/{chapter_pk}/lessons/{lesson_pk}/`
 
 **Permission:** `IsOwnerTeacherOrAdmin` (teacher của course hoặc staff)
 

@@ -11,7 +11,7 @@ module.exports = {
         NODE_ENV: 'development',
         PORT: 3000,
         HOST: '0.0.0.0',
-        API_BASE_URL: 'https://elearning.genfash.online/api/v1',
+        API_BASE_URL: 'https://api.hoctiengycungphantam.com/api/v1',
       },
       // Development specific options
       watch: true,

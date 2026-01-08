@@ -10,7 +10,7 @@
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-API_BASE_URL=https://elearning.genfash.online/api/v1
+API_BASE_URL=https://api.hoctiengycungphantam.com/api/v1
 GOOGLE_CLIENT_ID=your_google_client_id
 PORT=3000
 NODE_ENV=production

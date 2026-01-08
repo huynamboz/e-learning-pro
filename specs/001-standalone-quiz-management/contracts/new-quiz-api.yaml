@@ -7,7 +7,7 @@ info:
     name: E-Learning Platform API
 
 servers:
-  - url: https://elearning.genfash.online/api/v1
+  - url: https://api.hoctiengycungphantam.com/api/v1
     description: Production server
   - url: http://localhost:8000/api/v1
     description: Development server

@@ -1,5 +1,51 @@
 import type { FetchOptions } from 'ofetch'
 
+// Helper function to capture errors in Sentry
+function captureSentryError(error: Error | string, context: {
+  tags?: Record<string, string | number | boolean>
+  extra?: Record<string, any>
+  contexts?: Record<string, any>
+}) {
+  // Only capture errors on client-side
+  if (typeof window === 'undefined')
+    return
+
+  try {
+    // Try to use Sentry if available (from @sentry/nuxt module)
+    // @sentry/nuxt exposes Sentry globally
+    // @ts-expect-error - Sentry may be available globally from @sentry/nuxt
+    if (typeof window !== 'undefined' && window.Sentry) {
+      // @ts-expect-error - Sentry may be available globally from @sentry/nuxt
+      window.Sentry.captureException(
+        typeof error === 'string' ? new Error(error) : error,
+        {
+          tags: context.tags || {},
+          extra: context.extra || {},
+          contexts: context.contexts || {},
+        },
+      )
+      return
+    }
+
+    // Try to access from global scope (Nuxt auto-imports)
+    // @ts-expect-error - Sentry may be auto-imported by Nuxt
+    if (typeof Sentry !== 'undefined' && Sentry.captureException) {
+      // @ts-expect-error - Sentry may be auto-imported by Nuxt
+      Sentry.captureException(
+        typeof error === 'string' ? new Error(error) : error,
+        {
+          tags: context.tags || {},
+          extra: context.extra || {},
+          contexts: context.contexts || {},
+        },
+      )
+    }
+  }
+  catch {
+    // Silently fail if Sentry is not available
+  }
+}
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 interface SafeFetchOptions extends Omit<FetchOptions, 'method'> {
@@ -44,6 +90,7 @@ async function sendErrorToWebhook(errorData: {
   statusMessage?: string
   error?: any
   message?: string
+  payload?: any
   timestamp?: string
   userAgent?: string
   deviceId?: string
@@ -170,17 +217,45 @@ async function createRequest<T>(
     ...options,
     headers,
     onResponseError: async ({ response, request }: any) => {
+      const errorMessage = response._data?.message || response._data?.error || 'API request failed'
+      const fullUrl = request?.url || url
+      const method = options.method || 'GET'
+
       // Send error to webhook
       if (window && typeof window !== 'undefined') {
-      sendErrorToWebhook({
-        url: request?.url || url,
-        method: options.method || 'GET',
-        statusCode: response.status,
-        statusMessage: response.statusText || 'Request failed',
-        error: response._data,
-        message: response._data?.message || response._data?.error || 'API request failed',
-      })
+        sendErrorToWebhook({
+          url: fullUrl,
+          method,
+          statusCode: response.status,
+          statusMessage: response.statusText || 'Request failed',
+          error: response._data,
+          message: errorMessage,
+          payload: options.body,
+        })
       }
+
+      // Capture error in Sentry
+      captureSentryError(new Error(errorMessage), {
+        tags: {
+          api_error: 'true',
+          status_code: String(response.status),
+          http_method: method,
+        },
+        extra: {
+          url: fullUrl,
+          method,
+          statusCode: response.status,
+          statusMessage: response.statusText,
+          responseData: response._data,
+        },
+        contexts: {
+          request: {
+            url: fullUrl,
+            method,
+            headers: request?.headers,
+          },
+        },
+      })
 
       // Handle 401 Unauthorized
       if (response.status === 401) {
@@ -202,12 +277,38 @@ async function createRequest<T>(
       throw error
     },
     onRequestError: ({ error, request }: any) => {
+      const errorMessage = error?.message || String(error) || 'Network error occurred'
+      const fullUrl = request?.url || url
+      const method = options.method || 'GET'
+
       // Send error to webhook
       sendErrorToWebhook({
-        url: request?.url || url,
-        method: options.method || 'GET',
-        error: error?.message || String(error),
+        url: fullUrl,
+        method,
+        error: errorMessage,
         message: 'Network error occurred',
+        payload: options.body,
+      })
+
+      // Capture error in Sentry
+      captureSentryError(error instanceof Error ? error : new Error(errorMessage), {
+        tags: {
+          api_error: 'true',
+          network_error: 'true',
+          http_method: method,
+        },
+        extra: {
+          url: fullUrl,
+          method,
+          error: errorMessage,
+          originalError: error,
+        },
+        contexts: {
+          request: {
+            url: fullUrl,
+            method,
+          },
+        },
       })
 
       console.error('API Request Error:', error)
@@ -266,14 +367,46 @@ async function upload<T = any>(
     ...options,
     headers,
     onResponseError: async ({ response, request }: any) => {
+      const errorMessage = response._data?.message || response._data?.error || 'File upload failed'
+      const fullUrl = request?.url || url
+
       // Send error to webhook
+      // Note: For FormData, we can't easily serialize it, so we'll send a note instead
+      const payloadInfo = formData instanceof FormData
+        ? { _type: 'FormData', _note: 'FormData cannot be serialized' }
+        : formData
+
       sendErrorToWebhook({
-        url: request?.url || url,
+        url: fullUrl,
         method: 'POST',
         statusCode: response.status,
         statusMessage: response.statusText || 'Upload failed',
         error: response._data,
-        message: response._data?.message || response._data?.error || 'File upload failed',
+        message: errorMessage,
+        payload: payloadInfo,
+      })
+
+      // Capture error in Sentry
+      captureSentryError(new Error(errorMessage), {
+        tags: {
+          api_error: 'true',
+          upload_error: 'true',
+          status_code: String(response.status),
+          http_method: 'POST',
+        },
+        extra: {
+          url: fullUrl,
+          method: 'POST',
+          statusCode: response.status,
+          statusMessage: response.statusText,
+          responseData: response._data,
+        },
+        contexts: {
+          request: {
+            url: fullUrl,
+            method: 'POST',
+          },
+        },
       })
 
       if (response.status === 401) {
