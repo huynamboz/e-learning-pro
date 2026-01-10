@@ -10,14 +10,32 @@ export interface MenuItem {
   subItems?: SubMenuItem[]
 }
 
+const STORAGE_KEY = 'admin-sidebar-collapsed'
+
+// Initialize from localStorage
+const getInitialCollapsedState = (): boolean => {
+  if (process.client) {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    return saved === 'true'
+  }
+  return false
+}
+
 const globalSidebarState = {
-  isCollapsed: ref(false),
+  isCollapsed: ref(getInitialCollapsedState()),
   _initialized: false,
 }
 
 export function useSidebar() {
   const { isCollapsed } = globalSidebarState
   const { t } = useI18n()
+
+  // Save to localStorage when collapsed state changes
+  watch(isCollapsed, (newValue) => {
+    if (process.client) {
+      localStorage.setItem(STORAGE_KEY, String(newValue))
+    }
+  })
 
   const menu = computed<MenuItem[]>(() => [
     {
