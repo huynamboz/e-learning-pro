@@ -68,7 +68,7 @@ onMounted(() => {
 <template>
   <div
     class="fixed bg-white top-0 left-0 border rounded-e-2xl border-[#E6E7EC] z-50 h-full transition-all duration-300 ease-in-out h-100vh overflow-y-auto scrollbar-hide"
-    :class="isCollapsed ? 'w-[80px] px-4' : 'w-[280px] px-[18px]'"
+     :class="isCollapsed ? 'w-[80px] px-4' : 'w-[280px] px-[18px]'"
   >
     <div class="py-6 flex flex-col h-full flex-1">
       <!-- Site logo and dark mode toggle -->

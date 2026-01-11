@@ -441,12 +441,14 @@ export interface CalendarSession {
   attendance_count: number
   present_count: number
   meeting_link: string
+  background_color: string | null
 }
 
 export interface CalendarClassroom {
   id: string
   title: string
   background_url: string
+  background_color: string | null
   meeting_link?: string
   course: {
     id: string

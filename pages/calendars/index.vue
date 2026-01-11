@@ -28,30 +28,8 @@ export interface CalendarEvent {
   course_title?: string
 }
 
-// List of background colors (dark colors suitable for white text)
-const EVENT_BACKGROUND_COLORS = [
-  '#268100', // Green (default)
-  '#1e40af', // Blue
-  '#7c3aed', // Purple
-  '#c2410c', // Orange
-  '#be123c', // Rose
-  '#0891b2', // Cyan
-  '#b45309', // Amber
-  '#059669', // Emerald
-  '#7c2d12', // Brown
-  '#6b21a8', // Violet
-  '#0c4a6e', // Sky
-  '#831843', // Fuchsia
-  '#1e3a8a', // Indigo
-  '#92400e', // Yellow
-  '#991b1b', // Red
-]
-
-// Get random background color for event
-function getRandomBackgroundColor(): string {
-  const randomIndex = Math.floor(Math.random() * EVENT_BACKGROUND_COLORS.length)
-  return EVENT_BACKGROUND_COLORS[randomIndex]
-}
+// Default background color if classroom doesn't have background_color
+const DEFAULT_BACKGROUND_COLOR = '#268100' // Green
 
 // Format event time (from "YYYY-MM-DD HH:mm" to "HH:mm")
 function formatEventTime(dateTimeString: string): string {
@@ -119,8 +97,8 @@ function convertSessionToEvent(session: CalendarSession, classroom: CalendarClas
     meeting_link: session.meeting_link || '',
     resizable: false,
     schedule: 1,
-    // Use background_color from session if available, otherwise random
-    background: (session as any).background_color || getRandomBackgroundColor(),
+    // Use background_color from session if available, otherwise default
+    background: classroom.background_color || DEFAULT_BACKGROUND_COLOR,
   }
 }
 
@@ -226,7 +204,6 @@ function openEventDetail(event: any) {
 // Handle join class
 function startJoinClass(event: CalendarEvent) {
   // close event detail dialog
-  console.log('startJoinClass', event)
   selectedEventForJoin.value = event
   checkInError.value = null // Reset error when opening dialog
   isJoinClassDialogVisible.value = true
@@ -448,7 +425,7 @@ onMounted(async () => {
               <template #event="{ event }">
                 <div
                   class="flex flex-col gap-1 text-white p-1 px-2 rounded-[5px] h-full"
-                  :style="{ backgroundColor: event.background || getRandomBackgroundColor() }"
+                  :style="{ backgroundColor: event.background || DEFAULT_BACKGROUND_COLOR }"
                 >
                   <div class="text-sm font-medium text-white leading-tight">
                     {{ event.title }}

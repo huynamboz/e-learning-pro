@@ -519,9 +519,13 @@ function handleEditClassroom() {
   }
 }
 
-function handleClassroomUpdated() {
-  loadSessionDetail()
-  emit('sessionUpdated')
+async function handleClassroomUpdated() {
+  // Reload session detail to get updated classroom data
+  if (props.sessionId && props.courseId) {
+    loadSessionDetail().then(() => {
+      emit('sessionUpdated')
+    })
+  }
 }
 
 // Video upload functions

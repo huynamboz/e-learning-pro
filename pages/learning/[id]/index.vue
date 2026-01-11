@@ -73,6 +73,10 @@ const resourcePageSize = ref(10)
 const lessonMaterials = ref<any[]>([])
 const isLoadingLessonMaterials = ref(false)
 
+// Session videos data
+const sessionVideos = ref<any[]>([])
+const isLoadingSessionVideos = ref(false)
+
 // Video progress tracking
 const videoProgress = ref(0)
 const hasCompletedLesson = ref(false)
@@ -607,14 +611,61 @@ watch(activeLesson, (newLesson) => {
   }
 }, { immediate: true })
 
-// Watch for course changes to load classmates when course_type is 'course'
+// Load session videos
+async function loadSessionVideos() {
+  if (course.value?.course_type !== 'course') {
+    sessionVideos.value = []
+    return
+  }
+
+  try {
+    isLoadingSessionVideos.value = true
+    const response = await courseApi.getSessionVideosForLearning(courseId, {
+      page_size: 100,
+    })
+    sessionVideos.value = response.results || []
+  }
+  catch (error: any) {
+    console.error('Error loading session videos:', error)
+    sessionVideos.value = []
+  }
+  finally {
+    isLoadingSessionVideos.value = false
+  }
+}
+
+// Handle session video click
+function handleSessionVideoClick(video: any) {
+  if (!video || !video.file_url) {
+    return
+  }
+
+  // Set as active lesson-like item
+  // We'll create a temporary lesson object for the video player
+  const tempLesson = {
+    id: video.id,
+    title: video.title,
+    video_url: video.file_url,
+    video_duration: video.duration,
+    video_duration_formatted: video.duration_formatted,
+    is_completed: false,
+    comment_count: 0,
+    quiz_count: 0,
+  }
+
+  learnStore.setActiveLesson(tempLesson as any)
+}
+
+// Watch for course changes to load classmates and session videos when course_type is 'course'
 watch(course, (newCourse) => {
   if (newCourse?.course_type === 'course') {
     loadCourseStudents()
+    loadSessionVideos()
   }
   else {
-    // Clear classmates if course_type is not 'course'
+    // Clear classmates and session videos if course_type is not 'course'
     courseStudents.value = []
+    sessionVideos.value = []
   }
 }, { immediate: true })
 
@@ -999,6 +1050,64 @@ onBeforeUnmount(() => {
 
         <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-9">
+          <!-- Session Videos Section (only for course type) -->
+          <div v-if="course?.course_type === 'course'" class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
+            <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">
+              Video record
+            </h2>
+
+            <!-- Loading State -->
+            <div v-if="isLoadingSessionVideos" class="flex items-center justify-center py-8">
+              <a-spin size="small" />
+              <span class="ml-2 text-gray-600">{{ t('course.loading') }}</span>
+            </div>
+
+            <!-- Session Videos List -->
+            <div v-else-if="sessionVideos.length > 0" class="space-y-0">
+              <div
+                v-for="(video, index) in sessionVideos"
+                :key="video.id"
+                class="flex items-center justify-between py-4 px-4 group rounded-lg lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
+                :class="{
+                  '!bg-green-600 !text-white': activeLesson?.id === video.id,
+                }"
+                @click="handleSessionVideoClick(video)"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center justify-center w-5 h-5">
+                    <Icon name="tabler:video" size="16" class="text-gray-500 group-hover:text-white" :class="{ '!text-white': activeLesson?.id === video.id }" />
+                  </div>
+                  <span
+                    class="text-sm font-medium lesson-text group-hover:text-white"
+                    :class="{
+                      '!text-white': activeLesson?.id === video.id,
+                      'text-gray-900': activeLesson?.id !== video.id,
+                    }"
+                  >
+                    {{ index + 1 }}. {{ video.title }}
+                  </span>
+                </div>
+                <div
+                  class="flex items-center gap-1.5 group-hover:text-white"
+                  :class="{
+                    '!text-white': activeLesson?.id === video.id,
+                    'text-gray-500': activeLesson?.id !== video.id,
+                  }"
+                >
+                  <span class="text-sm">{{ video.duration_formatted || formatVideoDuration(video.duration) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-8">
+              <Icon name="tabler:video" class="text-gray-400 text-2xl mx-auto mb-2" />
+              <p class="text-sm text-gray-500">
+                Chưa có video record
+              </p>
+            </div>
+          </div>
+
           <!-- Course Completion Card -->
           <div class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
             <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">

@@ -13,23 +13,13 @@ export interface MenuItem {
 const STORAGE_KEY_USER = 'user-sidebar-collapsed'
 const STORAGE_KEY_ADMIN = 'admin-sidebar-collapsed'
 
-// Initialize from localStorage
-function getInitialCollapsedState(isAdmin = false): boolean {
-  if (process.client) {
-    const key = isAdmin ? STORAGE_KEY_ADMIN : STORAGE_KEY_USER
-    const saved = localStorage.getItem(key)
-    return saved === 'true'
-  }
-  return false
-}
-
 const globalSidebarState = {
-  isCollapsed: ref(getInitialCollapsedState(false)),
+  isCollapsed: ref(false), // Start with false, will be synced on client
   _initialized: false,
 }
 
 const globalAdminSidebarState = {
-  isCollapsed: ref(getInitialCollapsedState(true)),
+  isCollapsed: ref(false), // Start with false, will be synced on client
   _initialized: false,
 }
 
@@ -39,9 +29,18 @@ export function useSidebar(isAdmin = false) {
   const { t } = useI18n()
   const storageKey = isAdmin ? STORAGE_KEY_ADMIN : STORAGE_KEY_USER
 
+  // Initialize state from localStorage on client mount
+  if (typeof window !== 'undefined' && !sidebarState._initialized) {
+    const saved = localStorage.getItem(storageKey)
+    if (saved !== null) {
+      isCollapsed.value = saved === 'true'
+    }
+    sidebarState._initialized = true
+  }
+
   // Save to localStorage when collapsed state changes
   watch(isCollapsed, (newValue) => {
-    if (process.client) {
+    if (typeof window !== 'undefined') {
       localStorage.setItem(storageKey, String(newValue))
     }
   })
