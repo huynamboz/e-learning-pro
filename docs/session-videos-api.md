@@ -10,7 +10,7 @@ API để quản lý videos của một session. Hệ thống hỗ trợ upload 
 
 ### 1. Get Presigned URL for Video Upload
 
-**Endpoint**: `POST /api/v1/courses/{course_id}/sessions/{session_id}/upload-video-url/`
+**Endpoint**: `POST /api/v1/courses/{course_id}/sessions/{session_id}/videos/upload-video-url/`
 
 **Description**: Lấy presigned URL để upload video lên S3. Frontend sẽ sử dụng URL này để upload file trực tiếp lên S3.
 
@@ -248,7 +248,7 @@ API để quản lý videos của một session. Hệ thống hỗ trợ upload 
    - Hiển thị file trong list với status `pending`
 
 2. **User bấm "Upload video này"**
-   - Frontend gọi `POST /api/v1/courses/{course_id}/sessions/{session_id}/upload-video-url/` để lấy presigned URL
+   - Frontend gọi `POST /api/v1/courses/{course_id}/sessions/{session_id}/videos/upload-video-url/` để lấy presigned URL
    - Frontend upload file trực tiếp lên S3 bằng PUT request với presigned URL
    - Track upload progress và hiển thị progress bar
 
@@ -332,7 +332,7 @@ hoặc
 **Step 1: Get Presigned URL**
 
 ```http
-POST /api/v1/courses/550e8400-e29b-41d4-a716-446655440000/sessions/session-uuid-1/upload-video-url/
+POST /api/v1/courses/550e8400-e29b-41d4-a716-446655440000/sessions/session-uuid-1/videos/upload-video-url/
 Content-Type: application/json
 Authorization: Bearer {token}
 

@@ -4,7 +4,6 @@ import { CloseOutlined } from '@ant-design/icons-vue'
 import { Modal, notification } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
-import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useFileUpload } from '~/composables/useFileUpload'
 
 interface Props {
@@ -29,12 +28,16 @@ const {
   quickEnrollStudent,
   removeStudentFromClassroom,
   updateClassroomSession,
+  getClassroomStudents,
+  getSessionVideoUploadUrl,
+  createSessionVideo,
+  getSessionVideos,
+  deleteSessionVideo,
   getSessionMaterialUploadUrl,
   createSessionMaterial,
   getSessionMaterials,
   deleteSessionMaterial,
 } = useClassroomApi()
-const { getCourseStudents } = useCourseApi()
 const { uploadFileWithProgress } = useFileUpload()
 
 // State
@@ -71,9 +74,14 @@ interface VideoFileItem {
   percent?: number
   url?: string
   originFileObj?: File
+  id?: string // Video ID from API (after upload)
+  file_size?: number
+  content_type?: string
+  duration?: number
 }
 
 const videoFileList = ref<VideoFileItem[]>([])
+const videosLoading = ref(false)
 
 // Material upload state
 interface MaterialFileItem {
@@ -105,6 +113,7 @@ const dialogVisible = computed({
 watch(() => props.open, async (newValue) => {
   if (newValue && props.sessionId && props.courseId) {
     await loadSessionDetail()
+    await loadVideos()
     await loadMaterials()
     if (props.classroomId) {
       await loadStudents()
@@ -157,32 +166,21 @@ async function loadSessionDetail() {
 
 // Load students list
 async function loadStudents() {
-  if (!props.classroomId || !props.courseId)
+  if (!props.classroomId)
     return
 
   try {
     studentsLoading.value = true
 
-    // Get all course students
-    const response = await getCourseStudents(props.courseId)
-    const allStudents = (response as any).results || []
-
-    // Filter students by classroom enrollment
-    const classroomStudents = allStudents.filter((student: any) => {
-      // Check if student has enrollment with classroom_id matching current classroom
-      if (student.enrollment && student.enrollment.classroom_id === props.classroomId) {
-        return true
-      }
-      return false
-    })
-
-    students.value = classroomStudents
+    // Get classroom students directly
+    const response = await getClassroomStudents(props.classroomId)
+    students.value = (response.results || [])
   }
   catch (err: any) {
     console.error('Error loading students:', err)
     notification.error({
       message: 'Lỗi khi tải danh sách học sinh',
-      description: err.message || 'Vui lòng thử lại',
+      description: err.message || err.detail || 'Vui lòng thử lại',
       duration: 5,
     })
   }
@@ -191,11 +189,18 @@ async function loadStudents() {
   }
 }
 
-// Format date time for display
-function formatDateTime(dateTimeString: string): string {
+// Format date only
+function formatDate(dateTimeString: string): string {
   if (!dateTimeString)
     return ''
-  return dayjs(dateTimeString).format('DD/MM/YYYY HH:mm')
+  return dayjs(dateTimeString).format('DD/MM/YYYY')
+}
+
+// Format time only
+function formatTime(dateTimeString: string): string {
+  if (!dateTimeString)
+    return ''
+  return dayjs(dateTimeString).format('HH:mm')
 }
 
 // Handle add student
@@ -405,6 +410,35 @@ function handleVideoChange(info: UploadChangeParam) {
   }
 }
 
+// Load videos from session
+async function loadVideos() {
+  if (!props.sessionId || !props.courseId)
+    return
+
+  try {
+    videosLoading.value = true
+    const response = await getSessionVideos(props.courseId, props.sessionId)
+    videoFileList.value = (response.results || []).map((video: any) => ({
+      uid: video.id,
+      name: video.file_name,
+      status: 'done' as const,
+      percent: 100,
+      url: video.file_url,
+      id: video.id,
+      file_size: video.file_size,
+      content_type: video.content_type,
+      duration: video.duration,
+    }))
+  }
+  catch (err: any) {
+    console.error('Error loading videos:', err)
+    // Don't show error notification, just log it
+  }
+  finally {
+    videosLoading.value = false
+  }
+}
+
 // Upload single video
 async function uploadSingleVideo(uid: string) {
   const fileItem = videoFileList.value.find(f => f.uid === uid)
@@ -414,17 +448,87 @@ async function uploadSingleVideo(uid: string) {
   if (fileItem.status === 'uploading' || fileItem.status === 'done')
     return
 
+  if (!props.sessionId || !props.courseId) {
+    notification.error({
+      message: 'Lỗi',
+      description: 'Thiếu thông tin session hoặc course',
+      duration: 5,
+    })
+    return
+  }
+
   fileItem.status = 'uploading'
   fileItem.percent = 0
 
   try {
-    // TODO: Replace with actual API call
-    // For now, simulate upload progress
-    await simulateVideoUpload(fileItem, 0)
+    const file = fileItem.originFileObj
 
+    // Validate file type
+    const allowedTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo']
+    const fileType = file.type || 'video/mp4'
+
+    if (!allowedTypes.includes(fileType)) {
+      throw new Error(`Loại file không được hỗ trợ. Chỉ chấp nhận: ${allowedTypes.join(', ')}`)
+    }
+
+    // Step 1: Get presigned URL
+    console.warn('Requesting presigned URL for video upload:', {
+      courseId: props.courseId,
+      sessionId: props.sessionId,
+      fileName: file.name,
+      contentType: fileType,
+    })
+
+    const presignedResponse = await getSessionVideoUploadUrl(
+      props.courseId,
+      props.sessionId,
+      {
+        file_name: file.name,
+        content_type: fileType,
+      },
+    )
+
+    console.warn('Presigned URL response:', presignedResponse)
+
+    const uploadUrl = presignedResponse?.upload_url
+    const publicUrl = presignedResponse?.public_url
+
+    if (!uploadUrl || !publicUrl) {
+      console.error('Missing upload URLs in response:', presignedResponse)
+      throw new Error('Không nhận được upload URL từ server')
+    }
+
+    // Step 2: Upload to S3 with progress tracking
+    await uploadFileWithProgress(
+      file,
+      uploadUrl,
+      (percent) => {
+        fileItem.percent = percent
+      },
+    )
+
+    // Step 3: Create video record
+    // Note: duration is optional, frontend can try to extract from video metadata if needed
+    const videoResponse = await createSessionVideo(
+      props.courseId,
+      props.sessionId,
+      {
+        file_url: publicUrl,
+        file_name: file.name,
+        file_size: file.size,
+        content_type: file.type || 'video/mp4',
+        // duration: optional, can be extracted from video metadata if needed
+      },
+    )
+
+    // Update file item with video data
     fileItem.status = 'done'
     fileItem.percent = 100
-    // TODO: Set fileItem.url from API response
+    fileItem.url = publicUrl
+    fileItem.id = videoResponse.id
+    fileItem.file_size = videoResponse.file_size
+    fileItem.content_type = videoResponse.content_type
+    fileItem.duration = videoResponse.duration || undefined
 
     notification.success({
       message: 'Upload thành công',
@@ -432,36 +536,44 @@ async function uploadSingleVideo(uid: string) {
       duration: 3,
     })
   }
-  catch {
+  catch (err: any) {
+    console.error('Upload video failed:', err)
+    console.error('Error details:', {
+      message: err?.message,
+      data: err?.data,
+      response: err?.response,
+      status: err?.status,
+      statusText: err?.statusText,
+    })
+
     fileItem.status = 'error'
+
+    // Extract error message
+    let errorMessage = `Không thể upload ${fileItem.name}`
+    if (err?.data?.detail) {
+      errorMessage = err.data.detail
+    }
+    else if (err?.data?.message) {
+      errorMessage = err.data.message
+    }
+    else if (err?.data?.errors) {
+      const errorFields = Object.keys(err.data.errors)
+      const firstError = errorFields[0]
+      errorMessage = `${firstError}: ${err.data.errors[firstError][0]}`
+    }
+    else if (err?.message) {
+      errorMessage = err.message
+    }
+    else if (err?.response?.data?.detail) {
+      errorMessage = err.response.data.detail
+    }
+
     notification.error({
       message: 'Lỗi khi upload video',
-      description: `Không thể upload ${fileItem.name}`,
+      description: errorMessage,
       duration: 5,
     })
   }
-}
-
-// Simulate video upload with progress (replace with actual API call later)
-function simulateVideoUpload(fileItem: VideoFileItem, _index: number): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (!fileItem.originFileObj) {
-      reject(new Error('No file to upload'))
-      return
-    }
-
-    // Simulate progress updates
-    let progress = 0
-    const interval = setInterval(() => {
-      progress += Math.random() * 15
-      if (progress >= 100) {
-        progress = 100
-        clearInterval(interval)
-        resolve()
-      }
-      fileItem.percent = Math.min(progress, 100)
-    }, 200)
-  })
 }
 
 function removeVideo(uid: string) {
@@ -469,21 +581,34 @@ function removeVideo(uid: string) {
   if (!fileItem)
     return
 
-  // If video is already uploaded, show confirm dialog
-  if (fileItem.status === 'done') {
+  // If video is already uploaded, show confirm dialog and delete from server
+  if (fileItem.status === 'done' && fileItem.id) {
     Modal.confirm({
       title: 'Xác nhận xóa video',
       content: `Bạn có chắc chắn muốn xóa video "${fileItem.name}"? Video đã được upload sẽ bị xóa khỏi hệ thống.`,
       okText: 'Xóa',
       cancelText: 'Hủy',
       okType: 'danger',
-      onOk() {
-        videoFileList.value = videoFileList.value.filter(file => file.uid !== uid)
-        notification.success({
-          message: 'Đã xóa video',
-          description: `Đã xóa ${fileItem.name}`,
-          duration: 3,
-        })
+      async onOk() {
+        try {
+          if (props.sessionId && props.courseId && fileItem.id) {
+            await deleteSessionVideo(props.courseId, props.sessionId, fileItem.id)
+          }
+          videoFileList.value = videoFileList.value.filter(file => file.uid !== uid)
+          notification.success({
+            message: 'Đã xóa video',
+            description: `Đã xóa ${fileItem.name}`,
+            duration: 3,
+          })
+        }
+        catch (err: any) {
+          console.error('Error deleting video:', err)
+          notification.error({
+            message: 'Lỗi khi xóa video',
+            description: err?.message || err?.detail || 'Vui lòng thử lại',
+            duration: 5,
+          })
+        }
       },
     })
   }
@@ -947,15 +1072,20 @@ function getFileIcon(fileType?: string): string {
         <!-- Session Details -->
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="text-sm font-medium text-gray-500">Thời gian bắt đầu</label>
+            <label class="text-sm font-medium text-gray-500">Ngày</label>
             <p class="text-gray-900 mt-1">
-              {{ formatDateTime(sessionDetail.start_time) }}
+              {{ formatDate(sessionDetail.start_time) }}
             </p>
           </div>
           <div>
-            <label class="text-sm font-medium text-gray-500">Thời gian kết thúc</label>
+            <label class="text-sm font-medium text-gray-500">Thời gian</label>
             <p class="text-gray-900 mt-1">
-              {{ formatDateTime(sessionDetail.end_time) }}
+              <span v-if="sessionDetail.start_time && sessionDetail.end_time">
+                Từ {{ formatTime(sessionDetail.start_time) }} đến {{ formatTime(sessionDetail.end_time) }}
+              </span>
+              <span v-else-if="sessionDetail.start_time">
+                {{ formatTime(sessionDetail.start_time) }}
+              </span>
             </p>
           </div>
           <div v-if="sessionDetail.location">
@@ -1042,8 +1172,13 @@ function getFileIcon(fileType?: string): string {
             </a-upload>
           </div>
 
+          <!-- Loading State -->
+          <div v-if="videosLoading" class="flex items-center justify-center py-4">
+            <a-spin />
+          </div>
+
           <!-- Video List -->
-          <div v-if="videoFileList.length > 0" class="space-y-3">
+          <div v-else-if="videoFileList.length > 0" class="space-y-3">
             <div
               v-for="file in videoFileList"
               :key="file.uid"
@@ -1056,9 +1191,13 @@ function getFileIcon(fileType?: string): string {
                     <p class="font-medium text-gray-900 truncate">
                       {{ file.name }}
                     </p>
-                    <p v-if="file.originFileObj" class="text-xs text-gray-500 mt-1">
-                      {{ formatFileSize(file.originFileObj.size) }}
-                    </p>
+                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                      <span v-if="file.originFileObj">{{ formatFileSize(file.originFileObj.size) }}</span>
+                      <span v-else-if="file.file_size">{{ formatFileSize(file.file_size) }}</span>
+                      <span v-if="file.duration" class="text-gray-400">
+                        • {{ Math.floor(file.duration / 60) }}:{{ String(file.duration % 60).padStart(2, '0') }}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -1095,6 +1234,15 @@ function getFileIcon(fileType?: string): string {
                   <!-- Status (if done) -->
                   <template v-else-if="file.status === 'done'">
                     <div class="flex items-center gap-2">
+                      <a
+                        v-if="file.url"
+                        :href="file.url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-blue-600 hover:text-blue-800"
+                      >
+                        <Icon name="solar:play-circle-bold-duotone" class="text-lg" />
+                      </a>
                       <Icon name="solar:check-circle-bold" class="text-green-600 text-lg" />
                       <span class="text-xs text-green-600">Hoàn thành</span>
                     </div>
@@ -1121,6 +1269,11 @@ function getFileIcon(fileType?: string): string {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="text-center py-4 text-gray-500 text-sm">
+            Chưa có video nào
           </div>
         </div>
 

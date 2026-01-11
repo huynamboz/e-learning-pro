@@ -167,6 +167,75 @@ export function useClassroomApi() {
     selfCheckInSession: (sessionId: string, classroomId: string) =>
       apiClient.post(`/classrooms/sessions/${sessionId}/self_checkin/`, { classroom: classroomId }),
 
+    // Get presigned URL for session video upload
+    getSessionVideoUploadUrl: (
+      courseId: string,
+      sessionId: string,
+      payload: { file_name: string; content_type: string },
+    ) =>
+      apiClient.post<{
+        upload_url: string
+        key: string
+        public_url: string
+        expires_in: number
+        file_name: string
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/upload-video-url/`, payload),
+
+    // Create session video
+    createSessionVideo: (
+      courseId: string,
+      sessionId: string,
+      payload: {
+        file_url: string
+        file_name: string
+        file_size: number
+        content_type: string
+        duration?: number
+      },
+    ) =>
+      apiClient.post<{
+        id: string
+        session: string
+        file_url: string
+        file_name: string
+        file_size: number
+        content_type: string
+        duration: number | null
+        uploaded_by: number
+        created_at: string
+        updated_at: string
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/`, payload),
+
+    // List session videos
+    getSessionVideos: (courseId: string, sessionId: string, params?: { page?: number; page_size?: number }) =>
+      apiClient.get<{
+        count: number
+        next: string | null
+        previous: string | null
+        results: Array<{
+          id: string
+          session: string
+          file_url: string
+          file_name: string
+          file_size: number
+          content_type: string
+          duration: number | null
+          uploaded_by: number
+          uploaded_by_info?: {
+            id: number
+            username: string
+            first_name: string
+            last_name: string
+          }
+          created_at: string
+          updated_at: string
+        }>
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/`, { params }),
+
+    // Delete session video
+    deleteSessionVideo: (courseId: string, sessionId: string, videoId: string) =>
+      apiClient.delete(`/courses/${courseId}/sessions/${sessionId}/videos/${videoId}/`),
+
     // Get presigned URL for session material upload
     getSessionMaterialUploadUrl: (
       courseId: string,
