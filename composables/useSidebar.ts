@@ -10,30 +10,39 @@ export interface MenuItem {
   subItems?: SubMenuItem[]
 }
 
-const STORAGE_KEY = 'admin-sidebar-collapsed'
+const STORAGE_KEY_USER = 'user-sidebar-collapsed'
+const STORAGE_KEY_ADMIN = 'admin-sidebar-collapsed'
 
 // Initialize from localStorage
-const getInitialCollapsedState = (): boolean => {
+function getInitialCollapsedState(isAdmin = false): boolean {
   if (process.client) {
-    const saved = localStorage.getItem(STORAGE_KEY)
+    const key = isAdmin ? STORAGE_KEY_ADMIN : STORAGE_KEY_USER
+    const saved = localStorage.getItem(key)
     return saved === 'true'
   }
   return false
 }
 
 const globalSidebarState = {
-  isCollapsed: ref(getInitialCollapsedState()),
+  isCollapsed: ref(getInitialCollapsedState(false)),
   _initialized: false,
 }
 
-export function useSidebar() {
-  const { isCollapsed } = globalSidebarState
+const globalAdminSidebarState = {
+  isCollapsed: ref(getInitialCollapsedState(true)),
+  _initialized: false,
+}
+
+export function useSidebar(isAdmin = false) {
+  const sidebarState = isAdmin ? globalAdminSidebarState : globalSidebarState
+  const { isCollapsed } = sidebarState
   const { t } = useI18n()
+  const storageKey = isAdmin ? STORAGE_KEY_ADMIN : STORAGE_KEY_USER
 
   // Save to localStorage when collapsed state changes
   watch(isCollapsed, (newValue) => {
     if (process.client) {
-      localStorage.setItem(STORAGE_KEY, String(newValue))
+      localStorage.setItem(storageKey, String(newValue))
     }
   })
 

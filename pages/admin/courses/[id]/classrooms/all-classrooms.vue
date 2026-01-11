@@ -119,8 +119,8 @@ function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): Calen
       classroomId: session.classroom,
       description: session.description,
       meeting_link: session.meeting_link,
-      // Use background_color from session if available, otherwise random
-      background: (session as any).background_color || getRandomBackgroundColor(),
+      // Use background_color from classroom (via session.classroom_background_color) if available, otherwise random
+      background: (session as any).classroom_background_color || getRandomBackgroundColor(),
     })
   })
 

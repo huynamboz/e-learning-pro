@@ -54,6 +54,7 @@ POST /api/v1/classrooms/
   }>
   price: string // Giá gốc (Decimal string, ví dụ: "100.00")
   discount_price: string | null // Giá khuyến mãi (Decimal string hoặc null)
+  background_color?: string // Màu nền cho calendar event (hex color, ví dụ: "#268100")
 }
 ```
 
@@ -69,6 +70,11 @@ POST /api/v1/classrooms/
 2. **Price Validation:**
    - `price`: Bắt buộc, phải > 0
    - `discount_price`: Optional, nếu có thì phải < `price`
+
+3. **Background Color Validation:**
+   - `background_color`: Optional, nếu có thì phải là hex color code hợp lệ (format: `#RRGGBB`)
+   - Ví dụ hợp lệ: `#268100`, `#FF5733`
+   - Ví dụ không hợp lệ: `268100` (thiếu `#`), `#2681` (thiếu 2 chữ số)
 
 ---
 
@@ -94,7 +100,8 @@ POST /api/v1/classrooms/
     }
   ],
   "price": "100.00",
-  "discount_price": null
+  "discount_price": null,
+  "background_color": "#268100"
 }
 ```
 
@@ -122,7 +129,8 @@ POST /api/v1/classrooms/
     }
   ],
   "price": "80.00",
-  "discount_price": "70.00"
+  "discount_price": "70.00",
+  "background_color": "#FF5733"
 }
 ```
 
@@ -148,7 +156,8 @@ POST /api/v1/classrooms/
     }
   ],
   "price": "90.00",
-  "discount_price": null
+  "discount_price": null,
+  "background_color": "#268100"
 }
 ```
 
@@ -197,6 +206,7 @@ const classroomPayload = {
     }),
   price: formState.value.price?.toString() || '0',
   discount_price: formState.value.discount_price ? formState.value.discount_price.toString() : null,
+  background_color: formState.value.background_color || undefined,
 }
 ```
 
@@ -285,6 +295,7 @@ Backend sẽ:
 - [ ] Cập nhật API documentation
 - [ ] Bỏ `is_free` khỏi payload (nếu cần)
 - [ ] Bỏ `start_date` và `end_date` khỏi payload (nếu cần)
+- [ ] Thêm field `background_color` vào model `Classroom` (xem thêm `docs/classroom-background-color.md`)
 
 ---
 

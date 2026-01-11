@@ -33,6 +33,25 @@ const daysOfWeek = [
   { value: 'sunday', label: 'Sunday' },
 ]
 
+// List of background colors (dark colors suitable for white text)
+const BACKGROUND_COLORS = [
+  '#268100', // Green (default)
+  '#1e40af', // Blue
+  '#7c3aed', // Purple
+  '#c2410c', // Orange
+  '#be123c', // Rose
+  '#0891b2', // Cyan
+  '#b45309', // Amber
+  '#059669', // Emerald
+  '#7c2d12', // Brown
+  '#6b21a8', // Violet
+  '#0c4a6e', // Sky
+  '#831843', // Fuchsia
+  '#1e3a8a', // Indigo
+  '#92400e', // Yellow
+  '#991b1b', // Red
+]
+
 const formState = ref({
   title: '',
   student_count: '',
@@ -42,6 +61,7 @@ const formState = ref({
   // Pricing fields
   price: null as number | null,
   discount_price: null as number | null,
+  background_color: BACKGROUND_COLORS[0], // Default to first color
 })
 
 // Computed for dialog visibility
@@ -128,6 +148,7 @@ function resetForm() {
     // Reset pricing fields
     price: null,
     discount_price: null,
+    background_color: BACKGROUND_COLORS[0],
   }
   // Reset form fields if formRef exists
   if (formRef.value) {
@@ -172,6 +193,8 @@ async function handleOk() {
       // Pricing fields
       price: formState.value.price?.toString() || '0',
       discount_price: formState.value.discount_price ? formState.value.discount_price.toString() : null,
+      // Background color
+      background_color: formState.value.background_color,
     }
 
     // Call API to create classroom
@@ -386,55 +409,57 @@ watch(() => props.open, (newValue) => {
           Giá cả
         </h3>
 
-        <!-- Price -->
-        <a-form-item
-          label="Giá gốc"
-          name="price"
-          class="w-full"
-          :rules="[{ required: true, validator: validatePrice, trigger: 'change' }]"
-        >
-          <a-input-number
-            v-model:value="formState.price"
-            size="large"
-            placeholder="Nhập giá gốc"
-            :min="0"
-            :step="0.01"
-            :precision="2"
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Price -->
+          <a-form-item
+            label="Giá gốc"
+            name="price"
             class="w-full"
+            :rules="[{ required: true, validator: validatePrice, trigger: 'change' }]"
           >
-            <template #prefix>
-              <span class="text-gray-500">€</span>
-            </template>
-          </a-input-number>
-          <div class="text-xs text-gray-500 mt-1">
-            Giá gốc của lớp học (bắt buộc)
-          </div>
-        </a-form-item>
+            <a-input-number
+              v-model:value="formState.price"
+              size="large"
+              placeholder="Nhập giá gốc"
+              :min="0"
+              :step="0.01"
+              :precision="2"
+              class="w-full"
+            >
+              <template #prefix>
+                <span class="text-gray-500">€</span>
+              </template>
+            </a-input-number>
+            <div class="text-xs text-gray-500 mt-1">
+              Giá gốc của lớp học (bắt buộc)
+            </div>
+          </a-form-item>
 
-        <!-- Discount Price -->
-        <a-form-item
-          label="Giá khuyến mãi"
-          name="discount_price"
-          class="w-full"
-          :rules="[{ validator: validateDiscountPrice, trigger: 'change' }]"
-        >
-          <a-input-number
-            v-model:value="formState.discount_price"
-            size="large"
-            placeholder="Nhập giá khuyến mãi (tùy chọn)"
-            :min="0"
-            :step="0.01"
-            :precision="2"
+          <!-- Discount Price -->
+          <a-form-item
+            label="Giá khuyến mãi"
+            name="discount_price"
             class="w-full"
+            :rules="[{ validator: validateDiscountPrice, trigger: 'change' }]"
           >
-            <template #prefix>
-              <span class="text-gray-500">€</span>
-            </template>
-          </a-input-number>
-          <div class="text-xs text-gray-500 mt-1">
-            Giá khuyến mãi (nếu có). Phải nhỏ hơn giá gốc.
-          </div>
-        </a-form-item>
+            <a-input-number
+              v-model:value="formState.discount_price"
+              size="large"
+              placeholder="Nhập giá khuyến mãi (tùy chọn)"
+              :min="0"
+              :step="0.01"
+              :precision="2"
+              class="w-full"
+            >
+              <template #prefix>
+                <span class="text-gray-500">€</span>
+              </template>
+            </a-input-number>
+            <div class="text-xs text-gray-500 mt-1">
+              Giá khuyến mãi (nếu có). Phải nhỏ hơn giá gốc.
+            </div>
+          </a-form-item>
+        </div>
 
         <!-- Effective Price Display (Read-only) -->
         <div v-if="formState.price" class="mb-4 p-3 bg-gray-50 rounded-lg">
@@ -446,6 +471,33 @@ watch(() => props.open, (newValue) => {
               ? formState.discount_price
               : formState.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </div>
+        </div>
+      </div>
+
+      <!-- Background Color Section -->
+      <div class="w-full border-t border-gray-200 pt-4 mt-4">
+        <h3 class="text-base font-semibold text-gray-900 mb-4">
+          Màu nền cho lịch học
+        </h3>
+
+        <a-form-item
+          label="Màu nền"
+          name="background_color"
+          class="w-full"
+        >
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="color in BACKGROUND_COLORS"
+              :key="color"
+              class="w-10 h-10 rounded-lg cursor-pointer border-2 transition-all"
+              :class="formState.background_color === color ? 'border-gray-900 scale-110' : 'border-gray-300 hover:border-gray-500'"
+              :style="{ backgroundColor: color }"
+              @click="formState.background_color = color"
+            />
+          </div>
+        </a-form-item>
+        <div class="text-xs text-gray-500 mt-1">
+          Chọn màu nền để hiển thị trên lịch học
         </div>
       </div>
     </a-form>

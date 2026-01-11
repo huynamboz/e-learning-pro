@@ -12,6 +12,7 @@ export interface ClassroomPayload {
   price?: string
   discount_price?: string | null
   is_free?: boolean
+  background_color?: string
 }
 
 export interface ClassroomSession {

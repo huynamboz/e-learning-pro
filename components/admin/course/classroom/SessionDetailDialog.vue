@@ -6,6 +6,7 @@ import { Modal, notification } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import { useFileUpload } from '~/composables/useFileUpload'
+import EditClassroomDialog from './EditClassroomDialog.vue'
 
 interface Props {
   open: boolean
@@ -63,6 +64,18 @@ const editFormState = ref({
   meeting_pass: '',
 })
 const isSaving = ref(false)
+
+// Meeting info inline edit state
+const isEditingMeeting = ref(false)
+const meetingEditState = ref({
+  meeting_link: '',
+  meeting_id: '',
+  meeting_pass: '',
+})
+const isSavingMeeting = ref(false)
+
+// Edit classroom dialog state
+const showEditClassroomDialog = ref(false)
 
 // Add student state
 const showAddStudent = ref(false)
@@ -165,6 +178,12 @@ async function loadSessionDetail() {
     isLoading.value = true
     const response = await getCourseSessionDetail(props.courseId, props.sessionId)
     sessionDetail.value = response
+    // Initialize meeting edit state
+    meetingEditState.value = {
+      meeting_link: response?.meeting_link || '',
+      meeting_id: response?.meeting_id || '',
+      meeting_pass: response?.meeting_pass || '',
+    }
   }
   catch (err: any) {
     console.error('Error loading session detail:', err)
@@ -325,6 +344,12 @@ function handleEdit() {
     meeting_id: sessionDetail.value.meeting_id || '',
     meeting_pass: sessionDetail.value.meeting_pass || '',
   }
+  // Initialize meeting edit state
+  meetingEditState.value = {
+    meeting_link: sessionDetail.value.meeting_link || '',
+    meeting_id: sessionDetail.value.meeting_id || '',
+    meeting_pass: sessionDetail.value.meeting_pass || '',
+  }
   isEditMode.value = true
 }
 
@@ -423,6 +448,80 @@ function handleCancel() {
   else {
     dialogVisible.value = false
   }
+}
+
+// Handle meeting info inline edit
+function startEditMeeting() {
+  meetingEditState.value = {
+    meeting_link: sessionDetail.value?.meeting_link || '',
+    meeting_id: sessionDetail.value?.meeting_id || '',
+    meeting_pass: sessionDetail.value?.meeting_pass || '',
+  }
+  isEditingMeeting.value = true
+}
+
+function cancelEditMeeting() {
+  isEditingMeeting.value = false
+  meetingEditState.value = {
+    meeting_link: sessionDetail.value?.meeting_link || '',
+    meeting_id: sessionDetail.value?.meeting_id || '',
+    meeting_pass: sessionDetail.value?.meeting_pass || '',
+  }
+}
+
+async function saveMeetingInfo() {
+  if (!props.sessionId)
+    return
+
+  try {
+    isSavingMeeting.value = true
+
+    const updatePayload: any = {}
+    if (meetingEditState.value.meeting_link) {
+      updatePayload.meeting_link = meetingEditState.value.meeting_link
+    }
+    if (meetingEditState.value.meeting_id) {
+      updatePayload.meeting_id = meetingEditState.value.meeting_id
+    }
+    if (meetingEditState.value.meeting_pass) {
+      updatePayload.meeting_pass = meetingEditState.value.meeting_pass
+    }
+
+    await updateClassroomSession(props.sessionId, updatePayload)
+
+    notification.success({
+      message: 'Thành công',
+      description: 'Đã cập nhật thông tin meeting',
+      duration: 3,
+    })
+
+    await loadSessionDetail()
+    isEditingMeeting.value = false
+    emit('sessionUpdated')
+  }
+  catch (error: any) {
+    console.error('Error updating meeting info:', error)
+    notification.error({
+      message: 'Lỗi',
+      description: error?.data?.detail || 'Không thể cập nhật thông tin meeting',
+      duration: 5,
+    })
+  }
+  finally {
+    isSavingMeeting.value = false
+  }
+}
+
+// Handle edit classroom
+function handleEditClassroom() {
+  if (sessionDetail.value?.classroom?.id) {
+    showEditClassroomDialog.value = true
+  }
+}
+
+function handleClassroomUpdated() {
+  loadSessionDetail()
+  emit('sessionUpdated')
 }
 
 // Video upload functions
@@ -1165,6 +1264,130 @@ function getFileIcon(fileType?: string): string {
 
       <!-- View Mode -->
       <div v-else>
+        <!-- Meeting Info Section - Full Width -->
+        <div class="border border-gray-200 rounded-lg p-3 mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-video-camera" class="w-4 h-4 text-blue-500" />
+              <h4 class="text-sm font-semibold text-gray-900">
+                Thông tin meeting
+              </h4>
+            </div>
+            <a-button
+              v-if="!isEditingMeeting"
+              type="default"
+              size="small"
+              class="!h-7 !px-2 text-xs"
+              @click="startEditMeeting"
+            >
+              <Icon name="i-material-symbols-edit-outline" class="w-3 h-3" />
+              Chỉnh sửa
+            </a-button>
+          </div>
+
+          <!-- View Mode -->
+          <div v-if="!isEditingMeeting" class="space-y-2">
+            <!-- Meeting Link -->
+            <div class="flex items-center gap-2 p-2 bg-gray-50 rounded">
+              <Icon name="i-heroicons-link" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <span class="text-xs text-gray-500 mr-2">Link:</span>
+                <a
+                  v-if="sessionDetail.meeting_link"
+                  :href="sessionDetail.meeting_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline break-all"
+                >
+                  {{ sessionDetail.meeting_link }}
+                </a>
+                <span v-else class="text-xs text-gray-400 italic">Chưa có</span>
+              </div>
+            </div>
+
+            <!-- Meeting ID & Password in one row -->
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 flex-1 p-2 bg-gray-50 rounded">
+                <Icon name="i-heroicons-identification" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs text-gray-500 mr-2">ID:</span>
+                  <span v-if="sessionDetail.meeting_id" class="text-xs font-medium text-gray-900">
+                    {{ sessionDetail.meeting_id }}
+                  </span>
+                  <span v-else class="text-xs text-gray-400 italic">Chưa có</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-1 p-2 bg-gray-50 rounded">
+                <Icon name="i-heroicons-lock-closed" class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <span class="text-xs text-gray-500 mr-2">Pass:</span>
+                  <span v-if="sessionDetail.meeting_pass" class="text-xs font-medium text-gray-900 font-mono">
+                    {{ sessionDetail.meeting_pass }}
+                  </span>
+                  <span v-else class="text-xs text-gray-400 italic">Chưa có</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div v-else class="space-y-2">
+            <a-input
+              v-model:value="meetingEditState.meeting_link"
+              placeholder="Meeting Link"
+              size="small"
+              class="!text-xs !h-8"
+            >
+              <template #prefix>
+                <Icon name="i-heroicons-link" class="w-3.5 h-3.5 text-gray-400" />
+              </template>
+            </a-input>
+
+            <div class="flex items-center gap-2">
+              <a-input
+                v-model:value="meetingEditState.meeting_id"
+                placeholder="Meeting ID"
+                size="small"
+                class="!text-xs !h-8 flex-1"
+              >
+                <template #prefix>
+                  <Icon name="i-heroicons-identification" class="w-3.5 h-3.5 text-gray-400" />
+                </template>
+              </a-input>
+
+              <a-input
+                v-model:value="meetingEditState.meeting_pass"
+                placeholder="Password"
+                size="small"
+                class="!text-xs !h-8 flex-1"
+              >
+                <template #prefix>
+                  <Icon name="i-heroicons-lock-closed" class="w-3.5 h-3.5 text-gray-400" />
+                </template>
+              </a-input>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-1">
+              <a-button
+                size="small"
+                class="!h-7 !px-3 text-xs"
+                @click="cancelEditMeeting"
+              >
+                Hủy
+              </a-button>
+              <a-button
+                type="primary"
+                size="small"
+                class="!h-7 !px-3 text-xs"
+                :loading="isSavingMeeting"
+                @click="saveMeetingInfo"
+              >
+                Lưu
+              </a-button>
+            </div>
+          </div>
+        </div>
+
         <!-- Session Info Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <!-- Location -->
@@ -1179,61 +1402,27 @@ function getFileIcon(fileType?: string): string {
               </p>
             </div>
           </div>
-
-          <!-- Meeting Link -->
-          <div v-if="sessionDetail.meeting_link" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-            <Icon name="i-heroicons-link" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-            <div class="flex-1 min-w-0">
-              <p class="text-xs text-gray-500 mb-1">
-                Meeting Link
-              </p>
-              <a
-                :href="sessionDetail.meeting_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline break-all"
-              >
-                {{ sessionDetail.meeting_link }}
-              </a>
-            </div>
-          </div>
-
-          <!-- Meeting ID -->
-          <div v-if="sessionDetail.meeting_id" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-            <Icon name="i-heroicons-identification" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-            <div class="flex-1 min-w-0">
-              <p class="text-xs text-gray-500 mb-1">
-                Meeting ID
-              </p>
-              <p class="text-sm font-medium text-gray-900">
-                {{ sessionDetail.meeting_id }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Meeting Password -->
-          <div v-if="sessionDetail.meeting_pass" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-            <Icon name="i-heroicons-lock-closed" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-            <div class="flex-1 min-w-0">
-              <p class="text-xs text-gray-500 mb-1">
-                Meeting Password
-              </p>
-              <p class="text-sm font-medium text-gray-900 font-mono">
-                {{ sessionDetail.meeting_pass }}
-              </p>
-            </div>
-          </div>
         </div>
 
         <!-- Classroom and Course Info -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <!-- Classroom Info -->
           <div v-if="sessionDetail.classroom" class="p-4 bg-gray-50 rounded-lg">
-            <div class="flex items-center gap-2 mb-3">
-              <Icon name="i-heroicons-academic-cap" class="w-4 h-4 text-gray-400" />
-              <h4 class="text-sm font-semibold text-gray-700">
-                Lớp học
-              </h4>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <Icon name="i-heroicons-academic-cap" class="w-4 h-4 text-purple-500" />
+                <h4 class="text-sm font-semibold text-gray-700">
+                  Lớp học
+                </h4>
+              </div>
+              <a-button
+                type="link"
+                size="small"
+                class="!h-auto !p-0 !text-xs"
+                @click="handleEditClassroom"
+              >
+                Sửa
+              </a-button>
             </div>
             <p class="text-sm font-medium text-gray-900 mb-2">
               {{ sessionDetail.classroom.title }}
@@ -1260,7 +1449,7 @@ function getFileIcon(fileType?: string): string {
           <!-- Course Info -->
           <div v-if="sessionDetail.course" class="p-4 bg-gray-50 rounded-lg">
             <div class="flex items-center gap-2 mb-3">
-              <Icon name="i-heroicons-book-open" class="w-4 h-4 text-gray-400" />
+              <Icon name="i-heroicons-book-open" class="w-4 h-4 text-green-500" />
               <h4 class="text-sm font-semibold text-gray-700">
                 Khóa học
               </h4>
@@ -1275,7 +1464,7 @@ function getFileIcon(fileType?: string): string {
         <div class="pt-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Icon name="i-heroicons-clipboard-document-check" class="w-4 h-4 text-gray-400" />
+              <Icon name="i-heroicons-clipboard-document-check" class="w-4 h-4 text-emerald-500" />
               <h4 class="text-sm font-semibold text-gray-900">
                 Danh sách học sinh đã điểm danh
               </h4>
@@ -1339,7 +1528,7 @@ function getFileIcon(fileType?: string): string {
         <div class="border-t border-gray-200 pt-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Icon name="i-heroicons-video-camera" class="w-4 h-4 text-gray-400" />
+              <Icon name="i-heroicons-video-camera" class="w-4 h-4 text-red-500" />
               <h4 class="text-sm font-semibold text-gray-900">
                 Video buổi học
               </h4>
@@ -1467,7 +1656,7 @@ function getFileIcon(fileType?: string): string {
         <div class="pt-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Icon name="i-heroicons-document" class="w-4 h-4 text-gray-400" />
+              <Icon name="i-heroicons-document" class="w-4 h-4 text-amber-500" />
               <h4 class="text-sm font-semibold text-gray-900">
                 Tài liệu buổi học
               </h4>
@@ -1593,7 +1782,7 @@ function getFileIcon(fileType?: string): string {
         <div class="border-t border-gray-200 pt-4">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center gap-2">
-              <Icon name="i-heroicons-user-group" class="w-4 h-4 text-gray-400" />
+              <Icon name="i-heroicons-user-group" class="w-4 h-4 text-indigo-500" />
               <h4 class="text-sm font-semibold text-gray-900">
                 Danh sách học sinh
               </h4>
@@ -1717,4 +1906,11 @@ function getFileIcon(fileType?: string): string {
       </div>
     </div>
   </a-modal>
+
+  <!-- Edit Classroom Dialog -->
+  <EditClassroomDialog
+    v-model:open="showEditClassroomDialog"
+    :classroom-id="sessionDetail?.classroom?.id || null"
+    @success="handleClassroomUpdated"
+  />
 </template>
