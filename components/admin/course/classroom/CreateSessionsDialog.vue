@@ -1,5 +1,9 @@
 <script lang="ts" setup>
+import { notification } from 'ant-design-vue'
+import { useClassroomApi } from '~/composables/api/useClassroomApi'
+
 const { t } = useI18n()
+const { createBulkSessions } = useClassroomApi()
 
 interface Props {
   open: boolean
@@ -115,30 +119,50 @@ function handleCancel() {
 
 // Handle OK button
 async function handleOk() {
+  if (!formState.value.classroom_id) {
+    notification.error({
+      message: 'Lỗi',
+      description: 'Vui lòng chọn lớp học',
+      duration: 3,
+    })
+    return
+  }
+
   try {
     await formRef.value?.validateFields()
     confirmLoading.value = true
 
     // Transform form data to API format
+    const schedulesData = formState.value.schedule
+      .filter(schedule => schedule.day && schedule.start && schedule.end)
+      .map((schedule) => {
+        const scheduleData: any = {
+          day_of_week: schedule.day as unknown as string,
+          start_time: formatTimeForApi(schedule.start),
+          end_time: formatTimeForApi(schedule.end),
+        }
+
+        // Add repeat dates if repeat is enabled
+        if (schedule.repeat && schedule.repeat_start_date && schedule.repeat_end_date) {
+          scheduleData.repeat_start_date = schedule.repeat_start_date.format('YYYY-MM-DD')
+          scheduleData.repeat_end_date = schedule.repeat_end_date.format('YYYY-MM-DD')
+        }
+
+        return scheduleData
+      })
+
+    if (schedulesData.length === 0) {
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng thêm ít nhất một lịch học',
+        duration: 3,
+      })
+      confirmLoading.value = false
+      return
+    }
+
     const sessionsPayload: any = {
-      classroom_id: formState.value.classroom_id,
-      schedules_data: formState.value.schedule
-        .filter(schedule => schedule.day && schedule.start && schedule.end)
-        .map((schedule) => {
-          const scheduleData: any = {
-            day_of_week: schedule.day as unknown as string,
-            start_time: formatTimeForApi(schedule.start),
-            end_time: formatTimeForApi(schedule.end),
-          }
-
-          // Add repeat dates if repeat is enabled
-          if (schedule.repeat && schedule.repeat_start_date && schedule.repeat_end_date) {
-            scheduleData.repeat_start_date = schedule.repeat_start_date.format('YYYY-MM-DD')
-            scheduleData.repeat_end_date = schedule.repeat_end_date.format('YYYY-MM-DD')
-          }
-
-          return scheduleData
-        }),
+      schedules_data: schedulesData,
     }
 
     // Add meeting fields if provided
@@ -152,12 +176,8 @@ async function handleOk() {
       sessionsPayload.meeting_pass = formState.value.meeting_pass
     }
 
-    // TODO: Uncomment when backend is ready
-    // const { createBulkSessions } = useClassroomApi()
-    // await createBulkSessions(formState.value.classroom_id, sessionsPayload)
-
-    // For now, just log the payload
-    console.warn('Sessions payload (ready for backend):', JSON.stringify(sessionsPayload, null, 2))
+    // Call API to create bulk sessions
+    await createBulkSessions(formState.value.classroom_id, sessionsPayload)
 
     // Reset form and close modal
     resetForm()
@@ -167,11 +187,19 @@ async function handleOk() {
     emit('success')
 
     // Show success message
-    const { $message } = useNuxtApp() as unknown as { $message: any }
-    $message.success('Đã tạo buổi học thành công (mock)')
+    notification.success({
+      message: 'Thành công',
+      description: 'Đã tạo buổi học thành công',
+      duration: 3,
+    })
   }
   catch (err: any) {
     console.error('Error creating sessions:', err)
+    notification.error({
+      message: 'Lỗi khi tạo buổi học',
+      description: err.message || err.detail || 'Vui lòng thử lại',
+      duration: 5,
+    })
   }
   finally {
     confirmLoading.value = false

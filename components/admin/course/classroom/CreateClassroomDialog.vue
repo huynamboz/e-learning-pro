@@ -1,5 +1,13 @@
 <script lang="ts" setup>
+import { notification } from 'ant-design-vue'
+import { useClassroomApi } from '~/composables/api/useClassroomApi'
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+})
+const emit = defineEmits<Emits>()
 const { t } = useI18n()
+const { createClassroom } = useClassroomApi()
 
 interface Props {
   open: boolean
@@ -11,12 +19,6 @@ interface Emits {
   (e: 'update:open', value: boolean): void
   (e: 'success'): void
 }
-
-const props = withDefaults(defineProps<Props>(), {
-  loading: false,
-})
-
-const emit = defineEmits<Emits>()
 
 const confirmLoading = ref(false)
 const formRef = ref()
@@ -67,7 +69,7 @@ function formatTimeForApi(time: any): string {
   if (typeof time === 'string')
     return time
   if (time.format) {
-    return time.format('HH:mm:ss')
+    return time.format('HH:mm')
   }
   return time.toString()
 }
@@ -167,12 +169,9 @@ async function handleOk() {
       discount_price: formState.value.discount_price ? formState.value.discount_price.toString() : null,
     }
 
-    // TODO: Uncomment when backend is ready
-    // const { createClassroom } = useClassroomApi()
-    // await createClassroom(classroomPayload)
-
-    // For now, just log the payload
-    console.warn('Classroom payload (ready for backend):', JSON.stringify(classroomPayload, null, 2))
+    // Call API to create classroom
+    // console.warn('Classroom payload (ready for backend):', JSON.stringify(classroomPayload, null, 2))
+    await createClassroom(classroomPayload)
 
     // Reset form and close modal
     resetForm()
@@ -182,13 +181,18 @@ async function handleOk() {
     emit('success')
 
     // Show success message
-    const { $message } = useNuxtApp() as unknown as { $message: any }
-    $message.success('Đã tạo lớp học thành công (mock)')
+    notification.success({
+      message: t('admin.classroom.notifications.createSuccess') || 'Đã tạo lớp học thành công',
+      duration: 3,
+    })
   }
   catch (err: any) {
     console.error('Error creating classroom:', err)
-    const { $message } = useNuxtApp() as unknown as { $message: any }
-    $message.error(err.message || 'Có lỗi xảy ra khi tạo lớp học')
+    notification.error({
+      message: t('admin.classroom.notifications.createFailed') || 'Có lỗi xảy ra khi tạo lớp học',
+      description: err.message || err.detail || 'Vui lòng thử lại',
+      duration: 5,
+    })
   }
   finally {
     confirmLoading.value = false
@@ -443,4 +447,3 @@ watch(() => props.open, (newValue) => {
     </a-form>
   </a-modal>
 </template>
-

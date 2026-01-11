@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc'
 import { VueCal } from 'vue-cal'
 import CreateClassroomDialog from '~/components/admin/course/classroom/CreateClassroomDialog.vue'
 import CreateSessionsDialog from '~/components/admin/course/classroom/CreateSessionsDialog.vue'
+import SessionDetailDialog from '~/components/admin/course/classroom/SessionDetailDialog.vue'
 import { useCourseApi } from '~/composables/api'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
 // import { createClassroom } from useClassroomApi() // TODO: Uncomment when backend is ready
@@ -19,8 +20,7 @@ const { t } = useI18n()
 const route = useRoute()
 const courseId = computed(() => route.params.id as string)
 const { getDetailCourses } = useCourseApi()
-const { getClassroomSessions } = useClassroomApi()
-// const { createClassroom } = useClassroomApi() // TODO: Uncomment when backend is ready
+const { getCourseSessions } = useClassroomApi()
 
 // State
 const sessionsData = ref<ClassroomSession[]>([])
@@ -30,6 +30,11 @@ const courseDetail = ref<any>(null)
 
 const open = ref<boolean>(false)
 const openSessionsDialog = ref<boolean>(false)
+const openSessionDetailDialog = ref<boolean>(false)
+const selectedSessionId = ref<string | null>(null)
+const selectedClassroomId = ref<string | null>(null)
+const calendarReady = ref(false)
+const isLoadingSessions = ref(false)
 
 // Calendar state
 interface CalendarEvent {
@@ -62,113 +67,21 @@ function AddNewSessions() {
   openSessionsDialog.value = true
 }
 
-// Mock sessions data (for testing when no data from backend)
-// Date range: 5/1/2026 to 11/1/2026
-// Lớp 1 thành viên: Thứ 2 (5/1), Thứ 4 (7/1) - 18:00-20:00
-// Lớp 3 thành viên: Thứ 5 (8/1), Thứ 7 (10/1) - 13:00-16:00
-const mockSessionsData: ClassroomSession[] = [
-  // Lớp 1 thành viên - Thứ 2 (5/1/2026)
-  {
-    id: 'mock-session-1-1',
-    classroom: 'mock-classroom-1',
-    topic: 'Lớp 1 thành viên - Buổi 1',
-    description: 'Buổi học 1 của Lớp 1 thành viên',
-    start_time: '2026-01-05T18:00:00.000Z',
-    end_time: '2026-01-05T20:00:00.000Z',
-    location: '',
-    meeting_link: '',
-    meeting_id: '',
-    meeting_pass: '',
-    limit: 10,
-    status: 'scheduled',
-    classroom_title: 'Lớp 1 thành viên',
-    course_title: 'Mock Course',
-    attendance_count: 0,
-    present_count: 0,
-    created_at: '2026-01-01T00:00:00.000Z',
-    updated_at: '2026-01-01T00:00:00.000Z',
-  },
-  // Lớp 1 thành viên - Thứ 4 (7/1/2026)
-  {
-    id: 'mock-session-1-2',
-    classroom: 'mock-classroom-1',
-    topic: 'Lớp 1 thành viên - Buổi 2',
-    description: 'Buổi học 2 của Lớp 1 thành viên',
-    start_time: '2026-01-07T18:00:00.000Z',
-    end_time: '2026-01-07T20:00:00.000Z',
-    location: '',
-    meeting_link: '',
-    meeting_id: '',
-    meeting_pass: '',
-    limit: 10,
-    status: 'scheduled',
-    classroom_title: 'Lớp 1 thành viên',
-    course_title: 'Mock Course',
-    attendance_count: 0,
-    present_count: 0,
-    created_at: '2026-01-01T00:00:00.000Z',
-    updated_at: '2026-01-01T00:00:00.000Z',
-  },
-  // Lớp 3 thành viên - Thứ 5 (8/1/2026)
-  {
-    id: 'mock-session-2-1',
-    classroom: 'mock-classroom-2',
-    topic: 'Lớp 3 thành viên - Buổi 1',
-    description: 'Buổi học 1 của Lớp 3 thành viên',
-    start_time: '2026-01-08T13:00:00.000Z',
-    end_time: '2026-01-08T16:00:00.000Z',
-    location: '',
-    meeting_link: '',
-    meeting_id: '',
-    meeting_pass: '',
-    limit: 10,
-    status: 'scheduled',
-    classroom_title: 'Lớp 3 thành viên',
-    course_title: 'Mock Course',
-    attendance_count: 0,
-    present_count: 0,
-    created_at: '2026-01-01T00:00:00.000Z',
-    updated_at: '2026-01-01T00:00:00.000Z',
-  },
-  // Lớp 3 thành viên - Thứ 7 (10/1/2026)
-  {
-    id: 'mock-session-2-2',
-    classroom: 'mock-classroom-2',
-    topic: 'Lớp 3 thành viên - Buổi 2',
-    description: 'Buổi học 2 của Lớp 3 thành viên',
-    start_time: '2026-01-10T13:00:00.000Z',
-    end_time: '2026-01-10T16:00:00.000Z',
-    location: '',
-    meeting_link: '',
-    meeting_id: '',
-    meeting_pass: '',
-    limit: 10,
-    status: 'scheduled',
-    classroom_title: 'Lớp 3 thành viên',
-    course_title: 'Mock Course',
-    attendance_count: 0,
-    present_count: 0,
-    created_at: '2026-01-01T00:00:00.000Z',
-    updated_at: '2026-01-01T00:00:00.000Z',
-  },
-]
-
 // Generate calendar events from sessions
 function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): CalendarEvent[] {
   const events: CalendarEvent[] = []
 
   sessions.forEach((session) => {
-    // Parse UTC date strings and format them correctly
-    // Backend returns: 2026-01-05T18:00:00.000Z
-    // We need to format as: YYYY-MM-DD HH:mm for vue-cal
-    const startDate = dayjs.utc(session.start_time)
-    const endDate = dayjs.utc(session.end_time)
+    // Parse date strings - backend can return UTC (2026-01-05T18:00:00.000Z) or timezone (2026-01-12T03:00:00+07:00)
+    // dayjs will automatically parse the timezone from the string
+    const startDate = dayjs(session.start_time)
+    const endDate = dayjs(session.end_time)
 
     events.push({
       id: session.id,
       start: startDate.format('YYYY-MM-DD HH:mm'),
       end: endDate.format('YYYY-MM-DD HH:mm'),
-      title: session.topic || session.classroom_title,
+      title: session.classroom_title,
       sessionId: session.id,
       classroomId: session.classroom,
       description: session.description,
@@ -181,57 +94,74 @@ function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): Calen
 
 // Load all sessions from all classrooms in the course
 async function loadAllSessions() {
+  // Prevent multiple simultaneous calls
+  if (isLoadingSessions.value) {
+    return
+  }
+
   try {
+    isLoadingSessions.value = true
     isLoading.value = true
     error.value = null
 
-    // First, get course detail to get classrooms
-    const response = await getDetailCourses(courseId.value)
-    courseDetail.value = response
+    // Get current week range from calendar
+    const view = vueCalRef.value?.view
+    let startDate: string | undefined
+    let endDate: string | undefined
 
-    const classrooms = (response as any).classrooms || []
+    if (view && view.cellDates && view.cellDates.length > 0) {
+      const firstCell = view.cellDates[0]
+      const lastCell = view.cellDates[view.cellDates.length - 1]
+      startDate = firstCell.startFormatted // Format: YYYY-MM-DD
+      endDate = lastCell.startFormatted // Format: YYYY-MM-DD
+    }
 
-    if (classrooms.length > 0) {
-      // Load sessions from all classrooms
-      const allSessions: ClassroomSession[] = []
-      for (const classroom of classrooms) {
-        try {
-          const sessionsResponse = await getClassroomSessions(classroom.id)
-          if (sessionsResponse.results && sessionsResponse.results.length > 0) {
-            allSessions.push(...sessionsResponse.results)
-          }
-        }
-        catch (err: any) {
-          // Continue loading other classrooms even if one fails
-          console.error(`Error loading sessions for classroom ${classroom.id}:`, err)
-        }
-      }
+    // Call API to get sessions with date range
+    const sessionsResponse = await getCourseSessions(courseId.value, {
+      start_date: startDate,
+      end_date: endDate,
+    })
 
-      if (allSessions.length > 0) {
-        sessionsData.value = allSessions
-        calendarEvents.value = generateCalendarEventsFromSessions(allSessions)
-      }
-      else {
-        // No sessions found, use mock data
-        sessionsData.value = mockSessionsData
-        calendarEvents.value = generateCalendarEventsFromSessions(sessionsData.value)
-      }
+    if (sessionsResponse.results && sessionsResponse.results.length > 0) {
+      sessionsData.value = sessionsResponse.results
+      calendarEvents.value = generateCalendarEventsFromSessions(sessionsData.value)
     }
     else {
-      // No classrooms found, use mock data
-      sessionsData.value = mockSessionsData
-      calendarEvents.value = generateCalendarEventsFromSessions(sessionsData.value)
+      // No sessions found
+      sessionsData.value = []
+      calendarEvents.value = []
+    }
+
+    // Also get course detail for classrooms list (for dialogs)
+    try {
+      const response = await getDetailCourses(courseId.value)
+      courseDetail.value = response
+    }
+    catch (err: any) {
+      console.error('Error loading course detail:', err)
     }
   }
   catch (err: any) {
     console.error('Error loading sessions:', err)
-    // Use mock data on error for testing
-    sessionsData.value = mockSessionsData
-    calendarEvents.value = generateCalendarEventsFromSessions(sessionsData.value)
-    error.value = null // Don't show error, use mock data instead
+    error.value = err.message || 'Có lỗi xảy ra khi tải danh sách buổi học'
+    sessionsData.value = []
+    calendarEvents.value = []
   }
   finally {
     isLoading.value = false
+    isLoadingSessions.value = false
+  }
+}
+
+// Handle calendar ready
+function handleCalendarReady({ view }: any) {
+  view.scrollToCurrentTime()
+  // Load sessions only once when calendar is ready for the first time
+  if (!calendarReady.value && !isLoadingSessions.value) {
+    calendarReady.value = true
+    nextTick(() => {
+      loadAllSessions()
+    })
   }
 }
 
@@ -258,77 +188,53 @@ function handleEventClick(event: any) {
   if (calendarEvent.sessionId) {
     const session = sessionsData.value.find(s => s.id === calendarEvent.sessionId)
     if (session) {
-      // Navigate to classroom detail page
-      navigateTo(`/admin/courses/${courseId.value}/classrooms/${session.classroom}`)
+      selectedSessionId.value = session.id
+      selectedClassroomId.value = session.classroom
+      openSessionDetailDialog.value = true
     }
   }
 }
 
+// Handle student added/removed
+function handleStudentChanged() {
+  // Reload sessions to update attendance count
+  loadAllSessions()
+}
+
 // Handle previous button click
 function handlePreviousClick() {
-  if (vueCalRef.value?.view) {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
     vueCalRef.value.view.previous()
 
-    // Wait for view to update, then log week range from vueCalRef
+    // Wait for view to update, then reload sessions for new week
     nextTick(() => {
-      const view = vueCalRef.value?.view
-      if (view && view.cellDates && view.cellDates.length > 0) {
-        const firstCell = view.cellDates[0]
-        const lastCell = view.cellDates[view.cellDates.length - 1]
-        console.warn('Previous week:', {
-          start: firstCell.startFormatted,
-          end: lastCell.startFormatted,
-        })
-      }
+      loadAllSessions()
     })
   }
 }
 
 // Handle next button click
 function handleNextClick() {
-  if (vueCalRef.value?.view) {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
     vueCalRef.value.view.next()
 
-    // Wait for view to update, then log week range from vueCalRef
+    // Wait for view to update, then reload sessions for new week
     nextTick(() => {
-      const view = vueCalRef.value?.view
-      if (view && view.cellDates && view.cellDates.length > 0) {
-        const firstCell = view.cellDates[0]
-        const lastCell = view.cellDates[view.cellDates.length - 1]
-        console.warn('Next week:', {
-          start: firstCell.startFormatted,
-          end: lastCell.startFormatted,
-        })
-      }
+      loadAllSessions()
     })
   }
 }
 
-// Load sessions on mount
+// Load sessions on mount - will be triggered by calendar ready event
 onMounted(() => {
-  loadAllSessions()
+  // Sessions will be loaded when calendar is ready via handleCalendarReady
 })
 </script>
 
 <template>
-  <div class="classroom">
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center py-8">
-      <a-spin size="large" />
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="text-center py-8">
-      <p class="text-red-500 mb-4">
-        {{ error }}
-      </p>
-      <a-button @click="loadAllSessions">
-        {{ t('common.tryAgain') }}
-      </a-button>
-    </div>
-
+  <div class="classroom relative">
     <!-- Calendar View -->
-    <div v-else class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-4">
           <h2 class="font-bold text-2xl flex items-center gap-3">
@@ -360,12 +266,33 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="flex flex-col overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div class="flex flex-col overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm relative">
+        <!-- Loading Overlay -->
+        <div
+          v-if="isLoading"
+          class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-xl"
+        >
+          <a-spin size="large" />
+        </div>
+
+        <!-- Error State -->
+        <div
+          v-if="error && !isLoading"
+          class="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center z-50 rounded-xl p-8"
+        >
+          <p class="text-red-500 mb-4 text-center">
+            {{ error }}
+          </p>
+          <a-button @click="loadAllSessions">
+            {{ t('common.tryAgain') }}
+          </a-button>
+        </div>
+
         <VueCal
           ref="vueCalRef" v-model:selected-date="selectedDate" v-model:view-date="viewDate"
           v-model:view="currentView" :views-bar="false" class="custom-theme calendar w-full !h-auto" :time-from="7 * 60"
           :time-step="60" :time-to="24 * 60" :time-cell-height="72" :events="calendarEvents" :views="['week']"
-          time-at-cursor @ready="({ view }: any) => view.scrollToCurrentTime()" @event-click="handleEventClick"
+          time-at-cursor @ready="handleCalendarReady" @event-click="handleEventClick"
         >
           <template #previous-button>
             <button
@@ -399,6 +326,16 @@ onMounted(() => {
       :course-id="courseId"
       :classrooms="(courseDetail?.classrooms || []) as Array<{ id: string; title: string }>"
       @success="handleClassroomCreated"
+    />
+
+    <SessionDetailDialog
+      v-model:open="openSessionDetailDialog"
+      :course-id="courseId"
+      :session-id="selectedSessionId"
+      :classroom-id="selectedClassroomId"
+      @student-added="handleStudentChanged"
+      @student-removed="handleStudentChanged"
+      @session-updated="handleStudentChanged"
     />
   </div>
 </template>
