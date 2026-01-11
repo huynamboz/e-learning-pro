@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { UploadChangeParam } from 'ant-design-vue'
+import type { SessionAttendance } from '~/composables/api/useClassroomApi'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import { Modal, notification } from 'ant-design-vue'
 import dayjs from 'dayjs'
@@ -18,6 +19,7 @@ interface Emits {
   (e: 'studentAdded'): void
   (e: 'studentRemoved'): void
   (e: 'sessionUpdated'): void
+  (e: 'classroomDeleted'): void
 }
 
 const props = defineProps<Props>()
@@ -29,6 +31,7 @@ const {
   removeStudentFromClassroom,
   updateClassroomSession,
   getClassroomStudents,
+  getSessionAttendance,
   getSessionVideoUploadUrl,
   createSessionVideo,
   getSessionVideos,
@@ -66,6 +69,12 @@ const showAddStudent = ref(false)
 const addStudentEmail = ref('')
 const addStudentLoading = ref(false)
 
+// Remove student state
+const showRemoveStudentDialog = ref(false)
+const studentToRemove = ref<number | null>(null)
+const deleteOrderOnRemove = ref(false)
+const removingStudent = ref(false)
+
 // Video upload state
 interface VideoFileItem {
   uid: string
@@ -101,6 +110,10 @@ interface MaterialFileItem {
 const materialFileList = ref<MaterialFileItem[]>([])
 const materialsLoading = ref(false)
 
+// Attendance state
+const attendance = ref<SessionAttendance[]>([])
+const attendanceLoading = ref(false)
+
 // Dialog visibility
 const dialogVisible = computed({
   get: () => props.open,
@@ -113,6 +126,7 @@ const dialogVisible = computed({
 watch(() => props.open, async (newValue) => {
   if (newValue && props.sessionId && props.courseId) {
     await loadSessionDetail()
+    await loadAttendance()
     await loadVideos()
     await loadMaterials()
     if (props.classroomId) {
@@ -128,6 +142,7 @@ watch(() => props.open, async (newValue) => {
     isEditMode.value = false
     videoFileList.value = []
     materialFileList.value = []
+    attendance.value = []
     editFormState.value = {
       topic: '',
       description: '',
@@ -190,17 +205,16 @@ async function loadStudents() {
 }
 
 // Format date only
-function formatDate(dateTimeString: string): string {
-  if (!dateTimeString)
+// Format date and time range: "06/01/2026 ⋅1:00 – 1:30"
+function formatDateTimeRange(startTime: string, endTime: string): string {
+  if (!startTime || !endTime)
     return ''
-  return dayjs(dateTimeString).format('DD/MM/YYYY')
-}
-
-// Format time only
-function formatTime(dateTimeString: string): string {
-  if (!dateTimeString)
-    return ''
-  return dayjs(dateTimeString).format('HH:mm')
+  const start = dayjs(startTime)
+  const end = dayjs(endTime)
+  const date = start.format('DD/MM/YYYY')
+  const startTimeStr = start.format('H:mm')
+  const endTimeStr = end.format('H:mm')
+  return `${date} ⋅${startTimeStr} – ${endTimeStr}`
 }
 
 // Handle add student
@@ -241,18 +255,35 @@ async function handleAddStudent() {
   }
 }
 
-// Handle remove student
-async function handleRemoveStudent(userId: number) {
-  if (!props.classroomId)
+// Handle remove student - show confirm dialog
+function handleRemoveStudent(userId: number) {
+  studentToRemove.value = userId
+  deleteOrderOnRemove.value = false
+  showRemoveStudentDialog.value = true
+}
+
+// Confirm remove student
+async function confirmRemoveStudent() {
+  if (!props.classroomId || !studentToRemove.value)
     return
 
   try {
-    await removeStudentFromClassroom(props.classroomId, userId)
+    removingStudent.value = true
+    await removeStudentFromClassroom(props.classroomId, studentToRemove.value, deleteOrderOnRemove.value)
+
+    const message = deleteOrderOnRemove.value
+      ? 'Đã xóa học sinh và đơn hàng khỏi lớp thành công'
+      : 'Đã xóa học sinh khỏi lớp thành công'
 
     notification.success({
-      message: 'Đã xóa học sinh khỏi lớp thành công',
+      message,
       duration: 3,
     })
+
+    // Close dialog and reset state
+    showRemoveStudentDialog.value = false
+    studentToRemove.value = null
+    deleteOrderOnRemove.value = false
 
     // Reload students list
     await loadStudents()
@@ -266,6 +297,16 @@ async function handleRemoveStudent(userId: number) {
       duration: 5,
     })
   }
+  finally {
+    removingStudent.value = false
+  }
+}
+
+// Cancel remove student
+function cancelRemoveStudent() {
+  showRemoveStudentDialog.value = false
+  studentToRemove.value = null
+  deleteOrderOnRemove.value = false
 }
 
 // Handle edit
@@ -407,6 +448,58 @@ function handleVideoChange(info: UploadChangeParam) {
   // Add new files to the list
   if (newFiles.length > 0) {
     videoFileList.value = [...videoFileList.value, ...newFiles]
+  }
+}
+
+// Load attendance from session
+async function loadAttendance() {
+  if (!props.sessionId)
+    return
+
+  try {
+    attendanceLoading.value = true
+    const response = await getSessionAttendance(props.sessionId)
+    attendance.value = response || []
+  }
+  catch (err: any) {
+    console.error('Error loading attendance:', err)
+    // Don't show error notification, just log it
+  }
+  finally {
+    attendanceLoading.value = false
+  }
+}
+
+// Get user display name for attendance
+function getAttendanceDisplayName(user: SessionAttendance['user_info']): string {
+  if (user.full_name && user.full_name.trim()) {
+    return user.full_name
+  }
+  const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim()
+  if (fullName) {
+    return fullName
+  }
+  return user.username || user.email || 'N/A'
+}
+
+// Get status badge for attendance
+function getAttendanceStatusBadge(status: string): { class: string, text: string } {
+  switch (status) {
+    case 'present':
+      return {
+        class: 'bg-green-100 text-green-800 border-green-200',
+        text: 'Có mặt',
+      }
+    case 'late':
+      return {
+        class: 'bg-orange-100 text-orange-800 border-orange-200',
+        text: 'Muộn',
+      }
+    default:
+      return {
+        class: 'bg-gray-100 text-gray-800 border-gray-200',
+        text: status,
+      }
   }
 }
 
@@ -906,25 +999,28 @@ function getFileIcon(fileType?: string): string {
     </div>
 
     <div v-else-if="sessionDetail" class="space-y-6">
-      <!-- Header with Edit Button -->
-      <div class="flex items-center justify-between border-b border-gray-200 pb-4">
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            {{ sessionDetail.topic || 'Buổi học' }}
-          </h3>
-          <p v-if="sessionDetail.description && !isEditMode" class="text-gray-600 text-sm">
-            {{ sessionDetail.description }}
+      <!-- Header -->
+      <div class="flex items-start justify-between pb-4 border-b border-gray-100">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-2">
+            <Icon name="i-heroicons-calendar-days" class="w-5 h-5 text-gray-400" />
+            <h3 class="text-xl font-semibold text-gray-900">
+              {{ sessionDetail.topic || 'Buổi học' }}
+            </h3>
+          </div>
+          <p v-if="sessionDetail.start_time && sessionDetail.end_time && !isEditMode" class="text-sm text-gray-500 ml-7">
+            {{ formatDateTimeRange(sessionDetail.start_time, sessionDetail.end_time) }}
           </p>
         </div>
         <a-button
           v-if="!isEditMode"
-          type="primary"
+          type="default"
           size="small"
-          class="!flex !justify-center !items-center"
+          class="!flex !justify-center !items-center gap-1.5"
           @click="handleEdit"
         >
-          <Icon name="i-material-symbols-edit-outline" class="text-[16px]" />
-          Chỉnh sửa buổi học
+          <Icon name="i-material-symbols-edit-outline" class="text-[14px]" />
+          Chỉnh sửa
         </a-button>
       </div>
 
@@ -1069,90 +1165,185 @@ function getFileIcon(fileType?: string): string {
 
       <!-- View Mode -->
       <div v-else>
-        <!-- Session Details -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm font-medium text-gray-500">Ngày</label>
-            <p class="text-gray-900 mt-1">
-              {{ formatDate(sessionDetail.start_time) }}
-            </p>
+        <!-- Session Info Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Location -->
+          <div v-if="sessionDetail.location" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <Icon name="i-heroicons-map-pin" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 mb-1">
+                Địa điểm
+              </p>
+              <p class="text-sm font-medium text-gray-900">
+                {{ sessionDetail.location }}
+              </p>
+            </div>
           </div>
-          <div>
-            <label class="text-sm font-medium text-gray-500">Thời gian</label>
-            <p class="text-gray-900 mt-1">
-              <span v-if="sessionDetail.start_time && sessionDetail.end_time">
-                Từ {{ formatTime(sessionDetail.start_time) }} đến {{ formatTime(sessionDetail.end_time) }}
-              </span>
-              <span v-else-if="sessionDetail.start_time">
-                {{ formatTime(sessionDetail.start_time) }}
-              </span>
-            </p>
+
+          <!-- Meeting Link -->
+          <div v-if="sessionDetail.meeting_link" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <Icon name="i-heroicons-link" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 mb-1">
+                Meeting Link
+              </p>
+              <a
+                :href="sessionDetail.meeting_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline break-all"
+              >
+                {{ sessionDetail.meeting_link }}
+              </a>
+            </div>
           </div>
-          <div v-if="sessionDetail.location">
-            <label class="text-sm font-medium text-gray-500">Địa điểm</label>
-            <p class="text-gray-900 mt-1">
-              {{ sessionDetail.location }}
-            </p>
+
+          <!-- Meeting ID -->
+          <div v-if="sessionDetail.meeting_id" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <Icon name="i-heroicons-identification" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 mb-1">
+                Meeting ID
+              </p>
+              <p class="text-sm font-medium text-gray-900">
+                {{ sessionDetail.meeting_id }}
+              </p>
+            </div>
           </div>
-          <div v-if="sessionDetail.meeting_link">
-            <label class="text-sm font-medium text-gray-500">Meeting Link</label>
-            <a
-              :href="sessionDetail.meeting_link"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-blue-600 hover:underline mt-1 block"
-            >
-              {{ sessionDetail.meeting_link }}
-            </a>
-          </div>
-          <div v-if="sessionDetail.meeting_id">
-            <label class="text-sm font-medium text-gray-500">Meeting ID</label>
-            <p class="text-gray-900 mt-1">
-              {{ sessionDetail.meeting_id }}
-            </p>
+
+          <!-- Meeting Password -->
+          <div v-if="sessionDetail.meeting_pass" class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <Icon name="i-heroicons-lock-closed" class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-500 mb-1">
+                Meeting Password
+              </p>
+              <p class="text-sm font-medium text-gray-900 font-mono">
+                {{ sessionDetail.meeting_pass }}
+              </p>
+            </div>
           </div>
         </div>
 
         <!-- Classroom and Course Info -->
-        <div class="grid grid-cols-2 gap-4 border-t border-gray-200 my-4 pt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <!-- Classroom Info -->
-          <div v-if="sessionDetail.classroom" class="space-y-2">
-            <h4 class="text-sm font-semibold text-gray-700 mb-2">
-              Lớp học
-            </h4>
-            <p class="text-sm text-gray-900">
+          <div v-if="sessionDetail.classroom" class="p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-2 mb-3">
+              <Icon name="i-heroicons-academic-cap" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-700">
+                Lớp học
+              </h4>
+            </div>
+            <p class="text-sm font-medium text-gray-900 mb-2">
               {{ sessionDetail.classroom.title }}
             </p>
-            <div class="flex items-center gap-4 text-xs text-gray-600">
-              <span>Tối đa {{ sessionDetail.classroom.student_count }} học viên</span>
-              <span>•</span>
-              <span>€{{ sessionDetail.classroom.price }}</span>
+            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+              <span class="flex items-center gap-1">
+                <Icon name="i-heroicons-users" class="w-3.5 h-3.5" />
+                Tối đa {{ sessionDetail.classroom.student_count }} học viên
+              </span>
+              <span class="flex items-center gap-1">
+                <Icon name="i-heroicons-currency-euro" class="w-3.5 h-3.5" />
+                €{{ sessionDetail.classroom.price }}
+              </span>
               <span
                 v-if="sessionDetail.classroom.discount_price"
-                class="text-orange-600"
+                class="flex items-center gap-1 text-orange-600"
               >
-                (KM: €{{ sessionDetail.classroom.discount_price }})
+                <Icon name="i-heroicons-tag" class="w-3.5 h-3.5" />
+                KM: €{{ sessionDetail.classroom.discount_price }}
               </span>
             </div>
           </div>
 
           <!-- Course Info -->
-          <div v-if="sessionDetail.course" class="space-y-2">
-            <h4 class="text-sm font-semibold text-gray-700 mb-2">
-              Khóa học
-            </h4>
-            <p class="text-sm text-gray-900">
+          <div v-if="sessionDetail.course" class="p-4 bg-gray-50 rounded-lg">
+            <div class="flex items-center gap-2 mb-3">
+              <Icon name="i-heroicons-book-open" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-700">
+                Khóa học
+              </h4>
+            </div>
+            <p class="text-sm font-medium text-gray-900">
               {{ sessionDetail.course.title }}
             </p>
           </div>
         </div>
 
+        <!-- Attendance Section -->
+        <div class="pt-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-clipboard-document-check" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-900">
+                Danh sách học sinh đã điểm danh
+              </h4>
+            </div>
+            <div v-if="attendance.length > 0" class="flex items-center gap-3 text-xs text-gray-500">
+              <span class="flex items-center gap-1">
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                {{ attendance.filter(a => a.status === 'present').length }} Có mặt
+              </span>
+              <span class="flex items-center gap-1">
+                <div class="w-1.5 h-1.5 bg-orange-500 rounded-full" />
+                {{ attendance.filter(a => a.status === 'late').length }} Muộn
+              </span>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div v-if="attendanceLoading" class="flex items-center justify-center py-6">
+            <a-spin size="small" />
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="attendance.length === 0" class="text-center py-6 text-gray-400">
+            <Icon name="i-heroicons-users" class="w-6 h-6 mx-auto mb-1.5" />
+            <p class="text-sm">
+              Chưa có học sinh nào tham gia
+            </p>
+          </div>
+
+          <!-- Attendance List -->
+          <div v-else class="space-y-1.5">
+            <div
+              v-for="(record, index) in attendance"
+              :key="record.id || index"
+              class="flex items-center justify-between p-2.5 bg-gray-50 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
+            >
+              <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-gray-200">
+                  <Icon name="i-heroicons-user" class="w-3.5 h-3.5 text-gray-400" />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
+                    {{ getAttendanceDisplayName(record.user_info) }}
+                  </p>
+                  <p v-if="record.user_info.email" class="text-xs text-gray-500 truncate">
+                    {{ record.user_info.email }}
+                  </p>
+                </div>
+              </div>
+              <span
+                class="whitespace-nowrap px-2 py-0.5 rounded text-xs font-medium ml-2"
+                :class="getAttendanceStatusBadge(record.status).class"
+              >
+                {{ getAttendanceStatusBadge(record.status).text }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- Video Upload Section -->
-        <div class="border-t border-gray-200 py-4">
-          <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold text-gray-900">
-              Video buổi học
-            </h4>
+        <div class="border-t border-gray-200 pt-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-video-camera" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-900">
+                Video buổi học
+              </h4>
+            </div>
             <a-upload
               name="videos"
               :multiple="true"
@@ -1162,127 +1353,125 @@ function getFileIcon(fileType?: string): string {
               @change="handleVideoChange"
             >
               <a-button
-                type="primary"
+                type="default"
                 size="small"
-                class="!flex !justify-center !items-center"
+                class="!flex !justify-center !items-center gap-1 !h-7"
               >
-                <Icon name="i-material-symbols-add-2-rounded" class="text-[16px]" />
-                Thêm video
+                <Icon name="i-material-symbols-add-2-rounded" class="text-[14px]" />
+                Thêm
               </a-button>
             </a-upload>
           </div>
 
           <!-- Loading State -->
-          <div v-if="videosLoading" class="flex items-center justify-center py-4">
-            <a-spin />
+          <div v-if="videosLoading" class="flex items-center justify-center py-6">
+            <a-spin size="small" />
           </div>
 
           <!-- Video List -->
-          <div v-else-if="videoFileList.length > 0" class="space-y-3">
+          <div v-else-if="videoFileList.length > 0" class="space-y-1.5">
             <div
               v-for="file in videoFileList"
               :key="file.uid"
-              class="border border-gray-200 rounded-lg p-3 bg-gray-50"
+              class="flex items-center gap-2.5 p-2.5 bg-gray-50 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
             >
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 flex-1 min-w-0">
-                  <Icon name="solar:play-circle-bold-duotone" class="text-2xl text-blue-600 flex-shrink-0" />
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-900 truncate">
-                      {{ file.name }}
-                    </p>
-                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                      <span v-if="file.originFileObj">{{ formatFileSize(file.originFileObj.size) }}</span>
-                      <span v-else-if="file.file_size">{{ formatFileSize(file.file_size) }}</span>
-                      <span v-if="file.duration" class="text-gray-400">
-                        • {{ Math.floor(file.duration / 60) }}:{{ String(file.duration % 60).padStart(2, '0') }}
-                      </span>
-                    </div>
-                  </div>
+              <Icon name="i-heroicons-play-circle" class="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {{ file.name }}
+                </p>
+                <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                  <span v-if="file.originFileObj">{{ formatFileSize(file.originFileObj.size) }}</span>
+                  <span v-else-if="file.file_size">{{ formatFileSize(file.file_size) }}</span>
+                  <span v-if="file.duration" class="text-gray-400">
+                    • {{ Math.floor(file.duration / 60) }}:{{ String(file.duration % 60).padStart(2, '0') }}
+                  </span>
                 </div>
+              </div>
 
-                <!-- Actions -->
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <!-- Upload Button (only show if pending) -->
-                  <template v-if="file.status === 'pending'">
-                    <a-button
-                      type="primary"
-                      size="small"
-                      class="!flex !justify-center !items-center"
-                      @click="uploadSingleVideo(file.uid)"
-                    >
-                      Upload video này
-                    </a-button>
-                  </template>
-
-                  <!-- Progress (if uploading) -->
-                  <template v-else-if="file.status === 'uploading'">
-                    <div class="flex items-center gap-2 min-w-[120px]">
-                      <a-progress
-                        :percent="Number((file.percent || 0).toFixed(1))"
-                        :show-info="false"
-                        status="active"
-                        stroke-color="#16a34a"
-                        class="!h-2 flex-1"
-                      />
-                      <span class="text-xs text-gray-600 whitespace-nowrap">
-                        {{ (file.percent || 0).toFixed(1) }}%
-                      </span>
-                    </div>
-                  </template>
-
-                  <!-- Status (if done) -->
-                  <template v-else-if="file.status === 'done'">
-                    <div class="flex items-center gap-2">
-                      <a
-                        v-if="file.url"
-                        :href="file.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-blue-600 hover:text-blue-800"
-                      >
-                        <Icon name="solar:play-circle-bold-duotone" class="text-lg" />
-                      </a>
-                      <Icon name="solar:check-circle-bold" class="text-green-600 text-lg" />
-                      <span class="text-xs text-green-600">Hoàn thành</span>
-                    </div>
-                  </template>
-
-                  <!-- Status (if error) -->
-                  <template v-else-if="file.status === 'error'">
-                    <div class="flex items-center gap-2">
-                      <Icon name="solar:close-circle-bold" class="text-red-600 text-lg" />
-                      <span class="text-xs text-red-600">Lỗi</span>
-                    </div>
-                  </template>
-
-                  <!-- Remove Button -->
+              <!-- Actions -->
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <!-- Upload Button (only show if pending) -->
+                <template v-if="file.status === 'pending'">
                   <a-button
-                    type="text"
+                    type="primary"
                     size="small"
-                    danger
-                    class="!h-8 !w-8 !p-0 !flex !justify-center !items-center"
-                    @click="removeVideo(file.uid)"
+                    class="!h-7 !px-2 !text-xs"
+                    @click="uploadSingleVideo(file.uid)"
                   >
-                    <CloseOutlined />
+                    Upload
                   </a-button>
-                </div>
+                </template>
+
+                <!-- Progress (if uploading) -->
+                <template v-else-if="file.status === 'uploading'">
+                  <div class="flex items-center gap-1.5 min-w-[100px]">
+                    <a-progress
+                      :percent="Number((file.percent || 0).toFixed(1))"
+                      :show-info="false"
+                      status="active"
+                      stroke-color="#16a34a"
+                      class="!h-1.5 flex-1"
+                    />
+                    <span class="text-xs text-gray-500 whitespace-nowrap">
+                      {{ (file.percent || 0).toFixed(0) }}%
+                    </span>
+                  </div>
+                </template>
+
+                <!-- Status (if done) -->
+                <template v-else-if="file.status === 'done'">
+                  <div class="flex items-center gap-1.5">
+                    <a
+                      v-if="file.url"
+                      :href="file.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:text-blue-700"
+                    >
+                      <Icon name="i-heroicons-play" class="w-4 h-4" />
+                    </a>
+                    <Icon name="i-heroicons-check-circle" class="w-4 h-4 text-green-600" />
+                  </div>
+                </template>
+
+                <!-- Status (if error) -->
+                <template v-else-if="file.status === 'error'">
+                  <Icon name="i-heroicons-x-circle" class="w-4 h-4 text-red-500" />
+                </template>
+
+                <!-- Remove Button -->
+                <a-button
+                  type="text"
+                  size="small"
+                  danger
+                  class="!h-7 !w-7 !p-0 !flex !justify-center !items-center"
+                  @click="removeVideo(file.uid)"
+                >
+                  <CloseOutlined />
+                </a-button>
               </div>
             </div>
           </div>
 
           <!-- Empty State -->
-          <div v-else class="text-center py-4 text-gray-500 text-sm">
-            Chưa có video nào
+          <div v-else class="text-center py-6 text-gray-400">
+            <Icon name="i-heroicons-video-camera-slash" class="w-6 h-6 mx-auto mb-1.5" />
+            <p class="text-xs">
+              Chưa có video nào
+            </p>
           </div>
         </div>
 
         <!-- Materials Upload Section -->
-        <div class="border-t border-gray-200 py-4">
-          <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold text-gray-900">
-              Tài liệu buổi học
-            </h4>
+        <div class="pt-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-document" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-900">
+                Tài liệu buổi học
+              </h4>
+            </div>
             <a-upload
               name="materials"
               :multiple="true"
@@ -1292,158 +1481,156 @@ function getFileIcon(fileType?: string): string {
               @change="handleMaterialChange"
             >
               <a-button
-                type="primary"
+                type="default"
                 size="small"
-                class="!flex !justify-center !items-center"
+                class="!flex !justify-center !items-center gap-1 !h-7"
               >
-                <Icon name="i-material-symbols-add-2-rounded" class="text-[16px]" />
-                Thêm tài liệu
+                <Icon name="i-material-symbols-add-2-rounded" class="text-[14px]" />
+                Thêm
               </a-button>
             </a-upload>
           </div>
 
           <!-- Loading State -->
-          <div v-if="materialsLoading" class="flex items-center justify-center py-4">
-            <a-spin />
+          <div v-if="materialsLoading" class="flex items-center justify-center py-6">
+            <a-spin size="small" />
           </div>
 
           <!-- Materials List -->
-          <div v-else-if="materialFileList.length > 0" class="space-y-3">
+          <div v-else-if="materialFileList.length > 0" class="space-y-1.5">
             <div
               v-for="file in materialFileList"
               :key="file.uid"
-              class="border border-gray-200 rounded-lg p-3 bg-gray-50"
+              class="flex items-center gap-2.5 p-2.5 bg-gray-50 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
             >
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3 flex-1 min-w-0">
-                  <Icon :name="getFileIcon(file.file_type)" class="text-2xl text-blue-600 flex-shrink-0" />
-                  <div class="flex-1 min-w-0">
-                    <p class="font-medium text-gray-900 truncate">
-                      {{ file.title || file.name }}
-                    </p>
-                    <div class="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                      <span v-if="file.originFileObj">{{ formatFileSize(file.originFileObj.size) }}</span>
-                      <span v-else-if="file.file_size">{{ formatFileSize(file.file_size) }}</span>
-                      <span v-if="file.file_type" class="uppercase">{{ file.file_type }}</span>
-                    </div>
-                  </div>
+              <Icon :name="getFileIcon(file.file_type)" class="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">
+                  {{ file.title || file.name }}
+                </p>
+                <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                  <span v-if="file.originFileObj">{{ formatFileSize(file.originFileObj.size) }}</span>
+                  <span v-else-if="file.file_size">{{ formatFileSize(file.file_size) }}</span>
+                  <span v-if="file.file_type" class="uppercase text-gray-400">{{ file.file_type }}</span>
                 </div>
+              </div>
 
-                <!-- Actions -->
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <!-- Upload Button (only show if pending) -->
-                  <template v-if="file.status === 'pending'">
-                    <a-button
-                      type="primary"
-                      size="small"
-                      class="!flex !justify-center !items-center"
-                      @click="uploadSingleMaterial(file.uid)"
-                    >
-                      Upload tài liệu này
-                    </a-button>
-                  </template>
-
-                  <!-- Progress (if uploading) -->
-                  <template v-else-if="file.status === 'uploading'">
-                    <div class="flex items-center gap-2 min-w-[120px]">
-                      <a-progress
-                        :percent="Number((file.percent || 0).toFixed(1))"
-                        :show-info="false"
-                        status="active"
-                        stroke-color="#16a34a"
-                        class="!h-2 flex-1"
-                      />
-                      <span class="text-xs text-gray-600 whitespace-nowrap">
-                        {{ (file.percent || 0).toFixed(1) }}%
-                      </span>
-                    </div>
-                  </template>
-
-                  <!-- Status (if done) -->
-                  <template v-else-if="file.status === 'done'">
-                    <div class="flex items-center gap-2">
-                      <a
-                        v-if="file.url"
-                        :href="file.url"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-blue-600 hover:text-blue-800"
-                      >
-                        <Icon name="solar:download-bold-duotone" class="text-lg" />
-                      </a>
-                      <Icon name="solar:check-circle-bold" class="text-green-600 text-lg" />
-                      <span class="text-xs text-green-600">Hoàn thành</span>
-                    </div>
-                  </template>
-
-                  <!-- Status (if error) -->
-                  <template v-else-if="file.status === 'error'">
-                    <div class="flex items-center gap-2">
-                      <Icon name="solar:close-circle-bold" class="text-red-600 text-lg" />
-                      <span class="text-xs text-red-600">Lỗi</span>
-                    </div>
-                  </template>
-
-                  <!-- Remove Button -->
+              <!-- Actions -->
+              <div class="flex items-center gap-1.5 flex-shrink-0">
+                <!-- Upload Button (only show if pending) -->
+                <template v-if="file.status === 'pending'">
                   <a-button
-                    type="text"
+                    type="primary"
                     size="small"
-                    danger
-                    class="!h-8 !w-8 !p-0 !flex !justify-center !items-center"
-                    @click="removeMaterial(file.uid)"
+                    class="!h-7 !px-2 !text-xs"
+                    @click="uploadSingleMaterial(file.uid)"
                   >
-                    <CloseOutlined />
+                    Upload
                   </a-button>
-                </div>
+                </template>
+
+                <!-- Progress (if uploading) -->
+                <template v-else-if="file.status === 'uploading'">
+                  <div class="flex items-center gap-1.5 min-w-[100px]">
+                    <a-progress
+                      :percent="Number((file.percent || 0).toFixed(1))"
+                      :show-info="false"
+                      status="active"
+                      stroke-color="#16a34a"
+                      class="!h-1.5 flex-1"
+                    />
+                    <span class="text-xs text-gray-500 whitespace-nowrap">
+                      {{ (file.percent || 0).toFixed(0) }}%
+                    </span>
+                  </div>
+                </template>
+
+                <!-- Status (if done) -->
+                <template v-else-if="file.status === 'done'">
+                  <div class="flex items-center gap-1.5">
+                    <a
+                      v-if="file.url"
+                      :href="file.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-blue-600 hover:text-blue-700"
+                    >
+                      <Icon name="i-heroicons-arrow-down-tray" class="w-4 h-4" />
+                    </a>
+                    <Icon name="i-heroicons-check-circle" class="w-4 h-4 text-green-600" />
+                  </div>
+                </template>
+
+                <!-- Status (if error) -->
+                <template v-else-if="file.status === 'error'">
+                  <Icon name="i-heroicons-x-circle" class="w-4 h-4 text-red-500" />
+                </template>
+
+                <!-- Remove Button -->
+                <a-button
+                  type="text"
+                  size="small"
+                  danger
+                  class="!h-7 !w-7 !p-0 !flex !justify-center !items-center"
+                  @click="removeMaterial(file.uid)"
+                >
+                  <CloseOutlined />
+                </a-button>
               </div>
             </div>
           </div>
 
           <!-- Empty State -->
-          <div v-else class="text-center py-4 text-gray-500 text-sm">
-            Chưa có tài liệu nào
+          <div v-else class="text-center py-6 text-gray-400">
+            <Icon name="i-heroicons-document-minus" class="w-6 h-6 mx-auto mb-1.5" />
+            <p class="text-xs">
+              Chưa có tài liệu nào
+            </p>
           </div>
         </div>
 
         <!-- Students List -->
-        <div class="border-t border-gray-200 py-4">
-          <div class="flex items-center justify-between mb-4">
-            <h4 class="font-semibold text-gray-900">
-              Danh sách học sinh
-            </h4>
+        <div class="border-t border-gray-200 pt-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <Icon name="i-heroicons-user-group" class="w-4 h-4 text-gray-400" />
+              <h4 class="text-sm font-semibold text-gray-900">
+                Danh sách học sinh
+              </h4>
+            </div>
             <a-button
-              type="primary"
+              type="default"
               size="small"
-              class="!flex !justify-center !items-center"
+              class="!flex !justify-center !items-center gap-1 !h-7"
               @click="showAddStudent = !showAddStudent"
             >
-              <Icon name="i-material-symbols-add-2-rounded" class="text-[16px]" />
-              Thêm học sinh
+              <Icon name="i-material-symbols-add-2-rounded" class="text-[14px]" />
+              Thêm
             </a-button>
           </div>
 
           <!-- Add Student Form -->
-          <div v-if="showAddStudent" class="mb-4 p-4 bg-gray-50 rounded-lg">
+          <div v-if="showAddStudent" class="mb-3 p-3 bg-gray-50 rounded-md">
             <div class="flex gap-2">
               <a-input
                 v-model:value="addStudentEmail"
                 placeholder="Nhập email học sinh"
-                size="large"
+                size="small"
                 class="flex-1"
                 @press-enter="handleAddStudent"
               />
               <a-button
                 type="primary"
-                size="large"
-                class="!flex !justify-center !items-center"
+                size="small"
+                class="!h-7"
                 :loading="addStudentLoading"
                 @click="handleAddStudent"
               >
-                Thêm học sinh này
+                Thêm
               </a-button>
               <a-button
-                size="large"
-                class="!flex !justify-center !items-center"
+                size="small"
+                class="!h-7"
                 @click="showAddStudent = false"
               >
                 Hủy
@@ -1452,34 +1639,34 @@ function getFileIcon(fileType?: string): string {
           </div>
 
           <!-- Loading State -->
-          <div v-if="studentsLoading" class="flex items-center justify-center py-4">
-            <a-spin />
+          <div v-if="studentsLoading" class="flex items-center justify-center py-6">
+            <a-spin size="small" />
           </div>
 
           <!-- Empty State -->
-          <div v-else-if="students.length === 0" class="text-center py-8">
-            <Icon name="i-heroicons-users" class="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p class="text-gray-500">
+          <div v-else-if="students.length === 0" class="text-center py-6 text-gray-400">
+            <Icon name="i-heroicons-users" class="w-6 h-6 mx-auto mb-1.5" />
+            <p class="text-xs">
               Chưa có học sinh nào trong lớp
             </p>
           </div>
 
           <!-- Students List -->
-          <div v-else class="space-y-2">
+          <div v-else class="space-y-1.5">
             <div
               v-for="student in students"
               :key="student.id"
-              class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+              class="flex items-center justify-between p-2.5 bg-gray-50 rounded-md border border-gray-200 hover:bg-gray-100 transition-colors"
             >
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Icon name="i-heroicons-user" class="w-5 h-5 text-blue-600" />
+              <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                <div class="w-7 h-7 bg-white rounded-full flex items-center justify-center flex-shrink-0 border border-gray-200">
+                  <Icon name="i-heroicons-user" class="w-3.5 h-3.5 text-gray-400" />
                 </div>
-                <div>
-                  <p class="font-medium text-gray-900">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900 truncate">
                     {{ student.full_name || `${student.first_name} ${student.last_name}` }}
                   </p>
-                  <p class="text-sm text-gray-500">
+                  <p class="text-xs text-gray-500 truncate">
                     {{ student.email }}
                   </p>
                 </div>
@@ -1488,15 +1675,45 @@ function getFileIcon(fileType?: string): string {
                 type="text"
                 danger
                 size="small"
-                class="!flex !justify-center !items-center"
+                class="!h-7 !w-7 !p-0 !flex !justify-center !items-center"
                 @click="handleRemoveStudent(student.id)"
               >
-                <Icon name="i-material-symbols-delete-outline" class="text-[16px]" />
-                Xóa
+                <CloseOutlined />
               </a-button>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </a-modal>
+
+  <!-- Remove Student Confirm Dialog -->
+  <a-modal
+    v-model:open="showRemoveStudentDialog"
+    title="Xác nhận xóa học sinh"
+    width="500px"
+    :confirm-loading="removingStudent"
+    @ok="confirmRemoveStudent"
+    @cancel="cancelRemoveStudent"
+  >
+    <div class="py-2">
+      <p class="text-gray-700 mb-4">
+        Bạn có chắc chắn muốn xóa học sinh này khỏi lớp không?
+      </p>
+
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+        <a-checkbox v-model:checked="deleteOrderOnRemove" class="w-full">
+          <div>
+            <div class="font-medium text-yellow-900 mb-1">
+              Xóa luôn đơn hàng
+            </div>
+            <div class="text-sm text-yellow-700">
+              Nếu bạn đã thêm nhầm học sinh và muốn xóa luôn đơn hàng để doanh thu không bị nhầm, hãy chọn tùy chọn này.
+              <br>
+              Mặc định chỉ xóa enrollment, đơn hàng sẽ được đánh dấu là "đã hủy".
+            </div>
+          </div>
+        </a-checkbox>
       </div>
     </div>
   </a-modal>

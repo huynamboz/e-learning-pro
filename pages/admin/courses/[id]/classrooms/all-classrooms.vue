@@ -47,6 +47,39 @@ interface CalendarEvent {
   classroomId?: string
   description?: string
   meeting_link?: string
+  background?: string
+}
+
+// List of background colors (dark colors suitable for white text)
+const EVENT_BACKGROUND_COLORS = [
+  '#268100', // Green (default)
+  '#1e40af', // Blue
+  '#7c3aed', // Purple
+  '#c2410c', // Orange
+  '#be123c', // Rose
+  '#0891b2', // Cyan
+  '#b45309', // Amber
+  '#059669', // Emerald
+  '#7c2d12', // Brown
+  '#6b21a8', // Violet
+  '#0c4a6e', // Sky
+  '#831843', // Fuchsia
+  '#1e3a8a', // Indigo
+  '#92400e', // Yellow
+  '#991b1b', // Red
+]
+
+// Get random background color for event
+function getRandomBackgroundColor(): string {
+  const randomIndex = Math.floor(Math.random() * EVENT_BACKGROUND_COLORS.length)
+  return EVENT_BACKGROUND_COLORS[randomIndex]
+}
+
+// Format event time (from "YYYY-MM-DD HH:mm" to "HH:mm")
+function formatEventTime(dateTimeString: string): string {
+  if (!dateTimeString)
+    return ''
+  return dayjs(dateTimeString).format('HH:mm')
 }
 
 const calendarEvents = ref<CalendarEvent[]>([])
@@ -86,6 +119,8 @@ function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): Calen
       classroomId: session.classroom,
       description: session.description,
       meeting_link: session.meeting_link,
+      // Use background_color from session if available, otherwise random
+      background: (session as any).background_color || getRandomBackgroundColor(),
     })
   })
 
@@ -168,6 +203,12 @@ function handleCalendarReady({ view }: any) {
 // Handle classroom creation success
 async function handleClassroomCreated() {
   // Reload sessions to get updated data
+  await loadAllSessions()
+}
+
+// Handle classroom deleted - reload sessions
+async function handleClassroomDeleted() {
+  // Reload sessions to remove deleted classroom sessions
   await loadAllSessions()
 }
 
@@ -294,6 +335,19 @@ onMounted(() => {
           :time-step="60" :time-to="24 * 60" :time-cell-height="72" :events="calendarEvents" :views="['week']"
           time-at-cursor @ready="handleCalendarReady" @event-click="handleEventClick"
         >
+          <template #event="{ event }">
+            <div
+              class="flex flex-col gap-1 text-white p-1 px-2 rounded-[5px] h-full"
+              :style="{ backgroundColor: event.background || getRandomBackgroundColor() }"
+            >
+              <div class="text-sm font-medium text-white leading-tight">
+                {{ event.title }}
+              </div>
+              <div v-if="event.start && event.end" class="text-xs font-semibold text-white opacity-90">
+                {{ formatEventTime(event.start) }} - {{ formatEventTime(event.end) }}
+              </div>
+            </div>
+          </template>
           <template #previous-button>
             <button
               class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
@@ -336,6 +390,7 @@ onMounted(() => {
       @student-added="handleStudentChanged"
       @student-removed="handleStudentChanged"
       @session-updated="handleStudentChanged"
+      @classroom-deleted="handleClassroomDeleted"
     />
   </div>
 </template>
@@ -366,15 +421,15 @@ onMounted(() => {
   color: var(--vuecal-base-color) !important;
 }
 
-/* Event styling */
+/* Event styling - background color is set via inline style in custom template */
 :deep(.vuecal--default-theme .vuecal__event) {
   color: #ffffff;
-  background: #268100;
   border: 1px solid rgba(203, 213, 225, 0.35);
-  padding: 10px 12px;
+  padding: 0;
   border-radius: 10px;
   box-shadow: none;
   transition: all 0.3s ease;
+  background: transparent !important;
 }
 
 :deep(.vuecal--default-theme .vuecal__event:hover) {
@@ -416,17 +471,6 @@ onMounted(() => {
   font-weight: 600;
 }
 
-:deep(.vuecal__event::before) {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4px;
-  height: 100%;
-  background: #20683b;
-  border-radius: 0 3px 3px 0;
-}
-
 /* Week and day view styling */
 :deep(.vuecal--default-theme .vuecal__time-cell) {
   border-color: #e2e8f0;
@@ -445,7 +489,6 @@ onMounted(() => {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   :deep(.vuecal--default-theme .vuecal__event) {
-    padding: 6px;
     font-size: 12px;
   }
 
@@ -456,5 +499,9 @@ onMounted(() => {
   :deep(.vuecal__event .vuecal__event-time) {
     font-size: 10px;
   }
+}
+
+:deep(.vuecal__event-details) {
+  padding: 0;
 }
 </style>

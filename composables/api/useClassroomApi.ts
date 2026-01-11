@@ -31,6 +31,7 @@ export interface ClassroomSession {
   course_title: string
   attendance_count: number
   present_count: number
+  background_color?: string
   created_at: string
   updated_at: string
 }
@@ -160,8 +161,10 @@ export function useClassroomApi() {
       apiClient.post<any>(`/classrooms/${classroomId}/quick-enroll/`, data),
 
     // Remove student from classroom
-    removeStudentFromClassroom: (classroomId: string, userId: number) =>
-      apiClient.delete(`/classrooms/${classroomId}/students/${userId}/`),
+    removeStudentFromClassroom: (classroomId: string, userId: number, deleteOrder?: boolean) => {
+      const params = deleteOrder ? { delete_order: true } : undefined
+      return apiClient.delete(`/classrooms/${classroomId}/students/${userId}/`, { params })
+    },
 
     // Self check-in for session
     selfCheckInSession: (sessionId: string, classroomId: string) =>

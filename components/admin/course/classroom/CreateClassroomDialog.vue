@@ -37,7 +37,7 @@ const formState = ref({
   title: '',
   student_count: '',
   schedule: [
-    { day: null, start: null, end: null, repeat: false, repeat_start_date: null as any, repeat_end_date: null as any },
+    { day: null, start: null, end: null, repeat: true, repeat_start_date: null as any, repeat_end_date: null as any },
   ],
   // Pricing fields
   price: null as number | null,
@@ -53,7 +53,7 @@ const dialogVisible = computed({
 })
 
 function addScheduleItem() {
-  formState.value.schedule.push({ day: null, start: null, end: null, repeat: false, repeat_start_date: null, repeat_end_date: null })
+  formState.value.schedule.push({ day: null, start: null, end: null, repeat: true, repeat_start_date: null, repeat_end_date: null })
 }
 
 function removeScheduleItem(index: number) {
@@ -76,11 +76,7 @@ function formatTimeForApi(time: any): string {
 
 // Validate repeat date range for schedule item
 function validateRepeatDateRange(rule: any, value: any, callback: any, scheduleItem: any) {
-  if (!scheduleItem.repeat) {
-    callback()
-    return
-  }
-
+  // Repeat is always true now, so always validate dates
   if (!scheduleItem.repeat_start_date || !scheduleItem.repeat_end_date) {
     callback()
     return
@@ -127,13 +123,22 @@ function resetForm() {
     title: '',
     student_count: '',
     schedule: [
-      { day: null, start: null, end: null, repeat: false, repeat_start_date: null, repeat_end_date: null },
+      { day: null, start: null, end: null, repeat: true, repeat_start_date: null, repeat_end_date: null },
     ],
     // Reset pricing fields
     price: null,
     discount_price: null,
   }
-  formRef.value?.resetFields()
+  // Reset form fields if formRef exists
+  if (formRef.value) {
+    try {
+      formRef.value.resetFields()
+    }
+    catch (err) {
+      // Ignore reset errors if form is not mounted
+      console.warn('Form reset error:', err)
+    }
+  }
 }
 
 // Handle OK button
@@ -156,8 +161,8 @@ async function handleOk() {
             end_time: formatTimeForApi(schedule.end),
           }
 
-          // Add repeat dates if repeat is enabled
-          if (schedule.repeat && schedule.repeat_start_date && schedule.repeat_end_date) {
+          // Add repeat dates (always required now)
+          if (schedule.repeat_start_date && schedule.repeat_end_date) {
             scheduleData.repeat_start_date = schedule.repeat_start_date.format('YYYY-MM-DD')
             scheduleData.repeat_end_date = schedule.repeat_end_date.format('YYYY-MM-DD')
           }
@@ -173,9 +178,12 @@ async function handleOk() {
     // console.warn('Classroom payload (ready for backend):', JSON.stringify(classroomPayload, null, 2))
     await createClassroom(classroomPayload)
 
-    // Reset form and close modal
-    resetForm()
+    // Close modal first
     dialogVisible.value = false
+    
+    // Reset form after dialog closes to avoid formRef errors
+    await nextTick()
+    resetForm()
 
     // Emit success event
     emit('success')
@@ -201,8 +209,11 @@ async function handleOk() {
 
 // Handle cancel
 function handleCancel() {
-  resetForm()
   dialogVisible.value = false
+  // Reset form after dialog closes
+  nextTick(() => {
+    resetForm()
+  })
 }
 
 // Watch for dialog close to reset form
@@ -317,21 +328,14 @@ watch(() => props.open, (newValue) => {
               </div>
             </div>
 
-            <!-- Repeat Checkbox -->
-            <div class="flex items-center gap-2">
-              <a-checkbox v-model:checked="item.repeat">
-                Lặp lại
-              </a-checkbox>
-            </div>
-
-            <!-- Repeat Date Range (shown when repeat is checked) -->
-            <div v-if="item.repeat" class="flex gap-4 w-full pl-6">
+            <!-- Repeat Date Range (always shown, repeat is always true) -->
+            <div class="flex gap-4 w-full">
               <a-form-item
                 label="Các buổi học lặp lại từ ngày"
                 :name="['schedule', index, 'repeat_start_date']"
                 class="w-full"
                 :rules="[
-                  { required: item.repeat, message: 'Vui lòng chọn ngày bắt đầu' },
+                  { required: true, message: 'Vui lòng chọn ngày bắt đầu' },
                   { validator: (rule: any, value: any, callback: any) => validateRepeatDateRange(rule, value, callback, item), trigger: 'change' },
                 ]"
               >
@@ -349,7 +353,7 @@ watch(() => props.open, (newValue) => {
                 :name="['schedule', index, 'repeat_end_date']"
                 class="w-full"
                 :rules="[
-                  { required: item.repeat, message: 'Vui lòng chọn ngày kết thúc' },
+                  { required: true, message: 'Vui lòng chọn ngày kết thúc' },
                   { validator: (rule: any, value: any, callback: any) => validateRepeatDateRange(rule, value, callback, item), trigger: 'change' },
                 ]"
               >

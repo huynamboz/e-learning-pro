@@ -61,6 +61,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
       "course_title": "Khóa học tiếng Ý cơ bản",
       "attendance_count": 0,
       "present_count": 0,
+      "background_color": "#268100",
       "created_at": "2026-01-01T00:00:00.000Z",
       "updated_at": "2026-01-01T00:00:00.000Z"
     },
@@ -78,6 +79,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
       "course_title": "Khóa học tiếng Ý cơ bản",
       "attendance_count": 0,
       "present_count": 0,
+      "background_color": "#268100",
       "created_at": "2026-01-01T00:00:00.000Z",
       "updated_at": "2026-01-01T00:00:00.000Z"
     },
@@ -95,6 +97,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
       "course_title": "Khóa học tiếng Ý cơ bản",
       "attendance_count": 0,
       "present_count": 0,
+      "background_color": "#268100",
       "created_at": "2026-01-01T00:00:00.000Z",
       "updated_at": "2026-01-01T00:00:00.000Z"
     }
@@ -163,6 +166,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
   "status": "scheduled",
   "attendance_count": 0,
   "present_count": 0,
+  "background_color": "#268100",
   "created_at": "2026-01-01T00:00:00.000Z",
   "updated_at": "2026-01-01T00:00:00.000Z"
 }
@@ -197,6 +201,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
   "status": "scheduled",
   "attendance_count": 0,
   "present_count": 0,
+  "background_color": "#268100",
   "created_at": "2026-01-01T00:00:00.000Z",
   "updated_at": "2026-01-01T00:00:00.000Z"
 }
@@ -236,6 +241,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
 - `course_title`: String (required) - Tên của course (để hiển thị trong calendar)
 - `attendance_count`: Integer (default: 0) - Tổng số học viên đã đăng ký
 - `present_count`: Integer (default: 0) - Số học viên có mặt
+- `background_color`: String (optional) - Màu nền cho event trong calendar (format: hex color, ví dụ: `#268100`). Nếu không có, frontend sẽ random từ danh sách màu có sẵn.
 - `created_at`: DateTime (auto-generated) - Thời gian tạo
 - `updated_at`: DateTime (auto-updated) - Thời gian cập nhật cuối
 
@@ -267,6 +273,7 @@ API để lấy danh sách tất cả sessions của tất cả classrooms trong
 - `status`: String (required) - Trạng thái session: `scheduled`, `ongoing`, `completed`, `cancelled`
 - `attendance_count`: Integer (default: 0) - Tổng số học viên đã đăng ký
 - `present_count`: Integer (default: 0) - Số học viên có mặt
+- `background_color`: String (optional) - Màu nền cho event trong calendar (format: hex color, ví dụ: `#268100`). Nếu không có, frontend sẽ random từ danh sách màu có sẵn.
 - `created_at`: DateTime (auto-generated) - Thời gian tạo
 - `updated_at`: DateTime (auto-updated) - Thời gian cập nhật cuối
 
