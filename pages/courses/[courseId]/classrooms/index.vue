@@ -1,14 +1,20 @@
 <script lang="ts" setup>
 import type { CourseAsset } from '~/composables/api/useAssetApi'
+import type { ClassroomSession } from '~/composables/api/useClassroomApi'
 import type { Classroom } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { VueCal } from 'vue-cal'
 import ResourceItem from '~/components/learning/ResourceItem.vue'
 import { useAssetApi } from '~/composables/api/useAssetApi'
+import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useOrderApi } from '~/composables/api/useOrderApi'
 import 'vue-cal/style'
+
+// Enable UTC plugin for dayjs
+dayjs.extend(utc)
 
 definePageMeta({
   layout: 'auth',
@@ -17,10 +23,14 @@ definePageMeta({
 const route = useRoute()
 const { t } = useI18n()
 const courseId = computed(() => route.params.courseId as string)
-const classroomId = computed(() => route.params.classroomId as string)
+const studentCount = computed(() => {
+  const count = route.query.student_count
+  return count ? Number.parseInt(count as string, 10) : null
+})
 
 const { getDetailCourses } = useCourseApi()
 const { getAssets } = useAssetApi()
+const { getCourseSessions } = useClassroomApi()
 
 // Fetch course data
 const { data: currentCourse, pending: isLoadingCourse, error: courseError, refresh: retryCourse } = useLazyAsyncData(
@@ -55,14 +65,13 @@ const allResources = ref<CourseAsset[]>([])
 const resourcesData = ref<{ count: number, next: string | null, previous: string | null } | null>(null)
 const isLoadingMore = ref(false)
 
-// Fetch resources/assets filtered by classroom
+// Fetch resources/assets (no classroom filter)
 const { data: initialResourcesData, pending: isLoadingResources, error: resourcesError } = useLazyAsyncData(
-  `resources-${courseId.value}-${classroomId.value}`,
+  `resources-${courseId.value}`,
   async () => {
     try {
       const response = await getAssets(courseId.value, {
         ordering: 'order',
-        visible_classrooms: classroomId.value,
         page: 1,
         limit: pageSize.value,
       })
@@ -76,7 +85,7 @@ const { data: initialResourcesData, pending: isLoadingResources, error: resource
   {
     default: () => ({ count: 0, results: [], next: null, previous: null }),
     server: true,
-    watch: [courseId, classroomId],
+    watch: [courseId],
   },
 )
 
@@ -140,7 +149,6 @@ async function loadMoreResources() {
 
     const response = await getAssets(courseId.value, {
       ordering: 'order',
-      visible_classrooms: classroomId.value,
       page: currentPage.value,
       limit: pageSize.value,
     })
@@ -181,12 +189,12 @@ function getAssetTypeInfo(type: string) {
   return typeMap[type] || typeMap.other
 }
 
-// Find classroom from course data
-const currentClassroom = computed(() => {
-  if (!currentCourse.value || !currentCourse.value.classrooms)
-    return null
-
-  return currentCourse.value.classrooms.find((c: any) => c.id === classroomId.value) || null
+// Get classroom title from student_count
+const classroomTitle = computed(() => {
+  if (studentCount.value) {
+    return `Lớp ${studentCount.value} học viên`
+  }
+  return 'Lớp học'
 })
 
 const isLoading = computed(() => isLoadingCourse.value || isLoadingResources.value)
@@ -202,16 +210,6 @@ watch(fetchError, (error) => {
   }
 })
 
-// Watch for classroom not found
-watch([currentCourse, currentClassroom], ([course, classroom]) => {
-  if (course && !classroom) {
-    notification.error({
-      message: t('classroomDetail.notifications.notFound'),
-      description: t('classroomDetail.notFound.description'),
-    })
-  }
-})
-
 // Calendar section for registration schedule
 interface CalendarEvent {
   start: string
@@ -219,12 +217,33 @@ interface CalendarEvent {
   title: string
   id?: string
   class?: string
+  sessionId?: string
+  classroomId?: string
+  description?: string
+  meeting_link?: string
+  background?: string
+}
+
+// Default background color if classroom doesn't have background_color
+const DEFAULT_BACKGROUND_COLOR = '#268100' // Green
+
+// Format event time (from "YYYY-MM-DD HH:mm" to "HH:mm")
+function formatEventTime(dateTimeString: string): string {
+  if (!dateTimeString)
+    return ''
+  return dayjs(dateTimeString).format('HH:mm')
 }
 
 const calendarEvents = ref<CalendarEvent[]>([])
+const sessionsData = ref<ClassroomSession[]>([])
+const isLoadingSessions = ref(false)
+const calendarReady = ref(false)
 const selectedDate = ref(new Date())
 const viewDate = ref(new Date())
 const currentView = ref('week')
+
+// VueCal template ref
+const vueCalRef = ref<any>(null)
 
 // Dialog state for classroom registration
 const showClassroomDialog = ref(false)
@@ -275,72 +294,148 @@ const hasClassroomDiscount = computed(() => {
   return discountPrice > 0 && discountPrice < Number.parseFloat(selectedClassroomForDialog.value.price || '0')
 })
 
-// Generate seed data for calendar events
-function generateCalendarEvents() {
+// Check if classroom is full
+const isClassroomFull = computed(() => {
+  if (!selectedClassroomForDialog.value)
+    return false
+  const enrollmentCount = selectedClassroomForDialog.value.enrollment_count || 0
+  const studentCount = selectedClassroomForDialog.value.student_count || 0
+  return enrollmentCount >= studentCount
+})
+
+// Generate calendar events from sessions
+function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): CalendarEvent[] {
   const events: CalendarEvent[] = []
-  const now = dayjs()
 
-  // Get the start of current week (Monday)
-  const startOfWeek = now.startOf('week').add(1, 'day') // Monday
-
-  // Generate events for the next 4 weeks
-  for (let week = 0; week < 4; week++) {
-    const weekStart = startOfWeek.add(week, 'week')
-
-    // Class 1: Monday and Wednesday from 6 PM to 8 PM (18:00-20:00)
-    // Monday
-    const monday = weekStart.hour(18).minute(0).second(0)
-    const mondayEnd = monday.hour(20).minute(0).second(0)
+  sessions.forEach((session) => {
+    // Parse date strings - backend can return UTC (2026-01-05T18:00:00.000Z) or timezone (2026-01-12T03:00:00+07:00)
+    // dayjs will automatically parse the timezone from the string
+    const startDate = dayjs(session.start_time)
+    const endDate = dayjs(session.end_time)
 
     events.push({
-      id: `class1-monday-${week}`,
-      start: monday.format('YYYY-MM-DD HH:mm'),
-      end: mondayEnd.format('YYYY-MM-DD HH:mm'),
-      title: 'Lớp 1 thành viên',
+      id: session.id,
+      start: startDate.format('YYYY-MM-DD HH:mm'),
+      end: endDate.format('YYYY-MM-DD HH:mm'),
+      title: session.classroom_title,
+      sessionId: session.id,
+      classroomId: session.classroom,
+      description: session.description,
+      meeting_link: session.meeting_link,
+      background: session.background_color || DEFAULT_BACKGROUND_COLOR,
     })
-
-    // Wednesday
-    const wednesday = weekStart.add(2, 'day').hour(18).minute(0).second(0)
-    const wednesdayEnd = wednesday.hour(20).minute(0).second(0)
-
-    events.push({
-      id: `class1-wednesday-${week}`,
-      start: wednesday.format('YYYY-MM-DD HH:mm'),
-      end: wednesdayEnd.format('YYYY-MM-DD HH:mm'),
-      title: 'Lớp 1 thành viên',
-    })
-
-    // Class 2: Thursday and Saturday from 1 PM to 4 PM (13:00-16:00)
-    // Thursday
-    const thursday = weekStart.add(3, 'day').hour(13).minute(0).second(0)
-    const thursdayEnd = thursday.hour(16).minute(0).second(0)
-
-    events.push({
-      id: `class2-thursday-${week}`,
-      start: thursday.format('YYYY-MM-DD HH:mm'),
-      end: thursdayEnd.format('YYYY-MM-DD HH:mm'),
-      title: 'Lớp 3 thành viên',
-    })
-
-    // Saturday
-    const saturday = weekStart.add(5, 'day').hour(13).minute(0).second(0)
-    const saturdayEnd = saturday.hour(16).minute(0).second(0)
-
-    events.push({
-      id: `class2-saturday-${week}`,
-      start: saturday.format('YYYY-MM-DD HH:mm'),
-      end: saturdayEnd.format('YYYY-MM-DD HH:mm'),
-      title: 'Lớp 3 thành viên',
-    })
-  }
+  })
 
   return events
 }
 
-// Initialize calendar events
-onMounted(() => {
-  calendarEvents.value = generateCalendarEvents()
-})
+// Load all sessions from the course
+async function loadAllSessions() {
+  // Prevent multiple simultaneous calls
+  if (isLoadingSessions.value || !courseId.value) {
+    return
+  }
+
+  try {
+    isLoadingSessions.value = true
+
+    // Get current week range from calendar
+    const view = vueCalRef.value?.view
+    let startDate: string | undefined
+    let endDate: string | undefined
+
+    if (view && view.cellDates && view.cellDates.length > 0) {
+      const firstCell = view.cellDates[0]
+      const lastCell = view.cellDates[view.cellDates.length - 1]
+      startDate = firstCell.startFormatted // Format: YYYY-MM-DD
+      endDate = lastCell.startFormatted // Format: YYYY-MM-DD
+    }
+
+    // Call API to get sessions with date range (no classroom filter)
+    const sessionsResponse = await getCourseSessions(courseId.value, {
+      start_date: startDate,
+      end_date: endDate,
+    })
+
+    if (sessionsResponse.results && sessionsResponse.results.length > 0) {
+      // Filter sessions by limit === student_count
+      let filteredSessions = sessionsResponse.results
+      if (studentCount.value !== null) {
+        filteredSessions = sessionsResponse.results.filter(
+          (session: ClassroomSession) => session.limit === studentCount.value,
+        )
+      }
+      sessionsData.value = filteredSessions
+      calendarEvents.value = generateCalendarEventsFromSessions(sessionsData.value)
+    }
+    else {
+      // No sessions found
+      sessionsData.value = []
+      calendarEvents.value = []
+    }
+  }
+  catch (err: any) {
+    console.error('Error loading sessions:', err)
+    sessionsData.value = []
+    calendarEvents.value = []
+  }
+  finally {
+    isLoadingSessions.value = false
+  }
+}
+
+// Handle calendar ready
+function handleCalendarReady({ view }: any) {
+  view.scrollToCurrentTime()
+  // Load sessions only once when calendar is ready for the first time
+  if (!calendarReady.value && !isLoadingSessions.value) {
+    calendarReady.value = true
+    nextTick(() => {
+      loadAllSessions()
+    })
+  }
+}
+
+// Handle previous button click
+function handlePreviousClick() {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
+    vueCalRef.value.view.previous()
+
+    // Wait for view to update, then reload sessions for new week
+    nextTick(() => {
+      loadAllSessions()
+    })
+  }
+}
+
+// Handle next button click
+function handleNextClick() {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
+    vueCalRef.value.view.next()
+
+    // Wait for view to update, then reload sessions for new week
+    nextTick(() => {
+      loadAllSessions()
+    })
+  }
+}
+
+// Handle today button click
+function handleTodayClick() {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
+    vueCalRef.value.view.goToToday()
+
+    // Update viewDate and selectedDate to today
+    const today = new Date()
+    viewDate.value = today
+    selectedDate.value = today
+
+    // Wait for view to update, then reload sessions
+    nextTick(() => {
+      loadAllSessions()
+    })
+  }
+}
 
 // Watch for view date changes
 watch(viewDate, (newViewDate) => {
@@ -353,39 +448,34 @@ watch(viewDate, (newViewDate) => {
   }
 })
 
-// Map event title to classroom
-function findClassroomByEventTitle(eventTitle: string): Classroom | null {
-  if (!currentCourse.value || !currentCourse.value.classrooms)
-    return null
-
-  // Map event titles to classroom titles
-  // "Lớp 1 thành viên" -> find classroom with student_count = 1 or title contains "1 thành viên"
-  // "Lớp 3 thành viên" -> find classroom with student_count = 3 or title contains "3 thành viên"
-  if (eventTitle.includes('1 thành viên')) {
-    return currentCourse.value.classrooms.find((c: Classroom) =>
-      c.is_one_on_one || c.student_count === 1 || c.title.includes('1 thành viên'),
-    ) || currentCourse.value.classrooms[0] || null
+// Watch for student_count query parameter changes
+watch(studentCount, () => {
+  // Reload sessions when student_count changes
+  if (calendarReady.value) {
+    loadAllSessions()
   }
-  else if (eventTitle.includes('3 thành viên')) {
-    return currentCourse.value.classrooms.find((c: Classroom) =>
-      c.student_count === 3 || c.title.includes('3 thành viên'),
-    ) || currentCourse.value.classrooms[1] || null
-  }
-
-  // Fallback: try to find by title match
-  return currentCourse.value.classrooms.find((c: Classroom) =>
-    c.title === eventTitle || c.title.includes(eventTitle),
-  ) || null
-}
+})
 
 // Handle event click
 function handleEventClick(event: any) {
   const calendarEvent = event.event as CalendarEvent
-  const classroom = findClassroomByEventTitle(calendarEvent.title)
-
-  if (classroom) {
-    selectedClassroomForDialog.value = classroom
-    showClassroomDialog.value = true
+  // Find session from sessionsData
+  const session = sessionsData.value.find(s => s.id === calendarEvent.sessionId)
+  if (session && currentCourse.value) {
+    // Find classroom from course that matches the session's classroom_id and student_count
+    const classroom = currentCourse.value.classrooms?.find((c: any) => {
+      return c.id === session.classroom && c.student_count === studentCount.value
+    })
+    if (classroom) {
+      selectedClassroomForDialog.value = classroom
+      showClassroomDialog.value = true
+    }
+    else {
+      notification.warning({
+        message: 'Không tìm thấy lớp học',
+        description: 'Không thể tìm thấy thông tin lớp học cho lịch học này.',
+      })
+    }
   }
   else {
     notification.warning({
@@ -524,7 +614,7 @@ function cancelPayment() {
     </div>
 
     <!-- Content -->
-    <div v-else-if="currentCourse && currentClassroom" class="flex flex-col">
+    <div v-else-if="currentCourse" class="flex flex-col">
       <!-- Breadcrumb -->
       <div class="bg-white border-b border-gray-200">
         <div class="px-4 sm:px-6 lg:px-8 py-4">
@@ -537,7 +627,7 @@ function cancelPayment() {
               {{ currentCourse.title }}
             </NuxtLink>
             <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
-            <span class="text-gray-900 font-medium">{{ currentClassroom.title }}</span>
+            <span class="text-gray-900 font-medium">{{ classroomTitle }}</span>
           </nav>
         </div>
       </div>
@@ -641,12 +731,24 @@ function cancelPayment() {
             <h2 class="font-bold text-2xl mb-6 flex items-center gap-3">
               <Icon name="solar:calendar-bold" size="28" class="text-green-600" />
               Chọn lịch đăng ký học
+              <span v-if="studentCount" class="text-lg font-normal text-gray-600">
+                - Lớp {{ studentCount }} học viên
+              </span>
             </h2>
 
             <div class="flex flex-col lg:flex-row gap-6">
               <!-- Calendar View -->
-              <div class="flex-1 flex flex-col overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div class="flex-1 flex flex-col overflow-auto rounded-xl border border-gray-200 bg-white shadow-sm relative">
+                <!-- Loading Overlay -->
+                <div
+                  v-if="isLoadingSessions"
+                  class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 rounded-xl"
+                >
+                  <a-spin size="large" />
+                </div>
+
                 <VueCal
+                  ref="vueCalRef"
                   v-model:selected-date="selectedDate"
                   v-model:view-date="viewDate"
                   v-model:view="currentView"
@@ -659,9 +761,49 @@ function cancelPayment() {
                   :events="calendarEvents"
                   :views="['week']"
                   time-at-cursor
-                  @ready="({ view }: any) => view.scrollToCurrentTime()"
+                  @ready="handleCalendarReady"
                   @event-click="handleEventClick"
-                />
+                >
+                  <template #event="{ event }">
+                    <div
+                      class="flex flex-col gap-1 text-white p-1 px-2 rounded-[5px] h-full"
+                      :style="{ backgroundColor: event.background || DEFAULT_BACKGROUND_COLOR }"
+                    >
+                      <div class="text-sm font-medium text-white leading-tight">
+                        {{ event.title }}
+                      </div>
+                      <div v-if="event.start && event.end" class="text-xs font-semibold text-white opacity-90">
+                        {{ formatEventTime(event.start) }} - {{ formatEventTime(event.end) }}
+                      </div>
+                    </div>
+                  </template>
+                  <template #previous-button>
+                    <button
+                      class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                      @click.stop.prevent="handlePreviousClick"
+                    >
+                      <Icon name="i-heroicons-chevron-left" class="text-[26px]" />
+                    </button>
+                  </template>
+
+                  <template #next-button>
+                    <button
+                      class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                      @click.stop.prevent="handleNextClick"
+                    >
+                      <Icon name="i-heroicons-chevron-right" class="text-[26px]" />
+                    </button>
+                  </template>
+
+                  <template #today-button>
+                    <button
+                      class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                      @click.stop.prevent="handleTodayClick"
+                    >
+                      Hôm nay
+                    </button>
+                  </template>
+                </VueCal>
               </div>
             </div>
           </div>
@@ -712,17 +854,6 @@ function cancelPayment() {
         <!-- Classroom Info -->
         <div class="rounded-xl border border-gray-200 bg-gray-50 p-6 mb-6">
           <div class="space-y-4">
-            <!-- Student Count -->
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <Icon name="solar:users-group-two-rounded-bold" class="h-5 w-5 text-gray-400" />
-                <span class="text-sm font-medium text-gray-600">Số lượng học viên</span>
-              </div>
-              <span class="text-sm font-semibold text-gray-900">
-                {{ selectedClassroomForDialog.student_count }} học viên
-              </span>
-            </div>
-
             <!-- Schedule Summary -->
             <div v-if="selectedClassroomForDialog.schedule_summary" class="flex items-center justify-between">
               <div class="flex items-center gap-2">
@@ -742,6 +873,17 @@ function cancelPayment() {
               </div>
               <span class="text-sm font-semibold text-gray-900">
                 {{ selectedClassroomForDialog.session_count }} buổi
+              </span>
+            </div>
+
+            <!-- Enrollment Count -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <Icon name="solar:users-group-rounded-bold" class="h-5 w-5 text-gray-400" />
+                <span class="text-sm font-medium text-gray-600">Số lượng học viên</span>
+              </div>
+              <span class="text-sm font-semibold text-gray-900">
+                {{ selectedClassroomForDialog.enrollment_count || 0 }}/{{ selectedClassroomForDialog.student_count }}
               </span>
             </div>
           </div>
@@ -789,9 +931,17 @@ function cancelPayment() {
           </div>
         </div>
 
+        <!-- Warning for full classroom -->
+        <div v-if="isClassroomFull" class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
+          <div class="flex items-center gap-2">
+            <Icon name="solar:info-circle-bold" class="h-5 w-5 text-red-600" />
+            <span class="text-sm font-medium text-red-800">Lớp học đã đầy, không thể đăng ký thêm.</span>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex flex-col gap-3">
-          <template v-if="!isTeacher && !isGeneratedAccount">
+          <template v-if="!isTeacher && !isGeneratedAccount && !isClassroomFull">
             <!-- Register button -->
             <a-button
               type="primary"
@@ -811,7 +961,7 @@ function cancelPayment() {
             </a-button>
           </template>
           <template v-else>
-            <!-- Teacher or generated account - only close button -->
+            <!-- Teacher, generated account, or full classroom - only close button -->
             <a-button
               size="large"
               class="!h-12 !rounded-lg !flex !items-center !justify-center !text-sm !font-semibold !bg-gray-100 hover:!bg-gray-200"
@@ -932,15 +1082,15 @@ function cancelPayment() {
   color: var(--vuecal-base-color) !important;
 }
 
-/* Event styling */
+/* Event styling - background color is set via inline style in custom template */
 :deep(.vuecal--default-theme .vuecal__event) {
   color: #ffffff;
-  background: #268100;
   border: 1px solid rgba(203, 213, 225, 0.35);
-  padding: 10px 12px;
+  padding: 0;
   border-radius: 10px;
   box-shadow: none;
   transition: all 0.3s ease;
+  background: transparent !important;
 }
 
 :deep(.vuecal--default-theme .vuecal__event:hover) {
@@ -990,7 +1140,7 @@ function cancelPayment() {
 
 :deep(.calendar .vuecal__nav--today) {
   margin-left: 3px;
-  display: none;
+  /* display: none; */
 }
 
 /* Event content styling */

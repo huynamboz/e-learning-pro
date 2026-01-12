@@ -15,7 +15,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { getClassroomDetail, patchClassroom } = useClassroomApi()
+const { getClassroomDetail, patchClassroom, deleteClassroom } = useClassroomApi()
 
 // List of background colors (dark colors suitable for white text)
 const BACKGROUND_COLORS = [
@@ -56,6 +56,10 @@ const classroomEditFormState = ref({
 })
 const isLoadingClassroomDetail = ref(false)
 const isSavingClassroom = ref(false)
+
+// Delete classroom state
+const showDeleteClassroomDialog = ref(false)
+const isDeletingClassroom = ref(false)
 
 // Watch for dialog open to load classroom detail
 watch(dialogVisible, async (newValue) => {
@@ -166,6 +170,45 @@ async function saveClassroom() {
   }
   finally {
     isSavingClassroom.value = false
+  }
+}
+
+function handleDeleteClassroom() {
+  showDeleteClassroomDialog.value = true
+}
+
+function cancelDeleteClassroom() {
+  showDeleteClassroomDialog.value = false
+}
+
+async function confirmDeleteClassroom() {
+  if (!props.classroomId)
+    return
+
+  try {
+    isDeletingClassroom.value = true
+    await deleteClassroom(props.classroomId)
+
+    notification.success({
+      message: 'Thành công',
+      description: 'Đã xóa lớp học',
+      duration: 3,
+    })
+
+    showDeleteClassroomDialog.value = false
+    dialogVisible.value = false
+    emit('success')
+  }
+  catch (error: any) {
+    console.error('Error deleting classroom:', error)
+    notification.error({
+      message: 'Lỗi',
+      description: error?.data?.detail || 'Không thể xóa lớp học',
+      duration: 5,
+    })
+  }
+  finally {
+    isDeletingClassroom.value = false
   }
 }
 </script>
@@ -306,18 +349,63 @@ async function saveClassroom() {
     </a-form>
 
     <template #footer>
-      <div class="flex justify-end gap-2">
-        <a-button @click="cancelEditClassroom">
-          Hủy
-      </a-button>
-      <a-button
-        type="primary"
-          :loading="isSavingClassroom"
-          @click="saveClassroom"
-      >
-          Lưu
-      </a-button>
-    </div>
+      <div class="flex justify-between items-center">
+        <a-button
+          danger
+          type="text"
+          :loading="isDeletingClassroom"
+          @click="handleDeleteClassroom"
+        >
+          Xóa lớp học
+        </a-button>
+        <div class="flex gap-2">
+          <a-button @click="cancelEditClassroom">
+            Hủy
+          </a-button>
+          <a-button
+            type="primary"
+            :loading="isSavingClassroom"
+            @click="saveClassroom"
+          >
+            Lưu
+          </a-button>
+        </div>
+      </div>
     </template>
+  </a-modal>
+
+  <!-- Delete Classroom Confirm Dialog -->
+  <a-modal
+    v-model:open="showDeleteClassroomDialog"
+    title="Xác nhận xóa lớp học"
+    width="500px"
+    :confirm-loading="isDeletingClassroom"
+    @ok="confirmDeleteClassroom"
+    @cancel="cancelDeleteClassroom"
+  >
+    <div class="py-2">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <div class="flex items-start gap-3">
+          <Icon name="i-heroicons-exclamation-triangle" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <div class="flex-1">
+            <h4 class="font-semibold text-red-900 mb-2">
+              Cảnh báo: Hành động này không thể hoàn tác!
+            </h4>
+            <p class="text-sm text-red-800 leading-relaxed">
+              Khi xóa lớp học này, tất cả dữ liệu liên quan sẽ bị xóa vĩnh viễn, bao gồm:
+            </p>
+            <ul class="text-sm text-red-800 mt-2 space-y-1 list-disc list-inside">
+              <li>Tất cả các buổi học trong lớp</li>
+              <li>Tất cả các tài liệu đã upload</li>
+              <li>Tất cả các video record</li>
+              <li>Thông tin đăng ký của học sinh</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <p class="text-gray-700">
+        Bạn có chắc chắn muốn xóa lớp học này không?
+      </p>
+    </div>
   </a-modal>
 </template>

@@ -184,6 +184,23 @@ function handleNextClick() {
   }
 }
 
+// Handle today button click
+function handleTodayClick() {
+  if (vueCalRef.value?.view) {
+    vueCalRef.value.view.goToToday()
+
+    // Update viewDate and selectedDate to today
+    const today = new Date()
+    viewDate.value = today
+    selectedDate.value = today
+
+    // Wait for view to update, then reload data
+    nextTick(() => {
+      fetchCalendarData()
+    })
+  }
+}
+
 // Watch for selected date changes
 // watch(selectedDate, async () => {
 //   await fetchCalendarData()
@@ -452,6 +469,15 @@ onMounted(async () => {
                   <Icon name="i-heroicons-chevron-right" class="text-[26px]" />
                 </button>
               </template>
+
+              <template #today-button>
+                <button
+                  class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                  @click.stop.prevent="handleTodayClick"
+                >
+                  Hôm nay
+                </button>
+              </template>
             </VueCal>
           </div>
         </section>
@@ -612,7 +638,7 @@ onMounted(async () => {
 
 :deep(.calendar .vuecal__nav--today) {
   margin-left: 3px;
-  display: none;
+  /* display: none; */
 }
 
 /* Event content styling */

@@ -18,7 +18,7 @@ function toggleChapter() {
   <div class="border-b pb-2 border-gray-200 last:border-b-0">
     <!-- Chapter Header -->
     <div
-      class="flex items-center justify-between py-4 px-4 cursor-pointer chapter-header transition-all duration-200"
+      class="flex items-center border-b bg-gray-100 justify-between py-4 px-4 cursor-pointer chapter-header transition-all duration-200"
       @click="toggleChapter"
     >
       <div class="flex items-center gap-3">
