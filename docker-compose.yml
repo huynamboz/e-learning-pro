@@ -1,29 +1,30 @@
+version: "3.9"
+
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: elearning-app
-    ports:
-      - "3000:3000"
+  elearning-blue:
+    image: ceruscs/elearning-app:v1.2.0
+    container_name: elearning-blue
     environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - API_BASE_URL=${API_BASE_URL:-https://elearning.genfash.online/api/v1}
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
-    env_file:
-      - .env
+      NODE_ENV: production
+      PORT: 3000
+    expose:
+      - "3000"
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 40s
     networks:
-      - elearning-network
+      - root_default
+
+  elearning-green:
+    image: ceruscs/elearning-app:v1.1.0
+    container_name: elearning-green
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    expose:
+      - "3000"
+    restart: unless-stopped
+    networks:
+      - root_default
 
 networks:
-  elearning-network:
-    driver: bridge
-
+  root_default:
+    external: true

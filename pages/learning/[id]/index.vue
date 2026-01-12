@@ -5,8 +5,6 @@ import { VideoPlayer } from '@videojs-player/vue'
 import { notification } from 'ant-design-vue'
 import CommentList from '~/components/learning/CommentList.vue'
 import CourseChapterItem from '~/components/learning/CourseChapterItem.vue'
-import LearningQuizList from '~/components/learning/QuizList.vue'
-import ResourceItem from '~/components/learning/ResourceItem.vue'
 import { useAssetApi } from '~/composables/api/useAssetApi'
 import { useCourseApi } from '~/composables/api/useCourseApi'
 import { useLearnStore } from '~/stores/learn.store'
@@ -74,6 +72,10 @@ const resourcePageSize = ref(10)
 // Lesson materials data
 const lessonMaterials = ref<any[]>([])
 const isLoadingLessonMaterials = ref(false)
+
+// Session videos data
+const sessionVideos = ref<any[]>([])
+const isLoadingSessionVideos = ref(false)
 
 // Video progress tracking
 const videoProgress = ref(0)
@@ -235,6 +237,12 @@ const classroomId = computed(() => {
 
 // Load course classmates
 async function loadCourseStudents() {
+  // Only load classmates if course_type is 'course'
+  if (course.value?.course_type !== 'course') {
+    courseStudents.value = []
+    return
+  }
+
   try {
     studentsLoading.value = true
     studentsError.value = null
@@ -478,11 +486,20 @@ function getMaterialIconColor(material: any): string {
   return 'text-blue-600'
 }
 
-// Handle material click
+// Handle material click - encode file_url and push to query
 function handleMaterialClick(material: any) {
-  if (!material.id || !activeLesson.value) {
+  if (!material.id) {
     return
   }
+
+  // Get file URL (can be file_url or file_path)
+  const fileUrl = material.file_url || material.file_path
+  if (!fileUrl) {
+    return
+  }
+
+  // Encode file_url for URL
+  const encodedFileUrl = encodeURIComponent(fileUrl)
 
   // Determine file type from extension and route to appropriate preview page
   const extension = getFileExtension(material)
@@ -508,14 +525,65 @@ function handleMaterialClick(material: any) {
     path = `/learning/${courseId}/documents-pdf`
   }
 
-  // Navigate to document preview page
-  router.push({
-    path,
-    query: {
-      lessonId: activeLesson.value.id,
-      documentId: material.id,
-    },
+  // Navigate to document preview page with encoded file_url in query
+  // Build full URL with query params to ensure old params are not preserved
+  const queryParams = new URLSearchParams({
+    file_url: encodedFileUrl,
+    title: material.title,
+    description: material.description || '',
+    file_size: material.file_size?.toString() || '',
+    file_type: material.file_type || '',
   })
+
+  // Use router.push with full URL string to ensure clean navigation (allows back button)
+  router.push(`${path}?${queryParams.toString()}`)
+}
+
+// Handle resource click - encode file_url and push to query
+function handleResourceClick(resource: CourseAsset) {
+  if (!resource.id || !resource.file_url) {
+    return
+  }
+
+  // Encode file_url for URL
+  const encodedFileUrl = encodeURIComponent(resource.file_url)
+
+  // Determine file type from extension and route to appropriate preview page
+  const extension = getFileExtension(resource)
+  const extLower = extension.toLowerCase()
+
+  const isPdf = extLower === 'pdf'
+  const isDocx = extLower === 'docx' || extLower === 'doc'
+  const isPptx = extLower === 'pptx' || extLower === 'ppt'
+
+  // Determine route path based on file type
+  let path = `/learning/${courseId}/documents-pdf` // Default to PDF
+  if (isPdf) {
+    path = `/learning/${courseId}/documents-pdf`
+  }
+  else if (isDocx) {
+    path = `/learning/${courseId}/documents-docx`
+  }
+  else if (isPptx) {
+    path = `/learning/${courseId}/documents-pptx`
+  }
+  else {
+    // For other file types, default to PDF route (will show "Open in New Tab" option)
+    path = `/learning/${courseId}/documents-pdf`
+  }
+
+  // Navigate to document preview page with encoded file_url in query
+  // Build full URL with query params to ensure old params are not preserved
+  const queryParams = new URLSearchParams({
+    file_url: encodedFileUrl,
+    title: resource.title,
+    description: resource.description || '',
+    file_size: resource.file_size?.toString() || '',
+    asset_type: resource.asset_type || '',
+  })
+
+  // Use router.push with full URL string to ensure clean navigation (allows back button)
+  router.push(`${path}?${queryParams.toString()}`)
 }
 
 // Drawer state for mobile lesson list
@@ -543,11 +611,66 @@ watch(activeLesson, (newLesson) => {
   }
 }, { immediate: true })
 
+// Load session videos
+async function loadSessionVideos() {
+  if (course.value?.course_type !== 'course') {
+    sessionVideos.value = []
+    return
+  }
+
+  try {
+    isLoadingSessionVideos.value = true
+    const response = await courseApi.getSessionVideosForLearning(courseId, {
+      page_size: 100,
+    })
+    sessionVideos.value = response.results || []
+  }
+  catch (error: any) {
+    console.error('Error loading session videos:', error)
+    sessionVideos.value = []
+  }
+  finally {
+    isLoadingSessionVideos.value = false
+  }
+}
+
+// Handle session video click
+function handleSessionVideoClick(video: any) {
+  if (!video || !video.file_url) {
+    return
+  }
+
+  // Set as active lesson-like item
+  // We'll create a temporary lesson object for the video player
+  const tempLesson = {
+    id: video.id,
+    title: video.title,
+    video_url: video.file_url,
+    video_duration: video.duration,
+    video_duration_formatted: video.duration_formatted,
+    is_completed: false,
+    comment_count: 0,
+    quiz_count: 0,
+  }
+
+  learnStore.setActiveLesson(tempLesson as any)
+}
+
+// Watch for course changes to load classmates and session videos when course_type is 'course'
+watch(course, (newCourse) => {
+  if (newCourse?.course_type === 'course') {
+    loadCourseStudents()
+    loadSessionVideos()
+  }
+  else {
+    // Clear classmates and session videos if course_type is not 'course'
+    courseStudents.value = []
+    sessionVideos.value = []
+  }
+}, { immediate: true })
+
 onMounted(async () => {
-  await Promise.all([
-    learnStore.loadCourse(courseId),
-    loadCourseStudents(),
-  ])
+  await learnStore.loadCourse(courseId)
 
   drmContainer.value = document.querySelector('.drm-protected')
   document.addEventListener('contextmenu', preventContextMenu)
@@ -848,7 +971,7 @@ onBeforeUnmount(() => {
                 </div>
               </a-tab-pane>
 
-              <a-tab-pane key="resources" :tab="`${t('classroomDetail.resources.title')} (${lessonMaterials.length})`">
+              <a-tab-pane key="resources" :tab="`${t('classroomDetail.resources.title')}`">
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                   <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-3">
                     <Icon name="solar:document-text-bold" size="24" class="text-blue-600" />
@@ -862,12 +985,34 @@ onBeforeUnmount(() => {
 
                   <!-- Resources List -->
                   <div v-else-if="resources.length > 0" class="space-y-3">
-                    <ResourceItem
+                    <div
                       v-for="resource in resources"
                       :key="resource.id"
-                      :resource="resource"
-                      :is-openable="true"
-                    />
+                      class="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-sm transition-all duration-200 group cursor-pointer"
+                      @click="handleResourceClick(resource)"
+                    >
+                      <div class="flex-shrink-0">
+                        <div class="p-3 rounded-lg bg-gray-50 group-hover:bg-blue-50 transition-colors">
+                          <Icon :name="getMaterialIcon(resource)" size="24" :class="getMaterialIconColor(resource)" />
+                        </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <h3 class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                          {{ resource.title }}
+                        </h3>
+                        <p v-if="resource.description" class="text-sm text-gray-500 line-clamp-1 mt-1">
+                          {{ resource.description }}
+                        </p>
+                        <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                          <span>{{ formatFileSize(resource.file_size) }}</span>
+                          <span>•</span>
+                          <span class="uppercase">{{ resource.asset_type }}</span>
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0">
+                        <Icon name="solar:external-link-bold" size="20" class="text-gray-400 group-hover:text-blue-600 transition-colors" />
+                      </div>
+                    </div>
 
                     <!-- Load More Button -->
                     <div v-if="hasMoreResources" class="flex justify-center pt-4">
@@ -905,6 +1050,64 @@ onBeforeUnmount(() => {
 
         <!-- Sidebar -->
         <div class="lg:col-span-1 space-y-9">
+          <!-- Session Videos Section (only for course type) -->
+          <div v-if="course?.course_type === 'course'" class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
+            <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">
+              Video record
+            </h2>
+
+            <!-- Loading State -->
+            <div v-if="isLoadingSessionVideos" class="flex items-center justify-center py-8">
+              <a-spin size="small" />
+              <span class="ml-2 text-gray-600">{{ t('course.loading') }}</span>
+            </div>
+
+            <!-- Session Videos List -->
+            <div v-else-if="sessionVideos.length > 0" class="space-y-0">
+              <div
+                v-for="(video, index) in sessionVideos"
+                :key="video.id"
+                class="flex items-center justify-between py-4 px-4 group rounded-lg lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
+                :class="{
+                  '!bg-green-600 !text-white': activeLesson?.id === video.id,
+                }"
+                @click="handleSessionVideoClick(video)"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center justify-center w-5 h-5">
+                    <Icon name="tabler:video" size="16" class="text-gray-500 group-hover:text-white" :class="{ '!text-white': activeLesson?.id === video.id }" />
+                  </div>
+                  <span
+                    class="text-sm font-medium lesson-text group-hover:text-white"
+                    :class="{
+                      '!text-white': activeLesson?.id === video.id,
+                      'text-gray-900': activeLesson?.id !== video.id,
+                    }"
+                  >
+                    {{ index + 1 }}. {{ video.title }}
+                  </span>
+                </div>
+                <div
+                  class="flex items-center gap-1.5 group-hover:text-white"
+                  :class="{
+                    '!text-white': activeLesson?.id === video.id,
+                    'text-gray-500': activeLesson?.id !== video.id,
+                  }"
+                >
+                  <span class="text-sm">{{ video.duration_formatted || formatVideoDuration(video.duration) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-8">
+              <Icon name="tabler:video" class="text-gray-400 text-2xl mx-auto mb-2" />
+              <p class="text-sm text-gray-500">
+                Chưa có video record
+              </p>
+            </div>
+          </div>
+
           <!-- Course Completion Card -->
           <div class="max-h-[calc(90vh-100px)] overflow-y-auto bg-white border border-gray-200 rounded-2xl course-completion-card">
             <h2 class="border-b pb-4 text-2xl px-4 mt-4 font-bold text-gray-900">

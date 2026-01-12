@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { CalendarClassroom, CalendarSession } from '~/types/course.type'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { formatDate, VueCal } from 'vue-cal'
+import EventDetailDialog from '~/components/calendar/EventDetailDialog.vue'
 import { useClassroomApi } from '~/composables/api/useClassroomApi'
 import 'vue-cal/style'
-import EventDetailDialog from '~/components/calendar/EventDetailDialog.vue'
+
+// Enable UTC plugin for dayjs
+dayjs.extend(utc)
 
 export interface CalendarEvent {
   start: string
@@ -11,7 +16,7 @@ export interface CalendarEvent {
   title: string
   class?: string
   content?: string
-  background?: boolean
+  background?: string
   deletable?: boolean
   resizable?: boolean
   schedule?: number
@@ -21,6 +26,16 @@ export interface CalendarEvent {
   classroom_id?: string
   classroom?: CalendarClassroom
   course_title?: string
+}
+
+// Default background color if classroom doesn't have background_color
+const DEFAULT_BACKGROUND_COLOR = '#268100' // Green
+
+// Format event time (from "YYYY-MM-DD HH:mm" to "HH:mm")
+function formatEventTime(dateTimeString: string): string {
+  if (!dateTimeString)
+    return ''
+  return dayjs(dateTimeString).format('HH:mm')
 }
 
 interface DemoExample {
@@ -51,35 +66,39 @@ const selectedDate: Ref<Date> = ref(new Date())
 const viewDate: Ref<Date> = ref(new Date())
 const currentView: Ref<string> = ref('week')
 
+// VueCal template ref
+const vueCalRef = ref<any>(null)
+
 // API composable
 const { getCalendarData, selfCheckInSession } = useClassroomApi()
 
 // Helper function to safely extract time from date string
 function extractTimeFromDateString(dateString: string | undefined): string {
-  if (!dateString || typeof dateString !== 'string') {
+  if (!dateString)
     return ''
-  }  
-  const parts = dateString.split(' ')
-  return parts.length > 1 ? parts[1] : ''
+  return dayjs(dateString).format('HH:mm')
 }
-
 
 // Convert session data to calendar events
 function convertSessionToEvent(session: CalendarSession, classroom: CalendarClassroom): CalendarEvent {
-  const startDate = new Date(session.start_time)
-  const endDate = new Date(session.end_time)
+  // Parse date strings - backend can return UTC or timezone
+  // dayjs will automatically parse the timezone from the string
+  const startDate = dayjs(session.start_time)
+  const endDate = dayjs(session.end_time)
 
   return {
     id: session.id,
-    start: `${formatDate(startDate)} ${startDate.toTimeString().slice(0, 5)}`,
-    end: `${formatDate(endDate)} ${endDate.toTimeString().slice(0, 5)}`,
+    start: startDate.format('YYYY-MM-DD HH:mm'),
+    end: endDate.format('YYYY-MM-DD HH:mm'),
     title: classroom.title,
-    classroom: classroom,
+    classroom,
     classroom_id: classroom.id,
     course_title: classroom.course.title,
     meeting_link: session.meeting_link || '',
     resizable: false,
     schedule: 1,
+    // Use background_color from session if available, otherwise default
+    background: classroom.background_color || DEFAULT_BACKGROUND_COLOR,
   }
 }
 
@@ -128,7 +147,7 @@ async function fetchCalendarData() {
 }
 
 // Watch for view date changes (week changes)
-watch(viewDate, async (newViewDate) => {
+watch(viewDate, (newViewDate) => {
   // Update selectedDate to the first day of the week when navigating
   if (currentView.value === 'week') {
     const firstDayOfWeek = new Date(newViewDate)
@@ -137,8 +156,33 @@ watch(viewDate, async (newViewDate) => {
     firstDayOfWeek.setDate(diff)
     selectedDate.value = firstDayOfWeek
   }
-  await fetchCalendarData()
+  // Fetch calendar data when view date changes
+  fetchCalendarData()
 })
+
+// Handle previous button click
+function handlePreviousClick() {
+  if (vueCalRef.value?.view) {
+    vueCalRef.value.view.previous()
+
+    // Wait for view to update, then reload data for new week
+    nextTick(() => {
+      fetchCalendarData()
+    })
+  }
+}
+
+// Handle next button click
+function handleNextClick() {
+  if (vueCalRef.value?.view) {
+    vueCalRef.value.view.next()
+
+    // Wait for view to update, then reload data for new week
+    nextTick(() => {
+      fetchCalendarData()
+    })
+  }
+}
 
 // Watch for selected date changes
 // watch(selectedDate, async () => {
@@ -151,16 +195,15 @@ watch(viewDate, async (newViewDate) => {
 // })
 
 // Handle event click to show detail dialog
-function openEventDetail(event: CalendarEvent) {
-  selectedEventForDetail.value = (event as any).event
-  console.log(selectedEventForDetail.value)
+function openEventDetail(event: any) {
+  const calendarEvent = event.event as CalendarEvent
+  selectedEventForDetail.value = calendarEvent
   showEventDetailDialog.value = true
 }
 
 // Handle join class
 function startJoinClass(event: CalendarEvent) {
   // close event detail dialog
-  console.log('startJoinClass', event)
   selectedEventForJoin.value = event
   checkInError.value = null // Reset error when opening dialog
   isJoinClassDialogVisible.value = true
@@ -245,32 +288,6 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-slate-100">
-    <header class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex flex-col gap-3 px-4 py-4 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-            {{ $t('calendar.header.subtitle') }}
-          </p>
-          <h1 class="mt-1 text-xl font-semibold text-slate-900">
-            {{ $t('calendar.header.title') }}
-          </h1>
-        </div>
-        <div class="flex items-center gap-2">
-          <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-            <Icon name="i-heroicons-calendar-days" class="h-4 w-4 text-slate-400" />
-            <span class="text-xs font-medium text-slate-500">{{ formatDate(new Date(), 'DD/MM/YYYY') }}</span>
-          </div>
-          <NuxtLink
-            to="/learning"
-            class="hidden items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-600 md:inline-flex"
-          >
-            <Icon name="i-heroicons-home" class="h-4 w-4" />
-            {{ $t('calendar.header.home') }}
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
-
     <main class="mx-auto px-4 py-10 sm:px-6 lg:px-8">
       <div class="max-md:flex-col flex items-stretch gap-8">
         <section class="flex w-full md:max-w-[300px] flex-col gap-6 max-md:flex-row">
@@ -386,20 +403,10 @@ onMounted(async () => {
           </div>
         </section>
 
-        <section class="  h-[calc(100vh-160px)] flex-auto flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div class="flex flex-col gap-3 border-b border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 class="text-lg font-semibold text-slate-900">
-                {{ $t('calendar.detailedCalendar.title') }}
-              </h3>
-            </div>
-            <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500">
-              <Icon name="i-heroicons-list-bullet" class="h-5 w-5 text-slate-300" />
-              {{ $t('calendar.detailedCalendar.classCount', { count: data.events.length }) }}
-            </div>
-          </div>
+        <section class="flex-auto flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div class="p-4 flex-auto flex overflow-hidden">
             <VueCal
+              ref="vueCalRef"
               v-model:selected-date="selectedDate"
               v-model:view-date="viewDate"
               v-model:view="currentView"
@@ -414,7 +421,38 @@ onMounted(async () => {
               time-at-cursor
               @ready="({ view }: any) => view.scrollToCurrentTime()"
               @event-click="openEventDetail"
-            />
+            >
+              <template #event="{ event }">
+                <div
+                  class="flex flex-col gap-1 text-white p-1 px-2 rounded-[5px] h-full"
+                  :style="{ backgroundColor: event.background || DEFAULT_BACKGROUND_COLOR }"
+                >
+                  <div class="text-sm font-medium text-white leading-tight">
+                    {{ event.title }}
+                  </div>
+                  <div v-if="event.start && event.end" class="text-xs font-semibold text-white opacity-90">
+                    {{ formatEventTime(event.start) }} - {{ formatEventTime(event.end) }}
+                  </div>
+                </div>
+              </template>
+              <template #previous-button>
+                <button
+                  class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                  @click.stop.prevent="handlePreviousClick"
+                >
+                  <Icon name="i-heroicons-chevron-left" class="text-[26px]" />
+                </button>
+              </template>
+
+              <template #next-button>
+                <button
+                  class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+                  @click.stop.prevent="handleNextClick"
+                >
+                  <Icon name="i-heroicons-chevron-right" class="text-[26px]" />
+                </button>
+              </template>
+            </VueCal>
           </div>
         </section>
       </div>
@@ -518,208 +556,163 @@ onMounted(async () => {
     v-model:visible="showEventDetailDialog"
     :event="selectedEventForDetail"
     @close="selectedEventForDetail = null"
-    @joinClass="startJoinClass"
+    @join-class="startJoinClass"
   />
 </template>
 
-<style>
-/* Global Vue-cal theme customization - must be unscoped */
-.vuecal.custom-theme {
-  --vuecal-primary-color: #15803d;
+<style scoped>
+/* Vue-cal theme customization */
+:deep(.vuecal.custom-theme) {
+  --vuecal-primary-color: #fff;
   --vuecal-secondary-color: #fafbfc;
   --vuecal-base-color: #0f172a;
   --vuecal-contrast-color: #ffffff;
   --vuecal-time-cell-height: 50px !important;
 }
 
-.vuecal__header {
+:deep(.vuecal__header) {
   color: var(--vuecal-base-color) !important;
   background: #fafbfc;
   border: 1px solid #f1f5f9;
   border-bottom: none;
 }
 
-.date-picker .vuecal__title-bar {
-  color: white !important;
-}
-
-.vuecal__event {
+:deep(.vuecal__event) {
   color: var(--vuecal-base-color) !important;
   border-color: rgba(203, 213, 225, 0.25) !important;
 }
 
-.vuecal__today-btn {
+:deep(.vuecal__today-btn) {
   color: var(--vuecal-base-color) !important;
 }
 
-/* Event styling */
-.vuecal--default-theme .vuecal__event {
-  background: #fafbfc;
+/* Event styling - background color is set via inline style in custom template */
+:deep(.vuecal--default-theme .vuecal__event) {
+  color: #ffffff;
   border: 1px solid rgba(203, 213, 225, 0.35);
-  padding: 10px 12px;
+  padding: 0;
   border-radius: 10px;
   box-shadow: none;
   transition: all 0.3s ease;
+  background: transparent !important;
 }
 
-.vuecal--default-theme .vuecal__event:hover {
+:deep(.vuecal--default-theme .vuecal__event:hover) {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  background: #f8fafc;
-}
-
-/* Calendar view buttons */
-.calendar .vuecal__views-bar .vuecal__view-button {
-  background: transparent;
-  color: #cbd5e1;
-  border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.calendar .vuecal__views-bar .vuecal__view-button:hover {
-  background: rgba(203, 213, 225, 0.08);
-  color: #94a3b8;
-  transform: translateY(-1px);
-}
-
-.calendar .vuecal__views-bar .vuecal__view-button--active {
-  background: #94a3b8;
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(148, 163, 184, 0.25);
-  transform: translateY(-1px);
-}
-
-.calendar .vuecal__transition-wrap {
-  display: none;
-}
-
-/* Date picker styling */
-.date-picker.vuecal--default-theme.vuecal--date-picker.vuecal--light .vuecal__cell--today:before {
-  background: #94a3b8;
-  box-shadow: 0 4px 16px rgba(148, 163, 184, 0.25);
-}
-
-.date-picker.vuecal--default-theme.vuecal--light .vuecal__cell--selected:before {
-  background: #64748b;
-  /* box-shadow: 0 4px 16px rgba(100, 116, 139, 0.3); */
-  background-color: color-mix(in srgb, #15803d 10%, transparent) !important;
-}
-
-.date-picker.vuecal--default-theme.vuecal--date-picker .vuecal__cell-date {
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.date-picker .vuecal__cell--selected,
-.date-picker.vuecal--default-theme.vuecal--date-picker.vuecal--light .vuecal__cell--today {
-  /* color: #ffffff; */
-  font-weight: 600;
-}
-
-.date-picker .vuecal__cell:hover.vuecal__cell:before {
-  background: #64748b;
-}
-
-.date-picker .vuecal__cell:hover {
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
 }
 
 /* Calendar navigation */
-.calendar .vuecal__title-bar button {
+:deep(.calendar .vuecal__title-bar button) {
   height: 36px;
   border-radius: 10px;
-  color: #ffffff !important;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.calendar .vuecal__nav--today {
+:deep(.calendar .vuecal__nav--today) {
   margin-left: 3px;
   display: none;
 }
 
 /* Event content styling */
-.vuecal__event {
+:deep(.vuecal__event) {
   position: relative;
   overflow: hidden;
 }
 
-.vuecal__event .vuecal__event-title,
-.calendar .vuecal__event-time {
+:deep(.vuecal__event .vuecal__event-title),
+:deep(.calendar .vuecal__event-time) {
   font-size: 14px;
-  color: #1e293b;
+  color: #ffffff;
   font-weight: 700;
 }
 
-.vuecal__event .vuecal__event-time {
+:deep(.vuecal__event .vuecal__event-time) {
   margin-top: 4px;
   font-size: 12px;
-  color: #475569;
+  color: #ffffff;
   font-weight: 600;
 }
 
-.vuecal__event::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4px;
-  height: 100%;
-  background: #94a3b8;
-  border-radius: 0 3px 3px 0;
-}
-
-/* Month view styling */
-.vuecal--default-theme .vuecal__cell {
-  border-color: #e2e8f0;
-}
-
-/* .vuecal--default-theme .vuecal__cell--today {
-  background: #fafbfc;
-} */
-
-/* .vuecal--default-theme .vuecal__cell--selected {
-  background: #f8fafc;
-} */
-
 /* Week and day view styling */
-.vuecal--default-theme .vuecal__time-cell {
+:deep(.vuecal--default-theme .vuecal__time-cell) {
   border-color: #e2e8f0;
 }
 
-.vuecal--default-theme .vuecal__time-cell--now {
+:deep(.vuecal--default-theme .vuecal__time-cell--now) {
   background: #fef9c3;
   border-color: #fbbf24;
 }
 
+:deep(.vuecal__weekday.vuecal__weekday--today .vuecal__weekday-date) {
+  background: #15803d;
+  color: #fff;
+}
+
+/* Date picker styling */
+:deep(.date-picker.vuecal--default-theme.vuecal--date-picker.vuecal--light .vuecal__cell--today:before) {
+  background: #94a3b8;
+  box-shadow: 0 4px 16px rgba(148, 163, 184, 0.25);
+}
+
+:deep(.date-picker.vuecal--default-theme.vuecal--light .vuecal__cell--selected:before) {
+  background: #64748b;
+  background-color: color-mix(in srgb, #15803d 10%, transparent) !important;
+}
+
+:deep(.date-picker.vuecal--default-theme.vuecal--date-picker .vuecal__cell-date) {
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:deep(.date-picker .vuecal__cell--selected),
+:deep(.date-picker.vuecal--default-theme.vuecal--date-picker.vuecal--light .vuecal__cell--today) {
+  font-weight: 600;
+}
+
+:deep(.date-picker .vuecal__cell:hover.vuecal__cell:before) {
+  background: #64748b;
+}
+
+:deep(.date-picker .vuecal__cell:hover) {
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.date-picker :deep(.vuecal__title-bar) {
+  color: white !important;
+}
+
 /* Custom modal styling */
-.join-class-modal .ant-modal-content {
+.join-class-modal :deep(.ant-modal-content) {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 24px 45px -18px rgba(15, 23, 42, 0.35);
   background: #ffffff;
 }
 
-.join-class-modal .ant-modal-body {
+.join-class-modal :deep(.ant-modal-body) {
   padding: 0;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .vuecal--default-theme .vuecal__event {
-    padding: 6px;
+  :deep(.vuecal--default-theme .vuecal__event) {
     font-size: 12px;
   }
 
-  .vuecal__event .vuecal__event-title {
+  :deep(.vuecal__event .vuecal__event-title) {
     font-size: 12px;
   }
 
-  .vuecal__event .vuecal__event-time {
+  :deep(.vuecal__event .vuecal__event-time) {
     font-size: 10px;
   }
+}
+
+:deep(.vuecal__event-details) {
+  padding: 0;
 }
 </style>

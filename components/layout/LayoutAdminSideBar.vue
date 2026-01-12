@@ -3,7 +3,7 @@ import { NuxtLink } from '#components'
 import { Tooltip } from 'ant-design-vue'
 import { cn } from '~/lib/utils'
 
-const { isCollapsed, toggleSidebar, menuAdmin } = useSidebar()
+const { isCollapsed, toggleSidebar, menuAdmin } = useSidebar(true)
 const expandedItems = ref(new Set())
 const route = useRoute()
 

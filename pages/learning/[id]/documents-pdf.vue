@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import type { Chapter, Lesson, LessonMaterial } from '~/types/course.type'
 import { notification } from 'ant-design-vue'
-import { useCourseApi } from '~/composables/api/useCourseApi'
 import { getFileExtension } from '~/utils/fileExtension'
 
 // Dynamically import VuePdfEmbed component (client-side only)
@@ -14,109 +12,51 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
-const courseApi = useCourseApi()
 
 const courseId = computed(() => route.params.id as string)
-const lessonId = computed(() => route.query.lessonId as string)
-const documentId = computed(() => route.query.documentId as string)
+const fileUrlQuery = computed(() => route.query.file_url as string | undefined)
 
 // State
-const loading = ref(true)
+const loading = ref(false)
 const error = ref<string | null>(null)
-const course = ref<any>(null)
-const chapters = ref<Chapter[]>([])
-const lesson = ref<Lesson | null>(null)
-const document = ref<LessonMaterial | null>(null)
-const currentChapterId = ref<string>('')
+const document = ref<any>(null)
 
 // PDF viewer state
 const pdfError = ref<string | null>(null)
 const pdfLoading = ref(true)
-const pdfWidth = ref<number | undefined>(undefined) // null = 100% (default), range: 200-2000
+const pdfWidth = ref<number | null>(null) // null = 100% (default), range: 200-2000
 const baseWidth = ref<number | null>(null) // Store initial width for percentage calculation
 const minWidth = 200
 const maxWidth = 2000
 const widthStep = 100
 const pdfWrapperRef = ref<HTMLElement | null>(null)
 
-// Fetch course and chapters
-async function fetchCourse() {
+// Load document from query parameters
+function loadDocumentFromQuery() {
   try {
-    loading.value = true
-    error.value = null
+    if (!fileUrlQuery.value) {
+      error.value = 'File URL not found in query parameters'
+      return
+    }
 
-    // Fetch course details
-    const courseData = await courseApi.getDetailCourses(courseId.value)
-    course.value = courseData
+    // Decode file_url from query
+    const decodedFileUrl = decodeURIComponent(fileUrlQuery.value)
 
-    // Fetch chapters
-    const chaptersData = await courseApi.getChapters(courseId.value)
-    chapters.value = chaptersData
-
-    // Find chapter containing the lesson
-    if (lessonId.value) {
-      for (const chapter of chapters.value) {
-        const foundLesson = chapter.lessons?.find(l => l.id === lessonId.value)
-        if (foundLesson) {
-          currentChapterId.value = chapter.id
-          await fetchLesson(chapter.id)
-          break
-        }
-      }
+    // Build document object from query parameters
+    document.value = {
+      file_url: decodedFileUrl,
+      title: route.query.title as string || 'Document',
+      description: route.query.description as string || '',
+      file_size: route.query.file_size ? Number(route.query.file_size) : undefined,
+      asset_type: route.query.asset_type as string || 'other',
     }
   }
   catch (err: any) {
-    console.error('Error fetching course:', err)
-    error.value = err?.data?.message || 'Failed to load course'
+    console.error('Error loading document from query:', err)
+    error.value = 'Failed to load document'
     notification.error({
       message: 'Error',
-      description: error.value,
-    })
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-// Fetch lesson detail
-async function fetchLesson(chapterId: string) {
-  if (!lessonId.value)
-    return
-
-  try {
-    const lessonData = await courseApi.getLesson(courseId.value, chapterId, lessonId.value)
-    lesson.value = lessonData
-
-    // Find document by documentId
-    if (documentId.value && lessonData.materials) {
-      const foundDocument = lessonData.materials.find((m: LessonMaterial) => m.id === documentId.value)
-      if (foundDocument) {
-        document.value = foundDocument
-
-        // Check access
-        if (!foundDocument.has_access) {
-          error.value = 'You do not have access to this document'
-          notification.error({
-            message: 'Access Denied',
-            description: 'You do not have permission to view this document',
-          })
-        }
-      }
-      else {
-        error.value = 'Document not found'
-        notification.error({
-          message: 'Not Found',
-          description: 'The requested document could not be found',
-        })
-      }
-    }
-  }
-  catch (err: any) {
-    console.error('Error fetching lesson:', err)
-    error.value = err?.data?.message || 'Failed to load lesson'
-    notification.error({
-      message: 'Error',
-      description: error.value,
+      description: 'Failed to load document from query parameters',
     })
   }
 }
@@ -134,7 +74,7 @@ const isPdf = computed(() => {
 const documentUrl = computed(() => {
   if (!document.value)
     return null
-  return document.value.file_url || document.value.file_path || null
+  return document.value.file_url || null
 })
 
 // PDF viewer handlers
@@ -161,7 +101,7 @@ function getInitialWidth(): number {
 // Zoom functions using width
 function zoomIn() {
   // If first time (null), get initial width from element
-  if (pdfWidth.value === null) {
+  if (pdfWidth.value === null || pdfWidth.value === undefined) {
     const initialWidth = getInitialWidth()
     baseWidth.value = initialWidth
     pdfWidth.value = initialWidth + widthStep
@@ -180,7 +120,7 @@ function zoomIn() {
 
 function zoomOut() {
   // If first time (null), get initial width from element
-  if (pdfWidth.value === null) {
+  if (pdfWidth.value === null || pdfWidth.value === undefined) {
     const initialWidth = getInitialWidth()
     baseWidth.value = initialWidth
     pdfWidth.value = initialWidth - widthStep
@@ -204,7 +144,7 @@ function resetZoom() {
 
 // Calculate zoom percentage (null = 100%)
 const zoomPercentage = computed(() => {
-  if (pdfWidth.value === null) {
+  if (pdfWidth.value === null || pdfWidth.value === undefined) {
     return 100 // Always 100% when null
   }
   // Use stored base width for calculation
@@ -243,24 +183,12 @@ function _preventKeydown(event: KeyboardEvent) {
 
 // Handle back
 function handleBack() {
-  router.push(`/learning/${courseId.value}?lessonId=${lessonId.value}`)
+  router.push(`/learning/${courseId.value}`)
 }
 
 // Initialize
-onMounted(async () => {
-  if (!lessonId.value || !documentId.value) {
-    error.value = 'Missing required parameters'
-    loading.value = false
-    return
-  }
-
-  fetchCourse()
-
-  // Add event listeners to prevent download
-  // if (process.client) {
-  //   document.value?.addEventListener('contextmenu', preventContextMenu)
-  //   document.value?.addEventListener('keydown', preventKeydown)
-  // }
+onMounted(() => {
+  loadDocumentFromQuery()
 })
 
 onBeforeUnmount(() => {
@@ -274,7 +202,7 @@ onBeforeUnmount(() => {
 useHead({
   title: () => {
     if (document.value)
-      return `${document.value.title} - ${course.value?.title || 'Document'}`
+      return `${document.value.title} - Document Viewer`
     return 'Document Viewer'
   },
 })
@@ -299,8 +227,8 @@ useHead({
               <h1 class="text-base font-medium text-gray-900 truncate">
                 {{ document?.title || 'Document Viewer' }}
               </h1>
-              <p v-if="course" class="text-xs text-gray-500 truncate">
-                {{ course.title }}
+              <p v-if="document" class="text-xs text-gray-500 truncate">
+                {{ document.title }}
               </p>
             </div>
           </div>
@@ -308,7 +236,7 @@ useHead({
             <!-- Zoom Controls -->
             <div class="flex items-center gap-1">
               <a-button
-                :disabled="pdfWidth !== null && pdfWidth <= minWidth"
+                :disabled="pdfWidth !== null && pdfWidth !== undefined && pdfWidth <= minWidth"
                 size="small"
                 class="!p-1 !h-7 !w-7"
                 title="Zoom Out"
@@ -320,7 +248,7 @@ useHead({
                 {{ zoomPercentage }}%
               </span>
               <a-button
-                :disabled="pdfWidth !== null && pdfWidth >= maxWidth"
+                :disabled="pdfWidth !== null && pdfWidth !== undefined && pdfWidth >= maxWidth"
                 size="small"
                 class="!p-1 !h-7 !w-7"
                 title="Zoom In"
@@ -389,7 +317,7 @@ useHead({
             <VuePdfEmbed
               :source="documentUrl"
               :page="undefined"
-              :width="pdfWidth"
+              :width="pdfWidth ?? undefined"
               class="pdf-embed w-full justify-center flex flex-col items-center border-0"
               @loaded="handlePdfLoaded"
               @rendered="pdfLoading = false"

@@ -45,7 +45,7 @@ export default defineNuxtConfig({
         // Preconnect to external domains
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'preconnect', href: 'https://elearning.genfash.online' },
+        { rel: 'preconnect', href: 'https://api.hoctiengycungphantam.com' },
       ],
     },
   },
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
     'highlight.js/styles/atom-one-dark.css',
   ],
 
-  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt', 'nuxt-vue3-google-signin', 'nuxt-gtag'],
+  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss', 'shadcn-nuxt', '@nuxtjs/google-fonts', '@nuxt/icon', '@nuxtjs/i18n', '@pinia/nuxt', 'nuxt-vue3-google-signin', 'nuxt-gtag', '@sentry/nuxt'],
 
   devtools: { enabled: true },
   compatibilityDate: '2025-05-15',
@@ -102,7 +102,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL || 'https://elearning.genfash.online/api/v1',
+      apiBase: process.env.API_BASE_URL || 'https://api.hoctiengycungphantam.com/api/v1',
       googleClientId: process.env.GOOGLE_CLIENT_ID || '',
     },
   },
@@ -118,6 +118,49 @@ export default defineNuxtConfig({
 
   i18n: {
     vueI18n: './i18n.config.ts',
+  },
+
+  // Sentry configuration
+  sentry: {
+    dsn: process.env.SENTRY_DSN || '',
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    // Disable Sentry in development by default
+    enabled: process.env.SENTRY_ENABLED !== 'false',
+    // Client-side configuration
+    clientInitOptions: {
+      beforeSend(event: any, hint: any) {
+        // Filter out known non-critical errors
+        if (event.exception) {
+          const error = hint.originalException
+          // Ignore network errors that are expected
+          if (error && typeof error === 'object' && 'message' in error) {
+            const message = String(error.message)
+            if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+              return null
+            }
+          }
+        }
+        return event
+      },
+      integrations: [],
+    },
+    // Server-side configuration
+    serverInitOptions: {
+      beforeSend(event: any, hint: any) {
+        // Filter out known non-critical errors
+        if (event.exception) {
+          const error = hint.originalException
+          if (error && typeof error === 'object' && 'message' in error) {
+            const message = String(error.message)
+            if (message.includes('Failed to fetch') || message.includes('NetworkError')) {
+              return null
+            }
+          }
+        }
+        return event
+      },
+    },
   },
 
   ssr: true,

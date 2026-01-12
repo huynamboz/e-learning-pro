@@ -385,5 +385,86 @@ export function useCourseApi() {
 
     deletePricePlan: (courseId: string, planId: string) =>
       apiClient.delete(`/courses/${courseId}/price-plans/${planId}/`),
+
+    // Get session videos for learning page
+    getSessionVideosForLearning: (
+      courseId: string,
+      params?: {
+        classroom_id?: string
+        session_id?: string
+        page?: number
+        page_size?: number
+      },
+    ) => {
+      const queryParams = new URLSearchParams()
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined) {
+            queryParams.append(key, value.toString())
+          }
+        })
+      }
+      const queryString = queryParams.toString()
+      return apiClient.get<{
+        count: number
+        next: string | null
+        previous: string | null
+        results: Array<{
+          id: string
+          course: string
+          asset_type: string
+          title: string
+          description: string
+          file_url: string
+          duration?: number
+          duration_formatted?: string
+          file_size: number
+          file_size_formatted?: string
+          order: number
+          is_downloadable: boolean
+          uploaded_by: {
+            id: string
+            username: string
+            email: string
+          }
+          uploaded_at: string
+          updated_at: string
+          visible_classrooms?: Array<{
+            id: string
+            title: string
+          }>
+          has_access: boolean
+          session?: {
+            id: string
+            topic: string
+            start_time: string
+            end_time: string
+          }
+          classroom?: {
+            id: string
+            title: string
+          }
+          materials?: Array<{
+            id: string
+            session: string
+            title: string
+            description: string
+            file_url: string
+            file_name: string
+            file_size: number
+            file_type: string
+            uploaded_by: number
+            uploaded_by_info?: {
+              id: number
+              username: string
+              first_name: string
+              last_name: string
+            }
+            created_at: string
+            updated_at: string
+          }>
+        }>
+      }>(`/courses/${courseId}/learning/session-videos/${queryString ? `?${queryString}` : ''}`)
+    },
   }
 }

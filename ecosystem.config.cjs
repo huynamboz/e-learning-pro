@@ -12,7 +12,7 @@ module.exports = {
         HOST: '0.0.0.0',
         NITRO_PORT: 3000,
         NITRO_HOST: '0.0.0.0',
-        API_BASE_URL: 'https://elearning.genfash.online/api/v1',
+        API_BASE_URL: 'https://api.hoctiengycungphantam.com/api/v1',
       },
       env_production: {
         NODE_ENV: 'production',
@@ -20,7 +20,7 @@ module.exports = {
         HOST: '0.0.0.0',
         NITRO_PORT: 3000,
         NITRO_HOST: '0.0.0.0',
-        API_BASE_URL: 'https://elearning.genfash.online/api/v1',
+        API_BASE_URL: 'https://api.hoctiengycungphantam.com/api/v1',
       },
       // PM2 specific options
       watch: false, // Tắt watch trong production

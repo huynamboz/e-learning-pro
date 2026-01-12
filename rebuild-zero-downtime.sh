@@ -74,7 +74,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - API_BASE_URL=\${API_BASE_URL:-https://elearning.genfash.online/api/v1}
+      - API_BASE_URL=\${API_BASE_URL:-https://api.hoctiengycungphantam.com/api/v1}
       - GOOGLE_CLIENT_ID=\${GOOGLE_CLIENT_ID:-}
     env_file:
       - .env

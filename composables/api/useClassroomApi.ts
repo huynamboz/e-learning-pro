@@ -12,6 +12,7 @@ export interface ClassroomPayload {
   price?: string
   discount_price?: string | null
   is_free?: boolean
+  background_color?: string
 }
 
 export interface ClassroomSession {
@@ -31,6 +32,7 @@ export interface ClassroomSession {
   course_title: string
   attendance_count: number
   present_count: number
+  background_color?: string
   created_at: string
   updated_at: string
 }
@@ -103,6 +105,21 @@ export function useClassroomApi() {
     createClassroomSession: (classroomId: string, sessionData: Partial<ClassroomSession>) =>
       apiClient.post<ClassroomSession>(`/classrooms/${classroomId}/sessions/`, sessionData),
 
+    // Create bulk sessions for classroom
+    createBulkSessions: (classroomId: string, payload: {
+      schedules_data: Array<{
+        day_of_week: string
+        start_time: string
+        end_time: string
+        repeat_start_date?: string
+        repeat_end_date?: string
+      }>
+      meeting_link?: string
+      meeting_id?: string
+      meeting_pass?: string
+    }) =>
+      apiClient.post<any>(`/classrooms/${classroomId}/sessions/bulk/`, payload),
+
     // Update classroom session
     updateClassroomSession: (sessionId: string, sessionData: Partial<ClassroomSession>) =>
       apiClient.patch<ClassroomSession>(`/classrooms/sessions/${sessionId}/`, sessionData),
@@ -119,8 +136,177 @@ export function useClassroomApi() {
     getCalendarData: (params?: { view?: string; date?: string }) =>
       apiClient.get<CalendarApiResponse>('/classrooms/calendar/', { params }),
 
+    // Get course sessions (all sessions of all classrooms in a course)
+    getCourseSessions: (courseId: string, params?: {
+      classroom_id?: string
+      start_date?: string
+      end_date?: string
+      page?: number
+      page_size?: number
+    }) =>
+      apiClient.get<ClassroomSessionsResponse>(`/courses/${courseId}/sessions/`, { params }),
+
+    // Get course session detail
+    getCourseSessionDetail: (courseId: string, sessionId: string) =>
+      apiClient.get<any>(`/courses/${courseId}/sessions/${sessionId}/`),
+
+    // Get classroom students
+    getClassroomStudents: (classroomId: string, params?: {
+      page?: number
+      page_size?: number
+    }) =>
+      apiClient.get<any>(`/classrooms/${classroomId}/students/`, { params }),
+
+    // Quick enroll student to classroom
+    quickEnrollStudent: (classroomId: string, data: { email: string; send_welcome_email?: boolean }) =>
+      apiClient.post<any>(`/classrooms/${classroomId}/quick-enroll/`, data),
+
+    // Remove student from classroom
+    removeStudentFromClassroom: (classroomId: string, userId: number, deleteOrder?: boolean) => {
+      const params = deleteOrder ? { delete_order: true } : undefined
+      return apiClient.delete(`/classrooms/${classroomId}/students/${userId}/`, { params })
+    },
+
     // Self check-in for session
     selfCheckInSession: (sessionId: string, classroomId: string) =>
       apiClient.post(`/classrooms/sessions/${sessionId}/self_checkin/`, { classroom: classroomId }),
+
+    // Get presigned URL for session video upload
+    getSessionVideoUploadUrl: (
+      courseId: string,
+      sessionId: string,
+      payload: { file_name: string; content_type: string },
+    ) =>
+      apiClient.post<{
+        upload_url: string
+        key: string
+        public_url: string
+        expires_in: number
+        file_name: string
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/upload-video-url/`, payload),
+
+    // Create session video
+    createSessionVideo: (
+      courseId: string,
+      sessionId: string,
+      payload: {
+        file_url: string
+        file_name: string
+        file_size: number
+        content_type: string
+        duration?: number
+      },
+    ) =>
+      apiClient.post<{
+        id: string
+        session: string
+        file_url: string
+        file_name: string
+        file_size: number
+        content_type: string
+        duration: number | null
+        uploaded_by: number
+        created_at: string
+        updated_at: string
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/`, payload),
+
+    // List session videos
+    getSessionVideos: (courseId: string, sessionId: string, params?: { page?: number; page_size?: number }) =>
+      apiClient.get<{
+        count: number
+        next: string | null
+        previous: string | null
+        results: Array<{
+          id: string
+          session: string
+          file_url: string
+          file_name: string
+          file_size: number
+          content_type: string
+          duration: number | null
+          uploaded_by: number
+          uploaded_by_info?: {
+            id: number
+            username: string
+            first_name: string
+            last_name: string
+          }
+          created_at: string
+          updated_at: string
+        }>
+      }>(`/courses/${courseId}/sessions/${sessionId}/videos/`, { params }),
+
+    // Delete session video
+    deleteSessionVideo: (courseId: string, sessionId: string, videoId: string) =>
+      apiClient.delete(`/courses/${courseId}/sessions/${sessionId}/videos/${videoId}/`),
+
+    // Get presigned URL for session material upload
+    getSessionMaterialUploadUrl: (
+      courseId: string,
+      sessionId: string,
+      payload: { file_name: string; content_type: string },
+    ) =>
+      apiClient.post<{
+        upload_url: string
+        key: string
+        public_url: string
+        expires_in: number
+        file_name: string
+      }>(`/courses/${courseId}/sessions/${sessionId}/upload-material-url/`, payload),
+
+    // Create session material
+    createSessionMaterial: (
+      courseId: string,
+      sessionId: string,
+      payload: {
+        title: string
+        description?: string
+        file_url: string
+        file_name: string
+        file_size: number
+        file_type: string
+      },
+    ) =>
+      apiClient.post<any>(`/courses/${courseId}/sessions/${sessionId}/materials/`, payload),
+
+    // List session materials
+    getSessionMaterials: (courseId: string, sessionId: string, params?: { page?: number; page_size?: number }) =>
+      apiClient.get<{
+        count: number
+        next: string | null
+        previous: string | null
+        results: Array<{
+          id: string
+          session: string
+          title: string
+          description: string
+          file_url: string
+          file_name: string
+          file_size: number
+          file_type: string
+          uploaded_by: number
+          uploaded_by_info?: {
+            id: number
+            username: string
+            first_name: string
+            last_name: string
+          }
+          created_at: string
+          updated_at: string
+        }>
+      }>(`/courses/${courseId}/sessions/${sessionId}/materials/`, { params }),
+
+    // Update session material
+    updateSessionMaterial: (
+      courseId: string,
+      sessionId: string,
+      materialId: string,
+      payload: { title?: string; description?: string },
+    ) =>
+      apiClient.patch<any>(`/courses/${courseId}/sessions/${sessionId}/materials/${materialId}/`, payload),
+
+    // Delete session material
+    deleteSessionMaterial: (courseId: string, sessionId: string, materialId: string) =>
+      apiClient.delete(`/courses/${courseId}/sessions/${sessionId}/materials/${materialId}/`),
   }
 }

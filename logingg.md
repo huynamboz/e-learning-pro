@@ -18,14 +18,14 @@ The Google OAuth Login API allows users to authenticate using their Google accou
      ```
      http://localhost:3000
      http://localhost:5173
-     https://elearning.genfash.online
+     https://api.hoctiengycungphantam.com
      ```
    - **Authorized redirect URIs**:
      ```
      http://localhost:3000
      http://localhost:5173
-     https://elearning.genfash.online
-     https://elearning.genfash.online/auth/callback
+     https://api.hoctiengycungphantam.com
+     https://api.hoctiengycungphantam.com/auth/callback
      ```
 7. Copy the **Client ID**
 
@@ -205,7 +205,7 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 function App() {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const response = await fetch('https://elearning.genfash.online/api/v1/auth/google/', {
+      const response = await fetch('https://api.hoctiengycungphantam.com/api/v1/auth/google/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -270,7 +270,7 @@ import { googleTokenLogin } from 'vue3-google-login'
 
 const handleGoogleLogin = async (response) => {
   try {
-    const result = await fetch('https://elearning.genfash.online/api/v1/auth/google/', {
+    const result = await fetch('https://api.hoctiengycungphantam.com/api/v1/auth/google/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

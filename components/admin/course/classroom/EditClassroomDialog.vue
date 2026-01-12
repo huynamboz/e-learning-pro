@@ -1,404 +1,323 @@
 <script lang="ts" setup>
-import type { ClassroomDetail, ClassroomSchedule } from '~/types/course.type'
+import { notification } from 'ant-design-vue'
+import { useClassroomApi } from '~/composables/api/useClassroomApi'
 
 interface Props {
-  visible: boolean
-  classroom: ClassroomDetail | null
-  loading?: boolean
+  open: boolean
+  classroomId: string | null
 }
 
 interface Emits {
-  (e: 'update:visible', value: boolean): void
-  (e: 'save', data: any): void
-  (e: 'cancel'): void
+  (e: 'update:open', value: boolean): void
+  (e: 'success'): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  loading: false,
-})
-
+const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-const { t: _t } = useI18n()
+const { getClassroomDetail, patchClassroom } = useClassroomApi()
 
-// Form state
-const formState = ref({
+// List of background colors (dark colors suitable for white text)
+const BACKGROUND_COLORS = [
+  '#268100', // Green (default)
+  '#1e40af', // Blue
+  '#7c3aed', // Purple
+  '#c2410c', // Orange
+  '#be123c', // Rose
+  '#0891b2', // Cyan
+  '#b45309', // Amber
+  '#059669', // Emerald
+  '#7c2d12', // Brown
+  '#6b21a8', // Violet
+  '#0c4a6e', // Sky
+  '#831843', // Fuchsia
+  '#1e3a8a', // Indigo
+  '#92400e', // Yellow
+  '#991b1b', // Red
+]
+
+const dialogVisible = computed({
+  get: () => props.open,
+  set: (value: boolean) => {
+    emit('update:open', value)
+  },
+})
+
+const classroomEditFormRef = ref()
+const classroomEditFormState = ref({
   title: '',
-  student_count: 0,
-  start_date: '',
-  end_date: '',
-  meeting_link: '',
-  schedules_data: [] as ClassroomSchedule[],
-  // Pricing fields
+  student_count: '',
   price: null as number | null,
   discount_price: null as number | null,
-  is_free: false,
+  meeting_link: '',
+  meeting_id: '',
+  meeting_pass: '',
+  background_color: BACKGROUND_COLORS[0],
 })
+const isLoadingClassroomDetail = ref(false)
+const isSavingClassroom = ref(false)
 
-// Form validation
-const formRef = ref()
-
-// Watch for classroom changes to populate form
-watch(() => props.classroom, (newClassroom) => {
-  if (newClassroom) {
-    formState.value = {
-      title: newClassroom.title || '',
-      student_count: newClassroom.student_count || 0,
-      start_date: newClassroom.start_date ? newClassroom.start_date.split('T')[0] : '',
-      end_date: newClassroom.end_date ? newClassroom.end_date.split('T')[0] : '',
-      meeting_link: newClassroom.meeting_link || '',
-      schedules_data: newClassroom.schedules?.map(schedule => ({
-        day_of_week: schedule.day_of_week,
-        start_time: schedule.start_time,
-        end_time: schedule.end_time,
-      })) || [],
-      // Pricing fields
-      price: newClassroom.price ? parseFloat(newClassroom.price) : null,
-      discount_price: newClassroom.discount_price ? parseFloat(newClassroom.discount_price) : null,
-      is_free: newClassroom.is_free || false,
+// Watch for dialog open to load classroom detail
+watch(dialogVisible, async (newValue) => {
+  if (newValue && props.classroomId) {
+    await loadClassroomDetail()
+  }
+  else {
+    // Reset form when dialog closes
+    classroomEditFormState.value = {
+      title: '',
+      student_count: '',
+      price: null,
+      discount_price: null,
+      meeting_link: '',
+      meeting_id: '',
+      meeting_pass: '',
+      background_color: BACKGROUND_COLORS[0],
     }
   }
-}, { immediate: true })
-
-// Handle dialog visibility
-const isVisible = computed({
-  get: () => props.visible,
-  set: value => emit('update:visible', value),
 })
 
-// Handle save
-async function handleSave() {
+async function loadClassroomDetail() {
+  if (!props.classroomId)
+    return
+
   try {
-    await formRef.value?.validateFields()
+    isLoadingClassroomDetail.value = true
+    const response = await getClassroomDetail(props.classroomId)
+    classroomEditFormState.value = {
+      title: response.title || '',
+      student_count: String(response.student_count || ''),
+      price: response.price ? Number.parseFloat(response.price) : null,
+      discount_price: response.discount_price ? Number.parseFloat(response.discount_price) : null,
+      meeting_link: response.meeting_link || '',
+      meeting_id: response.meeting_id || '',
+      meeting_pass: response.meeting_pass || '',
+      background_color: response.background_color || BACKGROUND_COLORS[0],
+    }
+  }
+  catch (error: any) {
+    console.error('Error loading classroom detail:', error)
+    notification.error({
+      message: 'Lỗi',
+      description: error?.data?.detail || 'Không thể tải thông tin lớp học',
+      duration: 5,
+    })
+    dialogVisible.value = false
+  }
+  finally {
+    isLoadingClassroomDetail.value = false
+  }
+}
 
-    const formData = {
-      title: formState.value.title,
-      student_count: formState.value.student_count,
-      start_date: formState.value.start_date,
-      end_date: formState.value.end_date,
-      meeting_link: formState.value.meeting_link,
-      schedules_data: formState.value.schedules_data,
-      // Pricing fields
-      is_free: formState.value.is_free,
-      price: formState.value.is_free ? null : (formState.value.price?.toString() || '0'),
-      discount_price: formState.value.is_free || !formState.value.discount_price 
-        ? null 
-        : formState.value.discount_price.toString(),
+function cancelEditClassroom() {
+  dialogVisible.value = false
+}
+
+async function saveClassroom() {
+  if (!props.classroomId || !classroomEditFormRef.value)
+    return
+
+  try {
+    await classroomEditFormRef.value.validate()
+    isSavingClassroom.value = true
+
+    const updatePayload: any = {
+      title: classroomEditFormState.value.title,
+      student_count: Number.parseInt(classroomEditFormState.value.student_count, 10),
     }
 
-    emit('save', formData)
+    if (classroomEditFormState.value.price !== null) {
+      updatePayload.price = String(classroomEditFormState.value.price)
+    }
+    if (classroomEditFormState.value.discount_price !== null) {
+      updatePayload.discount_price = String(classroomEditFormState.value.discount_price)
+    }
+    if (classroomEditFormState.value.meeting_link) {
+      updatePayload.meeting_link = classroomEditFormState.value.meeting_link
+    }
+    if (classroomEditFormState.value.meeting_id) {
+      updatePayload.meeting_id = classroomEditFormState.value.meeting_id
+    }
+    if (classroomEditFormState.value.meeting_pass) {
+      updatePayload.meeting_pass = classroomEditFormState.value.meeting_pass
+    }
+    if (classroomEditFormState.value.background_color) {
+      updatePayload.background_color = classroomEditFormState.value.background_color
+    }
+
+    await patchClassroom(props.classroomId, updatePayload)
+
+    notification.success({
+      message: 'Thành công',
+      description: 'Đã cập nhật thông tin lớp học',
+      duration: 3,
+    })
+
+    dialogVisible.value = false
+    emit('success')
   }
-  catch (error) {
-    console.error('Form validation failed:', error)
+  catch (error: any) {
+    console.error('Error updating classroom:', error)
+    notification.error({
+      message: 'Lỗi',
+      description: error?.data?.detail || 'Không thể cập nhật thông tin lớp học',
+      duration: 5,
+    })
+  }
+  finally {
+    isSavingClassroom.value = false
   }
 }
-
-// Handle cancel
-function handleCancel() {
-  emit('cancel')
-  isVisible.value = false
-}
-
-// Schedule management functions
-function addSchedule() {
-  formState.value.schedules_data.push({
-    day_of_week: 'monday',
-    start_time: '09:00',
-    end_time: '10:00',
-  })
-}
-
-function removeSchedule(index: number) {
-  formState.value.schedules_data.splice(index, 1)
-}
-
-// Day options for schedule
-const dayOptions = [
-  { label: 'Monday', value: 'monday' },
-  { label: 'Tuesday', value: 'tuesday' },
-  { label: 'Wednesday', value: 'wednesday' },
-  { label: 'Thursday', value: 'thursday' },
-  { label: 'Friday', value: 'friday' },
-  { label: 'Saturday', value: 'saturday' },
-  { label: 'Sunday', value: 'sunday' },
-]
 </script>
 
 <template>
   <a-modal
-    v-model:open="isVisible"
-    :title="$t('admin.classroom.edit.title')"
+    v-model:open="dialogVisible"
+    title="Chỉnh sửa lớp học"
     width="600px"
-    :footer="null"
-    @cancel="handleCancel"
+    :confirm-loading="isSavingClassroom"
+    @cancel="cancelEditClassroom"
   >
-    <div class="space-y-4">
-      <!-- Classroom Title -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          {{ $t('admin.classroom.edit.classroomTitle') }}
-        </label>
+    <div v-if="isLoadingClassroomDetail" class="flex items-center justify-center py-8">
+      <a-spin size="large" />
+    </div>
+    <a-form
+      v-else
+      ref="classroomEditFormRef"
+      :model="classroomEditFormState"
+      layout="vertical"
+      class="space-y-4"
+    >
+      <a-form-item
+        label="Tên lớp học"
+        name="title"
+        :rules="[{ required: true, message: 'Vui lòng nhập tên lớp học' }]"
+      >
         <a-input
-          v-model:value="formState.title"
-          :placeholder="$t('admin.classroom.edit.classroomTitlePlaceholder')"
+          v-model:value="classroomEditFormState.title"
+          placeholder="Nhập tên lớp học"
           size="large"
         />
-      </div>
+      </a-form-item>
 
-      <!-- Student Count -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          {{ $t('admin.classroom.edit.studentCount') }}
-        </label>
+      <a-form-item
+        label="Số lượng học viên tối đa"
+        name="student_count"
+        :rules="[{ required: true, message: 'Vui lòng nhập số lượng học viên' }]"
+      >
         <a-input-number
-          v-model:value="formState.student_count"
+          v-model:value="classroomEditFormState.student_count"
+          placeholder="Nhập số lượng học viên"
           :min="1"
-          :max="1000"
           size="large"
           class="w-full"
-          :placeholder="$t('admin.classroom.edit.studentCountPlaceholder')"
         />
-      </div>
+      </a-form-item>
 
-      <!-- Date Range -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.classroom.edit.startDate') }}
-          </label>
-          <a-date-picker
-            v-model:value="formState.start_date"
+      <a-form-item
+        label="Giá (€)"
+        name="price"
+        :rules="[{ required: true, message: 'Vui lòng nhập giá' }]"
+      >
+        <a-input-number
+          v-model:value="classroomEditFormState.price"
+          placeholder="Nhập giá"
+          :min="0"
+          :precision="2"
             size="large"
             class="w-full"
-            :placeholder="$t('admin.classroom.edit.startDatePlaceholder')"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.classroom.edit.endDate') }}
-          </label>
-          <a-date-picker
-            v-model:value="formState.end_date"
+        />
+      </a-form-item>
+
+      <a-form-item
+        label="Giá khuyến mãi (€)"
+        name="discount_price"
+      >
+        <a-input-number
+          v-model:value="classroomEditFormState.discount_price"
+          placeholder="Nhập giá khuyến mãi (tùy chọn)"
+          :min="0"
+          :precision="2"
             size="large"
             class="w-full"
-            :placeholder="$t('admin.classroom.edit.endDatePlaceholder')"
-            format="YYYY-MM-DD"
-            value-format="YYYY-MM-DD"
-          />
-        </div>
-      </div>
+        />
+      </a-form-item>
 
-      <!-- Meeting Link -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">
-          {{ $t('admin.classroom.edit.meetingLink') }}
-        </label>
+      <a-form-item
+        label="Meeting Link"
+        name="meeting_link"
+      >
         <a-input
-          v-model:value="formState.meeting_link"
-          :placeholder="$t('admin.classroom.edit.meetingLinkPlaceholder')"
+          v-model:value="classroomEditFormState.meeting_link"
+          placeholder="https://zoom.us/j/..."
           size="large"
         />
+      </a-form-item>
+
+      <div class="grid grid-cols-2 gap-4">
+        <a-form-item
+          label="Meeting ID"
+          name="meeting_id"
+        >
+          <a-input
+            v-model:value="classroomEditFormState.meeting_id"
+            placeholder="Nhập Meeting ID"
+            size="large"
+          />
+        </a-form-item>
+
+        <a-form-item
+          label="Meeting Password"
+          name="meeting_pass"
+        >
+          <a-input
+            v-model:value="classroomEditFormState.meeting_pass"
+            placeholder="Nhập Meeting Password"
+            size="large"
+          />
+        </a-form-item>
       </div>
 
-      <!-- Schedule Section -->
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h4 class="text-lg font-medium text-gray-900">
-            {{ $t('admin.classroom.edit.schedule') }}
-          </h4>
-          <a-button type="dashed" size="small" @click="addSchedule">
-            <Icon name="i-heroicons-plus" class="w-4 h-4 mr-2" />
-            {{ $t('admin.classroom.edit.addSchedule') }}
-          </a-button>
-        </div>
-
-        <div v-if="formState.schedules_data.length === 0" class="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg">
-          <Icon name="i-heroicons-calendar-days" class="w-8 h-8 text-gray-400 mx-auto mb-2" />
-          <p class="text-gray-500 text-sm">
-            {{ $t('admin.classroom.edit.noSchedules') }}
-          </p>
-        </div>
-
-        <div v-else class="space-y-3">
-          <div
-            v-for="(schedule, index) in formState.schedules_data"
-            :key="index"
-            class="border rounded-lg p-4 bg-gray-50"
-          >
-            <div class="flex items-center justify-between mb-3">
-              <h5 class="text-sm font-medium text-gray-700">
-                {{ $t('admin.classroom.edit.scheduleItem') }} {{ index + 1 }}
-              </h5>
-              <a-button
-                type="text"
-                size="small"
-                danger
-                @click="removeSchedule(index)"
-              >
-                <Icon name="i-heroicons-trash" class="w-4 h-4" />
-              </a-button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <!-- Day of Week -->
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">
-                  {{ $t('admin.classroom.edit.dayOfWeek') }}
-                </label>
-                <a-select
-                  v-model:value="schedule.day_of_week"
-                  :options="dayOptions"
-                  size="small"
-                  class="w-full"
-                />
-              </div>
-
-              <!-- Start Time -->
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">
-                  {{ $t('admin.classroom.edit.startTime') }}
-                </label>
-                <a-time-picker
-                  v-model:value="schedule.start_time"
-                  format="HH:mm"
-                  value-format="HH:mm"
-                  size="small"
-                  class="w-full"
-                />
-              </div>
-
-              <!-- End Time -->
-              <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">
-                  {{ $t('admin.classroom.edit.endTime') }}
-                </label>
-                <a-time-picker
-                  v-model:value="schedule.end_time"
-                  format="HH:mm"
-                  value-format="HH:mm"
-                  size="small"
-                  class="w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pricing Section -->
+      <!-- Background Color Section -->
       <div class="border-t border-gray-200 pt-4 mt-4">
-        <h4 class="text-lg font-medium text-gray-900 mb-4">
-          {{ $t('admin.classroom.form.pricingSection') }}
-        </h4>
+        <h3 class="text-base font-semibold text-gray-900 mb-4">
+          Màu nền cho lịch học
+        </h3>
 
-        <!-- Is Free Checkbox -->
-        <div class="mb-4">
-          <a-checkbox v-model:checked="formState.is_free">
-            {{ $t('admin.classroom.form.isFree') }}
-          </a-checkbox>
-          <div class="text-xs text-gray-500 mt-1">
-            {{ $t('admin.classroom.form.isFreeDescription') }}
+        <a-form-item
+          label="Màu nền"
+          name="background_color"
+        >
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="color in BACKGROUND_COLORS"
+              :key="color"
+              class="w-10 h-10 rounded-lg cursor-pointer border-2 transition-all"
+              :class="classroomEditFormState.background_color === color ? 'border-gray-900 scale-110' : 'border-gray-300 hover:border-gray-500'"
+              :style="{ backgroundColor: color }"
+              @click="classroomEditFormState.background_color = color"
+            />
           </div>
-        </div>
-
-        <!-- Price -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.classroom.form.price') }}
-          </label>
-          <a-input-number
-            v-model:value="formState.price"
-            size="large"
-            :placeholder="$t('admin.classroom.form.pricePlaceholder')"
-            :min="0"
-            :step="0.01"
-            :precision="2"
-            :disabled="formState.is_free"
-            class="w-full"
-          >
-            <template #prefix>
-              <span class="text-gray-500">€</span>
-            </template>
-          </a-input-number>
-          <div class="text-xs text-gray-500 mt-1">
-            {{ $t('admin.classroom.form.priceDescription') }}
-          </div>
-        </div>
-
-        <!-- Discount Price -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ $t('admin.classroom.form.discountPrice') }}
-          </label>
-          <a-input-number
-            v-model:value="formState.discount_price"
-            size="large"
-            :placeholder="$t('admin.classroom.form.discountPricePlaceholder')"
-            :min="0"
-            :step="0.01"
-            :precision="2"
-            :disabled="formState.is_free"
-            class="w-full"
-          >
-            <template #prefix>
-              <span class="text-gray-500">€</span>
-            </template>
-          </a-input-number>
-          <div class="text-xs text-gray-500 mt-1">
-            {{ $t('admin.classroom.form.discountPriceDescription') }}
-          </div>
-        </div>
-
-        <!-- Effective Price Display (Read-only) -->
-        <div v-if="!formState.is_free && formState.price" class="mb-4 p-3 bg-gray-50 rounded-lg">
-          <div class="text-sm text-gray-600 mb-1">
-            {{ $t('admin.classroom.form.effectivePrice') }}:
-          </div>
-          <div class="text-lg font-semibold text-green-600">
-            €{{ (formState.discount_price && formState.discount_price < formState.price 
-              ? formState.discount_price 
-              : formState.price).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
-          </div>
+        </a-form-item>
+        <div class="text-xs text-gray-500 mt-1">
+          Chọn màu nền để hiển thị trên lịch học
         </div>
       </div>
+    </a-form>
 
-      <!-- Current Info Display -->
-      <div v-if="classroom" class="bg-gray-50 rounded-lg p-4">
-        <h4 class="text-sm font-medium text-gray-900 mb-2">
-          {{ $t('admin.classroom.edit.currentInfo') }}
-        </h4>
-        <div class="space-y-1 text-sm text-gray-600">
-          <div>
-            <span class="font-medium">{{ $t('admin.classroom.edit.course') }}:</span>
-            {{ classroom.course.title }}
-          </div>
-          <div>
-            <span class="font-medium">{{ $t('admin.classroom.edit.enrolled') }}:</span>
-            {{ classroom.enrollment_count }} {{ $t('admin.classroom.edit.students') }}
-          </div>
-          <div>
-            <span class="font-medium">{{ $t('admin.classroom.edit.sessions') }}:</span>
-            {{ classroom.session_count }}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dialog Actions -->
-    <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
-      <a-button @click="handleCancel">
-        {{ $t('admin.classroom.edit.cancel') }}
+    <template #footer>
+      <div class="flex justify-end gap-2">
+        <a-button @click="cancelEditClassroom">
+          Hủy
       </a-button>
       <a-button
         type="primary"
-        :loading="loading"
-        class="!bg-[#548A1D]"
-        @click="handleSave"
+          :loading="isSavingClassroom"
+          @click="saveClassroom"
       >
-        {{ $t('admin.classroom.edit.save') }}
+          Lưu
       </a-button>
     </div>
+    </template>
   </a-modal>
 </template>

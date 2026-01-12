@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { cn } from '~/lib/utils'
 
-// Get sidebar collapse state
-const { isCollapsed } = useSidebar()
+// Get sidebar collapse state (admin sidebar)
+const { isCollapsed } = useSidebar(true)
 
 const isSidebarOpen = ref(false)
 
