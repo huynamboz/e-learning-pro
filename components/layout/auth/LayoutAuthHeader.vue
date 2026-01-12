@@ -111,12 +111,23 @@ const courseMenu = computed(() => {
             href: `/courses/${course.id}/classrooms/${classroom.id}`,
           }))
 
+          // Calculate classroom_category from unique student_count values
+          const studentCounts = course.classrooms.map((c: any) => c.student_count) as number[]
+          const uniqueStudentCounts = [...new Set(studentCounts)]
+          const classroomCategory = uniqueStudentCounts
+            .sort((a: number, b: number) => a - b) // Sort ascending
+            .map((studentCount: number) => ({
+              title: `Lớp ${studentCount} học viên`,
+              student_count: studentCount,
+            }))
+
           return {
             key: course.id,
             label: course.title,
             href: courseHref,
             description: course.short_description,
             classes,
+            classroom_category: classroomCategory,
           }
         })
 
@@ -276,12 +287,38 @@ const { isLoggedIn } = useAuth()
 // Cart store
 const cartStore = useCartStore()
 
+// Calculate classroom_category for a course
+function calculateClassroomCategory(classrooms: any[]) {
+  const uniqueStudentCounts = [...new Set(classrooms.map((c: any) => c.student_count))] as number[]
+  return uniqueStudentCounts
+    .sort((a, b) => a - b) // Sort ascending
+    .map((studentCount: number) => ({
+      title: `Lớp ${studentCount} học viên`,
+      student_count: studentCount,
+    }))
+}
+
 // Load hierarchical courses
 async function loadHierarchicalCourses() {
   try {
     loadingCourses.value = true
     const data = await courseApi.getCoursesHierarchical()
-    hierarchicalData.value = data
+
+    // Add classroom_category to each course
+    const levels = ['basic', 'intermediate', 'advanced', 'driving_theory'] as const
+    const processedData: any = {}
+
+    levels.forEach((levelKey) => {
+      const courses = data[levelKey] || []
+      processedData[levelKey] = courses.map((course: any) => ({
+        ...course,
+        classroom_category: course.classrooms && course.classrooms.length > 0
+          ? calculateClassroomCategory(course.classrooms)
+          : [],
+      }))
+    })
+
+    hierarchicalData.value = processedData
   }
   catch (error) {
     console.error('Error loading hierarchical courses:', error)
@@ -457,22 +494,22 @@ watch(resourceMenu, (newMenu) => {
                   >
                     <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]">
                       <span>{{ course.label }}</span>
-                      <Icon v-if="course.classes && course.classes.length" name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
+                      <Icon v-if="course.classroom_category && course.classroom_category.length" name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
                     </div>
-                    <!-- Submenu: Classes -->
+                    <!-- Submenu: Classroom Categories -->
                     <div
-                      v-if="course.classes && course.classes.length && hoverCourseKey === course.key"
+                      v-if="course.classroom_category && course.classroom_category.length && hoverCourseKey === course.key"
                       class="absolute left-full top-0 course-submenu bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[180px] z-50"
                       style="margin-left: 4px;"
                     >
                       <NuxtLink
-                        v-for="classItem in course.classes"
-                        :key="classItem.key"
-                        :to="classItem.href"
+                        v-for="category in course.classroom_category"
+                        :key="category.student_count"
+                        :to="`/courses/${course.key}/classrooms?student_count=${category.student_count}`"
                         class="block px-4 py-2 text-sm !text-gray-700 hover:bg-gray-50 hover:text-[#16A34A]"
                         @click="isDesktopCourseMenuOpen = false"
                       >
-                        {{ classItem.label }}
+                        {{ category.title }}
                       </NuxtLink>
                     </div>
                   </div>
@@ -756,13 +793,13 @@ watch(resourceMenu, (newMenu) => {
                               class="mt-2 pl-3 space-y-1 border-l border-dashed border-green-200"
                             >
                               <NuxtLink
-                                v-for="classItem in course.classes"
-                                :key="classItem.key"
-                                :to="classItem.href"
+                                v-for="category in course.classroom_category"
+                                :key="category.student_count"
+                                :to="`/courses/${course.key}/classrooms?student_count=${category.student_count}`"
                                 class="flex items-center justify-between text-xs font-medium text-gray-700 hover:text-[#16A34A]"
                                 @click="isMobileMenuOpen = false"
                               >
-                                <span>{{ classItem.label }}</span>
+                                <span>{{ category.title }}</span>
                                 <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
                               </NuxtLink>
                             </div>
@@ -1017,13 +1054,13 @@ watch(resourceMenu, (newMenu) => {
                               class="mt-2 pl-3 space-y-1 border-l border-dashed border-green-200"
                             >
                               <NuxtLink
-                                v-for="classItem in course.classes"
-                                :key="classItem.key"
-                                :to="classItem.href"
+                                v-for="category in course.classroom_category"
+                                :key="category.student_count"
+                                :to="`/courses/${course.key}/classrooms?student_count=${category.student_count}`"
                                 class="flex items-center justify-between text-xs font-medium text-gray-700 hover:text-[#16A34A]"
                                 @click="isMobileMenuOpen = false"
                               >
-                                <span>{{ classItem.label }}</span>
+                                <span>{{ category.title }}</span>
                                 <Icon name="solar:alt-arrow-right-line-duotone" size="14" class="text-gray-400" />
                               </NuxtLink>
                             </div>

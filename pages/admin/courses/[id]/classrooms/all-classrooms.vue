@@ -48,6 +48,7 @@ interface CalendarEvent {
   description?: string
   meeting_link?: string
   background?: string
+  limit?: number
 }
 
 // Default background color if classroom doesn't have background_color
@@ -62,9 +63,9 @@ function formatEventTime(dateTimeString: string): string {
 
 const calendarEvents = ref<CalendarEvent[]>([])
 // Set initial date to 5/1/2026 (Monday of that week)
-const initialDate = new Date(2026, 0, 5) // January 5, 2026
-const selectedDate = ref(new Date(initialDate))
-const viewDate = ref(new Date(initialDate))
+// const initialDate = new Date(2026, 0, 5) // January 5, 2026
+const selectedDate = ref()
+const viewDate = ref()
 const currentView = ref('week')
 
 // VueCal template ref
@@ -98,6 +99,7 @@ function generateCalendarEventsFromSessions(sessions: ClassroomSession[]): Calen
       description: session.description,
       meeting_link: session.meeting_link,
       background: session.background_color || DEFAULT_BACKGROUND_COLOR,
+      limit: session.limit,
     })
   })
 
@@ -243,6 +245,23 @@ function handleNextClick() {
   }
 }
 
+// Handle today button click
+function handleTodayClick() {
+  if (vueCalRef.value?.view && !isLoadingSessions.value) {
+    vueCalRef.value.view.goToToday()
+
+    // Update viewDate and selectedDate to today
+    const today = new Date()
+    viewDate.value = today
+    selectedDate.value = today
+
+    // Wait for view to update, then reload sessions
+    nextTick(() => {
+      loadAllSessions()
+    })
+  }
+}
+
 // Load sessions on mount - will be triggered by calendar ready event
 onMounted(() => {
   // Sessions will be loaded when calendar is ready via handleCalendarReady
@@ -323,6 +342,10 @@ onMounted(() => {
               <div v-if="event.start && event.end" class="text-xs font-semibold text-white opacity-90">
                 {{ formatEventTime(event.start) }} - {{ formatEventTime(event.end) }}
               </div>
+              <!-- limit -->
+              <div v-if="event.limit" class="text-xs font-semibold text-white opacity-90">
+                Tối đa {{ event.limit }} học viên
+              </div>
             </div>
           </template>
           <template #previous-button>
@@ -340,6 +363,15 @@ onMounted(() => {
               @click.stop.prevent="handleNextClick"
             >
               <Icon name="i-heroicons-chevron-right" class="text-[26px]" />
+            </button>
+          </template>
+
+          <template #today-button>
+            <button
+              class="!text-gray-500 cursor-pointer hover:!text-gray-700 transition-colors"
+              @click.stop.prevent="handleTodayClick"
+            >
+              Hôm nay
             </button>
           </template>
         </VueCal>
@@ -425,7 +457,7 @@ onMounted(() => {
 
 :deep(.calendar .vuecal__nav--today) {
   margin-left: 3px;
-  display: none;
+  /* display: none; */
 }
 
 /* Event content styling */

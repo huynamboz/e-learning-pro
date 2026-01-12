@@ -383,6 +383,22 @@ function formatFileSize(bytes: number): string {
   return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`
 }
 
+// Format video duration helper (seconds to MM:SS or HH:MM:SS)
+function formatVideoDuration(seconds: number | null | undefined): string {
+  if (!seconds || seconds === 0) {
+    return '0:00'
+  }
+
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = Math.floor(seconds % 60)
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+  return `${minutes}:${secs.toString().padStart(2, '0')}`
+}
+
 // Get icon for material based on file extension
 function getMaterialIcon(material: any): string {
   const extension = getFileExtension(material)
@@ -1063,7 +1079,7 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Session Videos List -->
-            <div v-else-if="sessionVideos.length > 0" class="space-y-0">
+            <div v-else-if="sessionVideos.length > 0" class="space-y-0 p-2 max-h-[60vh] overflow-y-auto">
               <div
                 v-for="(video, index) in sessionVideos"
                 :key="video.id"
@@ -1094,7 +1110,8 @@ onBeforeUnmount(() => {
                     'text-gray-500': activeLesson?.id !== video.id,
                   }"
                 >
-                  <span class="text-sm">{{ video.duration_formatted || formatVideoDuration(video.duration) }}</span>
+                  <span v-if="video.duration_formatted" class="text-sm">{{ video.duration_formatted }}</span>
+                  <span v-else-if="video.duration" class="text-sm">{{ formatVideoDuration(video.duration) || '0:00' }}</span>
                 </div>
               </div>
             </div>
