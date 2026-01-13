@@ -69,7 +69,11 @@ async function onFinish() {
   loading.value = true
 
   try {
-    const result = await register(formState)
+    const result = await register({
+      email: formState.email?.toLowerCase(),
+      username: formState.username,
+      password: formState.password,
+    })
 
     if (result.success) {
       // Save account credentials to cookie for account switching feature
@@ -82,27 +86,27 @@ async function onFinish() {
 
       // Check if account already exists in saved accounts
       const existingAccountIndex = savedAccountsCookie.value.findIndex(
-        account => account.email === formState.email,
+        account => account.email?.toLowerCase() === formState.email?.toLowerCase(),
       )
 
       if (existingAccountIndex >= 0) {
         // Update existing account
         savedAccountsCookie.value[existingAccountIndex] = {
-          email: formState.email,
+          email: formState.email?.toLowerCase(),
           password: formState.password,
         }
       }
       else {
         // Add new account
         savedAccountsCookie.value.push({
-          email: formState.email,
+          email: formState.email?.toLowerCase(),
           password: formState.password,
         })
       }
 
       // Auto login after successful registration
       const loginResult = await login({
-        email: formState.email,
+        email: formState.email?.toLowerCase(),
         password: formState.password,
       })
 
