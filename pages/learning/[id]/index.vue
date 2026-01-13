@@ -260,20 +260,20 @@ async function loadCourseStudents() {
 
 // Load resources/assets filtered by classroom
 async function loadResources() {
-  if (!classroomId.value) {
-    return
-  }
-
   try {
+    const query = {
+      ordering: 'order',
+      // visible_classrooms: classroomId.value,
+      page: 1,
+      limit: resourcePageSize.value,
+    }
+    if (classroomId.value) {
+      (query as any).visible_classrooms = classroomId.value
+    }
     isLoadingResources.value = true
     currentResourcePage.value = 1
 
-    const response = await assetApi.getAssets(courseId, {
-      ordering: 'order',
-      visible_classrooms: classroomId.value,
-      page: 1,
-      limit: resourcePageSize.value,
-    })
+    const response = await assetApi.getAssets(courseId, query)
 
     resources.value = response.results || []
     resourcesData.value = {
@@ -367,8 +367,8 @@ async function loadLessonMaterials() {
 }
 
 // Watch for classroomId changes to load resources
-watch([classroomId, activeTab], ([newClassroomId, newTab]) => {
-  if (newClassroomId && newTab === 'resources') {
+watch([classroomId, activeTab], ([,newTab]) => {
+  if (newTab === 'resources') {
     loadResources()
   }
 }, { immediate: true })
