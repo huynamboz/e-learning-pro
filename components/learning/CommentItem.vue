@@ -40,14 +40,14 @@
             Reply
           </a-button>
           
-          <!-- Delete button (only for own comments or teachers) -->
+          <!-- Delete button (only for own comments) -->
           <a-button 
-            v-if="canDelete"
+            v-if="canDeleteRoot"
             type="link" 
             size="small" 
             class="!flex items-center text-gray-500 hover:text-red-600 p-0 h-auto font-normal"
-            @click="showDeleteConfirm"
-            :loading="isDeleting"
+            @click="showDeleteConfirm(comment.id)"
+            :loading="isDeleting && deleteTargetId === comment.id"
           >
             <Icon name="tabler:trash" class="w-3 h-3 mr-1" />
             Delete
@@ -102,14 +102,25 @@
           </a-avatar>
           
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-gray-900 text-sm">
-                {{ reply.author_name }}
-              </span>
-              <span class="text-xs text-gray-500">
-                {{ formatTime(reply.created_at) }}
-              </span>
-            </div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-semibold text-gray-900 text-sm">
+              {{ reply.author_name }}
+            </span>
+            <span class="text-xs text-gray-500">
+              {{ formatTime(reply.created_at) }}
+            </span>
+            <a-button
+              v-if="canDeleteReply(reply)"
+              type="link"
+              size="small"
+              class="!flex items-center text-gray-500 hover:text-red-600 p-0 h-auto font-normal"
+              @click="showDeleteConfirm(reply.id)"
+              :loading="isDeleting && deleteTargetId === reply.id"
+            >
+              <Icon name="tabler:trash" class="w-3 h-3 mr-1" />
+              Delete
+            </a-button>
+          </div>
             
             <div class="text-gray-800 text-sm leading-relaxed">
               {{ reply.content }}
@@ -125,7 +136,7 @@
     v-model:open="showDeleteModal"
     title="Delete Comment"
     @ok="handleDelete"
-    @cancel="showDeleteModal = false"
+    @cancel="handleCancelDelete"
     :confirm-loading="isDeleting"
   >
     <p>Are you sure you want to delete this comment? This action cannot be undone.</p>
@@ -133,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Comment } from '~/types/comment.type'
+import type { Comment, Reply } from '~/types/comment.type'
 import { useAuth } from '~/composables/useAuth'
 
 interface Props {
@@ -151,16 +162,14 @@ const replyContent = ref('')
 const isSubmittingReply = ref(false)
 const isDeleting = ref(false)
 const showDeleteModal = ref(false)
+const deleteTargetId = ref<string | null>(null)
 
 // Computed
-const canDelete = computed(() => {
+const canDeleteRoot = computed(() => {
   if (!user.value) return false
   
   // User can delete their own comments
   if (user.value.id === props.comment.author) return true
-  
-  // Teachers can delete any comment (assuming they're the course teacher)
-  if (user.value.is_teacher) return true
   
   return false
 })
@@ -193,21 +202,33 @@ const handleReply = async () => {
   }
 }
 
-const showDeleteConfirm = () => {
+const canDeleteReply = (reply: Reply) => {
+  if (!user.value) return false
+  return user.value.id === reply.author
+}
+
+const showDeleteConfirm = (targetId: string) => {
+  deleteTargetId.value = targetId
   showDeleteModal.value = true
 }
 
+const handleCancelDelete = () => {
+  showDeleteModal.value = false
+  deleteTargetId.value = null
+}
+
 const handleDelete = async () => {
-  if (!props.onDelete) return
+  if (!props.onDelete || !deleteTargetId.value) return
   
   try {
     isDeleting.value = true
-    await props.onDelete(props.comment.id)
+    await props.onDelete(deleteTargetId.value)
     showDeleteModal.value = false
   } catch (error) {
     console.error('Error deleting comment:', error)
   } finally {
     isDeleting.value = false
+    deleteTargetId.value = null
   }
 }
 
@@ -229,4 +250,3 @@ const formatTime = (dateString: string) => {
   return date.toLocaleDateString()
 }
 </script>
-

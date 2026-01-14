@@ -29,6 +29,7 @@ const learnStore = useLearnStore()
 // Use course API
 const courseApi = useCourseApi()
 const assetApi = useAssetApi()
+const auth = useAuth()
 
 // Computed properties from store
 const course = computed(() => learnStore.course)
@@ -674,7 +675,7 @@ function handleSessionVideoClick(video: any) {
 
 // Watch for course changes to load classmates and session videos when course_type is 'course'
 watch(course, (newCourse) => {
-  if (newCourse?.course_type === 'course') {
+  if (newCourse?.course_type === 'course' && !auth.isTeacher) {
     loadCourseStudents()
     loadSessionVideos()
   }

@@ -35,7 +35,7 @@ const isLessonActive = computed(() => {
 
 <template>
   <div
-    class="flex items-center justify-between py-4 px-4 group rounded-lg lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
+    class="flex items-center mt-3 justify-between py-4 px-4 group rounded-lg lesson-item hover:bg-green-600 hover:text-white cursor-pointer transition-all duration-200"
     :class="{
       '!bg-green-600 !text-white': isLessonActive,
     }"

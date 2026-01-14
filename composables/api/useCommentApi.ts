@@ -126,8 +126,18 @@ export function useCommentManagement(courseId: string, chapterId: string, lesson
     try {
       await commentApi.deleteComment(courseId, chapterId, lessonId, commentId)
       
-      // Remove comment from list
-      comments.value = comments.value.filter(c => c.id !== commentId)
+      // Remove comment or reply from list
+      const rootIndex = comments.value.findIndex(c => c.id === commentId)
+      if (rootIndex !== -1) {
+        comments.value = comments.value.filter(c => c.id !== commentId)
+        return
+      }
+
+      comments.value = comments.value.map(comment => {
+        const replies = comment.replies.filter(reply => reply.id !== commentId)
+        if (replies.length === comment.replies.length) return comment
+        return { ...comment, replies }
+      })
     } catch (err: any) {
       console.error('Error deleting comment:', err)
       throw err
