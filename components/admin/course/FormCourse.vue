@@ -52,6 +52,7 @@ const lastUploadedFile = ref<File | null>(null)
 // Delete dialog state
 const showDeleteDialog = ref(false)
 const isDeleting = ref(false)
+const isInitializing = ref(false) // Flag to prevent watcher from resetting during initial load
 
 const courseTypeOptions = ref([
   {
@@ -375,6 +376,11 @@ onMounted(async () => {
 
   if (currentCourse.value) {
     const c = currentCourse.value as any
+
+    // Set flag to prevent watcher from resetting course_sub_level during initial load
+    isInitializing.value = true
+
+    // Set course_level first, then wait for nextTick to ensure courseSubLevelOptions is computed
     formState.value = {
       title: c.title || '',
       slug: c.slug || '',
@@ -394,6 +400,12 @@ onMounted(async () => {
       is_published: c.is_published ?? true,
       language: c.language || 'en',
     }
+
+    // Wait for nextTick to ensure courseSubLevelOptions is computed based on course_level
+    await nextTick()
+
+    // Reset flag after initialization is complete
+    isInitializing.value = false
 
     if (c.video_preview) {
       videoPreviewUrl.value = c.video_preview
@@ -443,6 +455,11 @@ function previewCourse() {
 
 // Watch course_level to reset course_sub_level when level changes
 watch(() => formState.value.course_level, (newLevel, oldLevel) => {
+  // Don't reset during initial load
+  if (isInitializing.value) {
+    return
+  }
+
   if (newLevel !== oldLevel) {
     formState.value.course_sub_level = undefined
   }
